@@ -77,7 +77,7 @@ auth.post('/register', async (c) => {
       username: newUser.username,
     };
     
-    const token = generateToken(tokenPayload, c.env.JWT_SECRET);
+    const token = await generateToken(tokenPayload, c.env.JWT_SECRET);
 
     return successResponse(
       {
@@ -138,7 +138,7 @@ auth.post('/login', async (c) => {
       username: user.username,
     };
     
-    const token = generateToken(tokenPayload, c.env.JWT_SECRET);
+    const token = await generateToken(tokenPayload, c.env.JWT_SECRET);
 
     return successResponse({
       token,
