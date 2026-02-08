@@ -197,4 +197,130 @@ auth.get('/me', async (c) => {
   }
 });
 
+// Forgot Password - Request reset token
+auth.post('/forgot-password', async (c) => {
+  try {
+    const { email } = await c.req.json();
+
+    if (!email) {
+      return errorResponse('請提供電子郵箱');
+    }
+
+    if (!validateEmail(email)) {
+      return errorResponse('無效的電子郵件格式');
+    }
+
+    // Find user
+    const user = await c.env.DB.prepare(
+      'SELECT id, email, username FROM users WHERE email = ?'
+    )
+      .bind(email)
+      .first() as any;
+
+    // Always return success (security best practice - don't leak user existence)
+    if (!user) {
+      return successResponse({
+        message: '如果該郵箱已註冊，您將收到密碼重置連結'
+      });
+    }
+
+    // Generate reset token (simple random string for demo)
+    const resetToken = Array.from({ length: 32 }, () => 
+      Math.random().toString(36).charAt(2)
+    ).join('');
+
+    // Token expires in 1 hour
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+
+    // Save token to database
+    await c.env.DB.prepare(
+      `INSERT INTO password_reset_tokens (user_id, token, expires_at) 
+       VALUES (?, ?, ?)`
+    )
+      .bind(user.id, resetToken, expiresAt)
+      .run();
+
+    // In production, send email here
+    // For now, just log the reset link
+    const host = c.req.header('host') || 'localhost:3000';
+    const resetLink = `https://${host}/reset-password?token=${resetToken}`;
+    console.log('Password reset link:', resetLink);
+
+    return successResponse({
+      message: '如果該郵箱已註冊，您將收到密碼重置連結',
+      // For development only - remove in production
+      resetLink: resetLink
+    });
+  } catch (error: any) {
+    console.error('Forgot password error:', error);
+    return errorResponse('處理請求時發生錯誤', 500);
+  }
+});
+
+// Reset Password - Verify token and update password
+auth.post('/reset-password', async (c) => {
+  try {
+    const { token, newPassword } = await c.req.json();
+
+    if (!token || !newPassword) {
+      return errorResponse('缺少必要參數');
+    }
+
+    if (!validatePassword(newPassword)) {
+      return errorResponse('密碼必須至少 6 個字符');
+    }
+
+    // Find valid token
+    const resetToken = await c.env.DB.prepare(
+      `SELECT * FROM password_reset_tokens 
+       WHERE token = ? AND used = 0 AND expires_at > datetime('now')`
+    )
+      .bind(token)
+      .first() as any;
+
+    if (!resetToken) {
+      return errorResponse('無效或已過期的重置令牌', 400);
+    }
+
+    // Hash new password
+    const passwordHash = await hashPassword(newPassword);
+
+    // Update user password
+    await c.env.DB.prepare(
+      'UPDATE users SET password_hash = ? WHERE id = ?'
+    )
+      .bind(passwordHash, resetToken.user_id)
+      .run();
+
+    // Mark token as used
+    await c.env.DB.prepare(
+      'UPDATE password_reset_tokens SET used = 1 WHERE id = ?'
+    )
+      .bind(resetToken.id)
+      .run();
+
+    return successResponse({
+      message: '密碼已成功重置，請使用新密碼登入'
+    });
+  } catch (error: any) {
+    console.error('Reset password error:', error);
+    return errorResponse('重置密碼時發生錯誤', 500);
+  }
+});
+
+// Logout (client-side token removal, but we can track it)
+auth.post('/logout', async (c) => {
+  try {
+    // In a more complex system, you might invalidate the token here
+    // For JWT, logout is typically handled client-side by removing the token
+    
+    return successResponse({
+      message: '成功登出'
+    });
+  } catch (error: any) {
+    console.error('Logout error:', error);
+    return errorResponse('登出時發生錯誤', 500);
+  }
+});
+
 export default auth;

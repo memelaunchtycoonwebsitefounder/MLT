@@ -271,6 +271,523 @@ app.get('/', (c) => {
   `);
 });
 
+// Signup page
+app.get('/signup', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>註冊 - MemeLaunch Tycoon</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
+    </head>
+    <body class="gradient-bg text-white min-h-screen">
+        <div class="min-h-screen flex items-center justify-center px-4 py-12">
+            <div class="max-w-md w-full">
+                <!-- Logo -->
+                <div class="text-center mb-8">
+                    <a href="/" class="inline-block">
+                        <h1 class="text-3xl font-bold gradient-text">
+                            <i class="fas fa-rocket"></i> MemeLaunch
+                        </h1>
+                    </a>
+                    <p class="text-gray-400 mt-2">開始你的模因幣帝國</p>
+                </div>
+
+                <!-- Signup Form -->
+                <div class="glass-effect rounded-2xl p-8">
+                    <h2 class="text-2xl font-bold mb-6 text-center">創建帳號</h2>
+                    
+                    <form id="signup-form" class="space-y-4">
+                        <!-- Email -->
+                        <div>
+                            <label for="email" class="block text-sm font-medium mb-2">
+                                <i class="fas fa-envelope mr-2"></i>電子郵箱
+                            </label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                required
+                                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
+                                placeholder="your@email.com"
+                            />
+                            <p class="text-red-400 text-sm mt-1 hidden" id="email-error"></p>
+                        </div>
+
+                        <!-- Username -->
+                        <div>
+                            <label for="username" class="block text-sm font-medium mb-2">
+                                <i class="fas fa-user mr-2"></i>用戶名稱
+                            </label>
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                required
+                                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
+                                placeholder="選擇一個用戶名"
+                            />
+                            <p class="text-red-400 text-sm mt-1 hidden" id="username-error"></p>
+                        </div>
+
+                        <!-- Password -->
+                        <div>
+                            <label for="password" class="block text-sm font-medium mb-2">
+                                <i class="fas fa-lock mr-2"></i>密碼
+                            </label>
+                            <div class="relative">
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    required
+                                    class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
+                                    placeholder="至少 8 個字符"
+                                />
+                                <button
+                                    type="button"
+                                    id="toggle-password"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                                >
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <!-- Password Strength Indicator -->
+                            <div class="mt-2">
+                                <div class="flex gap-1 mb-1">
+                                    <div class="h-1 flex-1 rounded bg-white/10" id="strength-1"></div>
+                                    <div class="h-1 flex-1 rounded bg-white/10" id="strength-2"></div>
+                                    <div class="h-1 flex-1 rounded bg-white/10" id="strength-3"></div>
+                                    <div class="h-1 flex-1 rounded bg-white/10" id="strength-4"></div>
+                                </div>
+                                <p class="text-xs text-gray-400" id="strength-text">密碼強度：請輸入密碼</p>
+                            </div>
+                            <p class="text-red-400 text-sm mt-1 hidden" id="password-error"></p>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div>
+                            <label for="confirm-password" class="block text-sm font-medium mb-2">
+                                <i class="fas fa-lock mr-2"></i>確認密碼
+                            </label>
+                            <input
+                                type="password"
+                                id="confirm-password"
+                                name="confirm-password"
+                                required
+                                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
+                                placeholder="再次輸入密碼"
+                            />
+                            <p class="text-red-400 text-sm mt-1 hidden" id="confirm-password-error"></p>
+                        </div>
+
+                        <!-- Terms Agreement -->
+                        <div class="flex items-start">
+                            <input
+                                type="checkbox"
+                                id="terms"
+                                name="terms"
+                                required
+                                class="mt-1 w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                            />
+                            <label for="terms" class="ml-2 text-sm text-gray-300">
+                                我同意 <a href="/terms" class="text-orange-500 hover:underline">服務條款</a> 和 <a href="/privacy" class="text-orange-500 hover:underline">隱私政策</a>
+                            </label>
+                        </div>
+                        <p class="text-red-400 text-sm hidden" id="terms-error"></p>
+
+                        <!-- Submit Button -->
+                        <button
+                            type="submit"
+                            id="submit-btn"
+                            class="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-lg transition transform hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+                        >
+                            <i class="fas fa-user-plus mr-2"></i>
+                            <span id="submit-text">創建帳號</span>
+                        </button>
+
+                        <!-- Form Message -->
+                        <div id="form-message" class="hidden mt-4 p-4 rounded-lg"></div>
+                    </form>
+
+                    <!-- Social Login (Optional) -->
+                    <div class="mt-6">
+                        <div class="relative">
+                            <div class="absolute inset-0 flex items-center">
+                                <div class="w-full border-t border-white/10"></div>
+                            </div>
+                            <div class="relative flex justify-center text-sm">
+                                <span class="px-2 bg-transparent text-gray-400">或使用社交帳號註冊</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 grid grid-cols-2 gap-3">
+                            <button class="flex items-center justify-center px-4 py-2 border border-white/20 rounded-lg hover:bg-white/10 transition">
+                                <i class="fab fa-google mr-2"></i> Google
+                            </button>
+                            <button class="flex items-center justify-center px-4 py-2 border border-white/20 rounded-lg hover:bg-white/10 transition">
+                                <i class="fab fa-twitter mr-2"></i> Twitter
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Login Link -->
+                    <p class="mt-6 text-center text-sm text-gray-400">
+                        已有帳號？ <a href="/login" class="text-orange-500 hover:underline font-medium">立即登入</a>
+                    </p>
+                </div>
+
+                <!-- Disclaimer -->
+                <p class="mt-6 text-center text-xs text-gray-500">
+                    🔒 100% 模擬遊戲 • 無實際金錢交易 • 您的數據安全受保護
+                </p>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="/static/auth.js"></script>
+    </body>
+    </html>
+  `);
+});
+
+// Login page
+app.get('/login', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>登入 - MemeLaunch Tycoon</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
+    </head>
+    <body class="gradient-bg text-white min-h-screen">
+        <div class="min-h-screen flex items-center justify-center px-4 py-12">
+            <div class="max-w-md w-full">
+                <!-- Logo -->
+                <div class="text-center mb-8">
+                    <a href="/" class="inline-block">
+                        <h1 class="text-3xl font-bold gradient-text">
+                            <i class="fas fa-rocket"></i> MemeLaunch
+                        </h1>
+                    </a>
+                    <p class="text-gray-400 mt-2">歡迎回來！</p>
+                </div>
+
+                <!-- Login Form -->
+                <div class="glass-effect rounded-2xl p-8">
+                    <h2 class="text-2xl font-bold mb-6 text-center">登入帳號</h2>
+                    
+                    <form id="login-form" class="space-y-4">
+                        <!-- Email -->
+                        <div>
+                            <label for="email" class="block text-sm font-medium mb-2">
+                                <i class="fas fa-envelope mr-2"></i>電子郵箱
+                            </label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                required
+                                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
+                                placeholder="your@email.com"
+                            />
+                            <p class="text-red-400 text-sm mt-1 hidden" id="email-error"></p>
+                        </div>
+
+                        <!-- Password -->
+                        <div>
+                            <label for="password" class="block text-sm font-medium mb-2">
+                                <i class="fas fa-lock mr-2"></i>密碼
+                            </label>
+                            <div class="relative">
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    required
+                                    class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
+                                    placeholder="輸入您的密碼"
+                                />
+                                <button
+                                    type="button"
+                                    id="toggle-password"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                                >
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <p class="text-red-400 text-sm mt-1 hidden" id="password-error"></p>
+                        </div>
+
+                        <!-- Remember Me & Forgot Password -->
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    id="remember-me"
+                                    name="remember-me"
+                                    class="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                                />
+                                <span class="ml-2 text-sm text-gray-300">記住我</span>
+                            </label>
+                            <a href="/forgot-password" class="text-sm text-orange-500 hover:underline">
+                                忘記密碼？
+                            </a>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button
+                            type="submit"
+                            id="submit-btn"
+                            class="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-lg transition transform hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+                        >
+                            <i class="fas fa-sign-in-alt mr-2"></i>
+                            <span id="submit-text">登入</span>
+                        </button>
+
+                        <!-- Form Message -->
+                        <div id="form-message" class="hidden mt-4 p-4 rounded-lg"></div>
+                    </form>
+
+                    <!-- Social Login (Optional) -->
+                    <div class="mt-6">
+                        <div class="relative">
+                            <div class="absolute inset-0 flex items-center">
+                                <div class="w-full border-t border-white/10"></div>
+                            </div>
+                            <div class="relative flex justify-center text-sm">
+                                <span class="px-2 bg-transparent text-gray-400">或使用社交帳號登入</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 grid grid-cols-2 gap-3">
+                            <button class="flex items-center justify-center px-4 py-2 border border-white/20 rounded-lg hover:bg-white/10 transition">
+                                <i class="fab fa-google mr-2"></i> Google
+                            </button>
+                            <button class="flex items-center justify-center px-4 py-2 border border-white/20 rounded-lg hover:bg-white/10 transition">
+                                <i class="fab fa-twitter mr-2"></i> Twitter
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Signup Link -->
+                    <p class="mt-6 text-center text-sm text-gray-400">
+                        還沒有帳號？ <a href="/signup" class="text-orange-500 hover:underline font-medium">立即註冊</a>
+                    </p>
+                </div>
+
+                <!-- Disclaimer -->
+                <p class="mt-6 text-center text-xs text-gray-500">
+                    🔒 100% 模擬遊戲 • 無實際金錢交易
+                </p>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="/static/auth.js"></script>
+    </body>
+    </html>
+  `);
+});
+
+// Forgot Password page
+app.get('/forgot-password', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>忘記密碼 - MemeLaunch Tycoon</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
+    </head>
+    <body class="gradient-bg text-white min-h-screen">
+        <div class="min-h-screen flex items-center justify-center px-4 py-12">
+            <div class="max-w-md w-full">
+                <!-- Logo -->
+                <div class="text-center mb-8">
+                    <a href="/" class="inline-block">
+                        <h1 class="text-3xl font-bold gradient-text">
+                            <i class="fas fa-rocket"></i> MemeLaunch
+                        </h1>
+                    </a>
+                    <p class="text-gray-400 mt-2">重置您的密碼</p>
+                </div>
+
+                <!-- Reset Form -->
+                <div class="glass-effect rounded-2xl p-8">
+                    <div class="text-center mb-6">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-orange-500/20 rounded-full mb-4">
+                            <i class="fas fa-key text-3xl text-orange-500"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold">忘記密碼？</h2>
+                        <p class="text-gray-400 mt-2 text-sm">別擔心！輸入您的郵箱，我們會發送重置連結給您</p>
+                    </div>
+                    
+                    <form id="forgot-password-form" class="space-y-4">
+                        <!-- Email -->
+                        <div>
+                            <label for="email" class="block text-sm font-medium mb-2">
+                                <i class="fas fa-envelope mr-2"></i>電子郵箱
+                            </label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                required
+                                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
+                                placeholder="your@email.com"
+                            />
+                            <p class="text-red-400 text-sm mt-1 hidden" id="email-error"></p>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button
+                            type="submit"
+                            id="submit-btn"
+                            class="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-lg transition transform hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+                        >
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            <span id="submit-text">發送重置連結</span>
+                        </button>
+
+                        <!-- Form Message -->
+                        <div id="form-message" class="hidden mt-4 p-4 rounded-lg"></div>
+                    </form>
+
+                    <!-- Back to Login -->
+                    <div class="mt-6 text-center">
+                        <a href="/login" class="text-sm text-gray-400 hover:text-orange-500 transition">
+                            <i class="fas fa-arrow-left mr-2"></i>返回登入
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="/static/auth.js"></script>
+    </body>
+    </html>
+  `);
+});
+
+// Reset Password page (with token)
+app.get('/reset-password', (c) => {
+  const token = c.req.query('token');
+  
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>重置密碼 - MemeLaunch Tycoon</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
+    </head>
+    <body class="gradient-bg text-white min-h-screen">
+        <div class="min-h-screen flex items-center justify-center px-4 py-12">
+            <div class="max-w-md w-full">
+                <!-- Logo -->
+                <div class="text-center mb-8">
+                    <a href="/" class="inline-block">
+                        <h1 class="text-3xl font-bold gradient-text">
+                            <i class="fas fa-rocket"></i> MemeLaunch
+                        </h1>
+                    </a>
+                    <p class="text-gray-400 mt-2">設置新密碼</p>
+                </div>
+
+                <!-- Reset Form -->
+                <div class="glass-effect rounded-2xl p-8">
+                    <h2 class="text-2xl font-bold mb-6 text-center">重置密碼</h2>
+                    
+                    <form id="reset-password-form" class="space-y-4" data-token="${token || ''}">
+                        <!-- New Password -->
+                        <div>
+                            <label for="password" class="block text-sm font-medium mb-2">
+                                <i class="fas fa-lock mr-2"></i>新密碼
+                            </label>
+                            <div class="relative">
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    required
+                                    class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
+                                    placeholder="至少 8 個字符"
+                                />
+                                <button
+                                    type="button"
+                                    id="toggle-password"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                                >
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <!-- Password Strength Indicator -->
+                            <div class="mt-2">
+                                <div class="flex gap-1 mb-1">
+                                    <div class="h-1 flex-1 rounded bg-white/10" id="strength-1"></div>
+                                    <div class="h-1 flex-1 rounded bg-white/10" id="strength-2"></div>
+                                    <div class="h-1 flex-1 rounded bg-white/10" id="strength-3"></div>
+                                    <div class="h-1 flex-1 rounded bg-white/10" id="strength-4"></div>
+                                </div>
+                                <p class="text-xs text-gray-400" id="strength-text">密碼強度：請輸入密碼</p>
+                            </div>
+                            <p class="text-red-400 text-sm mt-1 hidden" id="password-error"></p>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div>
+                            <label for="confirm-password" class="block text-sm font-medium mb-2">
+                                <i class="fas fa-lock mr-2"></i>確認新密碼
+                            </label>
+                            <input
+                                type="password"
+                                id="confirm-password"
+                                name="confirm-password"
+                                required
+                                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
+                                placeholder="再次輸入密碼"
+                            />
+                            <p class="text-red-400 text-sm mt-1 hidden" id="confirm-password-error"></p>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button
+                            type="submit"
+                            id="submit-btn"
+                            class="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-lg transition transform hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+                        >
+                            <i class="fas fa-check mr-2"></i>
+                            <span id="submit-text">重置密碼</span>
+                        </button>
+
+                        <!-- Form Message -->
+                        <div id="form-message" class="hidden mt-4 p-4 rounded-lg"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="/static/auth.js"></script>
+    </body>
+    </html>
+  `);
+});
+
 // Dashboard page
 app.get('/dashboard', (c) => {
   return c.html(`
