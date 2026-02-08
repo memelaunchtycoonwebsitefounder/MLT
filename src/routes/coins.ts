@@ -126,19 +126,28 @@ coins.post('/', async (c) => {
       return errorResponse('未授權', 401);
     }
 
-    const { name, symbol, description, imageUrl, totalSupply } = await c.req.json();
+    const body = await c.req.json();
+    const { name, symbol, description, image_url, total_supply, quality_score } = body;
 
     // Validation
-    if (!name || !totalSupply) {
+    if (!name || !total_supply) {
       return errorResponse('幣種名稱和總供應量是必填的');
     }
 
-    if (totalSupply <= 0 || totalSupply > 1000000000) {
+    if (name.length < 3 || name.length > 50) {
+      return errorResponse('幣種名稱必須是 3-50 個字符');
+    }
+
+    if (symbol && (symbol.length < 2 || symbol.length > 10)) {
+      return errorResponse('幣種符號必須是 2-10 個字符');
+    }
+
+    if (total_supply <= 0 || total_supply > 1000000000) {
       return errorResponse('總供應量必須在 1 到 1,000,000,000 之間');
     }
 
     // Auto-generate symbol if not provided
-    const coinSymbol = symbol || generateCoinSymbol(name);
+    const coinSymbol = (symbol || generateCoinSymbol(name)).toUpperCase();
 
     // Check if symbol already exists
     const existingCoin = await c.env.DB.prepare(
@@ -159,14 +168,20 @@ coins.post('/', async (c) => {
       .bind(user.userId)
       .first() as any;
 
-    if (userBalance.virtual_balance < creationFee) {
+    if (!userBalance || userBalance.virtual_balance < creationFee) {
       return errorResponse(`余額不足。創建幣種需要 ${creationFee} 金幣`);
     }
 
-    // Create coin
+    // Calculate initial values
     const initialPrice = 0.01;
-    const initialHype = 100;
+    const baseHype = 100;
+    const qualityBonus = quality_score ? Math.floor((quality_score - 50) / 2) : 0;
+    const initialHype = Math.max(50, Math.min(200, baseHype + qualityBonus));
 
+    // Use provided image URL or default
+    const finalImageUrl = image_url || '/static/default-coin.svg';
+
+    // Create coin
     const result = await c.env.DB.prepare(
       `INSERT INTO coins (creator_id, name, symbol, description, image_url, 
                           total_supply, current_price, hype_score) 
@@ -177,8 +192,8 @@ coins.post('/', async (c) => {
         name,
         coinSymbol,
         description || '',
-        imageUrl || '/static/default-coin.png',
-        totalSupply,
+        finalImageUrl,
+        total_supply,
         initialPrice,
         initialHype
       )
@@ -187,6 +202,9 @@ coins.post('/', async (c) => {
     if (!result.success) {
       return errorResponse('創建幣種失敗', 500);
     }
+
+    // Get the created coin ID
+    const coinId = result.meta.last_row_id;
 
     // Deduct creation fee
     await c.env.DB.prepare(

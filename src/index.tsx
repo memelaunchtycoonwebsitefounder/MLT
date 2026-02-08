@@ -788,6 +788,428 @@ app.get('/reset-password', (c) => {
   `);
 });
 
+// Create Coin page
+app.get('/create', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>創建模因幣 - MemeLaunch Tycoon</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
+    </head>
+    <body class="gradient-bg text-white min-h-screen">
+        <!-- Navigation -->
+        <nav class="glass-effect sticky top-0 z-50">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <a href="/" class="flex items-center space-x-2">
+                        <i class="fas fa-rocket text-2xl text-orange-500"></i>
+                        <span class="text-xl font-bold">MemeLaunch</span>
+                    </a>
+                    <div class="flex items-center space-x-6">
+                        <a href="/dashboard" class="hover:text-orange-500 transition">儀表板</a>
+                        <a href="/market" class="hover:text-orange-500 transition">市場</a>
+                        <div class="glass-effect px-4 py-2 rounded-lg">
+                            <i class="fas fa-coins text-yellow-500 mr-2"></i>
+                            <span id="user-balance">--</span> 金幣
+                        </div>
+                        <button id="logout-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
+                            登出
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container mx-auto px-4 py-8">
+            <!-- Progress Steps -->
+            <div class="max-w-4xl mx-auto mb-8">
+                <div class="flex items-center justify-center space-x-4">
+                    <div id="step-indicator-1" class="step-indicator active">
+                        <div class="step-number">1</div>
+                        <div class="step-label">選擇圖片</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div id="step-indicator-2" class="step-indicator">
+                        <div class="step-number">2</div>
+                        <div class="step-label">設置詳情</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div id="step-indicator-3" class="step-indicator">
+                        <div class="step-number">3</div>
+                        <div class="step-label">預覽發射</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 1: Upload/Select Image -->
+            <div id="step-1" class="step-content">
+                <div class="max-w-3xl mx-auto glass-effect rounded-2xl p-8">
+                    <h2 class="text-3xl font-bold mb-6 text-center">
+                        <i class="fas fa-image mr-2"></i>選擇您的 Meme 圖片
+                    </h2>
+                    <p class="text-gray-400 text-center mb-8">上傳自定義圖片或選擇模板</p>
+
+                    <!-- Upload Area -->
+                    <div class="mb-8">
+                        <div id="upload-area" class="border-2 border-dashed border-gray-600 rounded-xl p-12 text-center hover:border-orange-500 transition cursor-pointer">
+                            <div id="upload-prompt">
+                                <i class="fas fa-cloud-upload-alt text-6xl text-gray-500 mb-4"></i>
+                                <p class="text-xl mb-2">拖放圖片到這裡</p>
+                                <p class="text-gray-400 mb-4">或</p>
+                                <button class="px-6 py-3 bg-orange-500 hover:bg-orange-600 rounded-lg transition font-bold">
+                                    <i class="fas fa-folder-open mr-2"></i>選擇文件
+                                </button>
+                                <p class="text-sm text-gray-500 mt-4">支持 JPG, PNG, GIF (最大 5MB)</p>
+                            </div>
+                            <div id="upload-preview" class="hidden">
+                                <img id="preview-image" class="max-w-full max-h-96 mx-auto rounded-lg" />
+                                <button id="change-image" class="mt-4 px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg transition">
+                                    <i class="fas fa-sync-alt mr-2"></i>更換圖片
+                                </button>
+                            </div>
+                        </div>
+                        <input type="file" id="image-upload" accept="image/*" class="hidden" />
+                    </div>
+
+                    <!-- Templates -->
+                    <div>
+                        <h3 class="text-xl font-bold mb-4">
+                            <i class="fas fa-images mr-2"></i>或選擇模板
+                        </h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="template-grid">
+                            <!-- Templates will be loaded dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="flex justify-end mt-8">
+                        <button id="step-1-next" class="px-8 py-3 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-lg font-bold transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            下一步 <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Coin Details -->
+            <div id="step-2" class="step-content hidden">
+                <div class="max-w-3xl mx-auto glass-effect rounded-2xl p-8">
+                    <h2 class="text-3xl font-bold mb-6 text-center">
+                        <i class="fas fa-edit mr-2"></i>設置幣種詳情
+                    </h2>
+
+                    <form id="coin-details-form" class="space-y-6">
+                        <!-- Coin Name -->
+                        <div>
+                            <label for="coin-name" class="block text-sm font-medium mb-2">
+                                <i class="fas fa-tag mr-2"></i>幣種名稱 <span class="text-red-400">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="coin-name"
+                                name="coin-name"
+                                required
+                                minlength="3"
+                                maxlength="50"
+                                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
+                                placeholder="例如: Doge to the Moon"
+                            />
+                            <p class="text-sm text-gray-400 mt-1">3-50 個字符</p>
+                            <p class="text-red-400 text-sm mt-1 hidden" id="coin-name-error"></p>
+                        </div>
+
+                        <!-- Coin Symbol -->
+                        <div>
+                            <label for="coin-symbol" class="block text-sm font-medium mb-2">
+                                <i class="fas fa-dollar-sign mr-2"></i>幣種符號 <span class="text-red-400">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="coin-symbol"
+                                name="coin-symbol"
+                                required
+                                minlength="2"
+                                maxlength="10"
+                                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white uppercase"
+                                placeholder="例如: MOON"
+                            />
+                            <div class="flex items-center justify-between mt-1">
+                                <p class="text-sm text-gray-400">2-10 個字符，大寫字母</p>
+                                <div id="symbol-check" class="text-sm"></div>
+                            </div>
+                            <p class="text-red-400 text-sm mt-1 hidden" id="coin-symbol-error"></p>
+                        </div>
+
+                        <!-- Description -->
+                        <div>
+                            <label for="coin-description" class="block text-sm font-medium mb-2">
+                                <i class="fas fa-align-left mr-2"></i>描述
+                            </label>
+                            <textarea
+                                id="coin-description"
+                                name="coin-description"
+                                rows="4"
+                                maxlength="500"
+                                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white resize-none"
+                                placeholder="為您的 meme 幣寫一個吸引人的描述..."
+                            ></textarea>
+                            <div class="flex justify-between text-sm text-gray-400 mt-1">
+                                <span>可選</span>
+                                <span><span id="desc-count">0</span>/500</span>
+                            </div>
+                        </div>
+
+                        <!-- Initial Supply -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="fas fa-layer-group mr-2"></i>初始供應量 <span class="text-red-400">*</span>
+                            </label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="supply-option">
+                                    <input type="radio" name="supply" value="1000000" checked />
+                                    <span class="option-label">
+                                        <i class="fas fa-coins"></i>
+                                        <span class="option-amount">1,000,000</span>
+                                        <span class="option-desc">適合小型社群</span>
+                                    </span>
+                                </label>
+                                <label class="supply-option">
+                                    <input type="radio" name="supply" value="10000000" />
+                                    <span class="option-label">
+                                        <i class="fas fa-coins"></i>
+                                        <span class="option-amount">10,000,000</span>
+                                        <span class="option-desc">標準供應量</span>
+                                    </span>
+                                </label>
+                                <label class="supply-option">
+                                    <input type="radio" name="supply" value="100000000" />
+                                    <span class="option-label">
+                                        <i class="fas fa-coins"></i>
+                                        <span class="option-amount">100,000,000</span>
+                                        <span class="option-desc">大型項目</span>
+                                    </span>
+                                </label>
+                                <label class="supply-option">
+                                    <input type="radio" name="supply" value="1000000000" />
+                                    <span class="option-label">
+                                        <i class="fas fa-coins"></i>
+                                        <span class="option-amount">1,000,000,000</span>
+                                        <span class="option-desc">超大供應</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Navigation -->
+                    <div class="flex justify-between mt-8">
+                        <button id="step-2-back" class="px-8 py-3 glass-effect hover:bg-white/10 rounded-lg font-bold transition">
+                            <i class="fas fa-arrow-left mr-2"></i>上一步
+                        </button>
+                        <button id="step-2-next" class="px-8 py-3 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-lg font-bold transition">
+                            下一步 <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Preview & Launch -->
+            <div id="step-3" class="step-content hidden">
+                <div class="max-w-4xl mx-auto">
+                    <h2 class="text-3xl font-bold mb-8 text-center">
+                        <i class="fas fa-rocket mr-2"></i>預覽與發射
+                    </h2>
+
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <!-- Coin Preview Card -->
+                        <div class="glass-effect rounded-2xl p-6">
+                            <h3 class="text-xl font-bold mb-4">幣種預覽</h3>
+                            <div class="text-center mb-6">
+                                <img id="preview-coin-image" class="w-32 h-32 mx-auto rounded-full mb-4" />
+                                <h4 id="preview-coin-name" class="text-2xl font-bold">--</h4>
+                                <p id="preview-coin-symbol" class="text-xl text-orange-500">$--</p>
+                            </div>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">初始價格:</span>
+                                    <span class="font-bold">0.01 虛擬幣</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">總供應量:</span>
+                                    <span class="font-bold" id="preview-supply">--</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">創建者:</span>
+                                    <span class="font-bold" id="preview-creator">--</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 p-4 bg-white/5 rounded-lg">
+                                <p id="preview-description" class="text-sm text-gray-300">--</p>
+                            </div>
+                        </div>
+
+                        <!-- Metrics & Stats -->
+                        <div class="space-y-6">
+                            <!-- AI Quality Score -->
+                            <div class="glass-effect rounded-2xl p-6">
+                                <h3 class="text-xl font-bold mb-4">
+                                    <i class="fas fa-brain mr-2 text-purple-500"></i>AI 質量評分
+                                </h3>
+                                <div class="flex items-center justify-center mb-4">
+                                    <div class="text-6xl font-bold gradient-text" id="quality-score">--</div>
+                                    <div class="text-2xl text-gray-400 ml-2">/100</div>
+                                </div>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-gray-400">圖片質量</span>
+                                        <div class="flex items-center">
+                                            <div class="w-24 h-2 bg-white/10 rounded-full overflow-hidden mr-2">
+                                                <div id="image-quality-bar" class="h-full bg-gradient-to-r from-orange-500 to-pink-500" style="width: 0%"></div>
+                                            </div>
+                                            <span id="image-quality-score">--</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-gray-400">名稱吸引力</span>
+                                        <div class="flex items-center">
+                                            <div class="w-24 h-2 bg-white/10 rounded-full overflow-hidden mr-2">
+                                                <div id="name-quality-bar" class="h-full bg-gradient-to-r from-orange-500 to-pink-500" style="width: 0%"></div>
+                                            </div>
+                                            <span id="name-quality-score">--</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-gray-400">描述完整度</span>
+                                        <div class="flex items-center">
+                                            <div class="w-24 h-2 bg-white/10 rounded-full overflow-hidden mr-2">
+                                                <div id="desc-quality-bar" class="h-full bg-gradient-to-r from-orange-500 to-pink-500" style="width: 0%"></div>
+                                            </div>
+                                            <span id="desc-quality-score">--</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-4 text-center">
+                                    高質量分數可能提升初始 Hype 值
+                                </p>
+                            </div>
+
+                            <!-- Creation Cost -->
+                            <div class="glass-effect rounded-2xl p-6">
+                                <h3 class="text-xl font-bold mb-4">
+                                    <i class="fas fa-coins mr-2 text-yellow-500"></i>創建成本
+                                </h3>
+                                <div class="flex items-center justify-between text-2xl mb-4">
+                                    <span>總計:</span>
+                                    <span class="font-bold text-orange-500">100 金幣</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm text-gray-400">
+                                    <span>當前餘額:</span>
+                                    <span id="preview-balance">--</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm text-gray-400 mt-2">
+                                    <span>發射後餘額:</span>
+                                    <span id="preview-after-balance">--</span>
+                                </div>
+                            </div>
+
+                            <!-- Market Estimate -->
+                            <div class="glass-effect rounded-2xl p-6">
+                                <h3 class="text-xl font-bold mb-4">
+                                    <i class="fas fa-chart-line mr-2 text-green-500"></i>市場估值
+                                </h3>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-400">初始市值:</span>
+                                        <span class="font-bold" id="preview-market-cap">--</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-400">預估排名:</span>
+                                        <span class="font-bold" id="preview-ranking">新幣種</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-400">初始 Hype:</span>
+                                        <span class="font-bold" id="preview-hype">--</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Launch Button -->
+                    <div class="mt-8 text-center">
+                        <div id="launch-error" class="mb-4 p-4 bg-red-500/20 border border-red-500 rounded-lg text-sm hidden"></div>
+                        <div class="flex justify-center space-x-4">
+                            <button id="step-3-back" class="px-8 py-4 glass-effect hover:bg-white/10 rounded-lg font-bold transition text-lg">
+                                <i class="fas fa-arrow-left mr-2"></i>上一步
+                            </button>
+                            <button id="launch-btn" class="px-12 py-4 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-lg font-bold transition text-lg transform hover:scale-105">
+                                <i class="fas fa-rocket mr-2"></i>
+                                <span id="launch-text">發射我的 Meme 幣！</span>
+                            </button>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-4">
+                            發射後，您的幣將出現在市場上供其他玩家交易
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success Modal -->
+            <div id="success-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                <div class="glass-effect rounded-2xl p-8 max-w-lg w-full">
+                    <div class="text-center">
+                        <div class="text-6xl mb-4">🎉</div>
+                        <h2 class="text-3xl font-bold mb-4">發射成功！</h2>
+                        <p class="text-gray-300 mb-6">恭喜！您的 Meme 幣已成功發射到市場</p>
+                        
+                        <div class="glass-effect rounded-lg p-6 mb-6">
+                            <img id="success-coin-image" class="w-24 h-24 mx-auto rounded-full mb-4" />
+                            <h3 id="success-coin-name" class="text-2xl font-bold mb-2">--</h3>
+                            <p id="success-coin-symbol" class="text-xl text-orange-500 mb-4">$--</p>
+                            <div class="flex justify-around text-sm">
+                                <div>
+                                    <p class="text-gray-400">初始價格</p>
+                                    <p class="font-bold">0.01</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400">市值</p>
+                                    <p class="font-bold" id="success-market-cap">--</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400">排名</p>
+                                    <p class="font-bold">#<span id="success-rank">--</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col space-y-3">
+                            <button id="view-coin-btn" class="w-full px-6 py-3 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-lg font-bold transition">
+                                <i class="fas fa-eye mr-2"></i>查看我的幣
+                            </button>
+                            <button id="share-twitter-btn" class="w-full px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg font-bold transition">
+                                <i class="fab fa-twitter mr-2"></i>分享到 Twitter
+                            </button>
+                            <button id="create-another-btn" class="w-full px-6 py-3 glass-effect hover:bg-white/10 rounded-lg font-bold transition">
+                                <i class="fas fa-plus mr-2"></i>創建另一枚幣
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="/static/create-coin.js"></script>
+    </body>
+    </html>
+  `);
+});
+
 // Dashboard page
 app.get('/dashboard', (c) => {
   return c.html(`
