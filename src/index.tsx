@@ -11,6 +11,7 @@ import trades from './routes/trades';
 import portfolio from './routes/portfolio';
 import leaderboard from './routes/leaderboard';
 import email from './routes/email';
+import upload from './routes/upload';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -43,6 +44,12 @@ app.route('/api/portfolio', portfolioRoutes);
 
 app.route('/api/leaderboard', leaderboard);
 app.route('/api/email', email);
+
+// Upload routes (requires authentication)
+const uploadRoutes = new Hono<{ Bindings: Env }>();
+uploadRoutes.use('*', authMiddleware);
+uploadRoutes.route('/', upload);
+app.route('/api/upload', uploadRoutes);
 
 // Health check
 app.get('/api/health', (c) => {

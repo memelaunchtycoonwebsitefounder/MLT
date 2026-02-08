@@ -16,5 +16,11 @@
       "database_name": "memelaunch-db",
       "database_id": "local-dev"
     }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "IMAGES",
+      "bucket_name": "memelaunch-images"
+    }
   ]
 }

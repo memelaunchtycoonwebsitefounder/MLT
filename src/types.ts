@@ -1,5 +1,6 @@
 export interface Env {
   DB: D1Database;
+  IMAGES?: R2Bucket;  // Optional R2 bucket for image storage
   JWT_SECRET: string;
   STARTING_BALANCE: string;
 }

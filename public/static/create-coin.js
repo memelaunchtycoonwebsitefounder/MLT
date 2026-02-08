@@ -421,14 +421,47 @@ const launchCoin = async () => {
     const token = localStorage.getItem('auth_token');
     const qualityScore = calculateQualityScore();
     
-    // Prepare data
+    // Upload image to R2 if user uploaded a file
+    let imageUrl = coinData.imageUrl;
+    if (coinData.image && selectedImage === 'upload') {
+      try {
+        launchText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>上傳圖片...';
+        
+        // Convert image file to base64 (already done in imagePreview)
+        const uploadResponse = await axios.post('/api/upload/image', {
+          image: imagePreview,  // base64 data
+          filename: coinData.image.name
+        }, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (uploadResponse.data.success && uploadResponse.data.url) {
+          imageUrl = uploadResponse.data.url;
+        } else {
+          // Fallback to default image if upload fails
+          console.warn('Image upload failed, using default:', uploadResponse.data.message);
+          imageUrl = '/static/default-coin.svg';
+        }
+      } catch (uploadError) {
+        console.error('Image upload error:', uploadError);
+        // Continue with default image
+        imageUrl = '/static/default-coin.svg';
+      }
+    }
+    
+    // Prepare coin creation data
+    launchText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>創建幣種...';
+    
     const requestData = {
       name: coinData.name,
       symbol: coinData.symbol,
       description: coinData.description,
       total_supply: coinData.supply,
       quality_score: qualityScore.total,
-      image_url: coinData.imageUrl  // Send image URL directly
+      image_url: imageUrl  // Use uploaded URL or template/default URL
     };
     
     const response = await axios.post('/api/coins', requestData, {
