@@ -4,6 +4,7 @@ import {
   hashPassword,
   comparePassword,
   generateToken,
+  verifyToken,
   validateEmail,
   validatePassword,
   validateUsername,
@@ -158,13 +159,23 @@ auth.post('/login', async (c) => {
   }
 });
 
-// Get current user profile
+// Get current user profile (requires manual auth check)
 auth.get('/me', async (c) => {
   try {
-    const user = c.get('user') as JWTPayload;
+    // Manually verify token
+    const authHeader = c.req.header('Authorization');
     
-    if (!user) {
-      return errorResponse('未授權', 401);
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return errorResponse('未提供認證令牌', 401);
+    }
+
+    const token = authHeader.substring(7);
+    const jwtSecret = c.env.JWT_SECRET;
+    
+    const payload = verifyToken(token, jwtSecret);
+    
+    if (!payload) {
+      return errorResponse('無效或已過期的令牌', 401);
     }
 
     const userProfile = await c.env.DB.prepare(
@@ -172,7 +183,7 @@ auth.get('/me', async (c) => {
               level, xp, achievements, created_at, last_login 
        FROM users WHERE id = ?`
     )
-      .bind(user.userId)
+      .bind(payload.userId)
       .first();
 
     if (!userProfile) {
