@@ -788,6 +788,435 @@ app.get('/reset-password', (c) => {
   `);
 });
 
+// Coin Detail page
+app.get('/coin/:id', (c) => {
+  const coinId = c.req.param('id');
+  
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>幣種詳情 - MemeLaunch Tycoon</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    </head>
+    <body class="gradient-bg text-white min-h-screen">
+        <!-- Navigation -->
+        <nav class="glass-effect sticky top-0 z-50">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <a href="/" class="flex items-center space-x-2">
+                        <i class="fas fa-rocket text-2xl text-orange-500"></i>
+                        <span class="text-xl font-bold">MemeLaunch</span>
+                    </a>
+                    <div class="hidden md:flex items-center space-x-6">
+                        <a href="/dashboard" class="hover:text-orange-500 transition">儀表板</a>
+                        <a href="/market" class="hover:text-orange-500 transition">市場</a>
+                        <a href="/portfolio" class="hover:text-orange-500 transition">投資組合</a>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="glass-effect px-4 py-2 rounded-lg">
+                            <i class="fas fa-coins text-yellow-500 mr-2"></i>
+                            <span id="user-balance">--</span> 金幣
+                        </div>
+                        <button id="logout-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
+                            登出
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container mx-auto px-4 py-8">
+            <!-- Back Button -->
+            <div class="mb-6">
+                <a href="/market" class="inline-flex items-center text-gray-400 hover:text-white transition">
+                    <i class="fas fa-arrow-left mr-2"></i>返回市場
+                </a>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading-state" class="text-center py-20">
+                <i class="fas fa-spinner fa-spin text-6xl text-orange-500 mb-4"></i>
+                <p class="text-xl text-gray-400">載入中...</p>
+            </div>
+
+            <!-- Coin Content (Hidden initially) -->
+            <div id="coin-content" class="hidden">
+                <!-- Coin Header -->
+                <div class="glass-effect rounded-2xl p-8 mb-8">
+                    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                        <div class="flex items-center space-x-6">
+                            <img id="coin-image" class="w-24 h-24 rounded-full" />
+                            <div>
+                                <h1 id="coin-name" class="text-4xl font-bold mb-2">--</h1>
+                                <p id="coin-symbol" class="text-2xl text-orange-500">$--</p>
+                                <p class="text-sm text-gray-400 mt-2">
+                                    <i class="fas fa-user mr-1"></i>
+                                    創建者: <span id="coin-creator">--</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-400 mb-1">當前價格</p>
+                            <p id="coin-price" class="text-5xl font-bold">--</p>
+                            <p id="coin-price-change" class="text-lg mt-2">--</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <!-- Left Column - Chart & Stats -->
+                    <div class="lg:col-span-2 space-y-8">
+                        <!-- Price Chart -->
+                        <div class="glass-effect rounded-2xl p-6">
+                            <h2 class="text-2xl font-bold mb-6">
+                                <i class="fas fa-chart-line mr-2"></i>價格走勢
+                            </h2>
+                            <div class="mb-4 flex space-x-2">
+                                <button class="timeframe-btn active px-4 py-2 rounded-lg transition" data-timeframe="1h">1小時</button>
+                                <button class="timeframe-btn px-4 py-2 rounded-lg transition" data-timeframe="24h">24小時</button>
+                                <button class="timeframe-btn px-4 py-2 rounded-lg transition" data-timeframe="7d">7天</button>
+                                <button class="timeframe-btn px-4 py-2 rounded-lg transition" data-timeframe="30d">30天</button>
+                            </div>
+                            <div class="relative h-80">
+                                <canvas id="price-chart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Stats Grid -->
+                        <div class="grid md:grid-cols-4 gap-4">
+                            <div class="glass-effect rounded-xl p-4">
+                                <p class="text-sm text-gray-400 mb-1">市值</p>
+                                <p id="stat-market-cap" class="text-2xl font-bold">--</p>
+                            </div>
+                            <div class="glass-effect rounded-xl p-4">
+                                <p class="text-sm text-gray-400 mb-1">供應量</p>
+                                <p id="stat-supply" class="text-2xl font-bold">--</p>
+                            </div>
+                            <div class="glass-effect rounded-xl p-4">
+                                <p class="text-sm text-gray-400 mb-1">持有人</p>
+                                <p id="stat-holders" class="text-2xl font-bold">--</p>
+                            </div>
+                            <div class="glass-effect rounded-xl p-4">
+                                <p class="text-sm text-gray-400 mb-1">交易數</p>
+                                <p id="stat-transactions" class="text-2xl font-bold">--</p>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="glass-effect rounded-2xl p-6">
+                            <h2 class="text-2xl font-bold mb-4">
+                                <i class="fas fa-info-circle mr-2"></i>關於
+                            </h2>
+                            <p id="coin-description" class="text-gray-300">--</p>
+                        </div>
+
+                        <!-- Recent Transactions -->
+                        <div class="glass-effect rounded-2xl p-6">
+                            <h2 class="text-2xl font-bold mb-6">
+                                <i class="fas fa-history mr-2"></i>最近交易
+                            </h2>
+                            <div id="recent-transactions" class="space-y-3">
+                                <!-- Transactions will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Trading & Info -->
+                    <div class="space-y-6">
+                        <!-- Trading Panel -->
+                        <div class="glass-effect rounded-2xl p-6">
+                            <h2 class="text-2xl font-bold mb-6">
+                                <i class="fas fa-exchange-alt mr-2"></i>交易
+                            </h2>
+
+                            <!-- Buy/Sell Tabs -->
+                            <div class="flex mb-6 bg-black/30 rounded-lg p-1">
+                                <button id="buy-tab" class="flex-1 py-2 rounded-lg bg-green-500 transition font-bold">
+                                    買入
+                                </button>
+                                <button id="sell-tab" class="flex-1 py-2 rounded-lg hover:bg-white/10 transition font-bold">
+                                    賣出
+                                </button>
+                            </div>
+
+                            <!-- Buy Panel -->
+                            <div id="buy-panel">
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium mb-2">購買數量</label>
+                                    <input
+                                        type="number"
+                                        id="buy-amount"
+                                        min="1"
+                                        value="100"
+                                        class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition text-white"
+                                    />
+                                </div>
+                                <div class="mb-4 p-4 bg-white/5 rounded-lg space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-400">單價:</span>
+                                        <span id="buy-unit-price" class="font-bold">--</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-400">總計:</span>
+                                        <span id="buy-total-cost" class="font-bold text-lg">--</span>
+                                    </div>
+                                </div>
+                                <button id="buy-btn" class="w-full px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 rounded-lg font-bold transition transform hover:scale-105">
+                                    <i class="fas fa-arrow-up mr-2"></i>
+                                    <span id="buy-btn-text">買入</span>
+                                </button>
+                            </div>
+
+                            <!-- Sell Panel -->
+                            <div id="sell-panel" class="hidden">
+                                <div class="mb-4">
+                                    <div class="flex justify-between text-sm text-gray-400 mb-2">
+                                        <span>賣出數量</span>
+                                        <span>持有: <span id="user-holdings">0</span></span>
+                                    </div>
+                                    <input
+                                        type="number"
+                                        id="sell-amount"
+                                        min="1"
+                                        value="100"
+                                        class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition text-white"
+                                    />
+                                </div>
+                                <div class="mb-4 p-4 bg-white/5 rounded-lg space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-400">單價:</span>
+                                        <span id="sell-unit-price" class="font-bold">--</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-400">總計:</span>
+                                        <span id="sell-total-revenue" class="font-bold text-lg">--</span>
+                                    </div>
+                                </div>
+                                <button id="sell-btn" class="w-full px-6 py-4 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 rounded-lg font-bold transition transform hover:scale-105">
+                                    <i class="fas fa-arrow-down mr-2"></i>
+                                    <span id="sell-btn-text">賣出</span>
+                                </button>
+                            </div>
+
+                            <!-- Message Area -->
+                            <div id="trade-message" class="mt-4 hidden p-4 rounded-lg"></div>
+                        </div>
+
+                        <!-- Hype Score -->
+                        <div class="glass-effect rounded-2xl p-6">
+                            <h3 class="text-xl font-bold mb-4">
+                                <i class="fas fa-fire text-orange-500 mr-2"></i>Hype 分數
+                            </h3>
+                            <div class="text-center mb-4">
+                                <div id="hype-score" class="text-5xl font-bold gradient-text">--</div>
+                                <p class="text-sm text-gray-400 mt-1">滿分 200</p>
+                            </div>
+                            <div class="w-full h-3 bg-white/10 rounded-full overflow-hidden">
+                                <div id="hype-bar" class="h-full bg-gradient-to-r from-orange-500 to-pink-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Share -->
+                        <div class="glass-effect rounded-2xl p-6">
+                            <h3 class="text-xl font-bold mb-4">
+                                <i class="fas fa-share-alt mr-2"></i>分享
+                            </h3>
+                            <div class="flex space-x-3">
+                                <button id="share-twitter" class="flex-1 px-4 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg font-bold transition">
+                                    <i class="fab fa-twitter mr-2"></i>Twitter
+                                </button>
+                                <button id="copy-link" class="flex-1 px-4 py-3 glass-effect hover:bg-white/10 rounded-lg font-bold transition">
+                                    <i class="fas fa-link mr-2"></i>複製連結
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script>
+          const COIN_ID = '${coinId}';
+        </script>
+        <script src="/static/coin-detail.js"></script>
+    </body>
+    </html>
+  `);
+});
+
+// Market page
+app.get('/market', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>市場 - MemeLaunch Tycoon</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
+    </head>
+    <body class="gradient-bg text-white min-h-screen">
+        <!-- Navigation -->
+        <nav class="glass-effect sticky top-0 z-50">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <a href="/" class="flex items-center space-x-2">
+                        <i class="fas fa-rocket text-2xl text-orange-500"></i>
+                        <span class="text-xl font-bold">MemeLaunch</span>
+                    </a>
+                    <div class="hidden md:flex items-center space-x-6">
+                        <a href="/dashboard" class="hover:text-orange-500 transition">儀表板</a>
+                        <a href="/market" class="text-orange-500 font-bold">市場</a>
+                        <a href="/portfolio" class="hover:text-orange-500 transition">投資組合</a>
+                        <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="glass-effect px-4 py-2 rounded-lg">
+                            <i class="fas fa-coins text-yellow-500 mr-2"></i>
+                            <span id="user-balance">--</span> 金幣
+                        </div>
+                        <button id="logout-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
+                            登出
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container mx-auto px-4 py-8">
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-4xl font-bold mb-2">
+                    <i class="fas fa-store mr-3"></i>Meme 幣市場
+                </h1>
+                <p class="text-gray-400">探索、交易數千種 Meme 幣</p>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="glass-effect rounded-2xl p-6 mb-8">
+                <div class="grid md:grid-cols-4 gap-4">
+                    <!-- Search Bar -->
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium mb-2">
+                            <i class="fas fa-search mr-2"></i>搜索
+                        </label>
+                        <input
+                            type="text"
+                            id="search-input"
+                            placeholder="搜索幣種名稱或符號..."
+                            class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
+                        />
+                    </div>
+
+                    <!-- Sort By -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            <i class="fas fa-sort mr-2"></i>排序
+                        </label>
+                        <select
+                            id="sort-select"
+                            class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
+                        >
+                            <option value="created_at_desc">最新創建</option>
+                            <option value="created_at_asc">最早創建</option>
+                            <option value="current_price_desc">價格最高</option>
+                            <option value="current_price_asc">價格最低</option>
+                            <option value="market_cap_desc">市值最高</option>
+                            <option value="market_cap_asc">市值最低</option>
+                            <option value="hype_score_desc">最熱門</option>
+                            <option value="transaction_count_desc">交易最多</option>
+                        </select>
+                    </div>
+
+                    <!-- Filter Button -->
+                    <div class="flex items-end">
+                        <button id="apply-filters-btn" class="w-full px-4 py-2 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-lg font-bold transition">
+                            <i class="fas fa-filter mr-2"></i>應用篩選
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="glass-effect rounded-xl p-4 text-center">
+                    <i class="fas fa-coins text-3xl text-yellow-500 mb-2"></i>
+                    <p class="text-2xl font-bold" id="total-coins">--</p>
+                    <p class="text-sm text-gray-400">總幣種數</p>
+                </div>
+                <div class="glass-effect rounded-xl p-4 text-center">
+                    <i class="fas fa-chart-line text-3xl text-green-500 mb-2"></i>
+                    <p class="text-2xl font-bold" id="total-volume">--</p>
+                    <p class="text-sm text-gray-400">24h 交易量</p>
+                </div>
+                <div class="glass-effect rounded-xl p-4 text-center">
+                    <i class="fas fa-users text-3xl text-blue-500 mb-2"></i>
+                    <p class="text-2xl font-bold" id="total-holders">--</p>
+                    <p class="text-sm text-gray-400">持有人數</p>
+                </div>
+                <div class="glass-effect rounded-xl p-4 text-center">
+                    <i class="fas fa-fire text-3xl text-orange-500 mb-2"></i>
+                    <p class="text-2xl font-bold" id="trending-count">--</p>
+                    <p class="text-sm text-gray-400">熱門幣種</p>
+                </div>
+            </div>
+
+            <!-- Coins Grid -->
+            <div id="coins-container">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="coins-grid">
+                    <!-- Loading State -->
+                    <div class="col-span-full text-center py-12">
+                        <i class="fas fa-spinner fa-spin text-5xl text-orange-500 mb-4"></i>
+                        <p class="text-xl text-gray-400">載入中...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-8 flex justify-center">
+                <div class="glass-effect rounded-xl p-4 inline-flex items-center space-x-4">
+                    <button id="prev-page-btn" class="px-4 py-2 rounded-lg hover:bg-white/10 transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <i class="fas fa-chevron-left mr-2"></i>上一頁
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm text-gray-400">第</span>
+                        <span id="current-page" class="font-bold">1</span>
+                        <span class="text-sm text-gray-400">/ </span>
+                        <span id="total-pages" class="font-bold">1</span>
+                        <span class="text-sm text-gray-400">頁</span>
+                    </div>
+                    <button id="next-page-btn" class="px-4 py-2 rounded-lg hover:bg-white/10 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        下一頁<i class="fas fa-chevron-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden text-center py-20">
+                <i class="fas fa-search text-6xl text-gray-600 mb-4"></i>
+                <p class="text-xl text-gray-400 mb-2">找不到符合條件的幣種</p>
+                <p class="text-gray-500">試試調整搜索或篩選條件</p>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="/static/market.js"></script>
+    </body>
+    </html>
+  `);
+});
+
 // Create Coin page
 app.get('/create', (c) => {
   return c.html(`

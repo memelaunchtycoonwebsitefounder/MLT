@@ -20,20 +20,33 @@ coins.get('/', async (c) => {
     const sortBy = c.req.query('sortBy') || 'created_at';
     const order = c.req.query('order') || 'DESC';
     const search = c.req.query('search') || '';
+    const symbol = c.req.query('symbol') || '';
 
     const offset = (page - 1) * limit;
 
-    // Build query
-    let query = 'SELECT * FROM coins WHERE status = ?';
+    // Build query with JOIN to get creator username
+    let query = `
+      SELECT 
+        coins.*,
+        users.username as creator_username
+      FROM coins
+      LEFT JOIN users ON coins.creator_id = users.id
+      WHERE coins.status = ?
+    `;
     const params: any[] = ['active'];
 
     if (search) {
-      query += ' AND (name LIKE ? OR symbol LIKE ? OR description LIKE ?)';
+      query += ' AND (coins.name LIKE ? OR coins.symbol LIKE ? OR coins.description LIKE ?)';
       const searchPattern = `%${search}%`;
       params.push(searchPattern, searchPattern, searchPattern);
     }
 
-    query += ` ORDER BY ${sortBy} ${order} LIMIT ? OFFSET ?`;
+    if (symbol) {
+      query += ' AND coins.symbol = ?';
+      params.push(symbol);
+    }
+
+    query += ` ORDER BY coins.${sortBy} ${order} LIMIT ? OFFSET ?`;
     params.push(limit, offset);
 
     const result = await c.env.DB.prepare(query)
@@ -48,6 +61,11 @@ coins.get('/', async (c) => {
       countQuery += ' AND (name LIKE ? OR symbol LIKE ? OR description LIKE ?)';
       const searchPattern = `%${search}%`;
       countParams.push(searchPattern, searchPattern, searchPattern);
+    }
+
+    if (symbol) {
+      countQuery += ' AND symbol = ?';
+      countParams.push(symbol);
     }
 
     const countResult = await c.env.DB.prepare(countQuery)
@@ -78,39 +96,21 @@ coins.get('/:id', async (c) => {
     const coinId = c.req.param('id');
 
     const coin = await c.env.DB.prepare(
-      'SELECT * FROM coins WHERE id = ?'
+      `SELECT 
+        coins.*,
+        users.username as creator_username
+      FROM coins
+      LEFT JOIN users ON coins.creator_id = users.id
+      WHERE coins.id = ?`
     )
       .bind(coinId)
-      .first() as Coin | null;
+      .first() as any;
 
     if (!coin) {
       return errorResponse('幣種未找到', 404);
     }
 
-    // Get creator info
-    const creator = await c.env.DB.prepare(
-      'SELECT id, username FROM users WHERE id = ?'
-    )
-      .bind(coin.creator_id)
-      .first();
-
-    // Get recent transactions
-    const recentTxs = await c.env.DB.prepare(
-      `SELECT t.*, u.username 
-       FROM transactions t 
-       JOIN users u ON t.user_id = u.id 
-       WHERE t.coin_id = ? 
-       ORDER BY t.timestamp DESC 
-       LIMIT 10`
-    )
-      .bind(coinId)
-      .all();
-
-    return successResponse({
-      coin,
-      creator,
-      recentTransactions: recentTxs.results,
-    });
+    return successResponse(coin);
   } catch (error: any) {
     console.error('Get coin details error:', error);
     return errorResponse('獲取幣種詳情時發生錯誤', 500);
