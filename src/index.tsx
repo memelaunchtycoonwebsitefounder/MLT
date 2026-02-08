@@ -21,9 +21,25 @@ app.use('/static/*', serveStatic({ root: './public' }));
 
 // API Routes
 app.route('/api/auth', auth);
-app.route('/api/coins', optionalAuthMiddleware, coins);
-app.route('/api/trades', authMiddleware, trades);
-app.route('/api/portfolio', authMiddleware, portfolio);
+
+// Coins routes (optionally authenticated)
+const coinsRoutes = new Hono<{ Bindings: Env }>();
+coinsRoutes.use('*', optionalAuthMiddleware);
+coinsRoutes.route('/', coins);
+app.route('/api/coins', coinsRoutes);
+
+// Trades routes (requires authentication)
+const tradesRoutes = new Hono<{ Bindings: Env }>();
+tradesRoutes.use('*', authMiddleware);
+tradesRoutes.route('/', trades);
+app.route('/api/trades', tradesRoutes);
+
+// Portfolio routes (requires authentication)
+const portfolioRoutes = new Hono<{ Bindings: Env }>();
+portfolioRoutes.use('*', authMiddleware);
+portfolioRoutes.route('/', portfolio);
+app.route('/api/portfolio', portfolioRoutes);
+
 app.route('/api/leaderboard', leaderboard);
 
 // Health check
