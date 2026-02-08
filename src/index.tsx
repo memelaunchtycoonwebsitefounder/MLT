@@ -10,6 +10,7 @@ import coins from './routes/coins';
 import trades from './routes/trades';
 import portfolio from './routes/portfolio';
 import leaderboard from './routes/leaderboard';
+import email from './routes/email';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -41,6 +42,7 @@ portfolioRoutes.route('/', portfolio);
 app.route('/api/portfolio', portfolioRoutes);
 
 app.route('/api/leaderboard', leaderboard);
+app.route('/api/email', email);
 
 // Health check
 app.get('/api/health', (c) => {
@@ -62,6 +64,16 @@ app.get('/', (c) => {
         <title>MemeLaunch Tycoon - 模因幣發射大亨</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
+        
+        <!-- Google Analytics 4 -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-XXXXXXXXXX');
+        </script>
         <style>
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
           body { font-family: 'Inter', sans-serif; }
@@ -123,10 +135,26 @@ app.get('/', (c) => {
                         <p class="text-2xl font-bold">5,678+</p>
                     </div>
                 </div>
-                <button id="ctaBtn" class="px-12 py-4 text-xl rounded-lg bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 transition glow font-bold">
-                    <i class="fas fa-rocket mr-2"></i>
-                    免費開始遊戲
-                </button>
+                
+                <!-- Email Signup Form -->
+                <form class="email-signup-form mb-6" data-source="hero_section">
+                    <input 
+                        type="email" 
+                        name="email"
+                        placeholder="輸入你的郵箱，立即開始"
+                        required
+                    />
+                    <button type="submit" class="cta-button" data-cta="hero_signup">
+                        <i class="fas fa-rocket mr-2"></i>
+                        立即開始（完全免費）
+                    </button>
+                </form>
+                <div class="form-message"></div>
+                
+                <p class="text-sm text-gray-400 mt-4">
+                    <i class="fas fa-shield-alt mr-2"></i>
+                    無需信用卡 • 100% 免費 • 隨時可以退出
+                </p>
             </div>
         </section>
 
@@ -192,10 +220,22 @@ app.get('/', (c) => {
             <div class="glass-effect p-12 rounded-2xl max-w-3xl mx-auto glow">
                 <h3 class="text-4xl font-bold mb-4">準備好開始了嗎？</h3>
                 <p class="text-xl text-gray-300 mb-8">加入數千名玩家，開始你的模因幣帝國！</p>
-                <button id="finalCtaBtn" class="px-12 py-4 text-xl rounded-lg bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 transition font-bold">
-                    <i class="fas fa-rocket mr-2"></i>
-                    立即免費註冊
-                </button>
+                
+                <!-- Email Signup Form -->
+                <form class="email-signup-form" data-source="final_cta">
+                    <input 
+                        type="email" 
+                        name="email"
+                        placeholder="輸入你的郵箱"
+                        required
+                    />
+                    <button type="submit" class="cta-button" data-cta="final_cta_signup">
+                        <i class="fas fa-rocket mr-2"></i>
+                        立即免費註冊
+                    </button>
+                </form>
+                <div class="form-message"></div>
+                
                 <p class="text-sm text-gray-400 mt-4">
                     <i class="fas fa-shield-alt mr-2"></i>
                     100% 模擬遊戲 • 無真實金錢交易 • 無需信用卡
@@ -216,18 +256,13 @@ app.get('/', (c) => {
         </footer>
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="/static/landing.js"></script>
         <script>
           // Redirect to dashboard/register for now
           document.getElementById('registerBtn').addEventListener('click', () => {
             window.location.href = '/dashboard';
           });
           document.getElementById('loginBtn').addEventListener('click', () => {
-            window.location.href = '/dashboard';
-          });
-          document.getElementById('ctaBtn').addEventListener('click', () => {
-            window.location.href = '/dashboard';
-          });
-          document.getElementById('finalCtaBtn').addEventListener('click', () => {
             window.location.href = '/dashboard';
           });
         </script>
