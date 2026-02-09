@@ -58,7 +58,7 @@ const updateUserBalance = (balance) => {
 };
 
 // Load coin data
-const loadCoinData = async () => {
+const loadCoinData = async (skipChart = false) => {
   try {
     const token = localStorage.getItem('auth_token');
     
@@ -71,7 +71,9 @@ const loadCoinData = async () => {
       renderCoinData();
       await loadUserHoldings();
       loadRecentTransactions();
-      initPriceChart();
+      if (!skipChart) {
+        initPriceChart();
+      }
       updateTradeCalculations(); // Update calculations after loading
     }
   } catch (error) {
@@ -207,6 +209,12 @@ const renderTransactions = (transactions) => {
 const initPriceChart = () => {
   const ctx = document.getElementById('price-chart');
   if (!ctx) return;
+  
+  // Destroy existing chart if it exists
+  if (priceChart) {
+    priceChart.destroy();
+    priceChart = null;
+  }
   
   // Generate sample price data
   const now = Date.now();
@@ -469,8 +477,8 @@ const executeBuy = async () => {
       userData.virtual_balance = response.data.data.newBalance;
       updateUserBalance(userData.virtual_balance);
       
-      // Reload data
-      await loadCoinData();
+      // Reload data (skip chart re-initialization)
+      await loadCoinData(true);
       
       // Reset form
       document.getElementById('buy-amount').value = 100;
@@ -522,8 +530,8 @@ const executeSell = async () => {
       userData.virtual_balance = response.data.data.newBalance;
       updateUserBalance(userData.virtual_balance);
       
-      // Reload data
-      await loadCoinData();
+      // Reload data (skip chart re-initialization)
+      await loadCoinData(true);
       
       // Reset form
       document.getElementById('sell-amount').value = 10;
