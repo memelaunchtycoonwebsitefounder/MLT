@@ -3,28 +3,37 @@
  * Handles authenticated dashboard functionality
  */
 
-// Check authentication on page load
-checkAuth();
+// Wait for page to fully load before checking auth
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('Dashboard: DOM loaded, checking auth...');
+  checkAuth();
+});
 
 async function checkAuth() {
   const token = localStorage.getItem('auth_token');
   
+  console.log('Dashboard: Token check:', token ? 'Found' : 'Not found');
+  
   if (!token) {
+    console.log('Dashboard: No token, redirecting to login...');
     // Redirect to login if not authenticated
     window.location.href = '/login?redirect=/dashboard';
     return;
   }
 
   try {
+    console.log('Dashboard: Verifying token with API...');
     const response = await axios.get('/api/auth/me', {
       headers: { Authorization: `Bearer ${token}` }
     });
     
+    console.log('Dashboard: Token valid, user:', response.data.data.username);
     const user = response.data.data;
     updateUserUI(user);
     loadDashboardData(user);
   } catch (error) {
-    console.error('Authentication failed:', error);
+    console.error('Dashboard: Authentication failed:', error);
+    console.error('Dashboard: Error details:', error.response?.data);
     localStorage.removeItem('auth_token');
     window.location.href = '/login?redirect=/dashboard';
   }

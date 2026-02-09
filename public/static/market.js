@@ -15,12 +15,16 @@ let currentFilters = {
 const checkAuth = async () => {
   const token = localStorage.getItem('auth_token');
   
+  console.log('Market: Token check:', token ? 'Found' : 'Not found');
+  
   if (!token) {
-    window.location.href = '/login';
+    console.log('Market: No token, redirecting to login...');
+    window.location.href = '/login?redirect=/market';
     return null;
   }
 
   try {
+    console.log('Market: Verifying token with API...');
     const response = await axios.get('/api/auth/me', {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -28,16 +32,19 @@ const checkAuth = async () => {
     });
 
     if (response.data.success) {
+      console.log('Market: Token valid, user:', response.data.data.username);
       return response.data.data;
     } else {
+      console.log('Market: Invalid token response');
       localStorage.removeItem('auth_token');
-      window.location.href = '/login';
+      window.location.href = '/login?redirect=/market';
       return null;
     }
   } catch (error) {
-    console.error('Auth check failed:', error);
+    console.error('Market: Auth check failed:', error);
+    console.error('Market: Error details:', error.response?.data);
     localStorage.removeItem('auth_token');
-    window.location.href = '/login';
+    window.location.href = '/login?redirect=/market';
     return null;
   }
 };

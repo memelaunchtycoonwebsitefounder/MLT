@@ -22,12 +22,16 @@ const coinData = {
 const checkAuth = async () => {
   const token = localStorage.getItem('auth_token');
   
+  console.log('CreateCoin: Token check:', token ? 'Found' : 'Not found');
+  
   if (!token) {
-    window.location.href = '/login';
+    console.log('CreateCoin: No token, redirecting to login...');
+    window.location.href = '/login?redirect=/create';
     return null;
   }
 
   try {
+    console.log('CreateCoin: Verifying token with API...');
     const response = await axios.get('/api/auth/me', {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -35,16 +39,19 @@ const checkAuth = async () => {
     });
 
     if (response.data.success) {
+      console.log('CreateCoin: Token valid, user:', response.data.data.username);
       return response.data.data;
     } else {
+      console.log('CreateCoin: Invalid token response');
       localStorage.removeItem('auth_token');
-      window.location.href = '/login';
+      window.location.href = '/login?redirect=/create';
       return null;
     }
   } catch (error) {
-    console.error('Auth check failed:', error);
+    console.error('CreateCoin: Auth check failed:', error);
+    console.error('CreateCoin: Error details:', error.response?.data);
     localStorage.removeItem('auth_token');
-    window.location.href = '/login';
+    window.location.href = '/login?redirect=/create';
     return null;
   }
 };

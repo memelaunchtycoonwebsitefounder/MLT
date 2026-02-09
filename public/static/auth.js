@@ -200,6 +200,10 @@ const setupSignup = () => {
         // Store token
         localStorage.setItem('auth_token', response.data.data.token);
         
+        // Verify token is stored
+        const storedToken = localStorage.getItem('auth_token');
+        console.log('Token stored:', storedToken ? 'Yes' : 'No');
+        
         // Track event
         if (typeof gtag !== 'undefined') {
           gtag('event', 'sign_up', {
@@ -210,9 +214,10 @@ const setupSignup = () => {
         
         showMessage('註冊成功！正在跳轉...', 'success');
         
+        // Delay to ensure localStorage is written
         setTimeout(() => {
           window.location.href = '/dashboard';
-        }, 1000);
+        }, 1500);
       }
     } catch (error) {
       console.error('Signup error:', error);
@@ -255,6 +260,10 @@ const setupLogin = () => {
         // Store token
         localStorage.setItem('auth_token', response.data.data.token);
         
+        // Verify token is stored
+        const storedToken = localStorage.getItem('auth_token');
+        console.log('Token stored:', storedToken ? 'Yes' : 'No');
+        
         // Track event
         if (typeof gtag !== 'undefined') {
           gtag('event', 'login', {
@@ -264,9 +273,14 @@ const setupLogin = () => {
         
         showMessage('登入成功！正在跳轉...', 'success');
         
+        // Get redirect URL or default to dashboard
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get('redirect') || '/dashboard';
+        
+        // Delay to ensure localStorage is written
         setTimeout(() => {
-          window.location.href = '/dashboard';
-        }, 1000);
+          window.location.href = redirect;
+        }, 1500);
       }
     } catch (error) {
       console.error('Login error:', error);

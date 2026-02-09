@@ -12,12 +12,17 @@ let userHoldings = 0;
 const checkAuth = async () => {
   const token = localStorage.getItem('auth_token');
   
+  console.log('CoinDetail: Token check:', token ? 'Found' : 'Not found');
+  
   if (!token) {
-    window.location.href = '/login';
+    console.log('CoinDetail: No token, redirecting to login...');
+    const coinId = window.location.pathname.split('/').pop();
+    window.location.href = `/login?redirect=/coin/${coinId}`;
     return null;
   }
 
   try {
+    console.log('CoinDetail: Verifying token with API...');
     const response = await axios.get('/api/auth/me', {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -25,16 +30,21 @@ const checkAuth = async () => {
     });
 
     if (response.data.success) {
+      console.log('CoinDetail: Token valid, user:', response.data.data.username);
       return response.data.data;
     } else {
+      console.log('CoinDetail: Invalid token response');
       localStorage.removeItem('auth_token');
-      window.location.href = '/login';
+      const coinId = window.location.pathname.split('/').pop();
+      window.location.href = `/login?redirect=/coin/${coinId}`;
       return null;
     }
   } catch (error) {
-    console.error('Auth check failed:', error);
+    console.error('CoinDetail: Auth check failed:', error);
+    console.error('CoinDetail: Error details:', error.response?.data);
     localStorage.removeItem('auth_token');
-    window.location.href = '/login';
+    const coinId = window.location.pathname.split('/').pop();
+    window.location.href = `/login?redirect=/coin/${coinId}`;
     return null;
   }
 };
