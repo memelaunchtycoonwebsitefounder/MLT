@@ -14,6 +14,9 @@ import email from './routes/email';
 import upload from './routes/upload';
 import orders from './routes/orders';
 import cron from './routes/cron';
+import realtime from './routes/realtime';
+import social from './routes/social';
+import gamification from './routes/gamification';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -53,6 +56,19 @@ app.route('/api/portfolio', portfolioRoutes);
 app.route('/api/leaderboard', leaderboard);
 app.route('/api/email', email);
 app.route('/api/cron', cron);
+app.route('/api/realtime', realtime);
+
+// Social routes (requires authentication)
+const socialRoutes = new Hono<{ Bindings: Env }>();
+socialRoutes.use('*', authMiddleware);
+socialRoutes.route('/', social);
+app.route('/api/social', socialRoutes);
+
+// Gamification routes (requires authentication)
+const gamificationRoutes = new Hono<{ Bindings: Env }>();
+gamificationRoutes.use('*', authMiddleware);
+gamificationRoutes.route('/', gamification);
+app.route('/api/gamification', gamificationRoutes);
 
 // Upload routes (requires authentication)
 const uploadRoutes = new Hono<{ Bindings: Env }>();
