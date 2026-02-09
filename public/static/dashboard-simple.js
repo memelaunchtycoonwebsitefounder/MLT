@@ -76,24 +76,26 @@ async function loadDashboardData(user) {
     });
     
     if (portfolioResponse.data.success) {
-      const portfolio = portfolioResponse.data.data;
+      const data = portfolioResponse.data.data;
+      const stats = data.stats || {};
       
-      // Update portfolio value
+      // Update portfolio value - use stats object
       const portfolioValueEl = document.getElementById('portfolio-value');
-      if (portfolioValueEl) {
-        portfolioValueEl.textContent = portfolio.total_value.toLocaleString();
+      if (portfolioValueEl && stats.totalValue !== undefined) {
+        portfolioValueEl.textContent = stats.totalValue.toLocaleString();
       }
       
       // Update total P/L
       const totalPlEl = document.getElementById('total-pl');
       if (totalPlEl) {
-        const pl = portfolio.total_pl || 0;
+        const pl = stats.totalProfitLoss || 0;
         totalPlEl.textContent = `${pl >= 0 ? '+' : ''}${pl.toFixed(2)}`;
         totalPlEl.className = pl >= 0 ? 'text-green-400' : 'text-red-400';
       }
     }
   } catch (error) {
     console.error('Dashboard: Failed to load portfolio:', error);
+    // Don't fail the whole page if portfolio fails
   }
   
   // Load recent transactions
