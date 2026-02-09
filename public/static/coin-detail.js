@@ -1,54 +1,44 @@
 /**
  * Coin Detail Page JavaScript
- * Handles coin display, trading, and chart visualization
+ * Complete trading panel implementation with all features
  */
 
 let coinData = null;
 let userData = null;
 let priceChart = null;
 let userHoldings = 0;
+let currentTab = 'buy';
 
 // Check authentication
 const checkAuth = async (retryCount = 0) => {
   const token = localStorage.getItem('auth_token');
   
-  console.log(`CoinDetail: Token check (attempt ${retryCount + 1}):`, token ? 'Found' : 'Not found');
-  
   if (!token) {
-    // Retry a few times in case token is being written
     if (retryCount < 3) {
-      console.log('CoinDetail: No token yet, retrying in 200ms...');
       await new Promise(resolve => setTimeout(resolve, 200));
       return checkAuth(retryCount + 1);
     }
     
-    console.log('CoinDetail: No token after retries, redirecting to login...');
     const coinId = window.location.pathname.split('/').pop();
     window.location.href = `/login?redirect=/coin/${coinId}`;
     return null;
   }
 
   try {
-    console.log('CoinDetail: Verifying token with API...');
     const response = await axios.get('/api/auth/me', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: { 'Authorization': `Bearer ${token}` }
     });
 
     if (response.data.success) {
-      console.log('CoinDetail: Token valid, user:', response.data.data.username);
       return response.data.data;
     } else {
-      console.log('CoinDetail: Invalid token response');
       localStorage.removeItem('auth_token');
       const coinId = window.location.pathname.split('/').pop();
       window.location.href = `/login?redirect=/coin/${coinId}`;
       return null;
     }
   } catch (error) {
-    console.error('CoinDetail: Auth check failed:', error);
-    console.error('CoinDetail: Error details:', error.response?.data);
+    console.error('Auth check failed:', error);
     localStorage.removeItem('auth_token');
     const coinId = window.location.pathname.split('/').pop();
     window.location.href = `/login?redirect=/coin/${coinId}`;
@@ -56,11 +46,14 @@ const checkAuth = async (retryCount = 0) => {
   }
 };
 
-// Update user balance
+// Update user balance display
 const updateUserBalance = (balance) => {
   const balanceEl = document.getElementById('user-balance');
   if (balanceEl) {
-    balanceEl.textContent = Number(balance || 0).toLocaleString();
+    balanceEl.textContent = Number(balance || 0).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
   }
 };
 
@@ -70,22 +63,23 @@ const loadCoinData = async () => {
     const token = localStorage.getItem('auth_token');
     
     const response = await axios.get(`/api/coins/${COIN_ID}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: { 'Authorization': `Bearer ${token}` }
     });
     
     if (response.data.success) {
       coinData = response.data.data;
       renderCoinData();
-      loadUserHoldings();
+      await loadUserHoldings();
       loadRecentTransactions();
       initPriceChart();
+      updateTradeCalculations(); // Update calculations after loading
     }
   } catch (error) {
     console.error('Failed to load coin:', error);
-    alert('載入幣種資料失敗');
-    window.location.href = '/market';
+    showNotification('載入幣種資料失敗: ' + (error.response?.data?.message || error.message), 'error');
+    setTimeout(() => {
+      window.location.href = '/market';
+    }, 2000);
   }
 };
 
@@ -99,9 +93,9 @@ const renderCoinData = () => {
   document.getElementById('coin-name').textContent = coinData.name;
   document.getElementById('coin-symbol').textContent = `$${coinData.symbol}`;
   document.getElementById('coin-creator').textContent = coinData.creator_username || 'Unknown';
-  document.getElementById('coin-price').textContent = Number(coinData.current_price || 0).toFixed(4);
+  document.getElementById('coin-price').textContent = `$${Number(coinData.current_price || 0).toFixed(8)}`;
   
-  // Price change (simulated)
+  // Price change (simulated for now)
   const priceChange = Math.random() * 20 - 10;
   const priceChangeEl = document.getElementById('coin-price-change');
   const priceChangeClass = priceChange >= 0 ? 'text-green-400' : 'text-red-400';
@@ -110,7 +104,7 @@ const renderCoinData = () => {
   priceChangeEl.className = priceChangeClass + ' text-lg mt-2';
   
   // Stats
-  document.getElementById('stat-market-cap').textContent = Number(coinData.market_cap || 0).toLocaleString();
+  document.getElementById('stat-market-cap').textContent = `$${Number(coinData.market_cap || 0).toFixed(4)}`;
   document.getElementById('stat-supply').textContent = Number(coinData.total_supply || 0).toLocaleString();
   document.getElementById('stat-holders').textContent = Number(coinData.holders_count || 0).toLocaleString();
   document.getElementById('stat-transactions').textContent = Number(coinData.transaction_count || 0).toLocaleString();
@@ -120,11 +114,8 @@ const renderCoinData = () => {
   
   // Hype score
   const hypeScore = coinData.hype_score || 0;
-  document.getElementById('hype-score').textContent = hypeScore;
+  document.getElementById('hype-score').textContent = Math.floor(hypeScore);
   document.getElementById('hype-bar').style.width = `${Math.min(hypeScore / 200 * 100, 100)}%`;
-  
-  // Update trade prices
-  updateTradePrices();
 };
 
 // Load user holdings
@@ -133,16 +124,28 @@ const loadUserHoldings = async () => {
     const token = localStorage.getItem('auth_token');
     
     const response = await axios.get('/api/portfolio', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: { 'Authorization': `Bearer ${token}` }
     });
     
     if (response.data.success) {
       const holdings = response.data.data.holdings || [];
       const holding = holdings.find(h => h.coin_id == COIN_ID);
       userHoldings = holding ? holding.amount : 0;
-      document.getElementById('user-holdings').textContent = userHoldings.toLocaleString();
+      
+      // Update holdings display
+      document.getElementById('holdings-amount').textContent = userHoldings.toLocaleString();
+      document.getElementById('holdings-symbol').textContent = coinData.symbol;
+      
+      if (userHoldings > 0) {
+        const holdingValue = userHoldings * coinData.current_price;
+        document.getElementById('holdings-value').textContent = `$${holdingValue.toFixed(4)}`;
+        document.getElementById('holdings-info').classList.remove('hidden');
+      } else {
+        document.getElementById('holdings-info').classList.add('hidden');
+      }
+      
+      // Update calculations
+      updateTradeCalculations();
     }
   } catch (error) {
     console.error('Failed to load holdings:', error);
@@ -151,401 +154,423 @@ const loadUserHoldings = async () => {
 
 // Load recent transactions
 const loadRecentTransactions = async () => {
-  const container = document.getElementById('recent-transactions');
-  
   try {
     const token = localStorage.getItem('auth_token');
     
-    const response = await axios.get(`/api/trades/history?coin_id=${COIN_ID}&limit=10`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+    const response = await axios.get(`/api/trades/history/${COIN_ID}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
     });
     
     if (response.data.success) {
-      // API returns {transactions: [], pagination: {}}
-      const data = response.data.data || {};
-      const transactions = data.transactions || [];
-      
-      if (transactions.length === 0) {
-        container.innerHTML = '<p class="text-center text-gray-400 py-4">暫無交易記錄</p>';
-        return;
-      }
-      
-      container.innerHTML = transactions.map(tx => {
-        const isBuy = tx.type === 'buy';
-        const bgClass = isBuy ? 'bg-green-500/20' : 'bg-red-500/20';
-        const textClass = isBuy ? 'text-green-400' : 'text-red-400';
-        const icon = isBuy ? 'fa-arrow-up' : 'fa-arrow-down';
-        
-        return `
-          <div class="flex items-center justify-between p-3 ${bgClass} rounded-lg">
-            <div class="flex items-center space-x-3">
-              <div class="${textClass}">
-                <i class="fas ${icon}"></i>
-              </div>
-              <div>
-                <p class="font-bold">${isBuy ? '買入' : '賣出'}</p>
-                <p class="text-sm text-gray-400">${formatDate(tx.timestamp)}</p>
-              </div>
-            </div>
-            <div class="text-right">
-              <p class="font-bold">${Number(tx.amount || 0).toLocaleString()}</p>
-              <p class="text-sm text-gray-400">@ ${Number(tx.price || 0).toFixed(4)}</p>
-            </div>
-          </div>
-        `;
-      }).join('');
+      const transactions = response.data.data.transactions || [];
+      renderTransactions(transactions);
     }
   } catch (error) {
     console.error('Failed to load transactions:', error);
-    container.innerHTML = '<p class="text-center text-gray-400 py-4">載入失敗</p>';
   }
 };
 
-// Format date
-const formatDate = (dateString) => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  const now = new Date();
-  const diff = now - date;
+// Render transactions
+const renderTransactions = (transactions) => {
+  const container = document.getElementById('recent-transactions');
   
-  const minutes = Math.floor(diff / 60000);
-  const hours = Math.floor(diff / 3600000);
-  const days = Math.floor(diff / 86400000);
+  if (transactions.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-8 text-gray-400">
+        <i class="fas fa-inbox text-4xl mb-2"></i>
+        <p>暫無交易記錄</p>
+      </div>
+    `;
+    return;
+  }
   
-  if (minutes < 60) return `${minutes}分鐘前`;
-  if (hours < 24) return `${hours}小時前`;
-  if (days < 7) return `${days}天前`;
-  
-  return date.toLocaleDateString('zh-TW');
+  container.innerHTML = transactions.slice(0, 10).map(tx => `
+    <div class="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 rounded-full ${tx.type === 'buy' ? 'bg-green-500' : 'bg-red-500'} flex items-center justify-center">
+          <i class="fas fa-arrow-${tx.type === 'buy' ? 'up' : 'down'} text-white text-sm"></i>
+        </div>
+        <div>
+          <p class="font-bold">${tx.type === 'buy' ? '買入' : '賣出'} ${Number(tx.amount).toLocaleString()} ${coinData.symbol}</p>
+          <p class="text-sm text-gray-400">${new Date(tx.created_at).toLocaleString('zh-TW')}</p>
+        </div>
+      </div>
+      <div class="text-right">
+        <p class="font-bold">$${Number(tx.price).toFixed(8)}</p>
+        <p class="text-sm text-gray-400">總計: $${Number(tx.total_cost || tx.amount * tx.price).toFixed(4)}</p>
+      </div>
+    </div>
+  `).join('');
 };
 
 // Initialize price chart
 const initPriceChart = () => {
   const ctx = document.getElementById('price-chart');
+  if (!ctx) return;
   
   // Generate sample price data
-  const priceData = generatePriceData('24h');
+  const now = Date.now();
+  const labels = [];
+  const prices = [];
+  const basePrice = coinData.current_price;
+  
+  for (let i = 23; i >= 0; i--) {
+    labels.push(new Date(now - i * 3600000).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' }));
+    prices.push(basePrice * (1 + (Math.random() * 0.2 - 0.1)));
+  }
   
   priceChart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: priceData.labels,
+      labels: labels,
       datasets: [{
         label: '價格',
-        data: priceData.prices,
-        borderColor: 'rgb(255, 107, 53)',
-        backgroundColor: 'rgba(255, 107, 53, 0.1)',
-        tension: 0.4,
-        fill: true
+        data: prices,
+        borderColor: 'rgb(249, 115, 22)',
+        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: {
-          display: false
-        },
+        legend: { display: false },
         tooltip: {
-          mode: 'index',
-          intersect: false,
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          titleColor: 'white',
-          bodyColor: 'white',
-          borderColor: 'rgba(255, 107, 53, 0.5)',
-          borderWidth: 1
+          callbacks: {
+            label: (context) => `$${context.parsed.y.toFixed(8)}`
+          }
         }
       },
       scales: {
-        x: {
-          grid: {
-            color: 'rgba(255, 255, 255, 0.1)'
-          },
-          ticks: {
-            color: 'rgba(255, 255, 255, 0.6)'
-          }
-        },
         y: {
-          grid: {
-            color: 'rgba(255, 255, 255, 0.1)'
-          },
           ticks: {
-            color: 'rgba(255, 255, 255, 0.6)',
-            callback: function(value) {
-              return value.toFixed(4);
-            }
-          }
+            callback: (value) => `$${value.toFixed(8)}`,
+            color: '#9ca3af'
+          },
+          grid: { color: 'rgba(255, 255, 255, 0.1)' }
+        },
+        x: {
+          ticks: { color: '#9ca3af' },
+          grid: { color: 'rgba(255, 255, 255, 0.1)' }
         }
       }
     }
   });
-  
-  // Setup timeframe buttons
-  document.querySelectorAll('.timeframe-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      document.querySelectorAll('.timeframe-btn').forEach(b => {
-        b.classList.remove('active', 'bg-orange-500');
-        b.classList.add('hover:bg-white/10');
-      });
-      btn.classList.add('active', 'bg-orange-500');
-      btn.classList.remove('hover:bg-white/10');
-      
-      const timeframe = btn.dataset.timeframe;
-      updateChart(timeframe);
-    });
-  });
 };
 
-// Generate price data (simulated)
-const generatePriceData = (timeframe) => {
-  const basePrice = coinData.current_price || 0.01;
-  let dataPoints = 24;
-  let labelFormat = 'time';
-  
-  if (timeframe === '1h') {
-    dataPoints = 12;
-  } else if (timeframe === '7d') {
-    dataPoints = 7;
-    labelFormat = 'date';
-  } else if (timeframe === '30d') {
-    dataPoints = 30;
-    labelFormat = 'date';
-  }
-  
-  const labels = [];
-  const prices = [];
-  
-  for (let i = dataPoints; i >= 0; i--) {
-    let label;
-    if (labelFormat === 'time') {
-      const date = new Date(Date.now() - i * 60 * 60 * 1000);
-      label = date.getHours() + ':00';
-    } else {
-      const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
-      label = `${date.getMonth() + 1}/${date.getDate()}`;
-    }
-    labels.push(label);
-    
-    // Generate random walk price
-    const change = (Math.random() - 0.5) * basePrice * 0.1;
-    const price = i === 0 ? basePrice : (prices[prices.length - 1] || basePrice) + change;
-    prices.push(Math.max(price, basePrice * 0.5));
-  }
-  
-  return { labels, prices };
-};
-
-// Update chart
-const updateChart = (timeframe) => {
-  const priceData = generatePriceData(timeframe);
-  priceChart.data.labels = priceData.labels;
-  priceChart.data.datasets[0].data = priceData.prices;
-  priceChart.update();
-};
+// ==================== TRADING PANEL ====================
 
 // Setup trading tabs
 const setupTradingTabs = () => {
   const buyTab = document.getElementById('buy-tab');
   const sellTab = document.getElementById('sell-tab');
+  
+  buyTab.addEventListener('click', () => switchTab('buy'));
+  sellTab.addEventListener('click', () => switchTab('sell'));
+};
+
+// Switch between buy and sell tabs
+const switchTab = (tab) => {
+  currentTab = tab;
+  
+  const buyTab = document.getElementById('buy-tab');
+  const sellTab = document.getElementById('sell-tab');
   const buyPanel = document.getElementById('buy-panel');
   const sellPanel = document.getElementById('sell-panel');
   
-  buyTab.addEventListener('click', () => {
-    buyTab.classList.add('bg-green-500');
-    buyTab.classList.remove('hover:bg-white/10');
-    sellTab.classList.remove('bg-red-500');
-    sellTab.classList.add('hover:bg-white/10');
+  if (tab === 'buy') {
+    buyTab.classList.add('bg-green-500', 'text-white');
+    buyTab.classList.remove('bg-gray-200', 'text-gray-700', 'hover:bg-white/10');
+    sellTab.classList.remove('bg-red-500', 'text-white');
+    sellTab.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-white/10');
     buyPanel.classList.remove('hidden');
     sellPanel.classList.add('hidden');
-  });
-  
-  sellTab.addEventListener('click', () => {
-    sellTab.classList.add('bg-red-500');
-    sellTab.classList.remove('hover:bg-white/10');
-    buyTab.classList.remove('bg-green-500');
-    buyTab.classList.add('hover:bg-white/10');
+  } else {
+    sellTab.classList.add('bg-red-500', 'text-white');
+    sellTab.classList.remove('bg-gray-200', 'text-gray-700', 'hover:bg-white/10');
+    buyTab.classList.remove('bg-green-500', 'text-white');
+    buyTab.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-white/10');
     sellPanel.classList.remove('hidden');
     buyPanel.classList.add('hidden');
-  });
+  }
+  
+  updateTradeCalculations();
 };
 
-// Update trade prices
-const updateTradePrices = () => {
-  const price = coinData.current_price || 0;
-  
-  // Buy panel
-  const buyAmount = parseFloat(document.getElementById('buy-amount').value) || 0;
-  document.getElementById('buy-unit-price').textContent = price.toFixed(4);
-  document.getElementById('buy-total-cost').textContent = (buyAmount * price).toFixed(2);
-  
-  // Sell panel
-  const sellAmount = parseFloat(document.getElementById('sell-amount').value) || 0;
-  document.getElementById('sell-unit-price').textContent = price.toFixed(4);
-  document.getElementById('sell-total-revenue').textContent = (sellAmount * price).toFixed(2);
-};
-
-// Setup trade inputs
+// Setup trade inputs and buttons
 const setupTradeInputs = () => {
-  const buyAmountInput = document.getElementById('buy-amount');
-  const sellAmountInput = document.getElementById('sell-amount');
+  // Amount inputs
+  document.getElementById('buy-amount').addEventListener('input', updateTradeCalculations);
+  document.getElementById('sell-amount').addEventListener('input', updateTradeCalculations);
   
-  buyAmountInput.addEventListener('input', updateTradePrices);
-  sellAmountInput.addEventListener('input', updateTradePrices);
+  // Buy preset buttons
+  document.getElementById('buy-preset-10').addEventListener('click', () => setAmount(10));
+  document.getElementById('buy-preset-50').addEventListener('click', () => setAmount(50));
+  document.getElementById('buy-preset-100').addEventListener('click', () => setAmount(100));
+  document.getElementById('buy-preset-500').addEventListener('click', () => setAmount(500));
+  
+  // Sell preset buttons (percentage)
+  document.getElementById('sell-preset-25').addEventListener('click', () => setSellPercentage(0.25));
+  document.getElementById('sell-preset-50').addEventListener('click', () => setSellPercentage(0.5));
+  document.getElementById('sell-preset-75').addEventListener('click', () => setSellPercentage(0.75));
+  document.getElementById('sell-preset-100').addEventListener('click', () => setSellPercentage(1.0));
+  
+  // Max buttons
+  document.getElementById('buy-max-btn').addEventListener('click', setBuyMax);
+  document.getElementById('sell-max-btn').addEventListener('click', setSellMax);
+  
+  // Trade buttons
+  document.getElementById('buy-button').addEventListener('click', executeBuy);
+  document.getElementById('sell-button').addEventListener('click', executeSell);
 };
 
-// Buy coin
-const buyCoin = async () => {
-  const buyBtn = document.getElementById('buy-btn');
-  const buyBtnText = document.getElementById('buy-btn-text');
-  const tradeMessage = document.getElementById('trade-message');
+// Set amount
+const setAmount = (amount) => {
+  document.getElementById('buy-amount').value = amount;
+  updateTradeCalculations();
+};
+
+// Set sell percentage
+const setSellPercentage = (percentage) => {
+  const amount = Math.floor(userHoldings * percentage);
+  document.getElementById('sell-amount').value = amount;
+  updateTradeCalculations();
+};
+
+// Set buy max
+const setBuyMax = () => {
+  if (!coinData || !userData) return;
+  
+  const price = coinData.current_price;
+  const fee = 0.01; // 1%
+  const maxAmount = Math.floor(userData.virtual_balance / (price * (1 + fee)));
+  const availableSupply = coinData.total_supply - coinData.circulating_supply;
+  const finalAmount = Math.min(maxAmount, availableSupply);
+  
+  document.getElementById('buy-amount').value = finalAmount;
+  updateTradeCalculations();
+};
+
+// Set sell max
+const setSellMax = () => {
+  document.getElementById('sell-amount').value = userHoldings;
+  updateTradeCalculations();
+};
+
+// Update trade calculations
+const updateTradeCalculations = () => {
+  if (!coinData || !userData) return;
+  
+  const price = coinData.current_price;
+  const fee = 0.01; // 1% fee
+  
+  if (currentTab === 'buy') {
+    const amount = parseFloat(document.getElementById('buy-amount').value) || 0;
+    const subtotal = amount * price;
+    const feeAmount = subtotal * fee;
+    const total = subtotal + feeAmount;
+    
+    // Update display
+    document.getElementById('buy-price-per-coin').textContent = `$${price.toFixed(8)}`;
+    document.getElementById('buy-subtotal').textContent = `$${subtotal.toFixed(4)}`;
+    document.getElementById('buy-fee').textContent = `$${feeAmount.toFixed(4)}`;
+    document.getElementById('buy-total').textContent = `$${total.toFixed(4)}`;
+    
+    // Validation
+    const buyButton = document.getElementById('buy-button');
+    const warningEl = document.getElementById('buy-warning');
+    
+    if (amount <= 0) {
+      buyButton.disabled = true;
+      buyButton.classList.add('opacity-50', 'cursor-not-allowed');
+      warningEl.textContent = '請輸入購買數量';
+      warningEl.classList.remove('hidden');
+    } else if (total > userData.virtual_balance) {
+      buyButton.disabled = true;
+      buyButton.classList.add('opacity-50', 'cursor-not-allowed');
+      warningEl.textContent = `餘額不足！需要 ${total.toFixed(2)} 金幣，您只有 ${userData.virtual_balance.toFixed(2)} 金幣`;
+      warningEl.classList.remove('hidden');
+    } else if (amount > (coinData.total_supply - coinData.circulating_supply)) {
+      buyButton.disabled = true;
+      buyButton.classList.add('opacity-50', 'cursor-not-allowed');
+      warningEl.textContent = '可用供應量不足';
+      warningEl.classList.remove('hidden');
+    } else {
+      buyButton.disabled = false;
+      buyButton.classList.remove('opacity-50', 'cursor-not-allowed');
+      warningEl.classList.add('hidden');
+    }
+  } else {
+    const amount = parseFloat(document.getElementById('sell-amount').value) || 0;
+    const subtotal = amount * price;
+    const feeAmount = subtotal * fee;
+    const total = subtotal - feeAmount;
+    
+    // Update display
+    document.getElementById('sell-price-per-coin').textContent = `$${price.toFixed(8)}`;
+    document.getElementById('sell-subtotal').textContent = `$${subtotal.toFixed(4)}`;
+    document.getElementById('sell-fee').textContent = `$${feeAmount.toFixed(4)}`;
+    document.getElementById('sell-total').textContent = `$${total.toFixed(4)}`;
+    
+    // Validation
+    const sellButton = document.getElementById('sell-button');
+    const warningEl = document.getElementById('sell-warning');
+    
+    if (amount <= 0) {
+      sellButton.disabled = true;
+      sellButton.classList.add('opacity-50', 'cursor-not-allowed');
+      warningEl.textContent = '請輸入出售數量';
+      warningEl.classList.remove('hidden');
+    } else if (amount > userHoldings) {
+      sellButton.disabled = true;
+      sellButton.classList.add('opacity-50', 'cursor-not-allowed');
+      warningEl.textContent = `持有量不足！您只有 ${userHoldings} ${coinData.symbol}`;
+      warningEl.classList.remove('hidden');
+    } else {
+      sellButton.disabled = false;
+      sellButton.classList.remove('opacity-50', 'cursor-not-allowed');
+      warningEl.classList.add('hidden');
+    }
+  }
+};
+
+// Execute buy
+const executeBuy = async () => {
   const amount = parseFloat(document.getElementById('buy-amount').value) || 0;
   
   if (amount <= 0) {
-    showTradeMessage('請輸入有效數量', 'error');
+    showNotification('請輸入有效數量', 'error');
     return;
   }
   
-  const totalCost = amount * coinData.current_price;
-  if (totalCost > userData.virtual_balance) {
-    showTradeMessage('餘額不足', 'error');
-    return;
-  }
+  const button = document.getElementById('buy-button');
+  const originalHTML = button.innerHTML;
   
-  buyBtn.disabled = true;
-  buyBtnText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>處理中...';
+  button.disabled = true;
+  button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>處理中...';
   
   try {
     const token = localStorage.getItem('auth_token');
     
     const response = await axios.post('/api/trades/buy', {
-      coinId: COIN_ID,
+      coinId: parseInt(COIN_ID),
       amount: amount
     }, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: { 'Authorization': `Bearer ${token}` }
     });
     
     if (response.data.success) {
-      showTradeMessage('✅ 買入成功！', 'success');
+      showNotification(`✅ 成功買入 ${amount} ${coinData.symbol}！`, 'success');
       
-      // Refresh data
-      userData = await checkAuth();
+      // Update user balance
+      userData.virtual_balance = response.data.data.newBalance;
       updateUserBalance(userData.virtual_balance);
-      await loadCoinData();
-      await loadUserHoldings();
       
-      // Track event
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'buy_coin', {
-          coin_id: COIN_ID,
-          amount: amount
-        });
-      }
+      // Reload data
+      await loadCoinData();
+      
+      // Reset form
+      document.getElementById('buy-amount').value = 100;
+      updateTradeCalculations();
     }
   } catch (error) {
     console.error('Buy failed:', error);
-    const message = error.response?.data?.error || '買入失敗';
-    showTradeMessage(message, 'error');
+    showNotification(error.response?.data?.message || '買入失敗，請稍後再試', 'error');
   } finally {
-    buyBtn.disabled = false;
-    buyBtnText.innerHTML = '<i class="fas fa-arrow-up mr-2"></i>買入';
+    button.disabled = false;
+    button.innerHTML = originalHTML;
   }
 };
 
-// Sell coin
-const sellCoin = async () => {
-  const sellBtn = document.getElementById('sell-btn');
-  const sellBtnText = document.getElementById('sell-btn-text');
+// Execute sell
+const executeSell = async () => {
   const amount = parseFloat(document.getElementById('sell-amount').value) || 0;
   
   if (amount <= 0) {
-    showTradeMessage('請輸入有效數量', 'error');
+    showNotification('請輸入有效數量', 'error');
     return;
   }
   
   if (amount > userHoldings) {
-    showTradeMessage('持倉不足', 'error');
+    showNotification('持有量不足', 'error');
     return;
   }
   
-  sellBtn.disabled = true;
-  sellBtnText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>處理中...';
+  const button = document.getElementById('sell-button');
+  const originalHTML = button.innerHTML;
+  
+  button.disabled = true;
+  button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>處理中...';
   
   try {
     const token = localStorage.getItem('auth_token');
     
     const response = await axios.post('/api/trades/sell', {
-      coinId: COIN_ID,
+      coinId: parseInt(COIN_ID),
       amount: amount
     }, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: { 'Authorization': `Bearer ${token}` }
     });
     
     if (response.data.success) {
-      showTradeMessage('✅ 賣出成功！', 'success');
+      showNotification(`✅ 成功賣出 ${amount} ${coinData.symbol}！`, 'success');
       
-      // Refresh data
-      userData = await checkAuth();
+      // Update user balance
+      userData.virtual_balance = response.data.data.newBalance;
       updateUserBalance(userData.virtual_balance);
-      await loadCoinData();
-      await loadUserHoldings();
       
-      // Track event
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'sell_coin', {
-          coin_id: COIN_ID,
-          amount: amount
-        });
-      }
+      // Reload data
+      await loadCoinData();
+      
+      // Reset form
+      document.getElementById('sell-amount').value = 10;
+      updateTradeCalculations();
     }
   } catch (error) {
     console.error('Sell failed:', error);
-    const message = error.response?.data?.error || '賣出失敗';
-    showTradeMessage(message, 'error');
+    showNotification(error.response?.data?.message || '賣出失敗，請稍後再試', 'error');
   } finally {
-    sellBtn.disabled = false;
-    sellBtnText.innerHTML = '<i class="fas fa-arrow-down mr-2"></i>賣出';
+    button.disabled = false;
+    button.innerHTML = originalHTML;
   }
 };
 
-// Show trade message
-const showTradeMessage = (message, type = 'error') => {
-  const tradeMessage = document.getElementById('trade-message');
-  tradeMessage.textContent = message;
-  tradeMessage.classList.remove('hidden', 'bg-red-500/20', 'border-red-500', 'text-red-400', 'bg-green-500/20', 'border-green-500', 'text-green-400');
+// Show notification
+const showNotification = (message, type = 'info') => {
+  const colors = {
+    success: 'bg-green-500',
+    error: 'bg-red-500',
+    warning: 'bg-yellow-500',
+    info: 'bg-blue-500'
+  };
   
-  if (type === 'error') {
-    tradeMessage.classList.add('bg-red-500/20', 'border', 'border-red-500', 'text-red-400');
-  } else {
-    tradeMessage.classList.add('bg-green-500/20', 'border', 'border-green-500', 'text-green-400');
-  }
+  const notification = document.createElement('div');
+  notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-2xl ${colors[type]} text-white font-medium animate-slide-in`;
+  notification.textContent = message;
+  
+  document.body.appendChild(notification);
   
   setTimeout(() => {
-    tradeMessage.classList.add('hidden');
+    notification.style.opacity = '0';
+    notification.style.transform = 'translateX(400px)';
+    setTimeout(() => notification.remove(), 300);
   }, 5000);
 };
 
 // Share functions
 const setupShareButtons = () => {
-  document.getElementById('share-twitter').addEventListener('click', () => {
+  document.getElementById('share-twitter')?.addEventListener('click', () => {
     const text = encodeURIComponent(`🚀 查看 ${coinData.name} ($${coinData.symbol}) 在 MemeLaunch Tycoon！`);
     const url = encodeURIComponent(window.location.href);
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
   });
   
-  document.getElementById('copy-link').addEventListener('click', () => {
+  document.getElementById('copy-link')?.addEventListener('click', () => {
     navigator.clipboard.writeText(window.location.href);
-    const btn = document.getElementById('copy-link');
-    const originalHTML = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-check mr-2"></i>已複製！';
-    setTimeout(() => {
-      btn.innerHTML = originalHTML;
-    }, 2000);
+    showNotification('✅ 連結已複製！', 'success');
   });
 };
 
@@ -557,37 +582,32 @@ const handleLogout = () => {
 
 // Initialize
 const init = async () => {
+  console.log('Initializing coin detail page...');
+  
   userData = await checkAuth();
   
   if (userData) {
+    console.log('User authenticated:', userData.username);
     updateUserBalance(userData.virtual_balance);
+    
     await loadCoinData();
+    
     setupTradingTabs();
     setupTradeInputs();
     setupShareButtons();
     
-    // Setup trade buttons
-    document.getElementById('buy-btn').addEventListener('click', buyCoin);
-    document.getElementById('sell-btn').addEventListener('click', sellCoin);
+    document.getElementById('logout-btn')?.addEventListener('click', handleLogout);
     
-    // Logout button
-    document.getElementById('logout-btn').addEventListener('click', handleLogout);
-    
-    // Initialize new UI modules
-    if (window.TradingPanel && coinData) {
-      window.tradingPanel = new window.TradingPanel(COIN_ID, coinData, userData);
-      console.log('✅ Trading Panel initialized');
-    }
-    
+    // Initialize social UI if available
     if (window.SocialUI) {
       window.socialUI = new window.SocialUI(COIN_ID);
       console.log('✅ Social UI initialized');
     }
     
+    // Initialize real-time updates if available
     if (window.realtimeUpdates) {
-      // Subscribe to real-time price updates
       window.realtimeUpdates.subscribeToPrices((data) => {
-        if (data.coins) {
+        if (data.coins && coinData) {
           const updatedCoin = data.coins.find(c => c.id === parseInt(COIN_ID));
           if (updatedCoin) {
             coinData.current_price = updatedCoin.current_price;
@@ -602,17 +622,39 @@ const init = async () => {
             const percentage = Math.min((updatedCoin.hype_score / 200) * 100, 100);
             document.getElementById('hype-bar').style.width = `${percentage}%`;
             
-            // Update trading panel
-            if (window.tradingPanel) {
-              window.tradingPanel.updateCoinData(coinData);
-            }
+            // Update calculations
+            updateTradeCalculations();
           }
         }
       });
       
       console.log('✅ Real-time updates initialized');
     }
+    
+    console.log('✅ Coin detail page fully initialized');
   }
 };
+
+// Add animation styles
+if (!document.getElementById('animation-styles')) {
+  const style = document.createElement('style');
+  style.id = 'animation-styles';
+  style.textContent = `
+    @keyframes slide-in {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    .animate-slide-in {
+      animation: slide-in 0.3s ease-out;
+    }
+  `;
+  document.head.appendChild(style);
+}
 
 document.addEventListener('DOMContentLoaded', init);
