@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>認證問題診斷工具</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0A0B0D;
+            color: #fff;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #0052FF; margin-bottom: 20px; }
+        .section {
+            background: #1a1b1f;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            color: #55d292;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .log {
+            background: #0d0e12;
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-left: 3px solid #0052FF;
+            font-size: 13px;
+            word-break: break-all;
+        }
+        .log.success { border-left-color: #55d292; color: #55d292; }
+        .log.error { border-left-color: #ff4444; color: #ff4444; }
+        .log.warning { border-left-color: #ffaa00; color: #ffaa00; }
+        button {
+            background: #0052FF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px 5px 5px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover { background: #0041cc; }
+        button.danger { background: #ff4444; }
+        button.danger:hover { background: #cc0000; }
+        input {
+            background: #0d0e12;
+            border: 1px solid #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            margin: 5px 5px 5px 0;
+            width: 250px;
+        }
+        .status-box {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 5px 5px 5px 0;
+            font-weight: bold;
+        }
+        .status-box.ok { background: #55d292; color: #0A0B0D; }
+        .status-box.fail { background: #ff4444; color: white; }
+        .code-block {
+            background: #0d0e12;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 MemeLaunch 認證問題診斷工具</h1>
+        
+        <!-- Status Overview -->
+        <div class="section">
+            <h2>📊 當前狀態</h2>
+            <div id="status-overview"></div>
+        </div>
+
+        <!-- Test Login -->
+        <div class="section">
+            <h2>🔐 測試登入</h2>
+            <div style="margin-bottom: 15px;">
+                <input type="email" id="test-email" placeholder="Email" value="realtest1770637698@example.com">
+                <input type="password" id="test-password" placeholder="Password" value="RealTest123!">
+                <button onclick="testLogin()">執行登入測試</button>
+            </div>
+            <div id="login-logs"></div>
+        </div>
+
+        <!-- Check Storage -->
+        <div class="section">
+            <h2>💾 檢查儲存</h2>
+            <button onclick="checkStorage()">檢查 localStorage</button>
+            <button onclick="clearStorage()" class="danger">清除所有儲存</button>
+            <div id="storage-logs"></div>
+        </div>
+
+        <!-- Test Navigation -->
+        <div class="section">
+            <h2>🧭 測試導航</h2>
+            <button onclick="testNavigation('/dashboard')">測試 Dashboard</button>
+            <button onclick="testNavigation('/market')">測試 Market</button>
+            <button onclick="testNavigation('/create')">測試 Create</button>
+            <div id="nav-logs"></div>
+        </div>
+
+        <!-- Debug Logs -->
+        <div class="section">
+            <h2>📋 詳細日誌</h2>
+            <button onclick="clearLogs()">清除日誌</button>
+            <div id="debug-logs"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script>
+        const API_BASE = '/api';
+        const logs = [];
+
+        function log(message, type = 'log', section = 'debug-logs') {
+            const timestamp = new Date().toISOString().split('T')[1].slice(0, -1);
+            const logEntry = {
+                time: timestamp,
+                message,
+                type
+            };
+            logs.push(logEntry);
+
+            const container = document.getElementById(section);
+            const logEl = document.createElement('div');
+            logEl.className = `log ${type}`;
+            logEl.innerHTML = `<span style="opacity: 0.5">[${timestamp}]</span> ${message}`;
+            container.insertBefore(logEl, container.firstChild);
+
+            console.log(`[${type.toUpperCase()}]`, message);
+            
+            updateStatus();
+        }
+
+        function updateStatus() {
+            const token = localStorage.getItem('auth_token');
+            const user = localStorage.getItem('user');
+            
+            const statusHtml = `
+                <div>
+                    <span class="status-box ${token ? 'ok' : 'fail'}">
+                        Token: ${token ? '✓ 存在' : '✗ 不存在'}
+                    </span>
+                    <span class="status-box ${user ? 'ok' : 'fail'}">
+                        User: ${user ? '✓ 存在' : '✗ 不存在'}
+                    </span>
+                </div>
+                ${token ? `
+                    <div class="code-block" style="margin-top: 10px;">
+                        <small>Token: ${token.substring(0, 50)}...</small><br>
+                        ${user ? `<small>User: ${JSON.parse(user).username}</small>` : ''}
+                    </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('status-overview').innerHTML = statusHtml;
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('test-email').value;
+            const password = document.getElementById('test-password').value;
+            const section = 'login-logs';
+
+            log('開始測試登入...', 'log', section);
+            log(`Email: ${email}`, 'log', section);
+
+            try {
+                // Step 1: 登入
+                log('Step 1: 發送登入請求', 'log', section);
+                const response = await axios.post(`${API_BASE}/auth/login`, {
+                    email,
+                    password
+                });
+
+                if (response.data.success) {
+                    log('✓ 登入 API 調用成功', 'success', section);
+                    
+                    const token = response.data.data.token;
+                    const user = response.data.data.user;
+                    
+                    log(`Token 長度: ${token.length}`, 'log', section);
+                    log(`User ID: ${user.id}`, 'log', section);
+                    log(`Username: ${user.username}`, 'log', section);
+
+                    // Step 2: 儲存到 localStorage
+                    log('Step 2: 儲存到 localStorage', 'log', section);
+                    localStorage.setItem('auth_token', token);
+                    localStorage.setItem('user', JSON.stringify(user));
+                    log('✓ 儲存完成', 'success', section);
+
+                    // Step 3: 立即驗證
+                    log('Step 3: 立即驗證儲存', 'log', section);
+                    const storedToken = localStorage.getItem('auth_token');
+                    if (storedToken === token) {
+                        log('✓ Token 驗證: 匹配', 'success', section);
+                    } else {
+                        log('✗ Token 驗證: 不匹配', 'error', section);
+                    }
+
+                    // Step 4: 測試 API
+                    log('Step 4: 測試 /api/auth/me', 'log', section);
+                    const meResponse = await axios.get(`${API_BASE}/auth/me`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (meResponse.data.success) {
+                        log(`✓ API 測試成功: ${meResponse.data.data.username}`, 'success', section);
+                    }
+
+                    // Step 5: 延遲後再測試
+                    log('Step 5: 等待 1 秒後再測試', 'log', section);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+
+                    const storedToken2 = localStorage.getItem('auth_token');
+                    if (storedToken2) {
+                        log('✓ 1 秒後 Token 仍然存在', 'success', section);
+
+                        const meResponse2 = await axios.get(`${API_BASE}/auth/me`, {
+                            headers: { 'Authorization': `Bearer ${storedToken2}` }
+                        });
+                        
+                        if (meResponse2.data.success) {
+                            log('✓ 1 秒後 API 仍然有效', 'success', section);
+                        }
+                    } else {
+                        log('✗ 1 秒後 Token 消失了！', 'error', section);
+                    }
+
+                    log('============================', 'log', section);
+                    log('✅ 所有測試通過！可以嘗試導航到 Dashboard', 'success', section);
+
+                } else {
+                    log('✗ 登入失敗', 'error', section);
+                }
+            } catch (error) {
+                log(`✗ 錯誤: ${error.message}`, 'error', section);
+                if (error.response) {
+                    log(`Response: ${JSON.stringify(error.response.data)}`, 'error', section);
+                }
+            }
+        }
+
+        function checkStorage() {
+            const section = 'storage-logs';
+            log('檢查 localStorage...', 'log', section);
+
+            const token = localStorage.getItem('auth_token');
+            const user = localStorage.getItem('user');
+
+            if (token) {
+                log(`✓ Token: ${token.substring(0, 30)}...`, 'success', section);
+                log(`  長度: ${token.length}`, 'log', section);
+            } else {
+                log('✗ 沒有找到 Token', 'error', section);
+            }
+
+            if (user) {
+                try {
+                    const userData = JSON.parse(user);
+                    log(`✓ User: ${userData.username}`, 'success', section);
+                    log(`  ID: ${userData.id}`, 'log', section);
+                    log(`  Email: ${userData.email}`, 'log', section);
+                } catch (e) {
+                    log('✗ User 數據解析失敗', 'error', section);
+                }
+            } else {
+                log('✗ 沒有找到 User', 'error', section);
+            }
+
+            // 列出所有 localStorage 內容
+            log(`localStorage 總共有 ${localStorage.length} 個項目`, 'log', section);
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                log(`  ${key}: ${value.substring(0, 50)}...`, 'log', section);
+            }
+        }
+
+        function clearStorage() {
+            if (confirm('確定要清除所有 localStorage 嗎？')) {
+                localStorage.clear();
+                log('✓ localStorage 已清除', 'success', 'storage-logs');
+                updateStatus();
+            }
+        }
+
+        async function testNavigation(path) {
+            const section = 'nav-logs';
+            const token = localStorage.getItem('auth_token');
+
+            log(`測試導航到: ${path}`, 'log', section);
+
+            if (!token) {
+                log('✗ 沒有 Token！無法測試', 'error', section);
+                log('請先執行登入測試', 'warning', section);
+                return;
+            }
+
+            log('✓ Token 存在，模擬頁面加載...', 'success', section);
+
+            // 模擬頁面加載時的認證檢查
+            log('Step 1: 頁面加載，檢查 Token', 'log', section);
+            const checkToken = localStorage.getItem('auth_token');
+
+            if (checkToken) {
+                log('✓ Token 找到', 'success', section);
+
+                try {
+                    log('Step 2: 驗證 Token', 'log', section);
+                    const response = await axios.get(`${API_BASE}/auth/me`, {
+                        headers: { 'Authorization': `Bearer ${checkToken}` }
+                    });
+
+                    if (response.data.success) {
+                        log('✓ Token 有效！', 'success', section);
+                        log(`✓ User: ${response.data.data.username}`, 'success', section);
+                        log(`✅ 應該顯示 ${path} 內容`, 'success', section);
+                    } else {
+                        log('✗ Token 無效', 'error', section);
+                        log('❌ 應該重定向到 /login', 'error', section);
+                    }
+                } catch (error) {
+                    log(`✗ API 錯誤: ${error.message}`, 'error', section);
+                    log('❌ 應該重定向到 /login', 'error', section);
+                }
+            } else {
+                log('✗ Token 未找到', 'error', section);
+                log('❌ 應該重定向到 /login', 'error', section);
+            }
+        }
+
+        function clearLogs() {
+            document.getElementById('debug-logs').innerHTML = '';
+            logs.length = 0;
+        }
+
+        // 初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            log('診斷工具已載入', 'success');
+            updateStatus();
+            checkStorage();
+        });
+    </script>
+</body>
+</html>

@@ -197,12 +197,32 @@ const setupSignup = () => {
       });
       
       if (response.data.success) {
+        console.log('✅ Signup API success, storing token...');
+        
         // Store token
-        localStorage.setItem('auth_token', response.data.data.token);
+        const token = response.data.data.token;
+        localStorage.setItem('auth_token', token);
+        
+        // Also store user data
+        if (response.data.data.user) {
+          localStorage.setItem('user', JSON.stringify(response.data.data.user));
+        }
         
         // Verify token is stored
         const storedToken = localStorage.getItem('auth_token');
-        console.log('Token stored:', storedToken ? 'Yes' : 'No');
+        console.log('Token storage verification:', {
+          originalLength: token.length,
+          storedLength: storedToken ? storedToken.length : 0,
+          matches: token === storedToken
+        });
+        
+        if (!storedToken || storedToken !== token) {
+          console.error('❌ Token storage failed!');
+          showMessage('儲存失敗，請重試', 'error');
+          return;
+        }
+        
+        console.log('✅ Token stored successfully');
         
         // Track event
         if (typeof gtag !== 'undefined') {
@@ -214,10 +234,13 @@ const setupSignup = () => {
         
         showMessage('註冊成功！正在跳轉...', 'success');
         
-        // Delay to ensure localStorage is written
+        console.log('Will redirect to /dashboard in 2 seconds');
+        
+        // Longer delay to ensure everything is ready
         setTimeout(() => {
+          console.log('Redirecting now...');
           window.location.href = '/dashboard';
-        }, 1500);
+        }, 2000);
       }
     } catch (error) {
       console.error('Signup error:', error);
@@ -257,12 +280,32 @@ const setupLogin = () => {
       });
       
       if (response.data.success) {
+        console.log('✅ Login API success, storing token...');
+        
         // Store token
-        localStorage.setItem('auth_token', response.data.data.token);
+        const token = response.data.data.token;
+        localStorage.setItem('auth_token', token);
+        
+        // Also store user data
+        if (response.data.data.user) {
+          localStorage.setItem('user', JSON.stringify(response.data.data.user));
+        }
         
         // Verify token is stored
         const storedToken = localStorage.getItem('auth_token');
-        console.log('Token stored:', storedToken ? 'Yes' : 'No');
+        console.log('Token storage verification:', {
+          originalLength: token.length,
+          storedLength: storedToken ? storedToken.length : 0,
+          matches: token === storedToken
+        });
+        
+        if (!storedToken || storedToken !== token) {
+          console.error('❌ Token storage failed!');
+          showMessage('儲存失敗，請重試', 'error');
+          return;
+        }
+        
+        console.log('✅ Token stored successfully');
         
         // Track event
         if (typeof gtag !== 'undefined') {
@@ -277,10 +320,13 @@ const setupLogin = () => {
         const params = new URLSearchParams(window.location.search);
         const redirect = params.get('redirect') || '/dashboard';
         
-        // Delay to ensure localStorage is written
+        console.log('Will redirect to:', redirect, 'in 2 seconds');
+        
+        // Longer delay to ensure everything is ready
         setTimeout(() => {
+          console.log('Redirecting now...');
           window.location.href = redirect;
-        }, 1500);
+        }, 2000);
       }
     } catch (error) {
       console.error('Login error:', error);

@@ -1,94 +1,174 @@
 /**
- * Dashboard JavaScript
- * Handles authenticated dashboard functionality
+ * Dashboard JavaScript - Simplified Version
+ * Handles authenticated dashboard functionality with robust token checking
  */
 
-// Check auth when script loads or when DOM is ready
+console.log('=== Dashboard.js Loading ===');
+console.log('Script load time:', new Date().toISOString());
+console.log('Document readyState:', document.readyState);
+
+// Global state
+let isCheckingAuth = false;
+let checkAuthAttempts = 0;
+
+// Initialize when script loads
 if (document.readyState === 'loading') {
-  // DOM not ready yet, wait for it
   document.addEventListener('DOMContentLoaded', initDashboard);
 } else {
-  // DOM is already ready
+  // DOM already loaded, init immediately
   initDashboard();
 }
 
 function initDashboard() {
   console.log('Dashboard: Initializing...');
+  console.log('Dashboard: Current URL:', window.location.href);
   console.log('Dashboard: readyState:', document.readyState);
-  checkAuth();
+  
+  // Wait a tiny bit to ensure any redirecting login page has finished setting token
+  setTimeout(() => {
+    console.log('Dashboard: Starting auth check after brief delay');
+    checkAuth();
+  }, 100);
 }
 
-async function checkAuth(retryCount = 0) {
-  const token = localStorage.getItem('auth_token');
+async function checkAuth() {
+  // Prevent multiple simultaneous checks
+  if (isCheckingAuth) {
+    console.log('Dashboard: Auth check already in progress, skipping');
+    return;
+  }
   
-  console.log(`Dashboard: Token check (attempt ${retryCount + 1}):`, token ? 'Found' : 'Not found');
+  isCheckingAuth = true;
+  checkAuthAttempts++;
   
-  if (!token) {
-    // Retry a few times in case token is being written
-    if (retryCount < 3) {
-      console.log('Dashboard: No token yet, retrying in 200ms...');
-      setTimeout(() => checkAuth(retryCount + 1), 200);
+  console.log(`Dashboard: ===== Auth Check Attempt ${checkAuthAttempts} =====`);
+  
+  try {
+    // Check localStorage
+    const token = localStorage.getItem('auth_token');
+    console.log('Dashboard: localStorage check:', {
+      hasToken: !!token,
+      tokenLength: token ? token.length : 0,
+      tokenStart: token ? token.substring(0, 20) + '...' : 'N/A'
+    });
+    
+    if (!token) {
+      if (checkAuthAttempts <= 5) {
+        console.log(`Dashboard: No token found, retry ${checkAuthAttempts}/5 in 300ms...`);
+        isCheckingAuth = false;
+        setTimeout(() => checkAuth(), 300);
+        return;
+      }
+      
+      console.log('Dashboard: No token after 5 attempts, redirecting to login...');
+      window.location.href = '/login?redirect=/dashboard&reason=no_token';
       return;
     }
     
-    console.log('Dashboard: No token after retries, redirecting to login...');
-    // Redirect to login if not authenticated
-    window.location.href = '/login?redirect=/dashboard';
-    return;
-  }
-
-  try {
-    console.log('Dashboard: Verifying token with API...');
+    // Token found, verify with API
+    console.log('Dashboard: Token found! Verifying with API...');
+    
     const response = await axios.get('/api/auth/me', {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` },
+      timeout: 10000 // 10 second timeout
     });
     
-    console.log('Dashboard: Token valid, user:', response.data.data.username);
-    const user = response.data.data;
-    updateUserUI(user);
-    loadDashboardData(user);
+    console.log('Dashboard: API response received:', {
+      success: response.data.success,
+      username: response.data.data?.username,
+      userId: response.data.data?.id
+    });
+    
+    if (response.data.success) {
+      console.log('Dashboard: ✅ Authentication successful!');
+      const user = response.data.data;
+      updateUserUI(user);
+      loadDashboardData(user);
+    } else {
+      console.log('Dashboard: ❌ API returned success=false');
+      throw new Error('Invalid API response');
+    }
+    
   } catch (error) {
-    console.error('Dashboard: Authentication failed:', error);
-    console.error('Dashboard: Error details:', error.response?.data);
+    console.error('Dashboard: ❌ Authentication failed:', error.message);
+    
+    if (error.response) {
+      console.error('Dashboard: Error details:', {
+        status: error.response.status,
+        data: error.response.data
+      });
+    }
+    
+    // Clear invalid token and redirect
+    console.log('Dashboard: Clearing token and redirecting to login...');
     localStorage.removeItem('auth_token');
-    window.location.href = '/login?redirect=/dashboard';
+    window.location.href = '/login?redirect=/dashboard&reason=invalid_token';
+  } finally {
+    isCheckingAuth = false;
   }
 }
 
 function updateUserUI(user) {
-  // Update user info in navigation
-  const usernameEl = document.getElementById('username-display');
-  const balanceEl = document.getElementById('balance-display');
-  const authBtn = document.getElementById('auth-btn');
-  const logoutBtn = document.getElementById('logout-btn');
-
-  if (usernameEl) usernameEl.textContent = user.username;
-  if (balanceEl) balanceEl.textContent = user.virtual_balance.toFixed(2);
+  console.log('Dashboard: Updating UI for user:', user.username);
   
-  if (authBtn) authBtn.classList.add('hidden');
-  if (logoutBtn) logoutBtn.classList.remove('hidden');
-
-  // Update dashboard stats
-  document.getElementById('total-balance').textContent = user.virtual_balance.toFixed(2);
-  document.getElementById('user-level').textContent = user.level;
-  document.getElementById('user-xp').textContent = user.xp;
+  try {
+    // Update username
+    const usernameEl = document.getElementById('username-display');
+    if (usernameEl) {
+      usernameEl.textContent = user.username;
+      console.log('Dashboard: Username updated');
+    }
+    
+    // Update balance
+    const balanceEl = document.getElementById('balance-display');
+    if (balanceEl) {
+      balanceEl.textContent = user.virtual_balance.toFixed(2);
+      console.log('Dashboard: Balance updated:', user.virtual_balance);
+    }
+    
+    // Update dashboard stats
+    const totalBalanceEl = document.getElementById('total-balance');
+    if (totalBalanceEl) {
+      totalBalanceEl.textContent = user.virtual_balance.toFixed(2);
+    }
+    
+    const userLevelEl = document.getElementById('user-level');
+    if (userLevelEl) {
+      userLevelEl.textContent = user.level;
+    }
+    
+    const userXpEl = document.getElementById('user-xp');
+    if (userXpEl) {
+      userXpEl.textContent = user.xp;
+    }
+    
+    // Hide auth button, show logout button
+    const authBtn = document.getElementById('auth-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    
+    if (authBtn) authBtn.classList.add('hidden');
+    if (logoutBtn) logoutBtn.classList.remove('hidden');
+    
+    console.log('Dashboard: UI update complete');
+    
+  } catch (error) {
+    console.error('Dashboard: Error updating UI:', error);
+  }
 }
 
 async function loadDashboardData(user) {
+  console.log('Dashboard: Loading dashboard data...');
+  
   try {
-    // Load portfolio stats
-    await loadPortfolioStats();
-    
-    // Load recent transactions
-    await loadRecentTransactions();
-    
-    // Load trending coins
-    await loadTrendingCoins();
-    
-    // Load user holdings
-    await loadUserHoldings();
+    await Promise.all([
+      loadPortfolioStats(),
+      loadRecentTransactions(),
+      loadTrendingCoins(),
+      loadUserHoldings()
+    ]);
+    console.log('Dashboard: ✅ All data loaded successfully');
   } catch (error) {
-    console.error('Failed to load dashboard data:', error);
+    console.error('Dashboard: Error loading data:', error);
   }
 }
 
@@ -101,21 +181,27 @@ async function loadPortfolioStats() {
     
     const { stats, holdings } = response.data.data;
     
-    // Update portfolio value
-    document.getElementById('portfolio-value').textContent = stats.totalValue.toFixed(2);
+    const portfolioValueEl = document.getElementById('portfolio-value');
+    if (portfolioValueEl) {
+      portfolioValueEl.textContent = stats.totalValue.toFixed(2);
+    }
     
-    // Update profit/loss
     const pnlEl = document.getElementById('total-pnl');
-    const pnlValue = stats.totalProfitLoss;
-    const pnlPercent = stats.totalProfitLossPercent;
+    if (pnlEl) {
+      const pnlValue = stats.totalProfitLoss;
+      const pnlPercent = stats.totalProfitLossPercent;
+      pnlEl.textContent = `${pnlValue >= 0 ? '+' : ''}${pnlValue.toFixed(2)} (${pnlPercent.toFixed(2)}%)`;
+      pnlEl.className = pnlValue >= 0 ? 'text-green-400 font-bold' : 'text-red-400 font-bold';
+    }
     
-    pnlEl.textContent = `${pnlValue >= 0 ? '+' : ''}${pnlValue.toFixed(2)} (${pnlPercent.toFixed(2)}%)`;
-    pnlEl.className = pnlValue >= 0 ? 'text-green-400 font-bold' : 'text-red-400 font-bold';
+    const holdingsCountEl = document.getElementById('holdings-count');
+    if (holdingsCountEl) {
+      holdingsCountEl.textContent = holdings.length;
+    }
     
-    // Update holdings count
-    document.getElementById('holdings-count').textContent = holdings.length;
+    console.log('Dashboard: Portfolio stats loaded');
   } catch (error) {
-    console.error('Failed to load portfolio stats:', error);
+    console.error('Dashboard: Failed to load portfolio stats:', error);
   }
 }
 
@@ -128,6 +214,8 @@ async function loadRecentTransactions() {
     
     const transactions = response.data.data;
     const container = document.getElementById('recent-transactions');
+    
+    if (!container) return;
     
     if (transactions.length === 0) {
       container.innerHTML = '<p class="text-gray-400 text-center py-4">暫無交易記錄</p>';
@@ -155,8 +243,10 @@ async function loadRecentTransactions() {
         </div>
       `;
     }).join('');
+    
+    console.log('Dashboard: Recent transactions loaded');
   } catch (error) {
-    console.error('Failed to load transactions:', error);
+    console.error('Dashboard: Failed to load transactions:', error);
   }
 }
 
@@ -165,6 +255,8 @@ async function loadTrendingCoins() {
     const response = await axios.get('/api/coins/trending/list?limit=5');
     const coins = response.data.data;
     const container = document.getElementById('trending-coins');
+    
+    if (!container) return;
     
     if (coins.length === 0) {
       container.innerHTML = '<p class="text-gray-400 text-center py-4">暫無熱門幣種</p>';
@@ -186,8 +278,10 @@ async function loadTrendingCoins() {
         </div>
       </a>
     `).join('');
+    
+    console.log('Dashboard: Trending coins loaded');
   } catch (error) {
-    console.error('Failed to load trending coins:', error);
+    console.error('Dashboard: Failed to load trending coins:', error);
   }
 }
 
@@ -200,6 +294,8 @@ async function loadUserHoldings() {
     
     const { holdings } = response.data.data;
     const container = document.getElementById('user-holdings');
+    
+    if (!container) return;
     
     if (holdings.length === 0) {
       container.innerHTML = '<p class="text-gray-400 text-center py-4">您還沒有持倉</p>';
@@ -225,22 +321,34 @@ async function loadUserHoldings() {
         </a>
       `;
     }).join('');
+    
+    console.log('Dashboard: User holdings loaded');
   } catch (error) {
-    console.error('Failed to load holdings:', error);
+    console.error('Dashboard: Failed to load holdings:', error);
   }
 }
 
 // Logout functionality
-document.getElementById('logout-btn')?.addEventListener('click', async () => {
-  try {
-    const token = localStorage.getItem('auth_token');
-    await axios.post('/api/auth/logout', {}, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-  } catch (error) {
-    console.error('Logout failed:', error);
-  } finally {
-    localStorage.removeItem('auth_token');
-    window.location.href = '/';
-  }
-});
+const logoutBtn = document.getElementById('logout-btn');
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', async () => {
+    console.log('Dashboard: Logout clicked');
+    
+    try {
+      const token = localStorage.getItem('auth_token');
+      await axios.post('/api/auth/logout', {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      console.log('Dashboard: Logout API call successful');
+    } catch (error) {
+      console.error('Dashboard: Logout failed:', error);
+    } finally {
+      console.log('Dashboard: Clearing token and redirecting...');
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/';
+    }
+  });
+}
+
+console.log('=== Dashboard.js Loaded ===');
