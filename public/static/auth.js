@@ -1,295 +1,259 @@
 /**
- * Authentication JavaScript
- * Handles signup, login, password reset forms
+ * MemeLaunch Tycoon - Authentication & Email Collection
+ * Handles all auth forms: signup, login, forgot password, and email collection
  */
 
-// Utility Functions
-const showError = (elementId, message) => {
-  const element = document.getElementById(elementId);
-  if (element) {
-    element.textContent = message;
-    element.classList.remove('hidden');
-  }
+const API_BASE = '/api';
+
+// Utility: Show toast notification
+const showToast = (message, type = 'success') => {
+  // Remove existing toasts
+  const existingToasts = document.querySelectorAll('.toast');
+  existingToasts.forEach(toast => toast.remove());
+  
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `
+    <div class="flex items-center gap-3">
+      <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+      <span>${message}</span>
+    </div>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
 };
 
-const hideError = (elementId) => {
-  const element = document.getElementById(elementId);
-  if (element) {
-    element.classList.add('hidden');
-  }
-};
-
+// Utility: Show form message
 const showMessage = (message, type = 'success') => {
   const messageEl = document.getElementById('form-message');
-  if (!messageEl) return;
+  if (!messageEl) {
+    showToast(message, type);
+    return;
+  }
 
   messageEl.textContent = message;
-  messageEl.classList.remove('hidden', 'bg-red-500/20', 'border-red-500', 'text-red-400', 'bg-green-500/20', 'border-green-500', 'text-green-400');
+  messageEl.classList.remove('hidden', 'success', 'error');
+  messageEl.classList.add(type);
+};
+
+// Utility: Set button loading state
+const setButtonLoading = (buttonId, isLoading, originalText = '') => {
+  const button = document.getElementById(buttonId);
+  if (!button) return;
   
-  if (type === 'error') {
-    messageEl.classList.add('bg-red-500/20', 'border', 'border-red-500', 'text-red-400');
+  button.disabled = isLoading;
+  
+  if (isLoading) {
+    button.setAttribute('data-original-text', button.innerHTML);
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>處理中...';
   } else {
-    messageEl.classList.add('bg-green-500/20', 'border', 'border-green-500', 'text-green-400');
+    const original = button.getAttribute('data-original-text');
+    button.innerHTML = original || originalText;
   }
-};
-
-const setButtonLoading = (isLoading) => {
-  const submitBtn = document.getElementById('submit-btn');
-  const submitText = document.getElementById('submit-text');
-  
-  if (submitBtn) {
-    submitBtn.disabled = isLoading;
-  }
-  
-  if (submitText) {
-    if (isLoading) {
-      submitText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>處理中...';
-    } else {
-      // Restore original text based on page
-      const form = submitBtn.closest('form');
-      if (form?.id === 'signup-form') {
-        submitText.innerHTML = '創建帳號';
-      } else if (form?.id === 'login-form') {
-        submitText.innerHTML = '登入';
-      } else if (form?.id === 'forgot-password-form') {
-        submitText.innerHTML = '發送重置連結';
-      } else if (form?.id === 'reset-password-form') {
-        submitText.innerHTML = '重置密碼';
-      }
-    }
-  }
-};
-
-// Email validation
-const isValidEmail = (email) => {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return re.test(email);
 };
 
 // Password strength checker
 const checkPasswordStrength = (password) => {
   let strength = 0;
-  
-  if (password.length >= 8) strength++;
-  if (password.length >= 12) strength++;
-  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
-  if (/\d/.test(password)) strength++;
-  if (/[^a-zA-Z0-9]/.test(password)) strength++;
-  
-  return {
-    score: Math.min(strength, 4),
-    text: ['極弱', '弱', '中等', '強', '非常強'][Math.min(strength, 4)]
-  };
+  const feedback = [];
+
+  if (password.length >= 8) strength += 25;
+  else feedback.push('至少 8 個字符');
+
+  if (/[A-Z]/.test(password)) strength += 25;
+  else feedback.push('至少 1 個大寫字母');
+
+  if (/[0-9]/.test(password)) strength += 25;
+  else feedback.push('至少 1 個數字');
+
+  if (/[^A-Za-z0-9]/.test(password)) strength += 25;
+  else feedback.push('至少 1 個特殊字符');
+
+  let level = 'weak';
+  if (strength >= 75) level = 'strong';
+  else if (strength >= 50) level = 'medium';
+
+  return { strength, level, feedback };
 };
 
+// Update password strength UI
 const updatePasswordStrength = (password) => {
-  const strength = checkPasswordStrength(password);
-  const colors = ['#FF4444', '#FF8844', '#FFAA44', '#88DD88', '#00FF88'];
+  const strengthBar = document.querySelector('.password-strength-fill');
+  const strengthText = document.querySelector('.password-strength-text');
   
-  for (let i = 1; i <= 4; i++) {
-    const bar = document.getElementById(`strength-${i}`);
-    if (bar) {
-      if (i <= strength.score) {
-        bar.style.backgroundColor = colors[strength.score];
-      } else {
-        bar.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-      }
-    }
-  }
+  if (!strengthBar || !strengthText) return;
+
+  const { strength, level, feedback } = checkPasswordStrength(password);
   
-  const textEl = document.getElementById('strength-text');
-  if (textEl) {
-    textEl.textContent = `密碼強度：${strength.text}`;
-    textEl.style.color = colors[strength.score];
-  }
+  strengthBar.className = `password-strength-fill ${level}`;
+  
+  let text = '';
+  if (level === 'weak') text = '弱 - ' + feedback.join(', ');
+  else if (level === 'medium') text = '中等 - ' + feedback.join(', ');
+  else text = '強 - 密碼安全';
+  
+  strengthText.textContent = text;
 };
 
-// Password visibility toggle
-const setupPasswordToggle = () => {
-  const toggleBtns = document.querySelectorAll('#toggle-password');
+// ===========================================
+// EMAIL COLLECTION (Landing Page)
+// ===========================================
+const setupEmailCollection = () => {
+  const emailForms = document.querySelectorAll('.email-signup-form');
   
-  toggleBtns.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const input = btn.previousElementSibling || btn.parentElement.querySelector('input[type="password"], input[type="text"]');
-      if (!input) return;
+  emailForms.forEach(form => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
       
-      const icon = btn.querySelector('i');
-      if (input.type === 'password') {
-        input.type = 'text';
-        if (icon) {
-          icon.classList.remove('fa-eye');
-          icon.classList.add('fa-eye-slash');
+      const email = form.querySelector('input[type="email"]').value;
+      const source = form.getAttribute('data-source') || 'unknown';
+      const button = form.querySelector('button');
+      const originalHTML = button.innerHTML;
+      
+      button.disabled = true;
+      button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>處理中...';
+      
+      try {
+        const response = await axios.post(`${API_BASE}/email`, {
+          email,
+          source
+        });
+        
+        if (response.data.success) {
+          showToast('太好了！我們會通知您最新消息 🎉', 'success');
+          form.querySelector('input').value = '';
+          
+          // Redirect to signup after a delay
+          setTimeout(() => {
+            window.location.href = '/signup?email=' + encodeURIComponent(email);
+          }, 1500);
         }
-      } else {
-        input.type = 'password';
-        if (icon) {
-          icon.classList.remove('fa-eye-slash');
-          icon.classList.add('fa-eye');
-        }
+      } catch (error) {
+        console.error('Email collection error:', error);
+        const message = error.response?.data?.error || error.response?.data?.message || '提交失敗，請稍後再試';
+        showToast(message, 'error');
+      } finally {
+        button.disabled = false;
+        button.innerHTML = originalHTML;
       }
     });
   });
 };
 
-// Signup Form Handler
-const setupSignupForm = () => {
+// ===========================================
+// SIGNUP
+// ===========================================
+const setupSignup = () => {
   const form = document.getElementById('signup-form');
   if (!form) return;
-
-  const emailInput = document.getElementById('email');
-  const usernameInput = document.getElementById('username');
-  const passwordInput = document.getElementById('password');
-  const confirmPasswordInput = document.getElementById('confirm-password');
-  const termsCheckbox = document.getElementById('terms');
-
-  // Real-time password strength
+  
+  // Pre-fill email from URL parameter
+  const params = new URLSearchParams(window.location.search);
+  const emailParam = params.get('email');
+  if (emailParam) {
+    const emailInput = form.querySelector('input[name="email"]');
+    if (emailInput) emailInput.value = emailParam;
+  }
+  
+  // Password strength indicator
+  const passwordInput = form.querySelector('input[name="password"]');
   if (passwordInput) {
     passwordInput.addEventListener('input', (e) => {
       updatePasswordStrength(e.target.value);
     });
   }
-
+  
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-
-    // Clear previous errors
-    ['email-error', 'username-error', 'password-error', 'confirm-password-error', 'terms-error'].forEach(hideError);
-
-    // Validate
-    let hasError = false;
-
-    if (!isValidEmail(emailInput.value)) {
-      showError('email-error', '請輸入有效的電子郵箱地址');
-      hasError = true;
+    
+    const formData = new FormData(form);
+    const email = formData.get('email');
+    const username = formData.get('username');
+    const password = formData.get('password');
+    
+    // Validation
+    if (!email || !username || !password) {
+      showMessage('請填寫所有欄位', 'error');
+      return;
     }
-
-    if (usernameInput.value.length < 3) {
-      showError('username-error', '用戶名至少需要 3 個字符');
-      hasError = true;
+    
+    if (password.length < 8) {
+      showMessage('密碼至少需要 8 個字符', 'error');
+      return;
     }
-
-    const passwordStrength = checkPasswordStrength(passwordInput.value);
-    if (passwordInput.value.length < 8) {
-      showError('password-error', '密碼必須至少 8 個字符');
-      hasError = true;
-    } else if (!/[A-Z]/.test(passwordInput.value)) {
-      showError('password-error', '密碼必須包含至少一個大寫字母');
-      hasError = true;
-    } else if (!/\d/.test(passwordInput.value)) {
-      showError('password-error', '密碼必須包含至少一個數字');
-      hasError = true;
-    } else if (!/[^a-zA-Z0-9]/.test(passwordInput.value)) {
-      showError('password-error', '密碼必須包含至少一個特殊字符');
-      hasError = true;
-    }
-
-    if (passwordInput.value !== confirmPasswordInput.value) {
-      showError('confirm-password-error', '兩次密碼輸入不一致');
-      hasError = true;
-    }
-
-    if (!termsCheckbox.checked) {
-      showError('terms-error', '請同意服務條款和隱私政策');
-      hasError = true;
-    }
-
-    if (hasError) return;
-
-    // Submit
-    setButtonLoading(true);
-
+    
+    setButtonLoading('submit-btn', true);
+    
     try {
-      const response = await axios.post('/api/auth/register', {
-        email: emailInput.value,
-        username: usernameInput.value,
-        password: passwordInput.value
+      const response = await axios.post(`${API_BASE}/auth/register`, {
+        email,
+        username,
+        password
       });
-
+      
       if (response.data.success) {
-        // Save token
+        // Store token
         localStorage.setItem('auth_token', response.data.data.token);
-        
-        showMessage('🎉 註冊成功！正在跳轉...', 'success');
         
         // Track event
         if (typeof gtag !== 'undefined') {
           gtag('event', 'sign_up', {
-            method: 'email'
+            method: 'email',
+            user_id: response.data.data.user.id
           });
         }
         
-        // Redirect to dashboard
+        showMessage('註冊成功！正在跳轉...', 'success');
+        
         setTimeout(() => {
           window.location.href = '/dashboard';
-        }, 1500);
+        }, 1000);
       }
     } catch (error) {
       console.error('Signup error:', error);
-      
-      if (error.response) {
-        const message = error.response.data.error || error.response.data.message;
-        
-        if (message.includes('already exists') || message.includes('已註冊')) {
-          showError('email-error', '此郵箱已被註冊，請使用其他郵箱或直接登入');
-        } else if (message.includes('username') || message.includes('用戶名')) {
-          showError('username-error', message);
-        } else {
-          showMessage(message || '註冊失敗，請稍後重試', 'error');
-        }
-      } else {
-        showMessage('網絡錯誤，請檢查您的網絡連接', 'error');
-      }
+      const message = error.response?.data?.error || error.response?.data?.message || '註冊失敗，請稍後再試';
+      showMessage(message, 'error');
     } finally {
-      setButtonLoading(false);
+      setButtonLoading('submit-btn', false);
     }
   });
 };
 
-// Login Form Handler
-const setupLoginForm = () => {
+// ===========================================
+// LOGIN
+// ===========================================
+const setupLogin = () => {
   const form = document.getElementById('login-form');
   if (!form) return;
-
-  const emailInput = document.getElementById('email');
-  const passwordInput = document.getElementById('password');
-  const rememberMeCheckbox = document.getElementById('remember-me');
-
+  
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-
-    // Clear previous errors
-    ['email-error', 'password-error'].forEach(hideError);
-
-    // Validate
-    let hasError = false;
-
-    if (!isValidEmail(emailInput.value)) {
-      showError('email-error', '請輸入有效的電子郵箱地址');
-      hasError = true;
+    
+    const formData = new FormData(form);
+    const email = formData.get('email');
+    const password = formData.get('password');
+    
+    if (!email || !password) {
+      showMessage('請填寫所有欄位', 'error');
+      return;
     }
-
-    if (passwordInput.value.length < 1) {
-      showError('password-error', '請輸入密碼');
-      hasError = true;
-    }
-
-    if (hasError) return;
-
-    // Submit
-    setButtonLoading(true);
-
+    
+    setButtonLoading('submit-btn', true);
+    
     try {
-      const response = await axios.post('/api/auth/login', {
-        email: emailInput.value,
-        password: passwordInput.value,
-        rememberMe: rememberMeCheckbox?.checked || false
+      const response = await axios.post(`${API_BASE}/auth/login`, {
+        email,
+        password
       });
-
+      
       if (response.data.success) {
-        // Save token
+        // Store token
         localStorage.setItem('auth_token', response.data.data.token);
-        
-        showMessage('✅ 登入成功！正在跳轉...', 'success');
         
         // Track event
         if (typeof gtag !== 'undefined') {
@@ -298,191 +262,156 @@ const setupLoginForm = () => {
           });
         }
         
-        // Redirect to dashboard
+        showMessage('登入成功！正在跳轉...', 'success');
+        
         setTimeout(() => {
           window.location.href = '/dashboard';
-        }, 1500);
+        }, 1000);
       }
     } catch (error) {
       console.error('Login error:', error);
-      
-      if (error.response) {
-        const message = error.response.data.error || error.response.data.message;
-        
-        if (message.includes('not found') || message.includes('找不到')) {
-          showMessage('帳號不存在，請先註冊', 'error');
-        } else if (message.includes('password') || message.includes('密碼')) {
-          showMessage('郵箱或密碼錯誤，請重試', 'error');
-        } else {
-          showMessage(message || '登入失敗，請稍後重試', 'error');
-        }
-      } else {
-        showMessage('網絡錯誤，請檢查您的網絡連接', 'error');
-      }
+      const message = error.response?.data?.error || error.response?.data?.message || '登入失敗，請檢查您的郵箱和密碼';
+      showMessage(message, 'error');
     } finally {
-      setButtonLoading(false);
+      setButtonLoading('submit-btn', false);
     }
   });
 };
 
-// Forgot Password Form Handler
-const setupForgotPasswordForm = () => {
+// ===========================================
+// FORGOT PASSWORD
+// ===========================================
+const setupForgotPassword = () => {
   const form = document.getElementById('forgot-password-form');
   if (!form) return;
-
-  const emailInput = document.getElementById('email');
-
+  
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-
-    // Clear previous errors
-    hideError('email-error');
-
-    // Validate
-    if (!isValidEmail(emailInput.value)) {
-      showError('email-error', '請輸入有效的電子郵箱地址');
+    
+    const formData = new FormData(form);
+    const email = formData.get('email');
+    
+    if (!email) {
+      showMessage('請輸入您的郵箱', 'error');
       return;
     }
-
-    // Submit
-    setButtonLoading(true);
-
+    
+    setButtonLoading('submit-btn', true);
+    
     try {
-      const response = await axios.post('/api/auth/forgot-password', {
-        email: emailInput.value
+      const response = await axios.post(`${API_BASE}/auth/forgot-password`, {
+        email
       });
-
+      
       if (response.data.success) {
-        showMessage('✉️ 重置連結已發送到您的郵箱，請查收（包括垃圾郵件夾）', 'success');
-        emailInput.value = '';
-        
-        // Track event
-        if (typeof gtag !== 'undefined') {
-          gtag('event', 'password_reset_request');
-        }
+        showMessage('如果該郵箱已註冊，您將收到密碼重置連結', 'success');
+        form.reset();
       }
     } catch (error) {
       console.error('Forgot password error:', error);
-      
-      if (error.response) {
-        const message = error.response.data.error || error.response.data.message;
-        showMessage(message || '發送失敗，請稍後重試', 'error');
-      } else {
-        showMessage('網絡錯誤，請檢查您的網絡連接', 'error');
-      }
+      const message = error.response?.data?.error || error.response?.data?.message || '請求失敗，請稍後再試';
+      showMessage(message, 'error');
     } finally {
-      setButtonLoading(false);
+      setButtonLoading('submit-btn', false);
     }
   });
 };
 
-// Reset Password Form Handler
-const setupResetPasswordForm = () => {
+// ===========================================
+// RESET PASSWORD
+// ===========================================
+const setupResetPassword = () => {
   const form = document.getElementById('reset-password-form');
   if (!form) return;
-
-  const passwordInput = document.getElementById('password');
-  const confirmPasswordInput = document.getElementById('confirm-password');
-  const token = form.dataset.token;
-
-  // Check if token exists
+  
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+  
   if (!token) {
-    showMessage('無效的重置連結，請重新申請', 'error');
-    setTimeout(() => {
-      window.location.href = '/forgot-password';
-    }, 3000);
+    showMessage('無效的重置連結', 'error');
     return;
   }
-
-  // Real-time password strength
-  if (passwordInput) {
-    passwordInput.addEventListener('input', (e) => {
-      updatePasswordStrength(e.target.value);
-    });
-  }
-
+  
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-
-    // Clear previous errors
-    ['password-error', 'confirm-password-error'].forEach(hideError);
-
-    // Validate
-    let hasError = false;
-
-    if (passwordInput.value.length < 8) {
-      showError('password-error', '密碼必須至少 8 個字符');
-      hasError = true;
-    } else if (!/[A-Z]/.test(passwordInput.value)) {
-      showError('password-error', '密碼必須包含至少一個大寫字母');
-      hasError = true;
-    } else if (!/\d/.test(passwordInput.value)) {
-      showError('password-error', '密碼必須包含至少一個數字');
-      hasError = true;
-    } else if (!/[^a-zA-Z0-9]/.test(passwordInput.value)) {
-      showError('password-error', '密碼必須包含至少一個特殊字符');
-      hasError = true;
+    
+    const formData = new FormData(form);
+    const password = formData.get('password');
+    const confirmPassword = formData.get('confirmPassword');
+    
+    if (!password || !confirmPassword) {
+      showMessage('請填寫所有欄位', 'error');
+      return;
     }
-
-    if (passwordInput.value !== confirmPasswordInput.value) {
-      showError('confirm-password-error', '兩次密碼輸入不一致');
-      hasError = true;
+    
+    if (password !== confirmPassword) {
+      showMessage('密碼不匹配', 'error');
+      return;
     }
-
-    if (hasError) return;
-
-    // Submit
-    setButtonLoading(true);
-
+    
+    if (password.length < 8) {
+      showMessage('密碼至少需要 8 個字符', 'error');
+      return;
+    }
+    
+    setButtonLoading('submit-btn', true);
+    
     try {
-      const response = await axios.post('/api/auth/reset-password', {
-        token: token,
-        newPassword: passwordInput.value
+      const response = await axios.post(`${API_BASE}/auth/reset-password`, {
+        token,
+        password
       });
-
+      
       if (response.data.success) {
-        showMessage('✅ 密碼重置成功！正在跳轉到登入頁...', 'success');
+        showMessage('密碼已成功重置！正在跳轉到登入頁面...', 'success');
         
-        // Track event
-        if (typeof gtag !== 'undefined') {
-          gtag('event', 'password_reset_success');
-        }
-        
-        // Redirect to login
         setTimeout(() => {
           window.location.href = '/login';
         }, 2000);
       }
     } catch (error) {
       console.error('Reset password error:', error);
-      
-      if (error.response) {
-        const message = error.response.data.error || error.response.data.message;
-        
-        if (message.includes('expired') || message.includes('過期')) {
-          showMessage('重置連結已過期，請重新申請', 'error');
-          setTimeout(() => {
-            window.location.href = '/forgot-password';
-          }, 3000);
-        } else if (message.includes('invalid') || message.includes('無效')) {
-          showMessage('無效的重置連結，請重新申請', 'error');
-        } else {
-          showMessage(message || '重置失敗，請稍後重試', 'error');
-        }
-      } else {
-        showMessage('網絡錯誤，請檢查您的網絡連接', 'error');
-      }
+      const message = error.response?.data?.error || error.response?.data?.message || '重置失敗，請稍後再試';
+      showMessage(message, 'error');
     } finally {
-      setButtonLoading(false);
+      setButtonLoading('submit-btn', false);
     }
   });
 };
 
-// Initialize on page load
+// ===========================================
+// LOGOUT
+// ===========================================
+const setupLogout = () => {
+  const logoutButtons = document.querySelectorAll('[data-logout]');
+  
+  logoutButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      
+      localStorage.removeItem('auth_token');
+      showToast('已登出', 'success');
+      
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1000);
+    });
+  });
+};
+
+// ===========================================
+// INITIALIZE
+// ===========================================
 document.addEventListener('DOMContentLoaded', () => {
-  setupPasswordToggle();
-  setupSignupForm();
-  setupLoginForm();
-  setupForgotPasswordForm();
-  setupResetPasswordForm();
+  // Setup email collection (landing page)
+  setupEmailCollection();
+  
+  // Setup auth forms
+  setupSignup();
+  setupLogin();
+  setupForgotPassword();
+  setupResetPassword();
+  setupLogout();
+  
+  console.log('✅ Auth & Email Collection initialized');
 });
