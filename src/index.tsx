@@ -12,6 +12,8 @@ import portfolio from './routes/portfolio';
 import leaderboard from './routes/leaderboard';
 import email from './routes/email';
 import upload from './routes/upload';
+import orders from './routes/orders';
+import cron from './routes/cron';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -36,6 +38,12 @@ tradesRoutes.use('*', authMiddleware);
 tradesRoutes.route('/', trades);
 app.route('/api/trades', tradesRoutes);
 
+// Orders routes (requires authentication)
+const ordersRoutes = new Hono<{ Bindings: Env }>();
+ordersRoutes.use('*', authMiddleware);
+ordersRoutes.route('/', orders);
+app.route('/api/orders', ordersRoutes);
+
 // Portfolio routes (requires authentication)
 const portfolioRoutes = new Hono<{ Bindings: Env }>();
 portfolioRoutes.use('*', authMiddleware);
@@ -44,6 +52,7 @@ app.route('/api/portfolio', portfolioRoutes);
 
 app.route('/api/leaderboard', leaderboard);
 app.route('/api/email', email);
+app.route('/api/cron', cron);
 
 // Upload routes (requires authentication)
 const uploadRoutes = new Hono<{ Bindings: Env }>();
