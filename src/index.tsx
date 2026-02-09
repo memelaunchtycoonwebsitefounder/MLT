@@ -265,12 +265,12 @@ app.get('/', (c) => {
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="/static/landing.js"></script>
         <script>
-          // Redirect to dashboard/register for now
-          document.getElementById('registerBtn').addEventListener('click', () => {
-            window.location.href = '/dashboard';
+          // Redirect to signup/login pages
+          document.getElementById('registerBtn')?.addEventListener('click', () => {
+            window.location.href = '/signup';
           });
-          document.getElementById('loginBtn').addEventListener('click', () => {
-            window.location.href = '/dashboard';
+          document.getElementById('loginBtn')?.addEventListener('click', () => {
+            window.location.href = '/login';
           });
         </script>
     </body>
@@ -1646,7 +1646,7 @@ app.get('/create', (c) => {
   `);
 });
 
-// Dashboard page
+// Dashboard page - Protected route (requires authentication)
 app.get('/dashboard', (c) => {
   return c.html(`
     <!DOCTYPE html>
@@ -1657,42 +1657,42 @@ app.get('/dashboard', (c) => {
         <title>儀表板 - MemeLaunch Tycoon</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/professional-theme.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
         <style>
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
           body { font-family: 'Inter', sans-serif; }
-          .gradient-bg { background: linear-gradient(135deg, #1A1A2E 0%, #16213E 50%, #0F3460 100%); }
-          .glass-effect {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-          }
         </style>
     </head>
-    <body class="gradient-bg text-white min-h-screen">
+    <body class="min-h-screen" style="background: linear-gradient(135deg, #0A0B0D 0%, #1A1B1F 50%, #0A0B0D 100%);">
         <!-- Navigation -->
-        <nav class="glass-effect sticky top-0 z-50">
+        <nav class="glass-card sticky top-0 z-50 border-b border-white/10">
             <div class="container mx-auto px-4 py-4">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center space-x-6">
                         <a href="/" class="flex items-center space-x-2">
-                            <i class="fas fa-rocket text-2xl text-orange-500"></i>
-                            <span class="text-xl font-bold">MemeLaunch</span>
+                            <i class="fas fa-rocket text-2xl coinbase-blue"></i>
+                            <span class="text-xl font-bold text-white">MemeLaunch</span>
                         </a>
-                        <a href="/dashboard" class="hover:text-orange-500 transition">儀表板</a>
-                        <a href="/market" class="hover:text-orange-500 transition">市場</a>
-                        <a href="/portfolio" class="hover:text-orange-500 transition">我的組合</a>
-                        <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
+                        <a href="/dashboard" class="text-white hover:text-coinbase-blue transition font-semibold">儀表板</a>
+                        <a href="/market" class="text-gray-300 hover:text-coinbase-blue transition">市場</a>
+                        <a href="/create" class="text-gray-300 hover:text-coinbase-blue transition">創建幣</a>
+                        <a href="/portfolio" class="text-gray-300 hover:text-coinbase-blue transition">我的組合</a>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <div class="glass-effect px-4 py-2 rounded-lg">
-                            <i class="fas fa-coins text-yellow-500 mr-2"></i>
-                            <span id="userBalance">--</span> 金幣
+                        <div class="glass-card px-4 py-2 rounded-lg">
+                            <i class="fas fa-coins text-yellow-400 mr-2"></i>
+                            <span id="balance-display" class="text-white font-semibold">--</span> 金幣
                         </div>
-                        <button id="authBtn" class="px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 transition">
-                            登入/註冊
+                        <div class="glass-card px-4 py-2 rounded-lg">
+                            <i class="fas fa-user text-coinbase-blue mr-2"></i>
+                            <span id="username-display" class="text-white">載入中...</span>
+                        </div>
+                        <button id="auth-btn" onclick="window.location.href='/login'" class="btn-primary hidden">
+                            登入
                         </button>
-                        <button id="logoutBtn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white hover:bg-opacity-10 transition hidden">
-                            登出
+                        <button id="logout-btn" class="btn-secondary">
+                            <i class="fas fa-sign-out-alt mr-2"></i>登出
                         </button>
                     </div>
                 </div>
@@ -1701,257 +1701,122 @@ app.get('/dashboard', (c) => {
 
         <!-- Main Content -->
         <div class="container mx-auto px-4 py-8">
-            <!-- Auth Section (shown when not logged in) -->
-            <div id="authSection" class="max-w-md mx-auto">
-                <div class="glass-effect p-8 rounded-xl">
-                    <h2 class="text-3xl font-bold mb-6 text-center">歡迎來到 MemeLaunch Tycoon</h2>
-                    
-                    <!-- Login/Register Tabs -->
-                    <div class="flex mb-6 bg-black bg-opacity-30 rounded-lg p-1">
-                        <button id="loginTab" class="flex-1 py-2 rounded-lg bg-orange-500 transition">登入</button>
-                        <button id="registerTab" class="flex-1 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 transition">註冊</button>
+            <!-- Welcome Section -->
+            <div class="mb-8">
+                <h1 class="text-4xl font-bold text-white mb-2">歡迎回來！</h1>
+                <p class="text-gray-400">查看您的投資表現和市場動態</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid md:grid-cols-4 gap-6 mb-8">
+                <div class="glass-card p-6 rounded-xl hover-lift">
+                    <div class="flex items-center justify-between mb-3">
+                        <i class="fas fa-wallet text-3xl text-yellow-400"></i>
+                        <span class="text-xs text-gray-400">總餘額</span>
                     </div>
-
-                    <!-- Login Form -->
-                    <form id="loginForm" class="space-y-4">
-                        <div>
-                            <label class="block text-sm mb-2">電子郵件</label>
-                            <input type="email" id="loginEmail" class="w-full px-4 py-2 rounded-lg bg-black bg-opacity-30 border border-gray-700 focus:border-orange-500 focus:outline-none" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-2">密碼</label>
-                            <input type="password" id="loginPassword" class="w-full px-4 py-2 rounded-lg bg-black bg-opacity-30 border border-gray-700 focus:border-orange-500 focus:outline-none" required>
-                        </div>
-                        <button type="submit" class="w-full py-3 rounded-lg bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 transition font-bold">
-                            登入
-                        </button>
-                    </form>
-
-                    <!-- Register Form -->
-                    <form id="registerForm" class="space-y-4 hidden">
-                        <div>
-                            <label class="block text-sm mb-2">電子郵件</label>
-                            <input type="email" id="registerEmail" class="w-full px-4 py-2 rounded-lg bg-black bg-opacity-30 border border-gray-700 focus:border-orange-500 focus:outline-none" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-2">用戶名</label>
-                            <input type="text" id="registerUsername" class="w-full px-4 py-2 rounded-lg bg-black bg-opacity-30 border border-gray-700 focus:border-orange-500 focus:outline-none" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-2">密碼 (至少 6 個字符)</label>
-                            <input type="password" id="registerPassword" class="w-full px-4 py-2 rounded-lg bg-black bg-opacity-30 border border-gray-700 focus:border-orange-500 focus:outline-none" required>
-                        </div>
-                        <button type="submit" class="w-full py-3 rounded-lg bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 transition font-bold">
-                            註冊並獲得 10,000 金幣
-                        </button>
-                    </form>
-
-                    <div id="authError" class="mt-4 p-3 bg-red-500 bg-opacity-20 border border-red-500 rounded-lg text-sm hidden"></div>
-                    <div id="authSuccess" class="mt-4 p-3 bg-green-500 bg-opacity-20 border border-green-500 rounded-lg text-sm hidden"></div>
+                    <p class="text-3xl font-bold text-white" id="total-balance">--</p>
+                    <p class="text-sm text-gray-400 mt-1">金幣</p>
+                </div>
+                
+                <div class="glass-card p-6 rounded-xl hover-lift">
+                    <div class="flex items-center justify-between mb-3">
+                        <i class="fas fa-chart-line text-3xl text-green-400"></i>
+                        <span class="text-xs text-gray-400">投資組合價值</span>
+                    </div>
+                    <p class="text-3xl font-bold text-white" id="portfolio-value">--</p>
+                    <p class="text-sm text-gray-400 mt-1">金幣</p>
+                </div>
+                
+                <div class="glass-card p-6 rounded-xl hover-lift">
+                    <div class="flex items-center justify-between mb-3">
+                        <i class="fas fa-percentage text-3xl text-blue-400"></i>
+                        <span class="text-xs text-gray-400">總盈虧</span>
+                    </div>
+                    <p class="text-2xl font-bold" id="total-pnl">--</p>
+                </div>
+                
+                <div class="glass-card p-6 rounded-xl hover-lift">
+                    <div class="flex items-center justify-between mb-3">
+                        <i class="fas fa-briefcase text-3xl text-purple-400"></i>
+                        <span class="text-xs text-gray-400">持倉數量</span>
+                    </div>
+                    <p class="text-3xl font-bold text-white" id="holdings-count">--</p>
+                    <p class="text-sm text-gray-400 mt-1">種幣</p>
                 </div>
             </div>
 
-            <!-- Dashboard Content (shown when logged in) -->
-            <div id="dashboardContent" class="hidden">
-                <div class="grid md:grid-cols-3 gap-6 mb-8">
-                    <div class="glass-effect p-6 rounded-xl">
-                        <i class="fas fa-wallet text-3xl text-yellow-500 mb-3"></i>
-                        <p class="text-gray-400 text-sm">總餘額</p>
-                        <p class="text-3xl font-bold" id="dashBalance">--</p>
-                    </div>
-                    <div class="glass-effect p-6 rounded-xl">
-                        <i class="fas fa-chart-line text-3xl text-green-500 mb-3"></i>
-                        <p class="text-gray-400 text-sm">投資組合價值</p>
-                        <p class="text-3xl font-bold" id="portfolioValue">--</p>
-                    </div>
-                    <div class="glass-effect p-6 rounded-xl">
-                        <i class="fas fa-percentage text-3xl text-blue-500 mb-3"></i>
-                        <p class="text-gray-400 text-sm">總盈虧</p>
-                        <p class="text-3xl font-bold" id="totalPnL">--</p>
-                    </div>
+            <!-- Quick Actions -->
+            <div class="glass-card p-8 rounded-xl mb-8">
+                <h3 class="text-2xl font-bold text-white mb-6">快速操作</h3>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <button onclick="window.location.href='/create'" class="btn-primary p-6 rounded-xl text-center group">
+                        <i class="fas fa-plus-circle text-4xl mb-3 group-hover:scale-110 transition-transform"></i>
+                        <p class="font-bold text-lg">創建模因幣</p>
+                        <p class="text-sm opacity-80 mt-1">發行您的第一個幣種</p>
+                    </button>
+                    <button onclick="window.location.href='/market'" class="glass-card p-6 rounded-xl text-center group hover:bg-white/10">
+                        <i class="fas fa-store text-4xl mb-3 text-coinbase-blue group-hover:scale-110 transition-transform"></i>
+                        <p class="font-bold text-lg text-white">瀏覽市場</p>
+                        <p class="text-sm text-gray-400 mt-1">發現熱門幣種</p>
+                    </button>
+                    <button onclick="window.location.href='/portfolio'" class="glass-card p-6 rounded-xl text-center group hover:bg-white/10">
+                        <i class="fas fa-briefcase text-4xl mb-3 text-green-400 group-hover:scale-110 transition-transform"></i>
+                        <p class="font-bold text-lg text-white">我的投資組合</p>
+                        <p class="text-sm text-gray-400 mt-1">管理您的資產</p>
+                    </button>
                 </div>
+            </div>
 
-                <div class="glass-effect p-8 rounded-xl mb-8">
-                    <h3 class="text-2xl font-bold mb-6">快速操作</h3>
-                    <div class="grid md:grid-cols-3 gap-4">
-                        <button onclick="window.location.href='/create'" class="p-6 rounded-lg bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 transition text-center">
-                            <i class="fas fa-plus-circle text-4xl mb-3"></i>
-                            <p class="font-bold">創建模因幣</p>
-                        </button>
-                        <button onclick="window.location.href='/market'" class="p-6 rounded-lg glass-effect hover:bg-white hover:bg-opacity-10 transition text-center">
-                            <i class="fas fa-store text-4xl mb-3"></i>
-                            <p class="font-bold">瀏覽市場</p>
-                        </button>
-                        <button onclick="window.location.href='/portfolio'" class="p-6 rounded-lg glass-effect hover:bg-white hover:bg-opacity-10 transition text-center">
-                            <i class="fas fa-briefcase text-4xl mb-3"></i>
-                            <p class="font-bold">我的投資組合</p>
-                        </button>
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Recent Transactions -->
+                <div class="glass-card p-8 rounded-xl">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-bold text-white">最近交易</h3>
+                        <a href="/portfolio" class="text-sm coinbase-blue hover:text-blue-400 transition">查看全部 →</a>
                     </div>
-                </div>
-
-                <div class="glass-effect p-8 rounded-xl">
-                    <h3 class="text-2xl font-bold mb-6">熱門幣種</h3>
-                    <div id="trendingCoins" class="space-y-4">
+                    <div id="recent-transactions" class="space-y-3">
                         <p class="text-gray-400 text-center py-8">載入中...</p>
                     </div>
+                </div>
+
+                <!-- Your Holdings -->
+                <div class="glass-card p-8 rounded-xl">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-bold text-white">我的持倉</h3>
+                        <a href="/portfolio" class="text-sm coinbase-blue hover:text-blue-400 transition">查看全部 →</a>
+                    </div>
+                    <div id="user-holdings" class="space-y-3">
+                        <p class="text-gray-400 text-center py-8">載入中...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trending Coins -->
+            <div class="glass-card p-8 rounded-xl mt-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-2xl font-bold text-white">熱門幣種</h3>
+                    <a href="/market" class="text-sm coinbase-blue hover:text-blue-400 transition">查看市場 →</a>
+                </div>
+                <div id="trending-coins" class="space-y-3">
+                    <p class="text-gray-400 text-center py-8">載入中...</p>
                 </div>
             </div>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
-        <script>
-          const API_BASE = '/api';
-          let token = localStorage.getItem('token');
-          let currentUser = null;
-
-          // Tab switching
-          document.getElementById('loginTab').addEventListener('click', () => {
-            document.getElementById('loginTab').classList.add('bg-orange-500');
-            document.getElementById('registerTab').classList.remove('bg-orange-500');
-            document.getElementById('loginForm').classList.remove('hidden');
-            document.getElementById('registerForm').classList.add('hidden');
-          });
-
-          document.getElementById('registerTab').addEventListener('click', () => {
-            document.getElementById('registerTab').classList.add('bg-orange-500');
-            document.getElementById('loginTab').classList.remove('bg-orange-500');
-            document.getElementById('registerForm').classList.remove('hidden');
-            document.getElementById('loginForm').classList.add('hidden');
-          });
-
-          // Login
-          document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-
-            try {
-              const response = await axios.post(API_BASE + '/auth/login', { email, password });
-              token = response.data.data.token;
-              localStorage.setItem('token', token);
-              showSuccess('登入成功！');
-              setTimeout(() => location.reload(), 1000);
-            } catch (error) {
-              showError(error.response?.data?.error || '登入失敗');
-            }
-          });
-
-          // Register
-          document.getElementById('registerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('registerEmail').value;
-            const username = document.getElementById('registerUsername').value;
-            const password = document.getElementById('registerPassword').value;
-
-            try {
-              const response = await axios.post(API_BASE + '/auth/register', { email, username, password });
-              token = response.data.data.token;
-              localStorage.setItem('token', token);
-              showSuccess('註冊成功！獲得 10,000 金幣');
-              setTimeout(() => location.reload(), 1000);
-            } catch (error) {
-              showError(error.response?.data?.error || '註冊失敗');
-            }
-          });
-
-          // Logout
-          document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('token');
-            location.reload();
-          });
-
-          function showError(message) {
-            const errorEl = document.getElementById('authError');
-            errorEl.textContent = message;
-            errorEl.classList.remove('hidden');
-            setTimeout(() => errorEl.classList.add('hidden'), 5000);
-          }
-
-          function showSuccess(message) {
-            const successEl = document.getElementById('authSuccess');
-            successEl.textContent = message;
-            successEl.classList.remove('hidden');
-            setTimeout(() => successEl.classList.add('hidden'), 5000);
-          }
-
-          async function loadUserData() {
-            if (!token) return;
-
-            try {
-              const response = await axios.get(API_BASE + '/auth/me', {
-                headers: { Authorization: 'Bearer ' + token }
-              });
-              currentUser = response.data.data;
-              
-              // Update UI
-              document.getElementById('authSection').classList.add('hidden');
-              document.getElementById('dashboardContent').classList.remove('hidden');
-              document.getElementById('authBtn').classList.add('hidden');
-              document.getElementById('logoutBtn').classList.remove('hidden');
-              document.getElementById('userBalance').textContent = currentUser.virtual_balance.toFixed(2);
-              document.getElementById('dashBalance').textContent = currentUser.virtual_balance.toFixed(2) + ' 金幣';
-
-              // Load portfolio
-              await loadPortfolio();
-              // Load trending coins
-              await loadTrendingCoins();
-            } catch (error) {
-              console.error('Failed to load user data:', error);
-              localStorage.removeItem('token');
-              token = null;
-            }
-          }
-
-          async function loadPortfolio() {
-            try {
-              const response = await axios.get(API_BASE + '/portfolio', {
-                headers: { Authorization: 'Bearer ' + token }
-              });
-              const stats = response.data.data.stats;
-              document.getElementById('portfolioValue').textContent = stats.totalValue.toFixed(2) + ' 金幣';
-              const pnlClass = stats.totalProfitLoss >= 0 ? 'text-green-500' : 'text-red-500';
-              document.getElementById('totalPnL').innerHTML = 
-                '<span class="' + pnlClass + '">' + 
-                (stats.totalProfitLoss >= 0 ? '+' : '') + stats.totalProfitLoss.toFixed(2) + 
-                ' (' + stats.totalProfitLossPercent.toFixed(2) + '%)</span>';
-            } catch (error) {
-              console.error('Failed to load portfolio:', error);
-            }
-          }
-
-          async function loadTrendingCoins() {
-            try {
-              const response = await axios.get(API_BASE + '/coins/trending/list?limit=5');
-              const coins = response.data.data;
-              const html = coins.map(coin => 
-                '<div class="flex items-center justify-between p-4 glass-effect rounded-lg hover:bg-white hover:bg-opacity-5 transition cursor-pointer" onclick="window.location.href=\\'/coin/' + coin.id + '\\'">' +
-                  '<div class="flex items-center space-x-4">' +
-                    '<img src="' + (coin.image_url || '/static/default-coin.png') + '" class="w-12 h-12 rounded-full" alt="' + coin.name + '">' +
-                    '<div>' +
-                      '<p class="font-bold">' + coin.name + '</p>' +
-                      '<p class="text-sm text-gray-400">' + coin.symbol + '</p>' +
-                    '</div>' +
-                  '</div>' +
-                  '<div class="text-right">' +
-                    '<p class="font-bold">$' + coin.current_price.toFixed(4) + '</p>' +
-                    '<p class="text-sm text-gray-400">市值: $' + coin.market_cap.toFixed(2) + '</p>' +
-                  '</div>' +
-                '</div>'
-              ).join('');
-              document.getElementById('trendingCoins').innerHTML = html || '<p class="text-gray-400 text-center py-8">暫無數據</p>';
-            } catch (error) {
-              console.error('Failed to load trending coins:', error);
-            }
-          }
-
-          // Initialize
-          if (token) {
-            loadUserData();
-          }
-        </script>
+        <script src="/static/dashboard.js"></script>
     </body>
     </html>
-  `);
-});
+  `)
+})
+
+// Redirect old dashboard auth flow to new pages
+app.get('/dashboard/login', (c) => {
+  return c.redirect('/login?redirect=/dashboard')
+})
+
+app.get('/dashboard/register', (c) => {
+  return c.redirect('/signup?redirect=/dashboard', 308)
+})
 
 export default app;
