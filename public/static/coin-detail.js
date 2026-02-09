@@ -572,6 +572,46 @@ const init = async () => {
     
     // Logout button
     document.getElementById('logout-btn').addEventListener('click', handleLogout);
+    
+    // Initialize new UI modules
+    if (window.TradingPanel && coinData) {
+      window.tradingPanel = new window.TradingPanel(COIN_ID, coinData, userData);
+      console.log('✅ Trading Panel initialized');
+    }
+    
+    if (window.SocialUI) {
+      window.socialUI = new window.SocialUI(COIN_ID);
+      console.log('✅ Social UI initialized');
+    }
+    
+    if (window.realtimeUpdates) {
+      // Subscribe to real-time price updates
+      window.realtimeUpdates.subscribeToPrices((data) => {
+        if (data.coins) {
+          const updatedCoin = data.coins.find(c => c.id === parseInt(COIN_ID));
+          if (updatedCoin) {
+            coinData.current_price = updatedCoin.current_price;
+            coinData.market_cap = updatedCoin.market_cap;
+            coinData.hype_score = updatedCoin.hype_score;
+            
+            // Update display
+            document.getElementById('coin-price').textContent = `$${updatedCoin.current_price.toFixed(8)}`;
+            document.getElementById('stat-market-cap').textContent = `$${updatedCoin.market_cap.toFixed(4)}`;
+            document.getElementById('hype-score').textContent = Math.floor(updatedCoin.hype_score || 0);
+            
+            const percentage = Math.min((updatedCoin.hype_score / 200) * 100, 100);
+            document.getElementById('hype-bar').style.width = `${percentage}%`;
+            
+            // Update trading panel
+            if (window.tradingPanel) {
+              window.tradingPanel.updateCoinData(coinData);
+            }
+          }
+        }
+      });
+      
+      console.log('✅ Real-time updates initialized');
+    }
   }
 };
 

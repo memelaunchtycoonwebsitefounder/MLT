@@ -985,6 +985,11 @@ app.get('/coin/:id', (c) => {
                                 <!-- Transactions will be loaded here -->
                             </div>
                         </div>
+                        
+                        <!-- Comments Section -->
+                        <div id="comments-section">
+                            <!-- Comments will be loaded by social.js -->
+                        </div>
                     </div>
 
                     <!-- Right Column - Trading & Info -->
@@ -1008,7 +1013,12 @@ app.get('/coin/:id', (c) => {
                             <!-- Buy Panel -->
                             <div id="buy-panel">
                                 <div class="mb-4">
-                                    <label class="block text-sm font-medium mb-2">購買數量</label>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <label class="block text-sm font-medium">購買數量</label>
+                                        <button id="buy-max-btn" class="text-xs px-3 py-1 bg-orange-500 hover:bg-orange-600 rounded-full transition">
+                                            最大
+                                        </button>
+                                    </div>
                                     <input
                                         type="number"
                                         id="buy-amount"
@@ -1017,50 +1027,119 @@ app.get('/coin/:id', (c) => {
                                         class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition text-white"
                                     />
                                 </div>
+                                
+                                <!-- Quick Presets -->
+                                <div class="mb-4 grid grid-cols-4 gap-2">
+                                    <button id="buy-preset-10" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                        10
+                                    </button>
+                                    <button id="buy-preset-50" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                        50
+                                    </button>
+                                    <button id="buy-preset-100" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                        100
+                                    </button>
+                                    <button id="buy-preset-500" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                        500
+                                    </button>
+                                </div>
+                                
                                 <div class="mb-4 p-4 bg-white/5 rounded-lg space-y-2 text-sm">
                                     <div class="flex justify-between">
                                         <span class="text-gray-400">單價:</span>
-                                        <span id="buy-unit-price" class="font-bold">--</span>
+                                        <span id="buy-price-per-coin" class="font-bold">--</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">總計:</span>
-                                        <span id="buy-total-cost" class="font-bold text-lg">--</span>
+                                        <span class="text-gray-400">小計:</span>
+                                        <span id="buy-subtotal" class="font-bold">--</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-400">手續費 (1%):</span>
+                                        <span id="buy-fee" class="font-bold">--</span>
+                                    </div>
+                                    <div class="flex justify-between border-t border-white/10 pt-2">
+                                        <span class="text-gray-300 font-bold">總計:</span>
+                                        <span id="buy-total" class="font-bold text-lg text-green-500">--</span>
                                     </div>
                                 </div>
-                                <button id="buy-btn" class="w-full px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 rounded-lg font-bold transition transform hover:scale-105">
+                                
+                                <div id="buy-warning" class="hidden mb-3 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-sm text-red-300"></div>
+                                
+                                <button id="buy-button" class="w-full px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 rounded-lg font-bold transition transform hover:scale-105">
                                     <i class="fas fa-arrow-up mr-2"></i>
-                                    <span id="buy-btn-text">買入</span>
+                                    立即買入
                                 </button>
                             </div>
 
                             <!-- Sell Panel -->
                             <div id="sell-panel" class="hidden">
                                 <div class="mb-4">
-                                    <div class="flex justify-between text-sm text-gray-400 mb-2">
-                                        <span>賣出數量</span>
-                                        <span>持有: <span id="user-holdings">0</span></span>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-medium">賣出數量</span>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-sm text-gray-400">持有: <span id="holdings-amount">0</span> <span id="holdings-symbol">--</span></span>
+                                            <button id="sell-max-btn" class="text-xs px-3 py-1 bg-orange-500 hover:bg-orange-600 rounded-full transition">
+                                                最大
+                                            </button>
+                                        </div>
                                     </div>
                                     <input
                                         type="number"
                                         id="sell-amount"
                                         min="1"
-                                        value="100"
+                                        value="10"
                                         class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition text-white"
                                     />
                                 </div>
+                                
+                                <!-- Quick Presets (Percentage) -->
+                                <div class="mb-4 grid grid-cols-4 gap-2">
+                                    <button id="sell-preset-25" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                        25%
+                                    </button>
+                                    <button id="sell-preset-50" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                        50%
+                                    </button>
+                                    <button id="sell-preset-75" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                        75%
+                                    </button>
+                                    <button id="sell-preset-100" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                        100%
+                                    </button>
+                                </div>
+                                
                                 <div class="mb-4 p-4 bg-white/5 rounded-lg space-y-2 text-sm">
                                     <div class="flex justify-between">
                                         <span class="text-gray-400">單價:</span>
-                                        <span id="sell-unit-price" class="font-bold">--</span>
+                                        <span id="sell-price-per-coin" class="font-bold">--</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">總計:</span>
-                                        <span id="sell-total-revenue" class="font-bold text-lg">--</span>
+                                        <span class="text-gray-400">小計:</span>
+                                        <span id="sell-subtotal" class="font-bold">--</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-400">手續費 (1%):</span>
+                                        <span id="sell-fee" class="font-bold">--</span>
+                                    </div>
+                                    <div class="flex justify-between border-t border-white/10 pt-2">
+                                        <span class="text-gray-300 font-bold">收益:</span>
+                                        <span id="sell-total" class="font-bold text-lg text-red-500">--</span>
                                     </div>
                                 </div>
-                                <button id="sell-btn" class="w-full px-6 py-4 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 rounded-lg font-bold transition transform hover:scale-105">
+                                
+                                <!-- Holdings Info -->
+                                <div id="holdings-info" class="hidden mb-4 p-3 bg-blue-500/20 border border-blue-500/50 rounded-lg text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-300">持倉價值:</span>
+                                        <span id="holdings-value" class="font-bold text-blue-300">--</span>
+                                    </div>
+                                </div>
+                                
+                                <div id="sell-warning" class="hidden mb-3 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-sm text-red-300"></div>
+                                
+                                <button id="sell-button" class="w-full px-6 py-4 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 rounded-lg font-bold transition transform hover:scale-105">
                                     <i class="fas fa-arrow-down mr-2"></i>
-                                    <span id="sell-btn-text">賣出</span>
+                                    立即賣出
                                 </button>
                             </div>
 
@@ -1105,6 +1184,9 @@ app.get('/coin/:id', (c) => {
         <script>
           const COIN_ID = '${coinId}';
         </script>
+        <script src="/static/trading-panel.js"></script>
+        <script src="/static/social.js"></script>
+        <script src="/static/realtime.js"></script>
         <script src="/static/coin-detail.js"></script>
     </body>
     </html>
