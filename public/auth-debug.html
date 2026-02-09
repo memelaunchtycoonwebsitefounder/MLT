@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Debug Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #0A0B0D;
+            color: #fff;
+        }
+        .log {
+            background: #1a1b1f;
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 3px solid #0052FF;
+        }
+        .error {
+            border-left-color: #f00;
+        }
+        .success {
+            border-left-color: #0f0;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #0052FF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0041cc;
+        }
+        #token-display {
+            word-break: break-all;
+            background: #2a2b2f;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Authentication Debug Test</h1>
+    
+    <div>
+        <h2>Step 1: Login</h2>
+        <button onclick="testLogin()">Test Login</button>
+        <button onclick="clearStorage()">Clear Storage</button>
+    </div>
+    
+    <div>
+        <h2>Step 2: Check Token</h2>
+        <button onclick="checkToken()">Check localStorage</button>
+        <button onclick="testMe()">Test /api/auth/me</button>
+    </div>
+    
+    <div>
+        <h2>Step 3: Simulate Page Load</h2>
+        <button onclick="simulatePageLoad()">Simulate Dashboard Load</button>
+    </div>
+    
+    <div id="token-display"></div>
+    <div id="logs"></div>
+
+    <script>
+        const API_BASE = '/api';
+        const EMAIL = 'looptest1770636230@example.com';
+        const PASSWORD = 'LoopTest123!';
+        
+        function log(message, type = 'log') {
+            const logsDiv = document.getElementById('logs');
+            const logEl = document.createElement('div');
+            logEl.className = `log ${type}`;
+            logEl.textContent = `[${new Date().toISOString()}] ${message}`;
+            logsDiv.insertBefore(logEl, logsDiv.firstChild);
+            console.log(message);
+        }
+        
+        async function testLogin() {
+            log('Testing login...', 'log');
+            
+            try {
+                const response = await axios.post(`${API_BASE}/auth/login`, {
+                    email: EMAIL,
+                    password: PASSWORD
+                });
+                
+                log(`Login successful! Token received`, 'success');
+                
+                const token = response.data.data.token;
+                log(`Token: ${token.substring(0, 20)}...`, 'log');
+                
+                // Store token
+                localStorage.setItem('auth_token', token);
+                log('Token stored in localStorage', 'success');
+                
+                // Verify immediately
+                const stored = localStorage.getItem('auth_token');
+                if (stored === token) {
+                    log('✓ Token verification: MATCH', 'success');
+                } else {
+                    log('✗ Token verification: MISMATCH', 'error');
+                }
+                
+                updateTokenDisplay();
+                
+            } catch (error) {
+                log(`Login failed: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+        
+        function checkToken() {
+            const token = localStorage.getItem('auth_token');
+            
+            if (token) {
+                log(`Token found in localStorage: ${token.substring(0, 20)}...`, 'success');
+                log(`Token length: ${token.length}`, 'log');
+                updateTokenDisplay();
+            } else {
+                log('No token found in localStorage', 'error');
+            }
+        }
+        
+        async function testMe() {
+            const token = localStorage.getItem('auth_token');
+            
+            if (!token) {
+                log('No token to test with!', 'error');
+                return;
+            }
+            
+            log('Testing /api/auth/me...', 'log');
+            
+            try {
+                const response = await axios.get(`${API_BASE}/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                log(`API call successful! User: ${response.data.data.username}`, 'success');
+                log(`Balance: ${response.data.data.virtual_balance}`, 'log');
+                
+            } catch (error) {
+                log(`API call failed: ${error.message}`, 'error');
+                if (error.response) {
+                    log(`Response: ${JSON.stringify(error.response.data)}`, 'error');
+                }
+            }
+        }
+        
+        async function simulatePageLoad() {
+            log('=== Simulating Dashboard Page Load ===', 'log');
+            
+            // Step 1: Check token immediately
+            log('Step 1: Checking token on page load...', 'log');
+            const token = localStorage.getItem('auth_token');
+            
+            if (!token) {
+                log('Step 1: No token found! Would redirect to /login', 'error');
+                return;
+            }
+            
+            log('Step 1: Token found!', 'success');
+            
+            // Step 2: Verify with API
+            log('Step 2: Verifying token with API...', 'log');
+            
+            try {
+                const response = await axios.get(`${API_BASE}/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                log(`Step 2: Token valid! User: ${response.data.data.username}`, 'success');
+                log('Step 3: Would show dashboard content', 'success');
+                log('=== Simulation Complete: SUCCESS ===', 'success');
+                
+            } catch (error) {
+                log(`Step 2: Token invalid! ${error.message}`, 'error');
+                log('Step 3: Would redirect to /login', 'error');
+                log('=== Simulation Complete: FAILED ===', 'error');
+            }
+        }
+        
+        function clearStorage() {
+            localStorage.removeItem('auth_token');
+            log('localStorage cleared', 'log');
+            updateTokenDisplay();
+        }
+        
+        function updateTokenDisplay() {
+            const token = localStorage.getItem('auth_token');
+            const display = document.getElementById('token-display');
+            
+            if (token) {
+                display.innerHTML = `<strong>Current Token:</strong><br>${token}`;
+            } else {
+                display.innerHTML = '<strong>No token in storage</strong>';
+            }
+        }
+        
+        // Check on load
+        window.addEventListener('DOMContentLoaded', () => {
+            log('Page loaded', 'log');
+            checkToken();
+        });
+    </script>
+</body>
+</html>

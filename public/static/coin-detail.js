@@ -9,13 +9,20 @@ let priceChart = null;
 let userHoldings = 0;
 
 // Check authentication
-const checkAuth = async () => {
+const checkAuth = async (retryCount = 0) => {
   const token = localStorage.getItem('auth_token');
   
-  console.log('CoinDetail: Token check:', token ? 'Found' : 'Not found');
+  console.log(`CoinDetail: Token check (attempt ${retryCount + 1}):`, token ? 'Found' : 'Not found');
   
   if (!token) {
-    console.log('CoinDetail: No token, redirecting to login...');
+    // Retry a few times in case token is being written
+    if (retryCount < 3) {
+      console.log('CoinDetail: No token yet, retrying in 200ms...');
+      await new Promise(resolve => setTimeout(resolve, 200));
+      return checkAuth(retryCount + 1);
+    }
+    
+    console.log('CoinDetail: No token after retries, redirecting to login...');
     const coinId = window.location.pathname.split('/').pop();
     window.location.href = `/login?redirect=/coin/${coinId}`;
     return null;

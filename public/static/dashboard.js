@@ -3,19 +3,35 @@
  * Handles authenticated dashboard functionality
  */
 
-// Wait for page to fully load before checking auth
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('Dashboard: DOM loaded, checking auth...');
-  checkAuth();
-});
+// Check auth when script loads or when DOM is ready
+if (document.readyState === 'loading') {
+  // DOM not ready yet, wait for it
+  document.addEventListener('DOMContentLoaded', initDashboard);
+} else {
+  // DOM is already ready
+  initDashboard();
+}
 
-async function checkAuth() {
+function initDashboard() {
+  console.log('Dashboard: Initializing...');
+  console.log('Dashboard: readyState:', document.readyState);
+  checkAuth();
+}
+
+async function checkAuth(retryCount = 0) {
   const token = localStorage.getItem('auth_token');
   
-  console.log('Dashboard: Token check:', token ? 'Found' : 'Not found');
+  console.log(`Dashboard: Token check (attempt ${retryCount + 1}):`, token ? 'Found' : 'Not found');
   
   if (!token) {
-    console.log('Dashboard: No token, redirecting to login...');
+    // Retry a few times in case token is being written
+    if (retryCount < 3) {
+      console.log('Dashboard: No token yet, retrying in 200ms...');
+      setTimeout(() => checkAuth(retryCount + 1), 200);
+      return;
+    }
+    
+    console.log('Dashboard: No token after retries, redirecting to login...');
     // Redirect to login if not authenticated
     window.location.href = '/login?redirect=/dashboard';
     return;
