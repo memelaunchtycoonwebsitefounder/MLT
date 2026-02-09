@@ -163,7 +163,9 @@ const loadRecentTransactions = async () => {
     });
     
     if (response.data.success) {
-      const transactions = response.data.data || [];
+      // API returns {transactions: [], pagination: {}}
+      const data = response.data.data || {};
+      const transactions = data.transactions || [];
       
       if (transactions.length === 0) {
         container.innerHTML = '<p class="text-center text-gray-400 py-4">暫無交易記錄</p>';
@@ -418,7 +420,7 @@ const buyCoin = async () => {
     const token = localStorage.getItem('auth_token');
     
     const response = await axios.post('/api/trades/buy', {
-      coin_id: COIN_ID,
+      coinId: COIN_ID,
       amount: amount
     }, {
       headers: {
@@ -476,7 +478,7 @@ const sellCoin = async () => {
     const token = localStorage.getItem('auth_token');
     
     const response = await axios.post('/api/trades/sell', {
-      coin_id: COIN_ID,
+      coinId: COIN_ID,
       amount: amount
     }, {
       headers: {

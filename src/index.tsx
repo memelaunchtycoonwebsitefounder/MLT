@@ -64,11 +64,8 @@ socialRoutes.use('*', authMiddleware);
 socialRoutes.route('/', social);
 app.route('/api/social', socialRoutes);
 
-// Gamification routes (requires authentication)
-const gamificationRoutes = new Hono<{ Bindings: Env }>();
-gamificationRoutes.use('*', authMiddleware);
-gamificationRoutes.route('/', gamification);
-app.route('/api/gamification', gamificationRoutes);
+// Gamification routes
+app.route('/api/gamification', gamification);
 
 // Upload routes (requires authentication)
 const uploadRoutes = new Hono<{ Bindings: Env }>();

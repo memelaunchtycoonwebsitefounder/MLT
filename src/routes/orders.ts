@@ -12,20 +12,29 @@ orders.post('/', async (c) => {
       return errorResponse('未授權', 401);
     }
 
-    const { coinId, type, orderType, amount, price, triggerPrice, expiresIn } = await c.req.json();
+    const body = await c.req.json();
+    const coinId = body.coinId;
+    const side = body.side || body.type; // Support both 'side' and 'type'
+    const orderType = body.orderType || body.type || 'market'; // Default to market if not specified
+    const amount = body.amount;
+    const price = body.price;
+    const triggerPrice = body.triggerPrice;
+    const expiresIn = body.expiresIn;
 
     // Validate inputs
-    if (!coinId || !type || !orderType || !amount || amount <= 0) {
-      return errorResponse('無效的訂單參數');
+    if (!coinId || !side || !amount || amount <= 0) {
+      return errorResponse('無效的訂單參數：需要 coinId, side/type, amount');
     }
 
-    if (!['buy', 'sell'].includes(type)) {
-      return errorResponse('無效的訂單類型');
+    if (!['buy', 'sell'].includes(side)) {
+      return errorResponse('無效的訂單類型：必須是 buy 或 sell');
     }
 
     if (!['market', 'limit', 'stop_loss', 'take_profit'].includes(orderType)) {
-      return errorResponse('無效的訂單種類');
+      return errorResponse('無效的訂單種類：必須是 market, limit, stop_loss 或 take_profit');
     }
+    
+    const type = side; // Normalize to 'type' for internal use
 
     // Get coin details
     const coin = await c.env.DB.prepare(
