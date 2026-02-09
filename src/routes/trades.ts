@@ -340,4 +340,44 @@ trades.get('/history', async (c) => {
   }
 });
 
+// Get recent transactions (for dashboard)
+trades.get('/recent', async (c) => {
+  try {
+    const user = c.get('user') as JWTPayload;
+    
+    if (!user) {
+      return errorResponse('未授權', 401);
+    }
+
+    const limit = parseInt(c.req.query('limit') || '5');
+
+    const result = await c.env.DB.prepare(
+      `SELECT 
+         t.id,
+         t.type,
+         t.amount,
+         t.price,
+         t.total_cost,
+         t.timestamp,
+         c.id as coin_id,
+         c.name as coin_name,
+         c.symbol as coin_symbol,
+         c.image_url as coin_image
+       FROM transactions t
+       LEFT JOIN coins c ON t.coin_id = c.id
+       WHERE t.user_id = ?
+       ORDER BY t.timestamp DESC
+       LIMIT ?`
+    )
+      .bind(user.userId, limit)
+      .all();
+
+    return successResponse(result.results || []);
+  } catch (error: any) {
+    console.error('Get recent transactions error:', error);
+    return errorResponse('獲取最近交易時發生錯誤', 500);
+  }
+});
+
+
 export default trades;

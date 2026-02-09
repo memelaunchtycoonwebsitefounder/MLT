@@ -51,6 +51,36 @@ uploadRoutes.use('*', authMiddleware);
 uploadRoutes.route('/', upload);
 app.route('/api/upload', uploadRoutes);
 
+// Image serving from R2
+app.get('/images/*', async (c) => {
+  try {
+    // Get the path after /images/
+    const path = c.req.path.replace('/images/', '');
+    
+    if (!c.env.IMAGES) {
+      return c.notFound();
+    }
+    
+    const object = await c.env.IMAGES.get(path);
+    
+    if (!object) {
+      return c.notFound();
+    }
+    
+    const headers = new Headers();
+    object.writeHttpMetadata(headers);
+    headers.set('etag', object.httpEtag);
+    headers.set('cache-control', 'public, max-age=31536000');
+    
+    return new Response(object.body, {
+      headers
+    });
+  } catch (error) {
+    console.error('Image serving error:', error);
+    return c.notFound();
+  }
+});
+
 // Health check
 app.get('/api/health', (c) => {
   return c.json({ 
@@ -1804,7 +1834,162 @@ app.get('/dashboard', (c) => {
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
-        <script src="/static/dashboard.js"></script>
+        <script src="/static/dashboard-simple.js"></script>
+    </body>
+    </html>
+  `)
+})
+
+// Portfolio page
+app.get('/portfolio', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>投資組合 - MemeLaunch Tycoon</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
+    </head>
+    <body class="bg-gradient-to-br from-gray-900 via-purple-900 to-black min-h-screen text-white">
+        <!-- Navigation -->
+        <nav class="bg-black/30 backdrop-blur-md border-b border-white/10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center space-x-8">
+                        <a href="/" class="text-2xl font-bold bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">
+                            MemeLaunch 🚀
+                        </a>
+                        <div class="hidden md:flex space-x-4">
+                            <a href="/dashboard" class="text-gray-300 hover:text-white transition">儀表板</a>
+                            <a href="/market" class="text-gray-300 hover:text-white transition">市場</a>
+                            <a href="/portfolio" class="text-white border-b-2 border-orange-500">我的組合</a>
+                            <a href="/leaderboard" class="text-gray-300 hover:text-white transition">排行榜</a>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="glass-effect px-4 py-2 rounded-lg">
+                            <i class="fas fa-coins text-yellow-400 mr-2"></i>
+                            <span id="user-balance">--</span> 金幣
+                        </div>
+                        <button id="logout-btn" class="px-4 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition">
+                            登出
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Page Header -->
+            <div class="mb-8 flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl font-bold mb-2">我的投資組合</h1>
+                    <p class="text-gray-400">追蹤您的持倉和投資表現</p>
+                </div>
+                <button id="refresh-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
+                    <i class="fas fa-sync-alt mr-2"></i>刷新
+                </button>
+            </div>
+
+            <!-- Error Container -->
+            <div id="error-container" class="mb-4"></div>
+
+            <!-- Stats Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="glass-effect rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-gray-400">現金餘額</p>
+                        <i class="fas fa-wallet text-green-400"></i>
+                    </div>
+                    <p class="text-3xl font-bold" id="cash-balance">--</p>
+                    <p class="text-sm text-gray-400 mt-1">金幣</p>
+                </div>
+
+                <div class="glass-effect rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-gray-400">持倉總值</p>
+                        <i class="fas fa-chart-pie text-blue-400"></i>
+                    </div>
+                    <p class="text-3xl font-bold" id="total-value">--</p>
+                    <p class="text-sm text-gray-400 mt-1">金幣</p>
+                </div>
+
+                <div class="glass-effect rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-gray-400">總資產</p>
+                        <i class="fas fa-coins text-yellow-400"></i>
+                    </div>
+                    <p class="text-3xl font-bold" id="total-networth">--</p>
+                    <p class="text-sm text-gray-400 mt-1">金幣</p>
+                </div>
+
+                <div class="glass-effect rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-gray-400">總盈虧</p>
+                        <i class="fas fa-chart-line text-orange-400"></i>
+                    </div>
+                    <p id="total-pl" class="text-3xl font-bold">--</p>
+                    <p class="text-sm text-gray-400 mt-1">%</p>
+                </div>
+            </div>
+
+            <!-- Holdings Table -->
+            <div class="glass-effect rounded-xl p-6">
+                <h2 class="text-2xl font-bold mb-6">持倉明細</h2>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-white/10">
+                                <th class="px-6 py-3 text-left text-gray-400">#</th>
+                                <th class="px-6 py-3 text-left text-gray-400">幣種</th>
+                                <th class="px-6 py-3 text-left text-gray-400">持有量</th>
+                                <th class="px-6 py-3 text-left text-gray-400">平均買入價</th>
+                                <th class="px-6 py-3 text-left text-gray-400">當前價格</th>
+                                <th class="px-6 py-3 text-left text-gray-400">總價值</th>
+                                <th class="px-6 py-3 text-left text-gray-400">盈虧</th>
+                            </tr>
+                        </thead>
+                        <tbody id="holdings-tbody">
+                            <tr>
+                                <td colspan="7" class="text-center py-8 text-gray-400">
+                                    <i class="fas fa-spinner fa-spin text-4xl mb-2"></i>
+                                    <p>載入中...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="mt-8 grid md:grid-cols-3 gap-6">
+                <a href="/market" class="glass-effect rounded-xl p-6 hover:bg-white/10 transition text-center">
+                    <i class="fas fa-shopping-cart text-4xl text-blue-400 mb-3"></i>
+                    <h3 class="text-xl font-semibold mb-2">前往市場</h3>
+                    <p class="text-gray-400 text-sm">探索並購買更多模因幣</p>
+                </a>
+
+                <a href="/create" class="glass-effect rounded-xl p-6 hover:bg-white/10 transition text-center">
+                    <i class="fas fa-rocket text-4xl text-orange-400 mb-3"></i>
+                    <h3 class="text-xl font-semibold mb-2">創建幣種</h3>
+                    <p class="text-gray-400 text-sm">發射您自己的模因幣</p>
+                </a>
+
+                <a href="/dashboard" class="glass-effect rounded-xl p-6 hover:bg-white/10 transition text-center">
+                    <i class="fas fa-chart-bar text-4xl text-green-400 mb-3"></i>
+                    <h3 class="text-xl font-semibold mb-2">查看儀表板</h3>
+                    <p class="text-gray-400 text-sm">查看統計數據和分析</p>
+                </a>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="/static/portfolio.js"></script>
     </body>
     </html>
   `)

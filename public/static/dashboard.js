@@ -212,7 +212,19 @@ async function loadRecentTransactions() {
       headers: { Authorization: `Bearer ${token}` }
     });
     
-    const transactions = response.data.data;
+    console.log('Dashboard: Transaction response:', response.data);
+    
+    // Handle different response structures
+    let transactions = [];
+    if (Array.isArray(response.data.data)) {
+      transactions = response.data.data;
+    } else if (Array.isArray(response.data)) {
+      transactions = response.data;
+    } else {
+      console.warn('Dashboard: Unexpected transaction data structure:', response.data);
+      transactions = [];
+    }
+    
     const container = document.getElementById('recent-transactions');
     
     if (!container) return;
@@ -247,6 +259,10 @@ async function loadRecentTransactions() {
     console.log('Dashboard: Recent transactions loaded');
   } catch (error) {
     console.error('Dashboard: Failed to load transactions:', error);
+    const container = document.getElementById('recent-transactions');
+    if (container) {
+      container.innerHTML = '<p class="text-gray-400 text-center py-4">暫無交易記錄</p>';
+    }
   }
 }
 

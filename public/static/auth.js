@@ -234,13 +234,9 @@ const setupSignup = () => {
         
         showMessage('註冊成功！正在跳轉...', 'success');
         
-        console.log('Will redirect to /dashboard in 2 seconds');
-        
-        // Longer delay to ensure everything is ready
-        setTimeout(() => {
-          console.log('Redirecting now...');
-          window.location.href = '/dashboard';
-        }, 2000);
+        console.log('✅ Redirecting to /dashboard immediately');
+        // localStorage is synchronous, no need to wait
+        window.location.href = '/dashboard';
       }
     } catch (error) {
       console.error('Signup error:', error);
@@ -320,13 +316,9 @@ const setupLogin = () => {
         const params = new URLSearchParams(window.location.search);
         const redirect = params.get('redirect') || '/dashboard';
         
-        console.log('Will redirect to:', redirect, 'in 2 seconds');
-        
-        // Longer delay to ensure everything is ready
-        setTimeout(() => {
-          console.log('Redirecting now...');
-          window.location.href = redirect;
-        }, 2000);
+        console.log('✅ Redirecting to:', redirect, 'immediately');
+        // localStorage is synchronous, no need to wait
+        window.location.href = redirect;
       }
     } catch (error) {
       console.error('Login error:', error);
