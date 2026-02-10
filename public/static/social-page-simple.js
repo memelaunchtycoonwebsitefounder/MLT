@@ -414,14 +414,16 @@ const setupFilters = () => {
   });
 };
 
-// Setup logout
-const setupLogout = () => {
+// Setup logout (social page specific)
+const setupSocialLogout = () => {
   const logoutBtn = document.getElementById('logout-btn');
   
-  logoutBtn?.addEventListener('click', () => {
-    localStorage.removeItem('auth_token');
-    window.location.href = '/login';
-  });
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('auth_token');
+      window.location.href = '/login';
+    });
+  }
 };
 
 // Initialize page
@@ -439,7 +441,7 @@ const init = async () => {
   
   // Setup event listeners
   setupFilters();
-  setupLogout();
+  setupSocialLogout();
   
   // Load initial data
   await Promise.all([

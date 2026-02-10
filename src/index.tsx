@@ -1191,7 +1191,6 @@ app.get('/coin/:id', (c) => {
           const COIN_ID = '${coinId}';
         </script>
         <script src="/static/trading-panel.js"></script>
-        <script src="/static/social.js"></script>
         <script src="/static/comments-simple.js"></script>
         <script src="/static/realtime.js"></script>
         <script src="/static/coin-detail.js"></script>
@@ -1835,6 +1834,7 @@ app.get('/dashboard', (c) => {
                         <a href="/portfolio" class="text-gray-300 hover:text-coinbase-blue transition">我的組合</a>
                         <a href="/achievements" class="text-gray-300 hover:text-coinbase-blue transition">成就</a>
                         <a href="/leaderboard" class="text-gray-300 hover:text-coinbase-blue transition">排行榜</a>
+                        <a href="/social" class="text-gray-300 hover:text-coinbase-blue transition">社交</a>
                     </div>
                     <div class="flex items-center space-x-4">
                         <div class="glass-card px-4 py-2 rounded-lg">
