@@ -53,14 +53,20 @@ async function init() {
 function updateUserUI(user) {
   console.log('Dashboard: Updating UI for user:', user.username);
   
-  // Update balance
-  const balanceEl = document.getElementById('user-balance');
+  // Update balance in navbar
+  const balanceEl = document.getElementById('balance-display');
   if (balanceEl) {
-    balanceEl.textContent = user.virtual_balance.toLocaleString();
+    balanceEl.textContent = user.virtual_balance.toFixed(2);
+  }
+  
+  // Update total balance in stats
+  const totalBalanceEl = document.getElementById('total-balance');
+  if (totalBalanceEl) {
+    totalBalanceEl.textContent = user.virtual_balance.toFixed(2);
   }
   
   // Update username
-  const usernameEl = document.getElementById('user-username');
+  const usernameEl = document.getElementById('username-display');
   if (usernameEl) {
     usernameEl.textContent = user.username;
   }
@@ -77,25 +83,72 @@ async function loadDashboardData(user) {
     
     if (portfolioResponse.data.success) {
       const data = portfolioResponse.data.data;
+      const holdings = data.holdings || [];
       const stats = data.stats || {};
       
-      // Update portfolio value - use stats object
+      // Update portfolio value
       const portfolioValueEl = document.getElementById('portfolio-value');
-      if (portfolioValueEl && stats.totalValue !== undefined) {
-        portfolioValueEl.textContent = stats.totalValue.toLocaleString();
+      if (portfolioValueEl) {
+        portfolioValueEl.textContent = (stats.totalValue || 0).toFixed(2);
       }
       
       // Update total P/L
-      const totalPlEl = document.getElementById('total-pl');
-      if (totalPlEl) {
-        const pl = stats.totalProfitLoss || 0;
-        totalPlEl.textContent = `${pl >= 0 ? '+' : ''}${pl.toFixed(2)}`;
-        totalPlEl.className = pl >= 0 ? 'text-green-400' : 'text-red-400';
+      const totalPnlEl = document.getElementById('total-pnl');
+      if (totalPnlEl) {
+        const pnl = stats.totalProfitLoss || 0;
+        const pnlPercent = stats.totalProfitLossPercent || 0;
+        totalPnlEl.textContent = `${pnl >= 0 ? '+' : ''}${pnl.toFixed(2)} (${pnlPercent >= 0 ? '+' : ''}${pnlPercent.toFixed(2)}%)`;
+        totalPnlEl.className = `text-2xl font-bold ${pnl >= 0 ? 'text-green-400' : 'text-red-400'}`;
+      }
+      
+      // Update holdings count
+      const holdingsCountEl = document.getElementById('holdings-count');
+      if (holdingsCountEl) {
+        holdingsCountEl.textContent = holdings.length;
+      }
+      
+      // Update user holdings section
+      const userHoldingsEl = document.getElementById('user-holdings');
+      if (userHoldingsEl) {
+        if (holdings.length === 0) {
+          userHoldingsEl.innerHTML = '<p class="text-gray-400 text-center py-4">暫無持倉</p>';
+        } else {
+          userHoldingsEl.innerHTML = holdings.slice(0, 5).map(holding => `
+            <a href="/coin/${holding.coin_id}" class="block p-3 bg-white/5 rounded-lg hover:bg-white/10 transition">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <img src="${holding.coin_image_url || '/static/default-coin.svg'}" class="w-10 h-10 rounded-full" onerror="this.src='/static/default-coin.svg'">
+                  <div>
+                    <p class="font-semibold text-white">${holding.coin_name}</p>
+                    <p class="text-sm text-gray-400">${holding.amount} ${holding.coin_symbol}</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="font-semibold text-white">${(holding.current_value || 0).toFixed(2)} 金幣</p>
+                  <p class="text-sm ${(holding.profit_loss || 0) >= 0 ? 'text-green-400' : 'text-red-400'}">
+                    ${(holding.profit_loss || 0) >= 0 ? '+' : ''}${(holding.profit_loss || 0).toFixed(2)}
+                  </p>
+                </div>
+              </div>
+            </a>
+          `).join('');
+        }
       }
     }
   } catch (error) {
     console.error('Dashboard: Failed to load portfolio:', error);
-    // Don't fail the whole page if portfolio fails
+    // Set default values if portfolio fails
+    const portfolioValueEl = document.getElementById('portfolio-value');
+    if (portfolioValueEl) portfolioValueEl.textContent = '0.00';
+    
+    const totalPnlEl = document.getElementById('total-pnl');
+    if (totalPnlEl) {
+      totalPnlEl.textContent = '+0.00 (0.00%)';
+      totalPnlEl.className = 'text-2xl font-bold text-gray-400';
+    }
+    
+    const holdingsCountEl = document.getElementById('holdings-count');
+    if (holdingsCountEl) holdingsCountEl.textContent = '0';
   }
   
   // Load recent transactions
