@@ -336,12 +336,6 @@ const updateUserBalance = (balance) => {
   }
 };
 
-// Logout
-const handleLogout = () => {
-  localStorage.removeItem('auth_token');
-  window.location.href = '/login';
-};
-
 // Connect to achievement notifications via SSE
 let achievementEventSource = null;
 
@@ -463,7 +457,7 @@ const showAchievementUnlockNotification = (achievement) => {
       <p class="text-sm text-gray-300 mb-4">${achievement.description}</p>
       <div class="flex items-center justify-center space-x-4">
         <span class="px-3 py-1 rounded-full text-sm" style="background: ${rarityColor}20; color: ${rarityColor}">
-          ${getRarityLabel(achievement.rarity)}
+          ${getRarityText(achievement.rarity)}
         </span>
         <span class="text-orange-500 font-bold">
           <i class="fas fa-star mr-1"></i>+${achievement.points} XP
