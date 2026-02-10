@@ -2294,6 +2294,161 @@ app.get('/achievements', (c) => {
   `);
 })
 
+// Leaderboard page
+app.get('/leaderboard', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>排行榜 - MemeLaunch Tycoon</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
+    </head>
+    <body class="bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 min-h-screen">
+        <!-- Navigation -->
+        <nav class="glass-effect border-b border-gray-700/50 sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <a href="/" class="flex items-center space-x-2">
+                        <i class="fas fa-rocket text-2xl text-orange-500"></i>
+                        <span class="text-xl font-bold text-white">MemeLaunch Tycoon</span>
+                    </a>
+                    <div class="flex items-center space-x-6">
+                        <a href="/dashboard" class="text-gray-300 hover:text-orange-500 transition"><i class="fas fa-home mr-2"></i>儀表板</a>
+                        <a href="/market" class="text-gray-300 hover:text-orange-500 transition"><i class="fas fa-store mr-2"></i>市場</a>
+                        <a href="/portfolio" class="text-gray-300 hover:text-orange-500 transition"><i class="fas fa-briefcase mr-2"></i>投資組合</a>
+                        <a href="/achievements" class="text-gray-300 hover:text-orange-500 transition"><i class="fas fa-trophy mr-2"></i>成就</a>
+                        <a href="/leaderboard" class="text-orange-500 font-bold transition"><i class="fas fa-ranking-star mr-2"></i>排行榜</a>
+                        <div class="text-gray-300">
+                            <i class="fas fa-coins text-yellow-500 mr-2"></i>
+                            <span id="user-balance">$0</span>
+                        </div>
+                        <button id="logout-btn" class="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg transition">
+                            <i class="fas fa-sign-out-alt mr-2"></i>登出
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <!-- Header -->
+            <div class="mb-8">
+                <a href="/dashboard" class="inline-flex items-center gap-2 px-4 py-2 glass-effect rounded-lg hover:bg-white/10 transition mb-4">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>返回儀表板</span>
+                </a>
+                
+                <h1 class="text-4xl font-bold text-white mb-2">
+                    <i class="fas fa-ranking-star text-orange-500 mr-3"></i>
+                    排行榜
+                </h1>
+                <p class="text-gray-400">查看頂尖玩家，爭奪冠軍寶座！</p>
+            </div>
+
+            <!-- Category Tabs -->
+            <div class="flex flex-wrap gap-3 mb-8">
+                <button data-category="net_worth" class="category-btn active px-6 py-3 rounded-lg bg-orange-500 text-white font-bold transition hover:bg-orange-600">
+                    <i class="fas fa-wallet mr-2"></i>💰 淨資產
+                </button>
+                <button data-category="trades" class="category-btn px-6 py-3 rounded-lg glass-effect hover:bg-white/10 transition font-bold text-white">
+                    <i class="fas fa-chart-line mr-2"></i>📊 交易量
+                </button>
+                <button data-category="level" class="category-btn px-6 py-3 rounded-lg glass-effect hover:bg-white/10 transition font-bold text-white">
+                    <i class="fas fa-star mr-2"></i>⭐ 等級
+                </button>
+                <button data-category="profit" class="category-btn px-6 py-3 rounded-lg glass-effect hover:bg-white/10 transition font-bold text-white">
+                    <i class="fas fa-money-bill-trend-up mr-2"></i>💸 利潤
+                </button>
+                <button data-category="coins_created" class="category-btn px-6 py-3 rounded-lg glass-effect hover:bg-white/10 transition font-bold text-white">
+                    <i class="fas fa-rocket mr-2"></i>🚀 創建幣種
+                </button>
+            </div>
+
+            <!-- Top Three Podium -->
+            <div class="mb-12">
+                <h2 class="text-2xl font-bold text-white mb-6 text-center">
+                    🏆 前三名獎台 🏆
+                </h2>
+                <div id="top-three-container" class="min-h-[300px] flex items-center justify-center">
+                    <div class="text-gray-400">載入中...</div>
+                </div>
+            </div>
+
+            <!-- Rankings Table -->
+            <div class="glass-effect rounded-2xl overflow-hidden mb-8">
+                <div class="p-6 border-b border-gray-700/50">
+                    <h2 class="text-2xl font-bold text-white">
+                        <i class="fas fa-list-ol mr-2 text-orange-500"></i>
+                        完整排行榜
+                    </h2>
+                    <p class="text-gray-400 text-sm mt-1">前100名玩家 · 每30秒自動更新</p>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-800/50">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-300">排名</th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-300">用戶名</th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-300">數值</th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-300">等級</th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-300">創建幣種</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rankings-tbody">
+                            <tr>
+                                <td colspan="5" class="text-center py-12 text-gray-400">
+                                    <i class="fas fa-spinner fa-spin text-3xl mb-2"></i>
+                                    <p>載入排行榜中...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- User Stats Card -->
+            <div class="glass-effect rounded-2xl p-6">
+                <h2 class="text-2xl font-bold text-white mb-6">
+                    <i class="fas fa-user mr-2 text-orange-500"></i>
+                    你的統計
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="glass-effect rounded-xl p-6 text-center">
+                        <div class="text-4xl mb-2">🏅</div>
+                        <div class="text-3xl font-bold text-orange-500" id="user-rank">#-</div>
+                        <div class="text-sm text-gray-400 mt-1">排名</div>
+                    </div>
+                    <div class="glass-effect rounded-xl p-6 text-center">
+                        <div class="text-4xl mb-2">💰</div>
+                        <div class="text-2xl font-bold text-white" id="user-stat-value">$0</div>
+                        <div class="text-sm text-gray-400 mt-1">當前數值</div>
+                    </div>
+                    <div class="glass-effect rounded-xl p-6 text-center">
+                        <div class="text-4xl mb-2">📊</div>
+                        <div class="text-2xl font-bold text-white" id="user-stat-trades">0</div>
+                        <div class="text-sm text-gray-400 mt-1">交易/幣種</div>
+                    </div>
+                    <div class="glass-effect rounded-xl p-6 text-center">
+                        <div class="text-4xl mb-2">⭐</div>
+                        <div class="text-2xl font-bold text-white" id="user-stat-level">Lv.1</div>
+                        <div class="text-sm text-gray-400 mt-1">等級</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="/static/leaderboard-page.js"></script>
+    </body>
+    </html>
+  `);
+})
+
 // Redirect old dashboard auth flow to new pages
 app.get('/dashboard/login', (c) => {
   return c.redirect('/login?redirect=/dashboard')
