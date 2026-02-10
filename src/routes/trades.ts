@@ -11,6 +11,111 @@ import {
 
 const trades = new Hono<{ Bindings: Env }>();
 
+// Helper function to check and update achievements after trade
+async function checkTradeAchievements(db: any, userId: number, totalCost: number) {
+  try {
+    // Get user's total trade count
+    const tradeCount = await db.prepare(
+      'SELECT COUNT(*) as count FROM transactions WHERE user_id = ?'
+    ).bind(userId).first();
+
+    const count = tradeCount?.count || 0;
+
+    // Achievement: first_trade (1 trade)
+    if (count === 1) {
+      await updateAchievement(db, userId, 'first_trade', 1, 1);
+    }
+
+    // Achievement: trader_10 (10 trades)
+    if (count >= 10) {
+      await updateAchievement(db, userId, 'trader_10', Math.min(count, 10), 10);
+    }
+
+    // Achievement: trader_100 (100 trades)
+    if (count >= 100) {
+      await updateAchievement(db, userId, 'trader_100', Math.min(count, 100), 100);
+    }
+
+    // Achievement: whale (single trade > 10000)
+    if (totalCost >= 10000) {
+      await updateAchievement(db, userId, 'whale', 1, 1);
+    }
+
+    // Achievement: profit_king (total profit > 50000)
+    const profitResult = await db.prepare(
+      `SELECT 
+         SUM(CASE WHEN type = 'sell' THEN total_cost ELSE -total_cost END) as total_profit
+       FROM transactions
+       WHERE user_id = ?`
+    ).bind(userId).first();
+
+    if (profitResult && profitResult.total_profit >= 50000) {
+      await updateAchievement(db, userId, 'profit_king', 1, 1);
+    }
+  } catch (error) {
+    console.error('Error checking trade achievements:', error);
+  }
+}
+
+// Helper function to update achievement progress
+async function updateAchievement(db: any, userId: number, achievementKey: string, progress: number, requirement: number) {
+  try {
+    // Get achievement definition
+    const achievement = await db.prepare(
+      'SELECT id FROM achievement_definitions WHERE key = ?'
+    ).bind(achievementKey).first();
+
+    if (!achievement) return;
+
+    const achievementId = achievement.id;
+
+    // Check if user achievement exists
+    const userAchievement = await db.prepare(
+      'SELECT * FROM user_achievements WHERE user_id = ? AND achievement_id = ?'
+    ).bind(userId, achievementId).first();
+
+    const completed = progress >= requirement ? 1 : 0;
+
+    if (userAchievement) {
+      // Update existing
+      if (!userAchievement.completed && completed) {
+        // Just completed!
+        await db.prepare(
+          `UPDATE user_achievements 
+           SET progress = ?, completed = 1, completed_at = CURRENT_TIMESTAMP
+           WHERE user_id = ? AND achievement_id = ?`
+        ).bind(progress, userId, achievementId).run();
+      } else if (!userAchievement.completed) {
+        // Update progress
+        await db.prepare(
+          'UPDATE user_achievements SET progress = ? WHERE user_id = ? AND achievement_id = ?'
+        ).bind(progress, userId, achievementId).run();
+      }
+    } else {
+      // Create new
+      await db.prepare(
+        `INSERT INTO user_achievements (user_id, achievement_id, progress, completed, completed_at)
+         VALUES (?, ?, ?, ?, ${completed ? 'CURRENT_TIMESTAMP' : 'NULL'})`
+      ).bind(userId, achievementId, progress, completed).run();
+    }
+
+    // If just completed, add XP to user
+    if (completed && (!userAchievement || !userAchievement.completed)) {
+      const achDef = await db.prepare(
+        'SELECT points FROM achievement_definitions WHERE id = ?'
+      ).bind(achievementId).first();
+
+      if (achDef) {
+        await db.prepare(
+          'UPDATE users SET experience_points = experience_points + ? WHERE id = ?'
+        ).bind(achDef.points, userId).run();
+      }
+    }
+  } catch (error) {
+    console.error('Error updating achievement:', error);
+  }
+}
+
 // Buy coins
 trades.post('/buy', async (c) => {
   try {
@@ -143,6 +248,9 @@ trades.post('/buy', async (c) => {
         .bind(coinId)
         .run();
     }
+
+    // Check and update achievements
+    await checkTradeAchievements(c.env.DB, user.userId, totalCost);
 
     return successResponse({
       transactionId: txResult.meta.last_row_id,
@@ -278,6 +386,9 @@ trades.post('/sell', async (c) => {
     )
       .bind(user.userId)
       .first() as any;
+
+    // Check and update achievements
+    await checkTradeAchievements(c.env.DB, user.userId, totalRevenue);
 
     return successResponse({
       transactionId: txResult.meta.last_row_id,

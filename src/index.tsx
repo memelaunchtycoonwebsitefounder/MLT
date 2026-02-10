@@ -1389,6 +1389,9 @@ app.get('/create', (c) => {
                     <div class="flex items-center space-x-6">
                         <a href="/dashboard" class="hover:text-orange-500 transition">儀表板</a>
                         <a href="/market" class="hover:text-orange-500 transition">市場</a>
+                        <a href="/portfolio" class="hover:text-orange-500 transition">投資組合</a>
+                        <a href="/achievements" class="hover:text-orange-500 transition">成就</a>
+                        <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
                         <div class="glass-effect px-4 py-2 rounded-lg">
                             <i class="fas fa-coins text-yellow-500 mr-2"></i>
                             <span id="user-balance">--</span> 金幣
@@ -1818,6 +1821,8 @@ app.get('/dashboard', (c) => {
                         <a href="/market" class="text-gray-300 hover:text-coinbase-blue transition">市場</a>
                         <a href="/create" class="text-gray-300 hover:text-coinbase-blue transition">創建幣</a>
                         <a href="/portfolio" class="text-gray-300 hover:text-coinbase-blue transition">我的組合</a>
+                        <a href="/achievements" class="text-gray-300 hover:text-coinbase-blue transition">成就</a>
+                        <a href="/leaderboard" class="text-gray-300 hover:text-coinbase-blue transition">排行榜</a>
                     </div>
                     <div class="flex items-center space-x-4">
                         <div class="glass-card px-4 py-2 rounded-lg">
