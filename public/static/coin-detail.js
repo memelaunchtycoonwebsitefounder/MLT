@@ -639,6 +639,25 @@ const init = async () => {
       console.log('✅ Real-time updates initialized');
     }
     
+    // Initialize comments system
+    if (typeof window.SocialComments !== 'undefined') {
+      const commentsContainer = document.getElementById('comments-section');
+      if (commentsContainer && coinData) {
+        const commentsSystem = new window.SocialComments({
+          coinId: coinData.id,
+          containerId: 'comments-section',
+          maxDepth: 3,
+          pageSize: 20,
+          defaultSort: 'time',
+          enableEmoji: true,
+          enableMentions: true,
+          enableDraftSave: true
+        });
+        
+        console.log('✅ Comments system initialized');
+      }
+    }
+    
     console.log('✅ Coin detail page fully initialized');
   }
 };

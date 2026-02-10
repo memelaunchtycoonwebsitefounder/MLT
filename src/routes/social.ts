@@ -536,4 +536,103 @@ social.get('/feed', async (c) => {
   }
 });
 
+// Get recent comments across all coins
+social.get('/recent-comments', async (c) => {
+  try {
+    const limit = parseInt(c.req.query('limit') || '20');
+    const page = parseInt(c.req.query('page') || '1');
+    const offset = (page - 1) * limit;
+    
+    const comments = await c.env.DB.prepare(
+      `SELECT 
+        c.*,
+        u.username,
+        u.level,
+        co.name as coin_name,
+        (SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id) as likes_count
+       FROM comments c
+       LEFT JOIN users u ON c.user_id = u.id
+       LEFT JOIN coins co ON c.coin_id = co.id
+       WHERE c.deleted = 0
+       ORDER BY c.created_at DESC
+       LIMIT ? OFFSET ?`
+    ).bind(limit, offset).all();
+    
+    return successResponse({ comments: comments.results });
+  } catch (error: any) {
+    console.error('Get recent comments error:', error);
+    return errorResponse('獲取最新評論失敗', 500);
+  }
+});
+
+// Get popular comments (by likes)
+social.get('/popular-comments', async (c) => {
+  try {
+    const limit = parseInt(c.req.query('limit') || '20');
+    const page = parseInt(c.req.query('page') || '1');
+    const offset = (page - 1) * limit;
+    const timeframe = c.req.query('timeframe') || '7d'; // 1d, 7d, 30d, all
+    
+    let timeFilter = '';
+    if (timeframe === '1d') {
+      timeFilter = "AND c.created_at >= datetime('now', '-1 day')";
+    } else if (timeframe === '7d') {
+      timeFilter = "AND c.created_at >= datetime('now', '-7 days')";
+    } else if (timeframe === '30d') {
+      timeFilter = "AND c.created_at >= datetime('now', '-30 days')";
+    }
+    
+    const comments = await c.env.DB.prepare(
+      `SELECT 
+        c.*,
+        u.username,
+        u.level,
+        co.name as coin_name,
+        (SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id) as likes_count
+       FROM comments c
+       LEFT JOIN users u ON c.user_id = u.id
+       LEFT JOIN coins co ON c.coin_id = co.id
+       WHERE c.deleted = 0 ${timeFilter}
+       ORDER BY likes_count DESC, c.created_at DESC
+       LIMIT ? OFFSET ?`
+    ).bind(limit, offset).all();
+    
+    return successResponse({ comments: comments.results });
+  } catch (error: any) {
+    console.error('Get popular comments error:', error);
+    return errorResponse('獲取熱門評論失敗', 500);
+  }
+});
+
+// Get social statistics
+social.get('/stats', async (c) => {
+  try {
+    // Total comments
+    const totalComments = await c.env.DB.prepare(
+      `SELECT COUNT(*) as count FROM comments WHERE deleted = 0`
+    ).first();
+    
+    // Today's comments
+    const todayComments = await c.env.DB.prepare(
+      `SELECT COUNT(*) as count FROM comments 
+       WHERE deleted = 0 AND created_at >= datetime('now', 'start of day')`
+    ).first();
+    
+    // Active users (users who commented in last 7 days)
+    const activeUsers = await c.env.DB.prepare(
+      `SELECT COUNT(DISTINCT user_id) as count FROM comments 
+       WHERE deleted = 0 AND created_at >= datetime('now', '-7 days')`
+    ).first();
+    
+    return successResponse({
+      total_comments: (totalComments as any)?.count || 0,
+      today_comments: (todayComments as any)?.count || 0,
+      active_users: (activeUsers as any)?.count || 0
+    });
+  } catch (error: any) {
+    console.error('Get social stats error:', error);
+    return errorResponse('獲取社交統計失敗', 500);
+  }
+});
+
 export default social;

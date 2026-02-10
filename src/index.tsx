@@ -881,6 +881,7 @@ app.get('/coin/:id', (c) => {
                         <a href="/portfolio" class="hover:text-orange-500 transition">投資組合</a>
                         <a href="/achievements" class="hover:text-orange-500 transition">成就</a>
                         <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
+                        <a href="/social" class="hover:text-orange-500 transition">社交</a>
                     </div>
                     <div class="flex items-center space-x-4">
                         <div class="glass-effect px-4 py-2 rounded-lg">
@@ -1191,6 +1192,7 @@ app.get('/coin/:id', (c) => {
         </script>
         <script src="/static/trading-panel.js"></script>
         <script src="/static/social.js"></script>
+        <script src="/static/social-comments.js"></script>
         <script src="/static/realtime.js"></script>
         <script src="/static/coin-detail.js"></script>
     </body>
@@ -1226,6 +1228,7 @@ app.get('/market', (c) => {
                         <a href="/portfolio" class="hover:text-orange-500 transition">投資組合</a>
                         <a href="/achievements" class="hover:text-orange-500 transition">成就</a>
                         <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
+                        <a href="/social" class="hover:text-orange-500 transition">社交</a>
                     </div>
                     <div class="flex items-center space-x-4">
                         <div class="glass-effect px-4 py-2 rounded-lg">
@@ -1400,6 +1403,7 @@ app.get('/create', (c) => {
                         <a href="/portfolio" class="hover:text-orange-500 transition">投資組合</a>
                         <a href="/achievements" class="hover:text-orange-500 transition">成就</a>
                         <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
+                        <a href="/social" class="hover:text-orange-500 transition">社交</a>
                         <div class="glass-effect px-4 py-2 rounded-lg">
                             <i class="fas fa-coins text-yellow-500 mr-2"></i>
                             <span id="user-balance">--</span> 金幣
@@ -2146,6 +2150,7 @@ app.get('/achievements', (c) => {
                         <a href="/portfolio" class="hover:text-orange-500 transition">投資組合</a>
                         <a href="/achievements" class="text-orange-500 border-b-2 border-orange-500">成就</a>
                         <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
+                        <a href="/social" class="hover:text-orange-500 transition">社交</a>
                     </div>
                     <div class="flex items-center space-x-4">
                         <div class="glass-effect px-4 py-2 rounded-lg">
@@ -2444,6 +2449,169 @@ app.get('/leaderboard', (c) => {
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="/static/leaderboard-page.js"></script>
+    </body>
+    </html>
+  `);
+})
+
+// Social page - Activity feed and comments
+app.get('/social', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>社交動態 - MemeLaunch Tycoon</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
+    </head>
+    <body class="gradient-bg text-white min-h-screen">
+        <!-- Navigation -->
+        <nav class="glass-effect sticky top-0 z-50">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <a href="/" class="flex items-center space-x-2">
+                        <i class="fas fa-rocket text-2xl text-orange-500"></i>
+                        <span class="text-xl font-bold">MemeLaunch</span>
+                    </a>
+                    <div class="hidden md:flex items-center space-x-6">
+                        <a href="/dashboard" class="hover:text-orange-500 transition">儀表板</a>
+                        <a href="/market" class="hover:text-orange-500 transition">市場</a>
+                        <a href="/portfolio" class="hover:text-orange-500 transition">投資組合</a>
+                        <a href="/achievements" class="hover:text-orange-500 transition">成就</a>
+                        <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
+                        <a href="/social" class="hover:text-orange-500 transition">社交</a>
+                        <a href="/social" class="text-orange-500 border-b-2 border-orange-500">社交</a>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="glass-effect px-4 py-2 rounded-lg">
+                            <i class="fas fa-coins text-yellow-500 mr-2"></i>
+                            <span id="user-balance">--</span> 金幣
+                        </div>
+                        <button id="logout-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
+                            登出
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container mx-auto px-4 py-8">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h1 class="text-4xl font-bold mb-2">
+                        <i class="fas fa-comments mr-3"></i>
+                        社交動態
+                    </h1>
+                    <p class="text-gray-400">查看所有幣種的最新討論與活動</p>
+                </div>
+                <a href="/dashboard" class="inline-flex items-center px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    返回儀表板
+                </a>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="glass-effect rounded-2xl p-6 mb-8">
+                <div class="flex flex-wrap gap-4 items-center justify-between">
+                    <div class="flex flex-wrap gap-2">
+                        <button class="filter-btn active px-4 py-2 rounded-lg font-bold transition" data-filter="all">
+                            <i class="fas fa-globe mr-2"></i>全部動態
+                        </button>
+                        <button class="filter-btn px-4 py-2 rounded-lg font-bold transition" data-filter="following">
+                            <i class="fas fa-user-friends mr-2"></i>我的關注
+                        </button>
+                        <button class="filter-btn px-4 py-2 rounded-lg font-bold transition" data-filter="popular">
+                            <i class="fas fa-fire mr-2"></i>熱門討論
+                        </button>
+                        <button class="filter-btn px-4 py-2 rounded-lg font-bold transition" data-filter="recent">
+                            <i class="fas fa-clock mr-2"></i>最新評論
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-sync-alt text-gray-400"></i>
+                        <span class="text-sm text-gray-400">自動更新中...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Feed -->
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Main Feed -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div id="activity-feed" class="space-y-4">
+                        <!-- Loading State -->
+                        <div id="loading-state" class="glass-effect rounded-2xl p-12 text-center">
+                            <i class="fas fa-spinner fa-spin text-6xl text-orange-500 mb-4"></i>
+                            <p class="text-xl text-gray-400">載入中...</p>
+                        </div>
+                        
+                        <!-- Feed items will be loaded here -->
+                    </div>
+                    
+                    <!-- Load More Button -->
+                    <button id="load-more-btn" class="hidden w-full py-4 rounded-lg glass-effect hover:bg-white/10 transition">
+                        <i class="fas fa-arrow-down mr-2"></i>
+                        載入更多
+                    </button>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="space-y-6">
+                    <!-- Trending Coins -->
+                    <div class="glass-effect rounded-2xl p-6">
+                        <h2 class="text-2xl font-bold mb-4">
+                            <i class="fas fa-chart-line mr-2 text-orange-500"></i>
+                            熱門幣種
+                        </h2>
+                        <div id="trending-coins" class="space-y-3">
+                            <!-- Trending coins will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Active Users -->
+                    <div class="glass-effect rounded-2xl p-6">
+                        <h2 class="text-2xl font-bold mb-4">
+                            <i class="fas fa-users mr-2 text-orange-500"></i>
+                            活躍用戶
+                        </h2>
+                        <div id="active-users" class="space-y-3">
+                            <!-- Active users will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="glass-effect rounded-2xl p-6">
+                        <h2 class="text-2xl font-bold mb-4">
+                            <i class="fas fa-chart-bar mr-2 text-orange-500"></i>
+                            社交統計
+                        </h2>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-400">總評論數</span>
+                                <span id="stat-total-comments" class="text-2xl font-bold">--</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-400">今日新增</span>
+                                <span id="stat-today-comments" class="text-2xl font-bold text-green-500">--</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-400">活躍用戶</span>
+                                <span id="stat-active-users" class="text-2xl font-bold text-blue-500">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="/static/auth.js"></script>
+        <script src="/static/social-page.js"></script>
     </body>
     </html>
   `);
