@@ -42,7 +42,10 @@ class CommentsSystem {
   
   async loadComments() {
     try {
-      const response = await axios.get(`/api/social/comments/${this.coinId}?userId=${this.userId}`);
+      const token = localStorage.getItem('auth_token');
+      const response = await axios.get(`/api/social/comments/${this.coinId}?userId=${this.userId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       
       if (response.data.success) {
         this.comments = response.data.data || [];
