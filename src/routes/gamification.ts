@@ -1,8 +1,12 @@
 import { Hono } from 'hono';
 import { Env, JWTPayload } from '../types';
 import { errorResponse, successResponse } from '../utils';
+import { authMiddleware } from '../middleware';
 
 const gamification = new Hono<{ Bindings: Env }>();
+
+// Apply authentication middleware to all gamification routes
+gamification.use('*', authMiddleware);
 
 // ==================== ACHIEVEMENTS ====================
 

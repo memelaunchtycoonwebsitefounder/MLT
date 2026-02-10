@@ -64,8 +64,11 @@ socialRoutes.use('*', authMiddleware);
 socialRoutes.route('/', social);
 app.route('/api/social', socialRoutes);
 
-// Gamification routes
-app.route('/api/gamification', gamification);
+// Gamification routes (requires authentication)
+const gamificationRoutes = new Hono<{ Bindings: Env }>();
+gamificationRoutes.use('*', authMiddleware);
+gamificationRoutes.route('/', gamification);
+app.route('/api/gamification', gamificationRoutes);
 
 // Upload routes (requires authentication)
 const uploadRoutes = new Hono<{ Bindings: Env }>();
@@ -2097,6 +2100,175 @@ app.get('/portfolio', (c) => {
     </body>
     </html>
   `)
+})
+
+// Achievements page
+app.get('/achievements', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>成就系統 - MemeLaunch Tycoon</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
+    </head>
+    <body class="gradient-bg text-white min-h-screen">
+        <!-- Navigation -->
+        <nav class="glass-effect sticky top-0 z-50">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <a href="/" class="flex items-center space-x-2">
+                        <i class="fas fa-rocket text-2xl text-orange-500"></i>
+                        <span class="text-xl font-bold">MemeLaunch</span>
+                    </a>
+                    <div class="hidden md:flex items-center space-x-6">
+                        <a href="/dashboard" class="hover:text-orange-500 transition">儀表板</a>
+                        <a href="/market" class="hover:text-orange-500 transition">市場</a>
+                        <a href="/portfolio" class="hover:text-orange-500 transition">投資組合</a>
+                        <a href="/achievements" class="text-orange-500 border-b-2 border-orange-500">成就</a>
+                        <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="glass-effect px-4 py-2 rounded-lg">
+                            <i class="fas fa-coins text-yellow-500 mr-2"></i>
+                            <span id="user-balance">--</span> 金幣
+                        </div>
+                        <button id="logout-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
+                            登出
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container mx-auto px-4 py-8">
+            <!-- Page Header -->
+            <div class="mb-8">
+                <h1 class="text-5xl font-bold mb-4">
+                    <i class="fas fa-trophy text-yellow-500 mr-4"></i>
+                    成就系統
+                </h1>
+                <p class="text-xl text-gray-300">解鎖成就，獲得經驗值，提升等級！</p>
+            </div>
+
+            <!-- Level Progress Card -->
+            <div id="level-progress-card" class="glass-effect rounded-2xl p-8 mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-3xl font-bold">
+                            <span class="text-orange-500">等級 </span>
+                            <span id="user-level">1</span>
+                        </h2>
+                        <p class="text-gray-400 mt-2">
+                            <span id="current-xp">0</span> / <span id="next-level-xp">400</span> XP
+                        </p>
+                    </div>
+                    <div class="text-7xl" id="level-icon">🌟</div>
+                </div>
+                <div class="w-full h-6 bg-white/10 rounded-full overflow-hidden">
+                    <div id="xp-progress-bar" class="h-full bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <p class="text-sm text-gray-400 mt-3">
+                    還需 <span id="xp-remaining">400</span> XP 升到下一級
+                </p>
+            </div>
+
+            <!-- Achievements Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div class="glass-effect rounded-xl p-6 text-center">
+                    <div class="text-4xl mb-2">🏆</div>
+                    <div class="text-3xl font-bold" id="total-achievements">0</div>
+                    <div class="text-sm text-gray-400">總成就</div>
+                </div>
+                <div class="glass-effect rounded-xl p-6 text-center">
+                    <div class="text-4xl mb-2">✅</div>
+                    <div class="text-3xl font-bold text-green-500" id="unlocked-achievements">0</div>
+                    <div class="text-sm text-gray-400">已解鎖</div>
+                </div>
+                <div class="glass-effect rounded-xl p-6 text-center">
+                    <div class="text-4xl mb-2">⭐</div>
+                    <div class="text-3xl font-bold text-orange-500" id="total-points">0</div>
+                    <div class="text-sm text-gray-400">總積分</div>
+                </div>
+                <div class="glass-effect rounded-xl p-6 text-center">
+                    <div class="text-4xl mb-2">📈</div>
+                    <div class="text-3xl font-bold text-blue-500" id="completion-rate">0%</div>
+                    <div class="text-sm text-gray-400">完成度</div>
+                </div>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="flex flex-wrap gap-3 mb-8">
+                <button data-filter="all" class="filter-btn active px-6 py-3 rounded-lg bg-orange-500 text-white font-bold transition hover:bg-orange-600">
+                    全部
+                </button>
+                <button data-filter="unlocked" class="filter-btn px-6 py-3 rounded-lg glass-effect hover:bg-white/10 transition font-bold">
+                    已解鎖
+                </button>
+                <button data-filter="locked" class="filter-btn px-6 py-3 rounded-lg glass-effect hover:bg-white/10 transition font-bold">
+                    未解鎖
+                </button>
+                <button data-filter="trading" class="filter-btn px-6 py-3 rounded-lg glass-effect hover:bg-white/10 transition font-bold">
+                    <i class="fas fa-chart-line mr-2"></i>交易
+                </button>
+                <button data-filter="creation" class="filter-btn px-6 py-3 rounded-lg glass-effect hover:bg-white/10 transition font-bold">
+                    <i class="fas fa-rocket mr-2"></i>創作
+                </button>
+                <button data-filter="social" class="filter-btn px-6 py-3 rounded-lg glass-effect hover:bg-white/10 transition font-bold">
+                    <i class="fas fa-users mr-2"></i>社交
+                </button>
+                <button data-filter="milestone" class="filter-btn px-6 py-3 rounded-lg glass-effect hover:bg-white/10 transition font-bold">
+                    <i class="fas fa-flag mr-2"></i>里程碑
+                </button>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading-state" class="text-center py-20">
+                <i class="fas fa-spinner fa-spin text-6xl text-orange-500 mb-4"></i>
+                <p class="text-xl text-gray-400">載入成就中...</p>
+            </div>
+
+            <!-- Achievements Grid -->
+            <div id="achievements-content" class="hidden">
+                <div id="achievements-grid" class="space-y-8">
+                    <!-- Achievements will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievement Detail Modal -->
+        <div id="achievement-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
+            <div class="glass-effect rounded-2xl p-8 max-w-md w-full animate-bounce-in">
+                <div class="text-center">
+                    <div class="text-8xl mb-6" id="modal-icon">🏆</div>
+                    <h2 class="text-3xl font-bold mb-4" id="modal-name">成就名稱</h2>
+                    <p class="text-gray-300 mb-6" id="modal-description">成就描述</p>
+                    <div class="flex items-center justify-center space-x-4 mb-6">
+                        <span class="px-4 py-2 rounded-full" id="modal-rarity">普通</span>
+                        <span class="text-xl font-bold text-orange-500" id="modal-points">
+                            <i class="fas fa-star mr-2"></i>+100 XP
+                        </span>
+                    </div>
+                    <div id="modal-completed-time" class="text-sm text-gray-400 mb-4 hidden">
+                        解鎖時間: <span id="completed-at"></span>
+                    </div>
+                    <button onclick="closeModal()" class="px-8 py-3 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-lg font-bold transition">
+                        太棒了！
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="/static/gamification.js"></script>
+        <script src="/static/achievements-page.js"></script>
+    </body>
+    </html>
+  `);
 })
 
 // Redirect old dashboard auth flow to new pages
