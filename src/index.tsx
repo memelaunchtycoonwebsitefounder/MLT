@@ -879,6 +879,8 @@ app.get('/coin/:id', (c) => {
                         <a href="/dashboard" class="hover:text-orange-500 transition">儀表板</a>
                         <a href="/market" class="hover:text-orange-500 transition">市場</a>
                         <a href="/portfolio" class="hover:text-orange-500 transition">投資組合</a>
+                        <a href="/achievements" class="hover:text-orange-500 transition">成就</a>
+                        <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
                     </div>
                     <div class="flex items-center space-x-4">
                         <div class="glass-effect px-4 py-2 rounded-lg">
@@ -1222,6 +1224,7 @@ app.get('/market', (c) => {
                         <a href="/dashboard" class="hover:text-orange-500 transition">儀表板</a>
                         <a href="/market" class="text-orange-500 font-bold">市場</a>
                         <a href="/portfolio" class="hover:text-orange-500 transition">投資組合</a>
+                        <a href="/achievements" class="hover:text-orange-500 transition">成就</a>
                         <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
                     </div>
                     <div class="flex items-center space-x-4">
