@@ -342,6 +342,158 @@ const handleLogout = () => {
   window.location.href = '/login';
 };
 
+// Connect to achievement notifications via SSE
+let achievementEventSource = null;
+
+const connectToAchievementStream = () => {
+  if (!userData) return;
+  
+  const userId = userData.id;
+  achievementEventSource = new EventSource(`/api/realtime/achievements/${userId}`);
+  
+  achievementEventSource.addEventListener('connected', (e) => {
+    console.log('✅ Achievement notifications connected');
+  });
+  
+  achievementEventSource.addEventListener('achievement_unlocked', (e) => {
+    const data = JSON.parse(e.data);
+    console.log('🎉 Achievement unlocked:', data.achievement);
+    
+    // Show confetti animation
+    launchConfetti();
+    
+    // Show achievement unlock notification
+    showAchievementUnlockNotification(data.achievement);
+    
+    // Reload achievements to show updated state
+    setTimeout(() => {
+      loadAchievements();
+    }, 3000);
+  });
+  
+  achievementEventSource.addEventListener('xp_update', (e) => {
+    const data = JSON.parse(e.data);
+    console.log('⭐ XP updated:', data);
+    
+    // Update XP display
+    if (userData) {
+      userData.xp = data.xp;
+      userData.level = data.level;
+      updateLevelProgress();
+    }
+  });
+  
+  achievementEventSource.onerror = (error) => {
+    console.error('SSE error:', error);
+    achievementEventSource.close();
+    
+    // Reconnect after 5 seconds
+    setTimeout(connectToAchievementStream, 5000);
+  };
+};
+
+// Launch confetti animation (50 particles)
+const launchConfetti = () => {
+  const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8'];
+  const confettiContainer = document.createElement('div');
+  confettiContainer.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+  `;
+  document.body.appendChild(confettiContainer);
+  
+  // Create 50 confetti pieces
+  for (let i = 0; i < 50; i++) {
+    const confetti = document.createElement('div');
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const left = Math.random() * 100;
+    const animationDelay = Math.random() * 0.5;
+    const animationDuration = 3 + Math.random() * 2;
+    
+    confetti.style.cssText = `
+      position: absolute;
+      left: ${left}%;
+      top: -10px;
+      width: 10px;
+      height: 10px;
+      background: ${color};
+      opacity: 0.8;
+      animation: confetti-fall ${animationDuration}s linear ${animationDelay}s forwards;
+    `;
+    
+    confettiContainer.appendChild(confetti);
+  }
+  
+  // Remove after animation completes
+  setTimeout(() => {
+    document.body.removeChild(confettiContainer);
+  }, 5000);
+};
+
+// Show achievement unlock notification with details
+const showAchievementUnlockNotification = (achievement) => {
+  const notification = document.createElement('div');
+  notification.className = 'fixed top-20 right-4 glass-effect rounded-2xl p-6 max-w-md animate-slide-in z-[10000]';
+  notification.style.cssText = `
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    border: 2px solid rgba(255, 215, 0, 0.5);
+  `;
+  
+  const rarityColors = {
+    common: '#9CA3AF',
+    rare: '#3B82F6',
+    epic: '#A855F7',
+    legendary: '#F59E0B'
+  };
+  
+  const rarityColor = rarityColors[achievement.rarity] || '#9CA3AF';
+  
+  notification.innerHTML = `
+    <div class="text-center">
+      <div class="text-6xl mb-4">${achievement.icon || '🏆'}</div>
+      <h3 class="text-2xl font-bold mb-2" style="color: ${rarityColor}">
+        🎉 成就解鎖！
+      </h3>
+      <p class="text-xl font-bold mb-2">${achievement.name}</p>
+      <p class="text-sm text-gray-300 mb-4">${achievement.description}</p>
+      <div class="flex items-center justify-center space-x-4">
+        <span class="px-3 py-1 rounded-full text-sm" style="background: ${rarityColor}20; color: ${rarityColor}">
+          ${getRarityLabel(achievement.rarity)}
+        </span>
+        <span class="text-orange-500 font-bold">
+          <i class="fas fa-star mr-1"></i>+${achievement.points} XP
+        </span>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Remove after 5 seconds
+  setTimeout(() => {
+    notification.style.opacity = '0';
+    notification.style.transform = 'translateX(400px)';
+    notification.style.transition = 'all 0.5s ease-out';
+    setTimeout(() => {
+      document.body.removeChild(notification);
+    }, 500);
+  }, 5000);
+};
+
+const handleLogout = () => {
+  // Close SSE connection
+  if (achievementEventSource) {
+    achievementEventSource.close();
+  }
+  localStorage.removeItem('auth_token');
+  window.location.href = '/login';
+};
+
 // Show notification
 const showNotification = (message, type = 'info') => {
   const colors = {
@@ -386,6 +538,9 @@ const init = async () => {
         closeModal();
       }
     });
+    
+    // Connect to achievement notifications SSE
+    connectToAchievementStream();
     
     console.log('✅ Achievements page initialized');
   }

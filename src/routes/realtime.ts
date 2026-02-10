@@ -193,4 +193,91 @@ realtime.get('/events', async (c) => {
   });
 });
 
+/**
+ * SSE endpoint for achievement notifications
+ * Requires authentication via query parameter
+ */
+realtime.get('/achievements/:userId', async (c) => {
+  const userId = parseInt(c.req.param('userId'));
+  
+  return streamSSE(c, async (stream) => {
+    let id = 0;
+    let lastCheckTime = new Date();
+    
+    await stream.writeSSE({
+      data: JSON.stringify({ type: 'connected', message: 'Achievement notifications connected' }),
+      event: 'connected',
+      id: String(id++)
+    });
+    
+    const intervalId = setInterval(async () => {
+      try {
+        // Check for newly completed achievements since last check
+        const newAchievements = await c.env.DB.prepare(
+          `SELECT ua.*, ad.name, ad.description, ad.icon, ad.points, ad.rarity
+           FROM user_achievements ua
+           JOIN achievement_definitions ad ON ua.achievement_id = ad.id
+           WHERE ua.user_id = ? 
+             AND ua.completed = 1 
+             AND ua.completed_at > ?
+           ORDER BY ua.completed_at DESC`
+        ).bind(userId, lastCheckTime.toISOString()).all();
+        
+        if (newAchievements.results && newAchievements.results.length > 0) {
+          // Update last check time
+          lastCheckTime = new Date();
+          
+          // Send achievement unlock notification
+          for (const achievement of newAchievements.results as any[]) {
+            await stream.writeSSE({
+              data: JSON.stringify({
+                type: 'achievement_unlocked',
+                timestamp: new Date().toISOString(),
+                achievement: {
+                  id: achievement.achievement_id,
+                  name: achievement.name,
+                  description: achievement.description,
+                  icon: achievement.icon,
+                  points: achievement.points,
+                  rarity: achievement.rarity,
+                  completed_at: achievement.completed_at
+                }
+              }),
+              event: 'achievement_unlocked',
+              id: String(id++)
+            });
+          }
+        }
+        
+        // Also send current XP and level
+        const userStats = await c.env.DB.prepare(
+          'SELECT experience_points, level FROM users WHERE id = ?'
+        ).bind(userId).first() as any;
+        
+        if (userStats) {
+          await stream.writeSSE({
+            data: JSON.stringify({
+              type: 'xp_update',
+              timestamp: new Date().toISOString(),
+              xp: userStats.experience_points || 0,
+              level: userStats.level || 1
+            }),
+            event: 'xp_update',
+            id: String(id++)
+          });
+        }
+        
+      } catch (error) {
+        console.error('SSE achievement update error:', error);
+      }
+    }, 2000); // Check every 2 seconds
+    
+    stream.onAbort(() => {
+      clearInterval(intervalId);
+    });
+    
+    await stream.sleep(300000); // 5 minutes
+  });
+});
+
 export default realtime;

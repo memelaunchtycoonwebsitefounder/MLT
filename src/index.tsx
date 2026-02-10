@@ -1242,6 +1242,14 @@ app.get('/market', (c) => {
 
         <!-- Main Content -->
         <div class="container mx-auto px-4 py-8">
+            <!-- Back Button -->
+            <div class="mb-6">
+                <a href="/dashboard" class="inline-flex items-center px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    返回儀表板
+                </a>
+            </div>
+            
             <!-- Header -->
             <div class="mb-8">
                 <h1 class="text-4xl font-bold mb-2">
@@ -2154,6 +2162,14 @@ app.get('/achievements', (c) => {
 
         <!-- Main Content -->
         <div class="container mx-auto px-4 py-8">
+            <!-- Back Button -->
+            <div class="mb-6">
+                <a href="/dashboard" class="inline-flex items-center px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    返回儀表板
+                </a>
+            </div>
+            
             <!-- Page Header -->
             <div class="mb-8">
                 <h1 class="text-5xl font-bold mb-4">
