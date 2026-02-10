@@ -6,29 +6,270 @@ const social = new Hono<{ Bindings: Env }>();
 
 // ==================== COMMENTS ====================
 
-// Get comments for a coin
+// Get comments for a coin with nested replies
 social.get('/comments/:coinId', async (c) => {
   try {
     const coinId = parseInt(c.req.param('coinId'));
     const limit = parseInt(c.req.query('limit') || '50');
+    const sortBy = c.req.query('sortBy') || 'time'; // time, hot
+    const userId = c.req.query('userId'); // For checking if user liked
     
+    let orderBy = 'c.created_at DESC';
+    if (sortBy === 'hot') {
+      orderBy = '(SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id) DESC, c.created_at DESC';
+    }
+    
+    // Get top-level comments
     const comments = await c.env.DB.prepare(
       `SELECT 
         c.*,
         u.username,
         u.level,
-        (SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id) as likes_count
+        (SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id) as likes_count,
+        (SELECT COUNT(*) FROM comments WHERE parent_id = c.id) as replies_count
        FROM comments c
        LEFT JOIN users u ON c.user_id = u.id
-       WHERE c.coin_id = ? AND c.parent_id IS NULL
-       ORDER BY c.created_at DESC
+       WHERE c.coin_id = ? AND c.parent_id IS NULL AND c.deleted = 0
+       ORDER BY ${orderBy}
        LIMIT ?`
     ).bind(coinId, limit).all();
     
-    return successResponse({ comments: comments.results });
+    // Get user's likes if userId provided
+    let userLikes = new Set();
+    if (userId) {
+      const likes = await c.env.DB.prepare(
+        `SELECT comment_id FROM comment_likes WHERE user_id = ?`
+      ).bind(parseInt(userId)).all();
+      userLikes = new Set(likes.results.map((l: any) => l.comment_id));
+    }
+    
+    // For each comment, get up to 3 replies
+    const commentsWithReplies = await Promise.all(
+      comments.results.map(async (comment: any) => {
+        const replies = await c.env.DB.prepare(
+          `SELECT 
+            c.*,
+            u.username,
+            u.level,
+            (SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id) as likes_count,
+            (SELECT COUNT(*) FROM comments WHERE parent_id = c.id) as replies_count
+           FROM comments c
+           LEFT JOIN users u ON c.user_id = u.id
+           WHERE c.parent_id = ? AND c.deleted = 0
+           ORDER BY c.created_at ASC
+           LIMIT 3`
+        ).bind(comment.id).all();
+        
+        return {
+          ...comment,
+          user_liked: userLikes.has(comment.id),
+          replies: replies.results.map((r: any) => ({
+            ...r,
+            user_liked: userLikes.has(r.id)
+          })),
+          has_more_replies: comment.replies_count > 3
+        };
+      })
+    );
+    
+    return successResponse({ comments: commentsWithReplies });
   } catch (error: any) {
     console.error('Get comments error:', error);
     return errorResponse('獲取評論失敗', 500);
+  }
+});
+
+// Get more replies for a comment
+social.get('/comments/:commentId/replies', async (c) => {
+  try {
+    const commentId = parseInt(c.req.param('commentId'));
+    const offset = parseInt(c.req.query('offset') || '0');
+    const limit = parseInt(c.req.query('limit') || '10');
+    const userId = c.req.query('userId');
+    
+    const replies = await c.env.DB.prepare(
+      `SELECT 
+        c.*,
+        u.username,
+        u.level,
+        (SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id) as likes_count,
+        (SELECT COUNT(*) FROM comments WHERE parent_id = c.id) as replies_count
+       FROM comments c
+       LEFT JOIN users u ON c.user_id = u.id
+       WHERE c.parent_id = ? AND c.deleted = 0
+       ORDER BY c.created_at ASC
+       LIMIT ? OFFSET ?`
+    ).bind(commentId, limit, offset).all();
+    
+    // Get user's likes if userId provided
+    let userLikes = new Set();
+    if (userId) {
+      const likes = await c.env.DB.prepare(
+        `SELECT comment_id FROM comment_likes WHERE user_id = ?`
+      ).bind(parseInt(userId)).all();
+      userLikes = new Set(likes.results.map((l: any) => l.comment_id));
+    }
+    
+    const repliesWithLikes = replies.results.map((r: any) => ({
+      ...r,
+      user_liked: userLikes.has(r.id)
+    }));
+    
+    return successResponse({ replies: repliesWithLikes });
+  } catch (error: any) {
+    console.error('Get replies error:', error);
+    return errorResponse('獲取回覆失敗', 500);
+  }
+});
+
+// Edit a comment
+social.put('/comments/:id', async (c) => {
+  try {
+    const user = c.get('user') as JWTPayload;
+    if (!user) return errorResponse('未授權', 401);
+    
+    const commentId = parseInt(c.req.param('id'));
+    const { content } = await c.req.json();
+    
+    if (!content || content.trim().length === 0) {
+      return errorResponse('請提供有效的內容');
+    }
+    
+    if (content.length > 1000) {
+      return errorResponse('評論長度不能超過 1000 字');
+    }
+    
+    // Check if user owns the comment
+    const comment = await c.env.DB.prepare(
+      'SELECT user_id FROM comments WHERE id = ?'
+    ).bind(commentId).first() as any;
+    
+    if (!comment || comment.user_id !== user.userId) {
+      return errorResponse('無權編輯此評論', 403);
+    }
+    
+    await c.env.DB.prepare(
+      `UPDATE comments 
+       SET content = ?, edited_at = CURRENT_TIMESTAMP 
+       WHERE id = ?`
+    ).bind(content, commentId).run();
+    
+    return successResponse({ message: '評論已更新' });
+  } catch (error: any) {
+    console.error('Edit comment error:', error);
+    return errorResponse('編輯評論失敗', 500);
+  }
+});
+
+// Delete a comment (soft delete)
+social.delete('/comments/:id', async (c) => {
+  try {
+    const user = c.get('user') as JWTPayload;
+    if (!user) return errorResponse('未授權', 401);
+    
+    const commentId = parseInt(c.req.param('id'));
+    
+    // Check if user owns the comment
+    const comment = await c.env.DB.prepare(
+      'SELECT user_id FROM comments WHERE id = ?'
+    ).bind(commentId).first() as any;
+    
+    if (!comment || comment.user_id !== user.userId) {
+      return errorResponse('無權刪除此評論', 403);
+    }
+    
+    // Soft delete
+    await c.env.DB.prepare(
+      `UPDATE comments 
+       SET deleted = 1, content = '[已刪除]'
+       WHERE id = ?`
+    ).bind(commentId).run();
+    
+    return successResponse({ message: '評論已刪除' });
+  } catch (error: any) {
+    console.error('Delete comment error:', error);
+    return errorResponse('刪除評論失敗', 500);
+  }
+});
+
+// Pin/Unpin a comment (coin creator or admin only)
+social.post('/comments/:id/pin', async (c) => {
+  try {
+    const user = c.get('user') as JWTPayload;
+    if (!user) return errorResponse('未授權', 401);
+    
+    const commentId = parseInt(c.req.param('id'));
+    
+    // Get comment and coin info
+    const comment = await c.env.DB.prepare(
+      `SELECT c.coin_id, co.creator_id 
+       FROM comments c
+       JOIN coins co ON c.coin_id = co.id
+       WHERE c.id = ?`
+    ).bind(commentId).first() as any;
+    
+    if (!comment) {
+      return errorResponse('評論不存在', 404);
+    }
+    
+    // Check if user is coin creator
+    if (comment.creator_id !== user.userId) {
+      return errorResponse('只有幣種創建者可以釘選評論', 403);
+    }
+    
+    // Toggle pin status
+    const currentComment = await c.env.DB.prepare(
+      'SELECT pinned FROM comments WHERE id = ?'
+    ).bind(commentId).first() as any;
+    
+    const newPinStatus = currentComment.pinned ? 0 : 1;
+    
+    await c.env.DB.prepare(
+      'UPDATE comments SET pinned = ? WHERE id = ?'
+    ).bind(newPinStatus, commentId).run();
+    
+    return successResponse({ 
+      pinned: newPinStatus === 1,
+      message: newPinStatus ? '評論已釘選' : '已取消釘選'
+    });
+  } catch (error: any) {
+    console.error('Pin comment error:', error);
+    return errorResponse('操作失敗', 500);
+  }
+});
+
+// Report a comment
+social.post('/comments/:id/report', async (c) => {
+  try {
+    const user = c.get('user') as JWTPayload;
+    if (!user) return errorResponse('未授權', 401);
+    
+    const commentId = parseInt(c.req.param('id'));
+    const { reason } = await c.req.json();
+    
+    if (!reason || reason.trim().length === 0) {
+      return errorResponse('請提供舉報原因');
+    }
+    
+    // Check if already reported by this user
+    const existing = await c.env.DB.prepare(
+      'SELECT id FROM comment_reports WHERE user_id = ? AND comment_id = ?'
+    ).bind(user.userId, commentId).first();
+    
+    if (existing) {
+      return errorResponse('您已舉報過此評論');
+    }
+    
+    // Create report (need to add comment_reports table in migration)
+    await c.env.DB.prepare(
+      `INSERT INTO comment_reports (user_id, comment_id, reason)
+       VALUES (?, ?, ?)`
+    ).bind(user.userId, commentId, reason).run();
+    
+    return successResponse({ message: '舉報已提交，感謝您的反饋' });
+  } catch (error: any) {
+    console.error('Report comment error:', error);
+    return errorResponse('舉報失敗', 500);
   }
 });
 
