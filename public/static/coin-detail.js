@@ -640,22 +640,18 @@ const init = async () => {
     }
     
     // Initialize comments system
-    if (typeof window.SocialComments !== 'undefined') {
+    if (typeof window.CommentsSystem !== 'undefined') {
       const commentsContainer = document.getElementById('comments-section');
       if (commentsContainer && coinData) {
-        const commentsSystem = new window.SocialComments({
+        const commentsSystem = new window.CommentsSystem({
           coinId: coinData.id,
-          containerId: 'comments-section',
-          maxDepth: 3,
-          pageSize: 20,
-          defaultSort: 'time',
-          enableEmoji: true,
-          enableMentions: true,
-          enableDraftSave: true
+          containerId: 'comments-section'
         });
         
         console.log('✅ Comments system initialized');
       }
+    } else {
+      console.warn('⚠️ CommentsSystem not loaded');
     }
     
     console.log('✅ Coin detail page fully initialized');

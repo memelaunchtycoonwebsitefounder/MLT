@@ -1192,7 +1192,7 @@ app.get('/coin/:id', (c) => {
         </script>
         <script src="/static/trading-panel.js"></script>
         <script src="/static/social.js"></script>
-        <script src="/static/social-comments.js"></script>
+        <script src="/static/comments-simple.js"></script>
         <script src="/static/realtime.js"></script>
         <script src="/static/coin-detail.js"></script>
     </body>
@@ -2611,7 +2611,7 @@ app.get('/social', (c) => {
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="/static/auth.js"></script>
-        <script src="/static/social-page.js"></script>
+        <script src="/static/social-page-simple.js"></script>
     </body>
     </html>
   `);
