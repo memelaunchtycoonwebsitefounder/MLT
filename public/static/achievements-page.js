@@ -12,18 +12,22 @@ const checkAuth = async () => {
   const token = localStorage.getItem('auth_token');
   
   if (!token) {
+    console.log('❌ No auth token found, redirecting to login');
     window.location.href = '/login?redirect=/achievements';
     return null;
   }
 
   try {
+    console.log('🔐 Checking authentication...');
     const response = await axios.get('/api/auth/me', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
     if (response.data.success) {
+      console.log('✅ Authentication successful:', response.data.data);
       return response.data.data;
     } else {
+      console.log('❌ Authentication failed');
       localStorage.removeItem('auth_token');
       window.location.href = '/login?redirect=/achievements';
       return null;
@@ -276,13 +280,24 @@ const updateStats = () => {
 
 // Update level progress
 const updateLevelProgress = () => {
-  if (!userData) return;
+  if (!userData) {
+    console.error('❌ updateLevelProgress: userData is null');
+    return;
+  }
 
   const level = userData.level || 1;
   const currentXP = userData.xp || 0;
   const xpForNext = calculateXPForNextLevel(level);
   const progress = (currentXP / xpForNext) * 100;
   const remaining = xpForNext - currentXP;
+
+  console.log('📊 Updating level progress:', {
+    level,
+    currentXP,
+    xpForNext,
+    progress: `${progress.toFixed(2)}%`,
+    remaining
+  });
 
   document.getElementById('user-level').textContent = level;
   document.getElementById('current-xp').textContent = currentXP.toLocaleString();

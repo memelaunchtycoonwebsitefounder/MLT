@@ -21,20 +21,14 @@ async function checkTradeAchievements(db: any, userId: number, totalCost: number
 
     const count = tradeCount?.count || 0;
 
-    // Achievement: first_trade (1 trade)
-    if (count === 1) {
-      await updateAchievement(db, userId, 'first_trade', 1, 1);
-    }
+    // Achievement: first_trade (1 trade) - Always update progress
+    await updateAchievement(db, userId, 'first_trade', Math.min(count, 1), 1);
 
     // Achievement: trader_10 (10 trades)
-    if (count >= 10) {
-      await updateAchievement(db, userId, 'trader_10', Math.min(count, 10), 10);
-    }
+    await updateAchievement(db, userId, 'trader_10', Math.min(count, 10), 10);
 
     // Achievement: trader_100 (100 trades)
-    if (count >= 100) {
-      await updateAchievement(db, userId, 'trader_100', Math.min(count, 100), 100);
-    }
+    await updateAchievement(db, userId, 'trader_100', Math.min(count, 100), 100);
 
     // Achievement: whale (single trade > 10000)
     if (totalCost >= 10000) {
