@@ -252,320 +252,32 @@ const renderTransactions = (transactions) => {
 
 // Initialize price chart with Lightweight Charts (TradingView-style)
 const initPriceChart = async (limit = 100) => {
-  const container = document.getElementById('price-chart');
-  const volumeContainer = document.getElementById('volume-chart');
-  if (!container || !volumeContainer) return;
-  
-  // Destroy existing charts if they exist
-  if (chart) {
-    chart.remove();
-    chart = null;
-  }
-  if (volumeChart) {
-    volumeChart.remove();
-    volumeChart = null;
-  }
+  console.log('📊 Loading chart data with limit:', limit);
   
   try {
-    // Load real price history from API with limit parameter
-    console.log('📊 Loading chart data with limit:', limit);
+    // Load real price history from API
     const response = await axios.get(`/api/coins/${COIN_ID}/price-history?limit=${limit}`);
     
-    // Create main price chart with enhanced settings
-    chart = LightweightCharts.createChart(container, {
-      width: container.clientWidth,
-      height: 384,
-      layout: {
-        background: { color: 'transparent' },
-        textColor: '#9CA3AF',
-        fontSize: 12,
-        fontFamily: 'Inter, sans-serif',
-      },
-      grid: {
-        vertLines: { 
-          color: 'rgba(255, 255, 255, 0.08)',
-          style: 1,
-          visible: true,
-        },
-        horzLines: { 
-          color: 'rgba(255, 255, 255, 0.08)',
-          style: 1,
-          visible: true,
-        },
-      },
-      crosshair: {
-        mode: LightweightCharts.CrosshairMode.Normal,
-        vertLine: {
-          width: 1,
-          color: 'rgba(249, 115, 22, 0.5)',
-          style: 3,
-          labelBackgroundColor: '#f97316',
-        },
-        horzLine: {
-          width: 1,
-          color: 'rgba(249, 115, 22, 0.5)',
-          style: 3,
-          labelBackgroundColor: '#f97316',
-        },
-      },
-      rightPriceScale: {
-        borderColor: 'rgba(255, 255, 255, 0.2)',
-        scaleMargins: {
-          top: 0.1,
-          bottom: 0.2,
-        },
-        borderVisible: true,
-        visible: true,
-      },
-      leftPriceScale: {
-        visible: false,
-      },
-      timeScale: {
-        borderColor: 'rgba(255, 255, 255, 0.2)',
-        timeVisible: true,
-        secondsVisible: false,
-        borderVisible: true,
-        fixLeftEdge: true,
-        fixRightEdge: true,
-      },
-      watermark: {
-        visible: true,
-        fontSize: 48,
-        horzAlign: 'center',
-        vertAlign: 'center',
-        color: 'rgba(255, 255, 255, 0.02)',
-        text: coinData ? coinData.symbol : '',
-      },
-    });
-    
-    // Add candlestick series
-    candlestickSeries = chart.addCandlestickSeries({
-      upColor: '#10b981',
-      downColor: '#ef4444',
-      borderDownColor: '#ef4444',
-      borderUpColor: '#10b981',
-      wickDownColor: '#ef4444',
-      wickUpColor: '#10b981',
-    });
-    
-    // Process data with strict validation
-    if (response.data.success && response.data.data.data.length > 0) {
-      const history = response.data.data.data;
-      
-      // Convert to candlestick data with STRICT validation
-      const candleData = history
-        .filter(h => {
-          // Strict filtering: must have valid price and timestamp
-          return h && 
-                 h.price !== null && 
-                 h.price !== undefined && 
-                 h.timestamp !== null && 
-                 h.timestamp !== undefined &&
-                 !isNaN(parseFloat(h.price)) &&
-                 parseFloat(h.price) > 0;
-        })
-        .map(h => {
-          const timestamp = new Date(h.timestamp).getTime() / 1000;
-          const price = parseFloat(h.price);
-          const variance = price * 0.002; // 0.2% variance for candle
-          
-          const open = price - variance;
-          const high = price + variance;
-          const low = price - variance * 1.5;
-          const close = price;
-          
-          return {
-            time: timestamp,
-            open: open,
-            high: high,
-            low: low,
-            close: close,
-          };
-        })
-        .filter(candle => {
-          // Final validation: all values must be valid numbers
-          return candle.time > 0 &&
-                 !isNaN(candle.open) && candle.open > 0 &&
-                 !isNaN(candle.high) && candle.high > 0 &&
-                 !isNaN(candle.low) && candle.low > 0 &&
-                 !isNaN(candle.close) && candle.close > 0 &&
-                 candle.open !== null && candle.high !== null && 
-                 candle.low !== null && candle.close !== null;
-        });
-      
-      if (candleData.length === 0) {
-        console.warn('⚠️ No valid candle data after filtering, using current price as fallback');
-        // Use current price as fallback
-        if (coinData && coinData.current_price) {
-          const now = Math.floor(Date.now() / 1000);
-          const price = parseFloat(coinData.current_price);
-          if (!isNaN(price) && price > 0) {
-            const variance = price * 0.002;
-            candleData.push({
-              time: now,
-              open: price,
-              high: price + variance,
-              low: price - variance,
-              close: price,
-            });
-            console.log('📊 Using fallback: 1 candle from current price');
-          }
-        }
-        
-        if (candleData.length === 0) {
-          console.error('❌ Cannot create chart: no valid data');
-          return;
-        }
-      }
-      
-      console.log('📊 Setting', candleData.length, 'candles to chart');
-      candlestickSeries.setData(candleData);
-      
-      // Setup crosshair move event to display OHLC data with validation
-      chart.subscribeCrosshairMove((param) => {
-        if (param.time) {
-          const data = param.seriesData.get(candlestickSeries);
-          if (data && data.open && data.high && data.low && data.close) {
-            // Safe DOM updates with validation
-            const openEl = document.getElementById('ohlc-open');
-            const highEl = document.getElementById('ohlc-high');
-            const lowEl = document.getElementById('ohlc-low');
-            const closeEl = document.getElementById('ohlc-close');
-            const volumeEl = document.getElementById('ohlc-volume');
-            const panelEl = document.getElementById('ohlc-data');
-            
-            if (openEl) openEl.textContent = `$${data.open.toFixed(8)}`;
-            if (highEl) highEl.textContent = `$${data.high.toFixed(8)}`;
-            if (lowEl) lowEl.textContent = `$${data.low.toFixed(8)}`;
-            if (closeEl) closeEl.textContent = `$${data.close.toFixed(8)}`;
-            
-            // Find corresponding volume data
-            const volumeData = history.find(h => new Date(h.timestamp).getTime() / 1000 === param.time);
-            if (volumeData && volumeEl) {
-              volumeEl.textContent = (volumeData.volume || 0).toLocaleString();
-            }
-            
-            // Show OHLC panel
-            if (panelEl) {
-              panelEl.classList.remove('hidden');
-              panelEl.classList.add('flex');
-            }
-          }
-        }
-      });
-      
-      // Create volume chart
-      volumeChart = LightweightCharts.createChart(volumeContainer, {
-        width: volumeContainer.clientWidth,
-        height: 128,
-        layout: {
-          background: { color: 'transparent' },
-          textColor: '#9CA3AF',
-        },
-        grid: {
-          vertLines: { color: 'rgba(255, 255, 255, 0.05)' },
-          horzLines: { color: 'rgba(255, 255, 255, 0.05)' },
-        },
-        rightPriceScale: {
-          borderColor: 'rgba(255, 255, 255, 0.1)',
-        },
-        timeScale: {
-          borderColor: 'rgba(255, 255, 255, 0.1)',
-          timeVisible: true,
-          secondsVisible: false,
-        },
-      });
-      
-      volumeSeries = volumeChart.addHistogramSeries({
-        color: '#f97316',
-        priceFormat: {
-          type: 'volume',
-        },
-        priceScaleId: '',
-      });
-      
-      // Add volume data with STRICT validation
-      const volumeData = history
-        .filter(h => {
-          // Must have valid price and timestamp
-          return h && 
-                 h.price !== null && 
-                 h.price !== undefined && 
-                 h.timestamp !== null && 
-                 h.timestamp !== undefined &&
-                 !isNaN(parseFloat(h.price)) &&
-                 parseFloat(h.price) > 0;
-        })
-        .map((h, index) => {
-          const prevPrice = index > 0 && history[index - 1] && history[index - 1].price 
-            ? parseFloat(history[index - 1].price) 
-            : parseFloat(h.price);
-          const currentPrice = parseFloat(h.price);
-          const isUp = currentPrice >= prevPrice;
-          
-          const timestamp = new Date(h.timestamp).getTime() / 1000;
-          const volume = h.volume && !isNaN(parseFloat(h.volume)) 
-            ? parseFloat(h.volume) 
-            : Math.random() * 500 + 500; // Random volume between 500-1000
-          
-          return {
-            time: timestamp,
-            value: volume,
-            color: isUp ? '#10b981' : '#ef4444',
-          };
-        })
-        .filter(v => {
-          // Final validation
-          return v.time > 0 && 
-                 !isNaN(v.value) && 
-                 v.value > 0 &&
-                 v.value !== null &&
-                 v.value !== undefined;
-        });
-      
-      if (volumeData.length > 0) {
-        console.log('📊 Setting', volumeData.length, 'volume bars to chart');
-        volumeSeries.setData(volumeData);
-      } else {
-        console.warn('⚠️ No valid volume data');
-      }
-      
-      console.log('✅ TradingView chart loaded with', history.length, 'data points');
-    } else {
-      // Fallback: Use current price
-      const now = Math.floor(Date.now() / 1000);
-      const price = coinData.current_price;
-      
-      candlestickSeries.setData([{
-        time: now,
-        open: price,
-        high: price,
-        low: price,
-        close: price,
-      }]);
+    if (!response.data.success) {
+      console.error('❌ Failed to load price history');
+      return false;
     }
     
-    // Sync time scales
-    chart.timeScale().fitContent();
-    if (volumeChart) {
-      volumeChart.timeScale().fitContent();
+    const history = response.data.data.data || [];
+    console.log('📊 Loaded', history.length, 'price history records');
+    
+    // Call the simple Chart.js function from chart-simple.js
+    const success = await window.initSimpleCharts(coinData, history, limit);
+    
+    if (success) {
+      console.log('✅ Chart.js charts initialized successfully');
     }
     
-    // Handle resize
-    const resizeObserver = new ResizeObserver(() => {
-      if (chart && container) {
-        chart.applyOptions({ width: container.clientWidth });
-      }
-      if (volumeChart && volumeContainer) {
-        volumeChart.applyOptions({ width: volumeContainer.clientWidth });
-      }
-    });
-    
-    resizeObserver.observe(container);
-    
+    return success;
   } catch (error) {
-    console.error('Price chart error:', error);
+    console.error('❌ Price chart error:', error);
     showNotification('無法載入價格圖表', 'error');
+    return false;
   }
 };
 
@@ -970,7 +682,7 @@ const init = async () => {
   
   if (userData) {
     console.log('User authenticated:', userData.username);
-    updateUserBalance(userData.virtual_balance);
+    updateUserBalance(userData.virtual_balance, userData.mlt_balance);
     
     await loadCoinData();
     

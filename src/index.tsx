@@ -870,8 +870,8 @@ app.get('/coin/:id', (c) => {
         <title>幣種詳情 - MemeLaunch Tycoon</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
-        <link href="/static/styles.css" rel="stylesheet">
-        <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+        <link href="/static/styles.css" rel="stylesheet>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <!-- Navigation -->
@@ -988,8 +988,12 @@ app.get('/coin/:id', (c) => {
                                     </div>
                                 </div>
                             </div>
-                            <div id="price-chart" class="relative h-96 bg-gray-900/50 rounded-lg"></div>
-                            <div id="volume-chart" class="relative h-32 bg-gray-900/50 rounded-lg mt-2"></div>
+                            <div class="bg-gray-900/50 rounded-lg p-4">
+                                <canvas id="price-chart" class="w-full" style="height: 384px;"></canvas>
+                            </div>
+                            <div class="bg-gray-900/50 rounded-lg p-2 mt-2">
+                                <canvas id="volume-chart" class="w-full" style="height: 128px;"></canvas>
+                            </div>
                         </div>
 
                         <!-- Stats Grid -->
@@ -1269,6 +1273,7 @@ app.get('/coin/:id', (c) => {
         <script>
           const COIN_ID = '${coinId}';
         </script>
+        <script src="/static/chart-simple.js"></script>
         <script src="/static/trading-panel.js"></script>
         <script src="/static/comments-simple.js"></script>
         <script src="/static/realtime.js"></script>
