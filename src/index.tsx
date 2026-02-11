@@ -2624,6 +2624,71 @@ app.get('/social', (c) => {
   `);
 })
 
+// User Profile page
+app.get('/profile/:userId', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>用戶資料 - MemeLaunch</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
+        <style>
+          .tab-btn { opacity: 0.6; }
+          .tab-btn.active { opacity: 1; border-bottom: 2px solid #f97316; }
+        </style>
+    </head>
+    <body class="bg-gray-900 text-white min-h-screen">
+        <!-- Navigation -->
+        <nav class="glass-effect sticky top-0 z-40 border-b border-white/10">
+            <div class="container mx-auto px-4">
+                <div class="flex items-center justify-between h-16">
+                    <a href="/" class="flex items-center space-x-2">
+                        <i class="fas fa-rocket text-2xl text-orange-500"></i>
+                        <span class="text-xl font-bold">MemeLaunch</span>
+                    </a>
+                    <div class="hidden md:flex items-center space-x-6">
+                        <a href="/dashboard" class="hover:text-orange-500 transition">儀表板</a>
+                        <a href="/market" class="hover:text-orange-500 transition">市場</a>
+                        <a href="/portfolio" class="hover:text-orange-500 transition">投資組合</a>
+                        <a href="/achievements" class="hover:text-orange-500 transition">成就</a>
+                        <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
+                        <a href="/social" class="hover:text-orange-500 transition">社交</a>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="glass-effect px-4 py-2 rounded-lg">
+                            <i class="fas fa-coins text-yellow-500 mr-2"></i>
+                            <span id="user-balance">--</span> 金幣
+                        </div>
+                        <button id="logout-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
+                            登出
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container mx-auto px-4 py-8">
+            <div id="profile-content">
+                <!-- Loading -->
+                <div class="text-center py-20">
+                    <i class="fas fa-spinner fa-spin text-6xl text-orange-500 mb-4"></i>
+                    <p class="text-xl text-gray-400">載入中...</p>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="/static/profile-page.js"></script>
+    </body>
+    </html>
+  `);
+})
+
 // Redirect old dashboard auth flow to new pages
 app.get('/dashboard/login', (c) => {
   return c.redirect('/login?redirect=/dashboard')

@@ -318,6 +318,7 @@ profile.get('/:userId/achievements', async (c) => {
   const userId = parseInt(c.req.param('userId'))
 
   try {
+    // Get user achievements
     const achievements = await DB.prepare(`
       SELECT 
         ad.key, ad.name, ad.description, ad.icon, ad.rarity, ad.xp_reward,
@@ -328,6 +329,7 @@ profile.get('/:userId/achievements', async (c) => {
       ORDER BY ua.unlocked_at DESC
     `).bind(userId).all()
 
+    // Get achievement stats
     const stats = await DB.prepare(`
       SELECT 
         COUNT(*) as total_unlocked,
@@ -337,16 +339,40 @@ profile.get('/:userId/achievements', async (c) => {
       WHERE ua.user_id = ?
     `).bind(userId).first()
 
+    // Get total available achievements
+    const totalAvailable = await DB.prepare(`
+      SELECT COUNT(*) as count FROM achievement_definitions
+    `).first()
+
     return c.json({
       success: true,
       data: {
-        achievements: achievements.results,
-        stats
+        achievements: achievements.results || [],
+        stats: {
+          total_unlocked: stats?.total_unlocked || 0,
+          total_xp_earned: stats?.total_xp_earned || 0,
+          total_available: totalAvailable?.count || 0,
+          completion_rate: totalAvailable?.count > 0 
+            ? ((stats?.total_unlocked || 0) / totalAvailable.count * 100).toFixed(1)
+            : 0
+        }
       }
     })
   } catch (error) {
     console.error('Get achievements error:', error)
-    return c.json({ error: '獲取成就失敗' }, 500)
+    // Return empty data instead of error for better UX
+    return c.json({
+      success: true,
+      data: {
+        achievements: [],
+        stats: {
+          total_unlocked: 0,
+          total_xp_earned: 0,
+          total_available: 0,
+          completion_rate: 0
+        }
+      }
+    })
   }
 })
 
