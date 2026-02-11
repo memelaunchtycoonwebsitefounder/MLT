@@ -950,11 +950,36 @@ app.get('/coin/:id', (c) => {
                             <h2 class="text-2xl font-bold mb-6">
                                 <i class="fas fa-chart-line mr-2"></i>價格走勢
                             </h2>
-                            <div class="mb-4 flex space-x-2">
-                                <button class="timeframe-btn active bg-orange-500 px-4 py-2 rounded-lg transition hover:bg-orange-600" data-timeframe="1h">1小時</button>
-                                <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="24h">24小時</button>
-                                <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="7d">7天</button>
-                                <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="30d">30天</button>
+                            <div class="mb-4 flex justify-between items-center">
+                                <div class="flex space-x-2">
+                                    <button class="timeframe-btn active bg-orange-500 px-4 py-2 rounded-lg transition hover:bg-orange-600" data-timeframe="1h">1小時</button>
+                                    <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="24h">24小時</button>
+                                    <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="7d">7天</button>
+                                    <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="30d">30天</button>
+                                </div>
+                                <!-- OHLC Data Display -->
+                                <div id="ohlc-data" class="hidden md:flex space-x-4 text-sm">
+                                    <div class="flex items-center space-x-1">
+                                        <span class="text-gray-400">O:</span>
+                                        <span id="ohlc-open" class="font-mono text-white">--</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1">
+                                        <span class="text-gray-400">H:</span>
+                                        <span id="ohlc-high" class="font-mono text-green-400">--</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1">
+                                        <span class="text-gray-400">L:</span>
+                                        <span id="ohlc-low" class="font-mono text-red-400">--</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1">
+                                        <span class="text-gray-400">C:</span>
+                                        <span id="ohlc-close" class="font-mono text-white">--</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1">
+                                        <span class="text-gray-400">Vol:</span>
+                                        <span id="ohlc-volume" class="font-mono text-orange-400">--</span>
+                                    </div>
+                                </div>
                             </div>
                             <div id="price-chart" class="relative h-96 bg-gray-900/50 rounded-lg"></div>
                             <div id="volume-chart" class="relative h-32 bg-gray-900/50 rounded-lg mt-2"></div>

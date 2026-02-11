@@ -234,28 +234,70 @@ const initPriceChart = async () => {
     // Load real price history from API
     const response = await axios.get(`/api/coins/${COIN_ID}/price-history?limit=100`);
     
-    // Create main price chart
+    // Create main price chart with enhanced settings
     chart = LightweightCharts.createChart(container, {
       width: container.clientWidth,
       height: 384,
       layout: {
         background: { color: 'transparent' },
         textColor: '#9CA3AF',
+        fontSize: 12,
+        fontFamily: 'Inter, sans-serif',
       },
       grid: {
-        vertLines: { color: 'rgba(255, 255, 255, 0.05)' },
-        horzLines: { color: 'rgba(255, 255, 255, 0.05)' },
+        vertLines: { 
+          color: 'rgba(255, 255, 255, 0.08)',
+          style: 1,
+          visible: true,
+        },
+        horzLines: { 
+          color: 'rgba(255, 255, 255, 0.08)',
+          style: 1,
+          visible: true,
+        },
       },
       crosshair: {
         mode: LightweightCharts.CrosshairMode.Normal,
+        vertLine: {
+          width: 1,
+          color: 'rgba(249, 115, 22, 0.5)',
+          style: 3,
+          labelBackgroundColor: '#f97316',
+        },
+        horzLine: {
+          width: 1,
+          color: 'rgba(249, 115, 22, 0.5)',
+          style: 3,
+          labelBackgroundColor: '#f97316',
+        },
       },
       rightPriceScale: {
-        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderColor: 'rgba(255, 255, 255, 0.2)',
+        scaleMargins: {
+          top: 0.1,
+          bottom: 0.2,
+        },
+        borderVisible: true,
+        visible: true,
+      },
+      leftPriceScale: {
+        visible: false,
       },
       timeScale: {
-        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderColor: 'rgba(255, 255, 255, 0.2)',
         timeVisible: true,
         secondsVisible: false,
+        borderVisible: true,
+        fixLeftEdge: true,
+        fixRightEdge: true,
+      },
+      watermark: {
+        visible: true,
+        fontSize: 48,
+        horzAlign: 'center',
+        vertAlign: 'center',
+        color: 'rgba(255, 255, 255, 0.02)',
+        text: coinData ? coinData.symbol : '',
       },
     });
     
@@ -289,6 +331,29 @@ const initPriceChart = async () => {
       });
       
       candlestickSeries.setData(candleData);
+      
+      // Setup crosshair move event to display OHLC data
+      chart.subscribeCrosshairMove((param) => {
+        if (param.time) {
+          const data = param.seriesData.get(candlestickSeries);
+          if (data) {
+            document.getElementById('ohlc-open').textContent = `$${data.open.toFixed(8)}`;
+            document.getElementById('ohlc-high').textContent = `$${data.high.toFixed(8)}`;
+            document.getElementById('ohlc-low').textContent = `$${data.low.toFixed(8)}`;
+            document.getElementById('ohlc-close').textContent = `$${data.close.toFixed(8)}`;
+            
+            // Find corresponding volume data
+            const volumeData = history.find(h => new Date(h.timestamp).getTime() / 1000 === param.time);
+            if (volumeData) {
+              document.getElementById('ohlc-volume').textContent = (volumeData.volume || 0).toLocaleString();
+            }
+            
+            // Show OHLC panel
+            document.getElementById('ohlc-data').classList.remove('hidden');
+            document.getElementById('ohlc-data').classList.add('flex');
+          }
+        }
+      });
       
       // Create volume chart
       volumeChart = LightweightCharts.createChart(volumeContainer, {
