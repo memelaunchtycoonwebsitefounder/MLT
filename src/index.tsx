@@ -17,6 +17,7 @@ import cron from './routes/cron';
 import realtime from './routes/realtime';
 import social from './routes/social';
 import gamification from './routes/gamification';
+import profile from './routes/profile';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -63,6 +64,12 @@ const socialRoutes = new Hono<{ Bindings: Env }>();
 socialRoutes.use('*', authMiddleware);
 socialRoutes.route('/', social);
 app.route('/api/social', socialRoutes);
+
+// Profile routes (with auth)
+const profileRoutes = new Hono<{ Bindings: Env }>();
+profileRoutes.use('*', authMiddleware);
+profileRoutes.route('/', profile);
+app.route('/api/profile', profileRoutes);
 
 // Gamification routes (requires authentication)
 const gamificationRoutes = new Hono<{ Bindings: Env }>();
