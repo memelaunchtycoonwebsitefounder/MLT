@@ -200,7 +200,7 @@ const renderTransactions = (transactions) => {
 };
 
 // Initialize price chart
-const initPriceChart = () => {
+const initPriceChart = async () => {
   const ctx = document.getElementById('price-chart');
   if (!ctx) return;
   
@@ -210,56 +210,211 @@ const initPriceChart = () => {
     priceChart = null;
   }
   
-  // Generate sample price data
-  const now = Date.now();
-  const labels = [];
-  const prices = [];
-  const basePrice = coinData.current_price;
-  
-  for (let i = 23; i >= 0; i--) {
-    labels.push(new Date(now - i * 3600000).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' }));
-    prices.push(basePrice * (1 + (Math.random() * 0.2 - 0.1)));
-  }
-  
-  priceChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: '價格',
-        data: prices,
-        borderColor: 'rgb(249, 115, 22)',
-        backgroundColor: 'rgba(249, 115, 22, 0.1)',
-        borderWidth: 2,
-        fill: true,
-        tension: 0.4
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: (context) => `$${context.parsed.y.toFixed(8)}`
-          }
-        }
-      },
-      scales: {
-        y: {
-          ticks: {
-            callback: (value) => `$${value.toFixed(8)}`,
-            color: '#9ca3af'
-          },
-          grid: { color: 'rgba(255, 255, 255, 0.1)' }
-        },
-        x: {
-          ticks: { color: '#9ca3af' },
-          grid: { color: 'rgba(255, 255, 255, 0.1)' }
-        }
+  try {
+    // Load real price history from API
+    const response = await axios.get(`/api/coins/${COIN_ID}/price-history?limit=100`);
+    
+    let labels = [];
+    let prices = [];
+    
+    if (response.data.success && response.data.data.data.length > 0) {
+      // Use real historical data
+      const history = response.data.data.data;
+      
+      labels = history.map(h => {
+        const date = new Date(h.timestamp);
+        return date.toLocaleTimeString('zh-TW', { 
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit', 
+          minute: '2-digit' 
+        });
+      });
+      
+      prices = history.map(h => h.price);
+    } else {
+      // Fallback: Generate sample data if no history
+      const now = Date.now();
+      const basePrice = coinData.current_price;
+      
+      for (let i = 23; i >= 0; i--) {
+        labels.push(new Date(now - i * 3600000).toLocaleTimeString('zh-TW', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        }));
+        prices.push(basePrice * (1 + (Math.random() * 0.1 - 0.05)));
       }
     }
+    
+    // Create gradient
+    const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 320);
+    gradient.addColorStop(0, 'rgba(249, 115, 22, 0.3)');
+    gradient.addColorStop(1, 'rgba(249, 115, 22, 0.0)');
+    
+    priceChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: '價格',
+          data: prices,
+          borderColor: 'rgb(249, 115, 22)',
+          backgroundColor: gradient,
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 0,
+          pointHoverRadius: 6,
+          pointHoverBackgroundColor: 'rgb(249, 115, 22)',
+          pointHoverBorderColor: '#fff',
+          pointHoverBorderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          intersect: false,
+          mode: 'index'
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: 'rgb(249, 115, 22)',
+            borderWidth: 1,
+            padding: 12,
+            displayColors: false,
+            callbacks: {
+              title: (context) => {
+                return context[0].label;
+              },
+              label: (context) => {
+                const price = context.parsed.y;
+                return `價格: $${price.toFixed(8)}`;
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            ticks: {
+              callback: (value) => `$${value.toFixed(6)}`,
+              color: '#9ca3af',
+              font: { size: 11 }
+            },
+            grid: { 
+              color: 'rgba(255, 255, 255, 0.05)',
+              drawBorder: false
+            }
+          },
+          x: {
+            ticks: { 
+              color: '#9ca3af',
+              font: { size: 11 },
+              maxRotation: 0,
+              autoSkip: true,
+              maxTicksLimit: 8
+            },
+            grid: { 
+              color: 'rgba(255, 255, 255, 0.05)',
+              drawBorder: false
+            }
+          }
+        }
+      }
+    });
+    
+    console.log('✅ Price chart loaded with', prices.length, 'data points');
+  } catch (error) {
+    console.error('Failed to load price chart:', error);
+    // Still show a chart with current price
+    const basePrice = coinData.current_price;
+    const now = Date.now();
+    const labels = [];
+    const prices = [];
+    
+    for (let i = 23; i >= 0; i--) {
+      labels.push(new Date(now - i * 3600000).toLocaleTimeString('zh-TW', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      }));
+      prices.push(basePrice);
+    }
+    
+    priceChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: '價格',
+          data: prices,
+          borderColor: 'rgb(249, 115, 22)',
+          backgroundColor: 'rgba(249, 115, 22, 0.1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            ticks: {
+              callback: (value) => `$${value.toFixed(8)}`,
+              color: '#9ca3af'
+            },
+            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+          },
+          x: {
+            ticks: { color: '#9ca3af' },
+            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+          }
+        }
+      }
+    });
+  }
+};
+
+// Setup timeframe buttons for chart
+const setupTimeframeButtons = () => {
+  const buttons = document.querySelectorAll('.timeframe-btn');
+  
+  buttons.forEach(btn => {
+    btn.addEventListener('click', async () => {
+      // Update active state
+      buttons.forEach(b => b.classList.remove('active', 'bg-orange-500'));
+      btn.classList.add('active', 'bg-orange-500');
+      
+      // Get timeframe
+      const timeframe = btn.dataset.timeframe;
+      
+      // Calculate limit based on timeframe
+      let limit = 24; // default 24 hours
+      switch(timeframe) {
+        case '1h':
+          limit = 60; // 60 minutes of data
+          break;
+        case '24h':
+          limit = 24; // 24 hours
+          break;
+        case '7d':
+          limit = 168; // 7 days * 24 hours
+          break;
+        case '30d':
+          limit = 720; // 30 days * 24 hours
+          break;
+      }
+      
+      // Reload chart with new timeframe
+      await initPriceChart();
+    });
   });
 };
 
@@ -597,6 +752,7 @@ const init = async () => {
     setupTradingTabs();
     setupTradeInputs();
     setupShareButtons();
+    setupTimeframeButtons();
     
     document.getElementById('logout-btn')?.addEventListener('click', handleLogout);
     

@@ -951,10 +951,10 @@ app.get('/coin/:id', (c) => {
                                 <i class="fas fa-chart-line mr-2"></i>價格走勢
                             </h2>
                             <div class="mb-4 flex space-x-2">
-                                <button class="timeframe-btn active px-4 py-2 rounded-lg transition" data-timeframe="1h">1小時</button>
-                                <button class="timeframe-btn px-4 py-2 rounded-lg transition" data-timeframe="24h">24小時</button>
-                                <button class="timeframe-btn px-4 py-2 rounded-lg transition" data-timeframe="7d">7天</button>
-                                <button class="timeframe-btn px-4 py-2 rounded-lg transition" data-timeframe="30d">30天</button>
+                                <button class="timeframe-btn active bg-orange-500 px-4 py-2 rounded-lg transition hover:bg-orange-600" data-timeframe="1h">1小時</button>
+                                <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="24h">24小時</button>
+                                <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="7d">7天</button>
+                                <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="30d">30天</button>
                             </div>
                             <div class="relative h-80">
                                 <canvas id="price-chart"></canvas>
