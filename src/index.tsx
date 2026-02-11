@@ -871,7 +871,7 @@ app.get('/coin/:id', (c) => {
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+        <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <!-- Navigation -->
@@ -956,9 +956,8 @@ app.get('/coin/:id', (c) => {
                                 <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="7d">7天</button>
                                 <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="30d">30天</button>
                             </div>
-                            <div class="relative h-80">
-                                <canvas id="price-chart"></canvas>
-                            </div>
+                            <div id="price-chart" class="relative h-96 bg-gray-900/50 rounded-lg"></div>
+                            <div id="volume-chart" class="relative h-32 bg-gray-900/50 rounded-lg mt-2"></div>
                         </div>
 
                         <!-- Stats Grid -->
@@ -1009,6 +1008,24 @@ app.get('/coin/:id', (c) => {
                     <div class="space-y-6">
                         <!-- Trading Panel -->
                         <div class="glass-effect rounded-2xl p-6">
+                            <!-- Bonding Curve Progress -->
+                            <div class="mb-6 p-4 bg-gradient-to-r from-orange-500/20 to-purple-500/20 rounded-xl border border-orange-500/30">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-bold">
+                                        <i class="fas fa-chart-line mr-1"></i>
+                                        Bonding Curve 進度
+                                    </span>
+                                    <span id="bonding-progress-percent" class="text-sm font-bold text-orange-500">0%</span>
+                                </div>
+                                <div class="relative h-3 bg-black/30 rounded-full overflow-hidden">
+                                    <div id="bonding-progress-bar" class="absolute inset-y-0 left-0 bg-gradient-to-r from-orange-500 to-purple-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                                <div class="flex justify-between mt-2 text-xs text-gray-400">
+                                    <span><span id="bonding-circulating">0</span> / <span id="bonding-total">0</span></span>
+                                    <span id="bonding-remaining">剩餘 0</span>
+                                </div>
+                            </div>
+                            
                             <h2 class="text-2xl font-bold mb-6">
                                 <i class="fas fa-exchange-alt mr-2"></i>交易
                             </h2>
@@ -1025,35 +1042,46 @@ app.get('/coin/:id', (c) => {
 
                             <!-- Buy Panel -->
                             <div id="buy-panel">
+                                <!-- Amount Slider -->
                                 <div class="mb-4">
                                     <div class="flex justify-between items-center mb-2">
                                         <label class="block text-sm font-medium">購買數量</label>
-                                        <button id="buy-max-btn" class="text-xs px-3 py-1 bg-orange-500 hover:bg-orange-600 rounded-full transition">
-                                            最大
-                                        </button>
+                                        <span class="text-sm text-orange-500 font-bold" id="buy-amount-display">100</span>
                                     </div>
+                                    <input
+                                        type="range"
+                                        id="buy-amount-slider"
+                                        min="1"
+                                        max="1000"
+                                        value="100"
+                                        class="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer slider-orange mb-2"
+                                    />
                                     <input
                                         type="number"
                                         id="buy-amount"
                                         min="1"
                                         value="100"
                                         class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition text-white"
+                                        placeholder="輸入數量..."
                                     />
                                 </div>
                                 
                                 <!-- Quick Presets -->
-                                <div class="mb-4 grid grid-cols-4 gap-2">
-                                    <button id="buy-preset-10" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                <div class="mb-4 grid grid-cols-5 gap-2">
+                                    <button class="buy-preset px-3 py-2 bg-white/10 hover:bg-orange-500 rounded-lg text-sm font-bold transition" data-value="10">
                                         10
                                     </button>
-                                    <button id="buy-preset-50" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                    <button class="buy-preset px-3 py-2 bg-white/10 hover:bg-orange-500 rounded-lg text-sm font-bold transition" data-value="50">
                                         50
                                     </button>
-                                    <button id="buy-preset-100" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                    <button class="buy-preset px-3 py-2 bg-white/10 hover:bg-orange-500 rounded-lg text-sm font-bold transition" data-value="100">
                                         100
                                     </button>
-                                    <button id="buy-preset-500" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                    <button class="buy-preset px-3 py-2 bg-white/10 hover:bg-orange-500 rounded-lg text-sm font-bold transition" data-value="500">
                                         500
+                                    </button>
+                                    <button id="buy-max-btn" class="px-3 py-2 bg-gradient-to-r from-orange-500 to-purple-500 hover:from-orange-600 hover:to-purple-600 rounded-lg text-sm font-bold transition">
+                                        最大
                                     </button>
                                 </div>
                                 
@@ -1086,38 +1114,50 @@ app.get('/coin/:id', (c) => {
 
                             <!-- Sell Panel -->
                             <div id="sell-panel" class="hidden">
+                                <!-- Amount Slider -->
                                 <div class="mb-4">
                                     <div class="flex justify-between items-center mb-2">
                                         <span class="text-sm font-medium">賣出數量</span>
-                                        <div class="flex items-center space-x-2">
-                                            <span class="text-sm text-gray-400">持有: <span id="holdings-amount">0</span> <span id="holdings-symbol">--</span></span>
-                                            <button id="sell-max-btn" class="text-xs px-3 py-1 bg-orange-500 hover:bg-orange-600 rounded-full transition">
-                                                最大
-                                            </button>
-                                        </div>
+                                        <span class="text-sm text-gray-400">持有: <span id="holdings-amount">0</span> <span id="holdings-symbol">--</span></span>
                                     </div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-red-500 font-bold" id="sell-amount-display">10</span>
+                                        <span class="text-xs text-gray-400" id="sell-percentage-display">0%</span>
+                                    </div>
+                                    <input
+                                        type="range"
+                                        id="sell-amount-slider"
+                                        min="0"
+                                        max="100"
+                                        value="10"
+                                        class="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer slider-red mb-2"
+                                    />
                                     <input
                                         type="number"
                                         id="sell-amount"
                                         min="1"
                                         value="10"
                                         class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition text-white"
+                                        placeholder="輸入數量..."
                                     />
                                 </div>
                                 
                                 <!-- Quick Presets (Percentage) -->
-                                <div class="mb-4 grid grid-cols-4 gap-2">
-                                    <button id="sell-preset-25" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                <div class="mb-4 grid grid-cols-5 gap-2">
+                                    <button class="sell-preset px-3 py-2 bg-white/10 hover:bg-red-500 rounded-lg text-sm font-bold transition" data-percent="25">
                                         25%
                                     </button>
-                                    <button id="sell-preset-50" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                    <button class="sell-preset px-3 py-2 bg-white/10 hover:bg-red-500 rounded-lg text-sm font-bold transition" data-percent="50">
                                         50%
                                     </button>
-                                    <button id="sell-preset-75" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                    <button class="sell-preset px-3 py-2 bg-white/10 hover:bg-red-500 rounded-lg text-sm font-bold transition" data-percent="75">
                                         75%
                                     </button>
-                                    <button id="sell-preset-100" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                    <button class="sell-preset px-3 py-2 bg-white/10 hover:bg-red-500 rounded-lg text-sm font-bold transition" data-percent="100">
                                         100%
+                                    </button>
+                                    <button id="sell-max-btn" class="px-3 py-2 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 rounded-lg text-sm font-bold transition">
+                                        全部
                                     </button>
                                 </div>
                                 

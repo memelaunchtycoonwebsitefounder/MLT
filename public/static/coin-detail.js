@@ -5,7 +5,10 @@
 
 let coinData = null;
 let userData = null;
-let priceChart = null;
+let chart = null;
+let candlestickSeries = null;
+let volumeChart = null;
+let volumeSeries = null;
 let userHoldings = 0;
 let currentTab = 'buy';
 
@@ -118,6 +121,18 @@ const renderCoinData = () => {
   const hypeScore = coinData.hype_score || 0;
   document.getElementById('hype-score').textContent = Math.floor(hypeScore);
   document.getElementById('hype-bar').style.width = `${Math.min(hypeScore / 200 * 100, 100)}%`;
+  
+  // Bonding Curve Progress
+  const circulatingSupply = Number(coinData.circulating_supply || 0);
+  const totalSupply = Number(coinData.total_supply || 10000);
+  const progressPercent = (circulatingSupply / totalSupply * 100).toFixed(2);
+  const remaining = totalSupply - circulatingSupply;
+  
+  document.getElementById('bonding-circulating').textContent = circulatingSupply.toLocaleString();
+  document.getElementById('bonding-total').textContent = totalSupply.toLocaleString();
+  document.getElementById('bonding-remaining').textContent = `剩餘 ${remaining.toLocaleString()}`;
+  document.getElementById('bonding-progress-percent').textContent = `${progressPercent}%`;
+  document.getElementById('bonding-progress-bar').style.width = `${progressPercent}%`;
 };
 
 // Load user holdings
@@ -199,186 +214,162 @@ const renderTransactions = (transactions) => {
   `).join('');
 };
 
-// Initialize price chart
+// Initialize price chart with Lightweight Charts (TradingView-style)
 const initPriceChart = async () => {
-  const ctx = document.getElementById('price-chart');
-  if (!ctx) return;
+  const container = document.getElementById('price-chart');
+  const volumeContainer = document.getElementById('volume-chart');
+  if (!container || !volumeContainer) return;
   
-  // Destroy existing chart if it exists
-  if (priceChart) {
-    priceChart.destroy();
-    priceChart = null;
+  // Destroy existing charts if they exist
+  if (chart) {
+    chart.remove();
+    chart = null;
+  }
+  if (volumeChart) {
+    volumeChart.remove();
+    volumeChart = null;
   }
   
   try {
     // Load real price history from API
     const response = await axios.get(`/api/coins/${COIN_ID}/price-history?limit=100`);
     
-    let labels = [];
-    let prices = [];
+    // Create main price chart
+    chart = LightweightCharts.createChart(container, {
+      width: container.clientWidth,
+      height: 384,
+      layout: {
+        background: { color: 'transparent' },
+        textColor: '#9CA3AF',
+      },
+      grid: {
+        vertLines: { color: 'rgba(255, 255, 255, 0.05)' },
+        horzLines: { color: 'rgba(255, 255, 255, 0.05)' },
+      },
+      crosshair: {
+        mode: LightweightCharts.CrosshairMode.Normal,
+      },
+      rightPriceScale: {
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+      },
+      timeScale: {
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        timeVisible: true,
+        secondsVisible: false,
+      },
+    });
     
+    // Add candlestick series
+    candlestickSeries = chart.addCandlestickSeries({
+      upColor: '#10b981',
+      downColor: '#ef4444',
+      borderDownColor: '#ef4444',
+      borderUpColor: '#10b981',
+      wickDownColor: '#ef4444',
+      wickUpColor: '#10b981',
+    });
+    
+    // Process data
     if (response.data.success && response.data.data.data.length > 0) {
-      // Use real historical data
       const history = response.data.data.data;
       
-      labels = history.map(h => {
-        const date = new Date(h.timestamp);
-        return date.toLocaleTimeString('zh-TW', { 
-          month: 'short',
-          day: 'numeric',
-          hour: '2-digit', 
-          minute: '2-digit' 
-        });
+      // Convert to candlestick data
+      const candleData = history.map(h => {
+        const timestamp = new Date(h.timestamp).getTime() / 1000;
+        const price = h.price;
+        const variance = price * 0.002; // 0.2% variance for candle
+        
+        return {
+          time: timestamp,
+          open: price - variance,
+          high: price + variance,
+          low: price - variance * 1.5,
+          close: price,
+        };
       });
       
-      prices = history.map(h => h.price);
-    } else {
-      // Fallback: Generate sample data if no history
-      const now = Date.now();
-      const basePrice = coinData.current_price;
+      candlestickSeries.setData(candleData);
       
-      for (let i = 23; i >= 0; i--) {
-        labels.push(new Date(now - i * 3600000).toLocaleTimeString('zh-TW', { 
-          hour: '2-digit', 
-          minute: '2-digit' 
-        }));
-        prices.push(basePrice * (1 + (Math.random() * 0.1 - 0.05)));
-      }
+      // Create volume chart
+      volumeChart = LightweightCharts.createChart(volumeContainer, {
+        width: volumeContainer.clientWidth,
+        height: 128,
+        layout: {
+          background: { color: 'transparent' },
+          textColor: '#9CA3AF',
+        },
+        grid: {
+          vertLines: { color: 'rgba(255, 255, 255, 0.05)' },
+          horzLines: { color: 'rgba(255, 255, 255, 0.05)' },
+        },
+        rightPriceScale: {
+          borderColor: 'rgba(255, 255, 255, 0.1)',
+        },
+        timeScale: {
+          borderColor: 'rgba(255, 255, 255, 0.1)',
+          timeVisible: true,
+          secondsVisible: false,
+        },
+      });
+      
+      volumeSeries = volumeChart.addHistogramSeries({
+        color: '#f97316',
+        priceFormat: {
+          type: 'volume',
+        },
+        priceScaleId: '',
+      });
+      
+      // Add volume data
+      const volumeData = history.map((h, index) => {
+        const prevPrice = index > 0 ? history[index - 1].price : h.price;
+        const isUp = h.price >= prevPrice;
+        
+        return {
+          time: new Date(h.timestamp).getTime() / 1000,
+          value: h.volume || Math.random() * 1000, // Use real volume or generate
+          color: isUp ? '#10b981' : '#ef4444',
+        };
+      });
+      
+      volumeSeries.setData(volumeData);
+      
+      console.log('✅ TradingView chart loaded with', history.length, 'data points');
+    } else {
+      // Fallback: Use current price
+      const now = Math.floor(Date.now() / 1000);
+      const price = coinData.current_price;
+      
+      candlestickSeries.setData([{
+        time: now,
+        open: price,
+        high: price,
+        low: price,
+        close: price,
+      }]);
     }
     
-    // Create gradient
-    const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 320);
-    gradient.addColorStop(0, 'rgba(249, 115, 22, 0.3)');
-    gradient.addColorStop(1, 'rgba(249, 115, 22, 0.0)');
+    // Sync time scales
+    chart.timeScale().fitContent();
+    if (volumeChart) {
+      volumeChart.timeScale().fitContent();
+    }
     
-    priceChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: '價格',
-          data: prices,
-          borderColor: 'rgb(249, 115, 22)',
-          backgroundColor: gradient,
-          borderWidth: 2,
-          fill: true,
-          tension: 0.4,
-          pointRadius: 0,
-          pointHoverRadius: 6,
-          pointHoverBackgroundColor: 'rgb(249, 115, 22)',
-          pointHoverBorderColor: '#fff',
-          pointHoverBorderWidth: 2
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {
-          intersect: false,
-          mode: 'index'
-        },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            titleColor: '#fff',
-            bodyColor: '#fff',
-            borderColor: 'rgb(249, 115, 22)',
-            borderWidth: 1,
-            padding: 12,
-            displayColors: false,
-            callbacks: {
-              title: (context) => {
-                return context[0].label;
-              },
-              label: (context) => {
-                const price = context.parsed.y;
-                return `價格: $${price.toFixed(8)}`;
-              }
-            }
-          }
-        },
-        scales: {
-          y: {
-            ticks: {
-              callback: (value) => `$${value.toFixed(6)}`,
-              color: '#9ca3af',
-              font: { size: 11 }
-            },
-            grid: { 
-              color: 'rgba(255, 255, 255, 0.05)',
-              drawBorder: false
-            }
-          },
-          x: {
-            ticks: { 
-              color: '#9ca3af',
-              font: { size: 11 },
-              maxRotation: 0,
-              autoSkip: true,
-              maxTicksLimit: 8
-            },
-            grid: { 
-              color: 'rgba(255, 255, 255, 0.05)',
-              drawBorder: false
-            }
-          }
-        }
+    // Handle resize
+    const resizeObserver = new ResizeObserver(() => {
+      if (chart && container) {
+        chart.applyOptions({ width: container.clientWidth });
+      }
+      if (volumeChart && volumeContainer) {
+        volumeChart.applyOptions({ width: volumeContainer.clientWidth });
       }
     });
     
-    console.log('✅ Price chart loaded with', prices.length, 'data points');
+    resizeObserver.observe(container);
+    
   } catch (error) {
-    console.error('Failed to load price chart:', error);
-    // Still show a chart with current price
-    const basePrice = coinData.current_price;
-    const now = Date.now();
-    const labels = [];
-    const prices = [];
-    
-    for (let i = 23; i >= 0; i--) {
-      labels.push(new Date(now - i * 3600000).toLocaleTimeString('zh-TW', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      }));
-      prices.push(basePrice);
-    }
-    
-    priceChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: '價格',
-          data: prices,
-          borderColor: 'rgb(249, 115, 22)',
-          backgroundColor: 'rgba(249, 115, 22, 0.1)',
-          borderWidth: 2,
-          fill: true,
-          tension: 0.4
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false }
-        },
-        scales: {
-          y: {
-            ticks: {
-              callback: (value) => `$${value.toFixed(8)}`,
-              color: '#9ca3af'
-            },
-            grid: { color: 'rgba(255, 255, 255, 0.1)' }
-          },
-          x: {
-            ticks: { color: '#9ca3af' },
-            grid: { color: 'rgba(255, 255, 255, 0.1)' }
-          }
-        }
-      }
-    });
+    console.error('Price chart error:', error);
+    showNotification('無法載入價格圖表', 'error');
   }
 };
 
@@ -751,6 +742,10 @@ const init = async () => {
     
     setupTradingTabs();
     setupTradeInputs();
+    setupBuySlider();
+    setupSellSlider();
+    setupBuyPresets();
+    setupSellPresets();
     setupShareButtons();
     setupTimeframeButtons();
     
@@ -831,3 +826,127 @@ if (!document.getElementById('animation-styles')) {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+// Slider handlers for Pump.fun-style trading
+
+// Setup buy amount slider
+const setupBuySlider = () => {
+  const slider = document.getElementById('buy-amount-slider');
+  const input = document.getElementById('buy-amount');
+  const display = document.getElementById('buy-amount-display');
+  
+  if (!slider || !input || !display) return;
+  
+  // Sync slider with input
+  slider.addEventListener('input', (e) => {
+    const value = e.target.value;
+    input.value = value;
+    display.textContent = value;
+    updateTradeCalculations();
+  });
+  
+  // Sync input with slider
+  input.addEventListener('input', (e) => {
+    let value = parseInt(e.target.value) || 1;
+    const max = parseInt(slider.max);
+    if (value > max) value = max;
+    if (value < 1) value = 1;
+    
+    slider.value = value;
+    display.textContent = value;
+    updateTradeCalculations();
+  });
+};
+
+// Setup sell amount slider
+const setupSellSlider = () => {
+  const slider = document.getElementById('sell-amount-slider');
+  const input = document.getElementById('sell-amount');
+  const display = document.getElementById('sell-amount-display');
+  const percentDisplay = document.getElementById('sell-percentage-display');
+  
+  if (!slider || !input || !display) return;
+  
+  // Update max when holdings change
+  const updateSliderMax = () => {
+    const maxAmount = userHoldings || 100;
+    slider.max = maxAmount;
+    input.max = maxAmount;
+  };
+  
+  // Sync slider with input
+  slider.addEventListener('input', (e) => {
+    const value = e.target.value;
+    const maxAmount = userHoldings || 100;
+    const percent = maxAmount > 0 ? ((value / maxAmount) * 100).toFixed(0) : 0;
+    
+    input.value = value;
+    display.textContent = value;
+    percentDisplay.textContent = `${percent}%`;
+    updateTradeCalculations();
+  });
+  
+  // Sync input with slider
+  input.addEventListener('input', (e) => {
+    let value = parseInt(e.target.value) || 1;
+    const maxAmount = userHoldings || 100;
+    if (value > maxAmount) value = maxAmount;
+    if (value < 1) value = 1;
+    
+    const percent = maxAmount > 0 ? ((value / maxAmount) * 100).toFixed(0) : 0;
+    
+    slider.value = value;
+    display.textContent = value;
+    percentDisplay.textContent = `${percent}%`;
+    updateTradeCalculations();
+  });
+  
+  // Initial update
+  updateSliderMax();
+};
+
+// Setup quick preset buttons (buy)
+const setupBuyPresets = () => {
+  const presets = document.querySelectorAll('.buy-preset');
+  const slider = document.getElementById('buy-amount-slider');
+  const input = document.getElementById('buy-amount');
+  const display = document.getElementById('buy-amount-display');
+  
+  presets.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const value = btn.dataset.value;
+      if (slider && input && display) {
+        slider.value = value;
+        input.value = value;
+        display.textContent = value;
+        updateTradeCalculations();
+      }
+    });
+  });
+};
+
+// Setup quick preset buttons (sell)
+const setupSellPresets = () => {
+  const presets = document.querySelectorAll('.sell-preset');
+  const slider = document.getElementById('sell-amount-slider');
+  const input = document.getElementById('sell-amount');
+  const display = document.getElementById('sell-amount-display');
+  const percentDisplay = document.getElementById('sell-percentage-display');
+  
+  presets.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const percent = parseInt(btn.dataset.percent);
+      const maxAmount = userHoldings || 100;
+      const value = Math.floor(maxAmount * percent / 100);
+      
+      if (slider && input && display) {
+        slider.value = value;
+        input.value = value;
+        display.textContent = value;
+        percentDisplay.textContent = `${percent}%`;
+        updateTradeCalculations();
+      }
+    });
+  });
+};
+
+console.log('✅ Slider handlers loaded');
