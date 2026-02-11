@@ -89,7 +89,7 @@ const loadCoinData = async (skipChart = false) => {
 };
 
 // Render coin data
-const renderCoinData = () => {
+const renderCoinData = async () => {
   document.getElementById('loading-state').classList.add('hidden');
   document.getElementById('coin-content').classList.remove('hidden');
   
@@ -100,13 +100,40 @@ const renderCoinData = () => {
   document.getElementById('coin-creator').textContent = coinData.creator_username || 'Unknown';
   document.getElementById('coin-price').textContent = `$${Number(coinData.current_price || 0).toFixed(8)}`;
   
-  // Price change (simulated for now)
-  const priceChange = Math.random() * 20 - 10;
-  const priceChangeEl = document.getElementById('coin-price-change');
-  const priceChangeClass = priceChange >= 0 ? 'text-green-400' : 'text-red-400';
-  const priceChangeIcon = priceChange >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
-  priceChangeEl.innerHTML = `<i class="fas ${priceChangeIcon} mr-1"></i>${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}%`;
-  priceChangeEl.className = priceChangeClass + ' text-lg mt-2';
+  // Calculate real price change from price history
+  try {
+    const response = await axios.get(`/api/coins/${COIN_ID}/price-history?limit=2`);
+    let priceChange = 0;
+    
+    if (response.data.success && response.data.data.data.length >= 2) {
+      const history = response.data.data.data;
+      const currentPrice = parseFloat(history[0].price);
+      const previousPrice = parseFloat(history[1].price);
+      
+      if (currentPrice && previousPrice && previousPrice > 0) {
+        priceChange = ((currentPrice - previousPrice) / previousPrice) * 100;
+      }
+    }
+    
+    // Update price change display
+    const priceChangeEl = document.getElementById('coin-price-change');
+    if (priceChangeEl) {
+      const isPositive = priceChange >= 0;
+      priceChangeEl.innerHTML = `
+        <i class="fas fa-arrow-${isPositive ? 'up' : 'down'} mr-1"></i>
+        ${isPositive ? '+' : ''}${priceChange.toFixed(2)}%
+      `;
+      priceChangeEl.className = `${isPositive ? 'text-green-400' : 'text-red-400'} text-lg mt-2`;
+    }
+  } catch (error) {
+    console.warn('Could not calculate price change:', error);
+    // Fallback to neutral display
+    const priceChangeEl = document.getElementById('coin-price-change');
+    if (priceChangeEl) {
+      priceChangeEl.innerHTML = `<i class="fas fa-minus mr-1"></i>0.00%`;
+      priceChangeEl.className = 'text-gray-400 text-lg mt-2';
+    }
+  }
   
   // Stats
   document.getElementById('stat-market-cap').textContent = `$${Number(coinData.market_cap || 0).toFixed(4)}`;
@@ -941,17 +968,82 @@ const init = async () => {
         if (data.coins && coinData) {
           const updatedCoin = data.coins.find(c => c.id === parseInt(COIN_ID));
           if (updatedCoin) {
+            // Store old price for comparison
+            const oldPrice = coinData.current_price;
+            
+            // Update coinData
             coinData.current_price = updatedCoin.current_price;
             coinData.market_cap = updatedCoin.market_cap;
             coinData.hype_score = updatedCoin.hype_score;
             
             // Update display
-            document.getElementById('coin-price').textContent = `$${updatedCoin.current_price.toFixed(8)}`;
-            document.getElementById('stat-market-cap').textContent = `$${updatedCoin.market_cap.toFixed(4)}`;
-            document.getElementById('hype-score').textContent = Math.floor(updatedCoin.hype_score || 0);
+            const priceEl = document.getElementById('coin-price');
+            if (priceEl) {
+              priceEl.textContent = `$${updatedCoin.current_price.toFixed(8)}`;
+            }
             
-            const percentage = Math.min((updatedCoin.hype_score / 200) * 100, 100);
-            document.getElementById('hype-bar').style.width = `${percentage}%`;
+            const marketCapEl = document.getElementById('stat-market-cap');
+            if (marketCapEl) {
+              marketCapEl.textContent = `$${updatedCoin.market_cap.toFixed(4)}`;
+            }
+            
+            const hypeScoreEl = document.getElementById('hype-score');
+            if (hypeScoreEl) {
+              hypeScoreEl.textContent = Math.floor(updatedCoin.hype_score || 0);
+            }
+            
+            const hypeBarEl = document.getElementById('hype-bar');
+            if (hypeBarEl) {
+              const percentage = Math.min((updatedCoin.hype_score / 200) * 100, 100);
+              hypeBarEl.style.width = `${percentage}%`;
+            }
+            
+            // Update price change indicator
+            const priceChangeEl = document.getElementById('price-change');
+            if (priceChangeEl && oldPrice) {
+              const change = ((updatedCoin.current_price - oldPrice) / oldPrice) * 100;
+              const isPositive = change >= 0;
+              
+              priceChangeEl.innerHTML = `
+                <i class="fas fa-arrow-${isPositive ? 'up' : 'down'}"></i>
+                ${isPositive ? '+' : ''}${change.toFixed(2)}%
+              `;
+              priceChangeEl.className = `text-lg mt-2 ${isPositive ? 'text-green-500' : 'text-red-500'}`;
+            }
+            
+            // Update chart with new data point (safely)
+            if (candlestickSeries && updatedCoin.current_price) {
+              try {
+                const now = Math.floor(Date.now() / 1000);
+                const price = parseFloat(updatedCoin.current_price);
+                
+                // Validate price before updating
+                if (!isNaN(price) && price > 0) {
+                  const variance = price * 0.002;
+                  const newCandle = {
+                    time: now,
+                    open: price - variance,
+                    high: price + variance,
+                    low: price - variance * 1.5,
+                    close: price,
+                  };
+                  
+                  // Use update() instead of setData() for real-time updates
+                  candlestickSeries.update(newCandle);
+                  
+                  // Update volume if series exists
+                  if (volumeSeries) {
+                    volumeSeries.update({
+                      time: now,
+                      value: Math.random() * 500 + 500,
+                      color: '#10b981'
+                    });
+                  }
+                }
+              } catch (error) {
+                console.warn('Chart update skipped:', error.message);
+              }
+            }
             
             // Update calculations
             updateTradeCalculations();
