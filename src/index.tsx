@@ -1844,18 +1844,19 @@ app.get('/dashboard', (c) => {
                         <a href="/social" class="text-gray-300 hover:text-coinbase-blue transition">社交</a>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <div class="glass-card px-4 py-2 rounded-lg">
+                        <div class="glass-card px-4 py-2 rounded-lg flex items-center">
                             <i class="fas fa-coins text-yellow-400 mr-2"></i>
-                            <span id="balance-display" class="text-white font-semibold">--</span> 金幣
+                            <span id="balance-display" class="text-white font-semibold">--</span>
+                            <span class="text-white ml-1">金幣</span>
                         </div>
-                        <button id="view-profile-btn" class="glass-card px-4 py-2 rounded-lg hover:bg-white/10 transition cursor-pointer flex items-center space-x-2">
+                        <button id="view-profile-btn" class="glass-card px-3 py-2 rounded-lg hover:bg-white/10 transition cursor-pointer flex items-center space-x-2 whitespace-nowrap">
                             <i class="fas fa-user text-coinbase-blue"></i>
-                            <span id="username-display" class="text-white">載入中...</span>
+                            <span id="username-display" class="text-white text-sm">載入中...</span>
                         </button>
                         <button id="auth-btn" onclick="window.location.href='/login'" class="btn-primary hidden">
                             登入
                         </button>
-                        <button id="logout-btn" class="btn-secondary">
+                        <button id="logout-btn" class="btn-secondary whitespace-nowrap">
                             <i class="fas fa-sign-out-alt mr-2"></i>登出
                         </button>
                     </div>
