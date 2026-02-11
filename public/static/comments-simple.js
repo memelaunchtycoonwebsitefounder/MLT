@@ -124,15 +124,20 @@ class CommentsSystem {
     return `
       <div class="glass-effect rounded-lg p-4 hover:bg-white/5 transition" data-comment-id="${comment.id}">
         <div class="flex items-start space-x-3">
-          <div class="flex-shrink-0">
+          <a href="/profile/${comment.user_id}" class="flex-shrink-0 cursor-pointer hover:opacity-80 transition">
             <div class="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 flex items-center justify-center">
-              ${levelIcon}
+              ${comment.avatar_url 
+                ? `<img src="${comment.avatar_url}" class="w-full h-full rounded-full object-cover">`
+                : levelIcon
+              }
             </div>
-          </div>
+          </a>
           
           <div class="flex-1 min-w-0">
             <div class="flex items-center space-x-2 mb-2">
-              <span class="font-bold">${this.escapeHtml(comment.username)}</span>
+              <a href="/profile/${comment.user_id}" class="font-bold hover:text-orange-500 transition">
+                ${this.escapeHtml(comment.username)}
+              </a>
               <span class="px-2 py-0.5 bg-orange-500/20 text-orange-500 rounded text-xs">
                 Lv.${comment.level || 1}
               </span>
@@ -201,15 +206,20 @@ class CommentsSystem {
     
     return `
       <div class="flex items-start space-x-2" data-comment-id="${reply.id}">
-        <div class="flex-shrink-0">
+        <a href="/profile/${reply.user_id}" class="flex-shrink-0 cursor-pointer hover:opacity-80 transition">
           <div class="w-8 h-8 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 flex items-center justify-center text-sm">
-            ${levelIcon}
+            ${reply.avatar_url 
+              ? `<img src="${reply.avatar_url}" class="w-full h-full rounded-full object-cover">`
+              : levelIcon
+            }
           </div>
-        </div>
+        </a>
         
         <div class="flex-1 min-w-0">
           <div class="flex items-center space-x-2 mb-1">
-            <span class="font-bold text-sm">${this.escapeHtml(reply.username)}</span>
+            <a href="/profile/${reply.user_id}" class="font-bold text-sm hover:text-orange-500 transition">
+              ${this.escapeHtml(reply.username)}
+            </a>
             <span class="px-2 py-0.5 bg-orange-500/20 text-orange-500 rounded text-xs">Lv.${reply.level || 1}</span>
             <span class="text-gray-400 text-xs">${timeAgo}</span>
           </div>

@@ -1848,10 +1848,10 @@ app.get('/dashboard', (c) => {
                             <i class="fas fa-coins text-yellow-400 mr-2"></i>
                             <span id="balance-display" class="text-white font-semibold">--</span> 金幣
                         </div>
-                        <div class="glass-card px-4 py-2 rounded-lg">
-                            <i class="fas fa-user text-coinbase-blue mr-2"></i>
+                        <button id="view-profile-btn" class="glass-card px-4 py-2 rounded-lg hover:bg-white/10 transition cursor-pointer flex items-center space-x-2">
+                            <i class="fas fa-user text-coinbase-blue"></i>
                             <span id="username-display" class="text-white">載入中...</span>
-                        </div>
+                        </button>
                         <button id="auth-btn" onclick="window.location.href='/login'" class="btn-primary hidden">
                             登入
                         </button>
@@ -1912,7 +1912,7 @@ app.get('/dashboard', (c) => {
             <!-- Quick Actions -->
             <div class="glass-card p-8 rounded-xl mb-8">
                 <h3 class="text-2xl font-bold text-white mb-6">快速操作</h3>
-                <div class="grid md:grid-cols-3 gap-4">
+                <div class="grid md:grid-cols-4 gap-4">
                     <button onclick="window.location.href='/create'" class="btn-primary p-6 rounded-xl text-center group">
                         <i class="fas fa-plus-circle text-4xl mb-3 group-hover:scale-110 transition-transform"></i>
                         <p class="font-bold text-lg">創建模因幣</p>
@@ -1927,6 +1927,11 @@ app.get('/dashboard', (c) => {
                         <i class="fas fa-briefcase text-4xl mb-3 text-green-400 group-hover:scale-110 transition-transform"></i>
                         <p class="font-bold text-lg text-white">我的投資組合</p>
                         <p class="text-sm text-gray-400 mt-1">管理您的資產</p>
+                    </button>
+                    <button id="quick-profile-btn" class="glass-card p-6 rounded-xl text-center group hover:bg-white/10">
+                        <i class="fas fa-user-circle text-4xl mb-3 text-purple-400 group-hover:scale-110 transition-transform"></i>
+                        <p class="font-bold text-lg text-white">查看資料</p>
+                        <p class="text-sm text-gray-400 mt-1">個人檔案與成就</p>
                     </button>
                 </div>
             </div>

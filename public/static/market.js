@@ -197,10 +197,10 @@ const renderCoins = (coins) => {
 
         <!-- Creator -->
         <div class="mt-4 flex items-center justify-between text-sm text-gray-400">
-          <span>
+          <a href="/profile/${coin.creator_id}" class="flex items-center hover:text-orange-500 transition" onclick="event.stopPropagation()">
             <i class="fas fa-user mr-1"></i>
             創建者: ${coin.creator_username || 'Unknown'}
-          </span>
+          </a>
           <span>
             <i class="fas fa-clock mr-1"></i>
             ${formatDate(coin.created_at)}

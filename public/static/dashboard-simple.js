@@ -50,8 +50,13 @@ async function init() {
   }
 }
 
+// Profile navigation functionality
+let currentUserId = null;
+
+// Save userId when user data is loaded
 function updateUserUI(user) {
   console.log('Dashboard: Updating UI for user:', user.username);
+  currentUserId = user.id;  // Store user ID for profile navigation
   
   // Update balance in navbar
   const balanceEl = document.getElementById('balance-display');
@@ -252,13 +257,60 @@ async function loadTrendingCoins() {
   }
 }
 
-// Logout functionality
+// Profile navigation functionality
+let currentUserId = null;
+
+// Save userId when user data is loaded
+function updateUserUI(user) {
+  console.log('Dashboard: Updating UI for user:', user.username);
+  currentUserId = user.id;  // Store user ID for profile navigation
+  
+  // Update balance in navbar
+  const balanceEl = document.getElementById('balance-display');
+  if (balanceEl) {
+    balanceEl.textContent = user.virtual_balance.toFixed(2);
+  }
+  
+  // Update total balance in stats
+  const totalBalanceEl = document.getElementById('total-balance');
+  if (totalBalanceEl) {
+    totalBalanceEl.textContent = user.virtual_balance.toFixed(2);
+  }
+  
+  // Update username
+  const usernameEl = document.getElementById('username-display');
+  if (usernameEl) {
+    usernameEl.textContent = user.username;
+  }
+}
+
+// Event delegation for button clicks
 document.addEventListener('click', (e) => {
+  // Logout
   if (e.target.id === 'logout-btn' || e.target.closest('#logout-btn')) {
     console.log('Dashboard: Logging out');
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user');
     window.location.href = '/login';
+    return;
+  }
+  
+  // View Profile - header button
+  if (e.target.id === 'view-profile-btn' || e.target.closest('#view-profile-btn')) {
+    if (currentUserId) {
+      console.log('Dashboard: Navigating to profile:', currentUserId);
+      window.location.href = `/profile/${currentUserId}`;
+    }
+    return;
+  }
+  
+  // View Profile - quick action button
+  if (e.target.id === 'quick-profile-btn' || e.target.closest('#quick-profile-btn')) {
+    if (currentUserId) {
+      console.log('Dashboard: Navigating to profile:', currentUserId);
+      window.location.href = `/profile/${currentUserId}`;
+    }
+    return;
   }
 });
 

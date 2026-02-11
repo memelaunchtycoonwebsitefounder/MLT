@@ -99,19 +99,24 @@ class UserProfile {
           </div>
 
           <!-- Actions -->
-          <div class="pt-6 flex justify-end space-x-3">
-            ${this.isOwnProfile 
-              ? `<button onclick="userProfile.showEditModal()" class="px-6 py-2 bg-orange-500 hover:bg-orange-600 rounded-lg font-bold transition">
-                  <i class="fas fa-edit mr-2"></i>編輯資料
-                </button>`
-              : `<button 
-                  onclick="userProfile.toggleFollow()" 
-                  id="follow-btn"
-                  class="px-6 py-2 ${isFollowing ? 'bg-gray-600 hover:bg-gray-700' : 'bg-orange-500 hover:bg-orange-600'} rounded-lg font-bold transition">
-                  <i class="fas fa-${isFollowing ? 'user-minus' : 'user-plus'} mr-2"></i>
-                  ${isFollowing ? '取消關注' : '關注'}
-                </button>`
-            }
+          <div class="pt-6 flex justify-between">
+            <button onclick="window.location.href='/dashboard'" class="px-6 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg font-bold transition">
+              <i class="fas fa-arrow-left mr-2"></i>返回Dashboard
+            </button>
+            <div class="space-x-3">
+              ${this.isOwnProfile 
+                ? `<button onclick="userProfile.showEditModal()" class="px-6 py-2 bg-orange-500 hover:bg-orange-600 rounded-lg font-bold transition">
+                    <i class="fas fa-edit mr-2"></i>編輯資料
+                  </button>`
+                : `<button 
+                    onclick="userProfile.toggleFollow()" 
+                    id="follow-btn"
+                    class="px-6 py-2 ${isFollowing ? 'bg-gray-600 hover:bg-gray-700' : 'bg-orange-500 hover:bg-orange-600'} rounded-lg font-bold transition">
+                    <i class="fas fa-${isFollowing ? 'user-minus' : 'user-plus'} mr-2"></i>
+                    ${isFollowing ? '取消關注' : '關注'}
+                  </button>`
+              }
+            </div>
           </div>
 
           <!-- User Info -->
