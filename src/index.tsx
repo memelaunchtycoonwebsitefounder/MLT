@@ -2774,10 +2774,17 @@ app.get('/profile/:userId', (c) => {
                         <a href="/social" class="hover:text-orange-500 transition">社交</a>
                     </div>
                     <div class="flex items-center space-x-4">
+                        <!-- Virtual Balance -->
                         <div class="glass-effect px-4 py-2 rounded-lg flex items-center">
                             <i class="fas fa-coins text-yellow-500 mr-2"></i>
                             <span id="user-balance">--</span>
                             <span class="ml-1">金幣</span>
+                        </div>
+                        <!-- MLT Balance -->
+                        <div class="glass-effect px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20">
+                            <img src="/static/mlt-token.png" class="inline-block w-5 h-5 mr-2" alt="MLT" />
+                            <span id="user-mlt-balance" class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">--</span>
+                            <span class="text-xs text-gray-400 ml-1">MLT</span>
                         </div>
                         
                         <!-- User Dropdown Menu -->
