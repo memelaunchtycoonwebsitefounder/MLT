@@ -257,33 +257,6 @@ async function loadTrendingCoins() {
   }
 }
 
-// Profile navigation functionality
-let currentUserId = null;
-
-// Save userId when user data is loaded
-function updateUserUI(user) {
-  console.log('Dashboard: Updating UI for user:', user.username);
-  currentUserId = user.id;  // Store user ID for profile navigation
-  
-  // Update balance in navbar
-  const balanceEl = document.getElementById('balance-display');
-  if (balanceEl) {
-    balanceEl.textContent = user.virtual_balance.toFixed(2);
-  }
-  
-  // Update total balance in stats
-  const totalBalanceEl = document.getElementById('total-balance');
-  if (totalBalanceEl) {
-    totalBalanceEl.textContent = user.virtual_balance.toFixed(2);
-  }
-  
-  // Update username
-  const usernameEl = document.getElementById('username-display');
-  if (usernameEl) {
-    usernameEl.textContent = user.username;
-  }
-}
-
 // Event delegation for button clicks
 document.addEventListener('click', (e) => {
   // Logout

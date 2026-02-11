@@ -157,18 +157,12 @@ const loadUserHoldings = async () => {
 // Load recent transactions
 const loadRecentTransactions = async () => {
   try {
-    const token = localStorage.getItem('auth_token');
-    
-    const response = await axios.get(`/api/trades/history/${COIN_ID}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    
-    if (response.data.success) {
-      const transactions = response.data.data.transactions || [];
-      renderTransactions(transactions);
-    }
+    // Note: Coin-specific transaction history endpoint not implemented yet
+    // For now, show empty state
+    renderTransactions([]);
   } catch (error) {
     console.error('Failed to load transactions:', error);
+    renderTransactions([]);
   }
 };
 

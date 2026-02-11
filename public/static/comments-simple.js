@@ -48,14 +48,18 @@ class CommentsSystem {
       });
       
       if (response.data.success) {
-        this.comments = response.data.data || [];
+        // Ensure comments is always an array
+        const data = response.data.data;
+        this.comments = Array.isArray(data) ? data : [];
         console.log(`✅ Loaded ${this.comments.length} comments`);
         this.render();
       } else {
+        this.comments = [];
         this.renderError('載入評論失敗');
       }
     } catch (error) {
       console.error('Load comments error:', error);
+      this.comments = [];
       this.renderError('載入評論失敗: ' + error.message);
     }
   }
