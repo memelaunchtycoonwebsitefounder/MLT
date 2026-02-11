@@ -1012,38 +1012,12 @@ const init = async () => {
             }
             
             // Update chart with new data point (safely)
-            if (candlestickSeries && updatedCoin.current_price) {
-              try {
-                const now = Math.floor(Date.now() / 1000);
-                const price = parseFloat(updatedCoin.current_price);
-                
-                // Validate price before updating
-                if (!isNaN(price) && price > 0) {
-                  const variance = price * 0.002;
-                  const newCandle = {
-                    time: now,
-                    open: price - variance,
-                    high: price + variance,
-                    low: price - variance * 1.5,
-                    close: price,
-                  };
-                  
-                  // Use update() instead of setData() for real-time updates
-                  candlestickSeries.update(newCandle);
-                  
-                  // Update volume if series exists
-                  if (volumeSeries) {
-                    volumeSeries.update({
-                      time: now,
-                      value: Math.random() * 500 + 500,
-                      color: '#10b981'
-                    });
-                  }
-                }
-              } catch (error) {
-                console.warn('Chart update skipped:', error.message);
-              }
-            }
+            // IMPORTANT: Don't update chart on every price update - only update display
+            // The chart will be refreshed on timeframe change or manual reload
+            // Real-time chart updates can cause issues with duplicate timestamps
+            
+            // Just update the display, not the chart
+            // Chart will update on next manual refresh or timeframe change
             
             // Update calculations
             updateTradeCalculations();
