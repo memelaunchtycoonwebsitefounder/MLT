@@ -256,4 +256,36 @@ coins.get('/trending/list', async (c) => {
   }
 });
 
+// Get price history for a coin
+coins.get('/:id/price-history', async (c) => {
+  try {
+    const coinId = parseInt(c.req.param('id'));
+    const limit = parseInt(c.req.query('limit') || '100');
+    const interval = c.req.query('interval') || '1h'; // Not used yet, future feature
+
+    // Get price history ordered by timestamp
+    const history = await c.env.DB.prepare(
+      `SELECT 
+        price,
+        volume,
+        market_cap,
+        circulating_supply,
+        timestamp
+       FROM price_history
+       WHERE coin_id = ?
+       ORDER BY timestamp ASC
+       LIMIT ?`
+    ).bind(coinId, limit).all();
+
+    return successResponse({
+      coin_id: coinId,
+      interval,
+      data: history.results
+    });
+  } catch (error: any) {
+    console.error('Get price history error:', error);
+    return errorResponse('獲取價格歷史時發生錯誤', 500);
+  }
+});
+
 export default coins;

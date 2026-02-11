@@ -150,7 +150,7 @@ class CommentsSystem {
               ${comment.pinned ? '<span class="text-yellow-500 text-sm"><i class="fas fa-thumbtack mr-1"></i>已釘選</span>' : ''}
             </div>
             
-            <p class="text-gray-300 mb-3 whitespace-pre-wrap break-words">${this.escapeHtml(comment.content)}</p>
+            <p class="comment-content text-gray-300 mb-3 whitespace-pre-wrap break-words">${this.escapeHtml(comment.content)}</p>
             
             <div class="flex items-center space-x-4 text-sm">
               <button class="like-btn flex items-center space-x-1 ${userLiked ? 'text-red-500' : 'text-gray-400'} hover:text-red-500 transition" data-id="${comment.id}">
@@ -228,7 +228,7 @@ class CommentsSystem {
             <span class="text-gray-400 text-xs">${timeAgo}</span>
           </div>
           
-          <p class="text-gray-300 text-sm mb-2 whitespace-pre-wrap break-words">${this.escapeHtml(reply.content)}</p>
+          <p class="comment-content text-gray-300 text-sm mb-2 whitespace-pre-wrap break-words">${this.escapeHtml(reply.content)}</p>
           
           <div class="flex items-center space-x-3 text-xs">
             <button class="like-btn flex items-center space-x-1 ${userLiked ? 'text-red-500' : 'text-gray-400'} hover:text-red-500 transition" data-id="${reply.id}">

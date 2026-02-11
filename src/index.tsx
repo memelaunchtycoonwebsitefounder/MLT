@@ -2681,13 +2681,37 @@ app.get('/profile/:userId', (c) => {
                         <a href="/social" class="hover:text-orange-500 transition">社交</a>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <div class="glass-effect px-4 py-2 rounded-lg">
+                        <div class="glass-effect px-4 py-2 rounded-lg flex items-center">
                             <i class="fas fa-coins text-yellow-500 mr-2"></i>
-                            <span id="user-balance">--</span> 金幣
+                            <span id="user-balance">--</span>
+                            <span class="ml-1">金幣</span>
                         </div>
-                        <button id="logout-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
-                            登出
-                        </button>
+                        
+                        <!-- User Dropdown Menu -->
+                        <div class="relative">
+                            <button id="user-menu-btn" class="glass-effect px-3 py-2 rounded-lg hover:bg-white/10 transition cursor-pointer flex items-center space-x-2 whitespace-nowrap">
+                                <i class="fas fa-user text-orange-500"></i>
+                                <span id="username-display" class="text-white text-sm">載入中...</span>
+                                <i class="fas fa-chevron-down text-gray-400 text-xs ml-1"></i>
+                            </button>
+                            
+                            <!-- Dropdown Menu -->
+                            <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 glass-effect rounded-lg shadow-xl border border-white/10 overflow-hidden z-50">
+                                <a href="/dashboard" class="block px-4 py-3 text-white hover:bg-white/10 transition">
+                                    <i class="fas fa-tachometer-alt mr-2 text-orange-500"></i>儀表板
+                                </a>
+                                <a href="/portfolio" class="block px-4 py-3 text-white hover:bg-white/10 transition">
+                                    <i class="fas fa-wallet mr-2 text-green-400"></i>我的組合
+                                </a>
+                                <a href="/achievements" class="block px-4 py-3 text-white hover:bg-white/10 transition">
+                                    <i class="fas fa-trophy mr-2 text-yellow-400"></i>成就
+                                </a>
+                                <div class="border-t border-white/10"></div>
+                                <button id="logout-btn-dropdown" class="w-full text-left px-4 py-3 text-red-400 hover:bg-white/10 transition">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>登出
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

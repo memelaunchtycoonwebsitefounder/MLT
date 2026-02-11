@@ -99,10 +99,7 @@ class UserProfile {
           </div>
 
           <!-- Actions -->
-          <div class="pt-6 flex justify-between">
-            <button onclick="window.location.href='/dashboard'" class="px-6 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg font-bold transition">
-              <i class="fas fa-arrow-left mr-2"></i>返回Dashboard
-            </button>
+          <div class="pt-6 flex justify-end">
             <div class="space-x-3">
               ${this.isOwnProfile 
                 ? `<button onclick="userProfile.showEditModal()" class="px-6 py-2 bg-orange-500 hover:bg-orange-600 rounded-lg font-bold transition">
@@ -499,12 +496,39 @@ class UserProfile {
   }
 
   setupLogout() {
-    const logoutBtn = document.getElementById('logout-btn');
+    const logoutBtn = document.getElementById('logout-btn-dropdown');
     if (logoutBtn) {
       logoutBtn.addEventListener('click', () => {
         localStorage.removeItem('auth_token');
         localStorage.removeItem('user');
         window.location.href = '/login';
+      });
+    }
+    
+    // Setup dropdown toggle
+    const menuBtn = document.getElementById('user-menu-btn');
+    const dropdown = document.getElementById('user-dropdown');
+    const usernameDisplay = document.getElementById('username-display');
+    
+    if (menuBtn && dropdown) {
+      // Set username in dropdown button
+      if (this.currentUser && usernameDisplay) {
+        usernameDisplay.textContent = this.currentUser.username;
+      }
+      
+      // Toggle dropdown
+      menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('hidden');
+      });
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!dropdown.classList.contains('hidden')) {
+          if (!e.target.closest('#user-dropdown') && !e.target.closest('#user-menu-btn')) {
+            dropdown.classList.add('hidden');
+          }
+        }
       });
     }
   }
