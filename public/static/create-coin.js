@@ -15,7 +15,10 @@ const coinData = {
   name: '',
   symbol: '',
   description: '',
-  supply: 1000000
+  supply: 1000000,
+  twitterUrl: '',
+  telegramUrl: '',
+  websiteUrl: ''
 };
 
 // Check authentication with retry mechanism
@@ -65,9 +68,49 @@ const checkAuth = async (retryCount = 0) => {
 
 // Update UI with user data
 const updateUserUI = (user) => {
+  // Update virtual balance
   const balanceEl = document.getElementById('user-balance');
   if (balanceEl) {
     balanceEl.textContent = Number(user.virtual_balance || 0).toLocaleString();
+  }
+  
+  // Update MLT balance in navigation
+  const navMltEl = document.getElementById('nav-mlt-balance');
+  if (navMltEl) {
+    navMltEl.textContent = Math.floor(user.mlt_balance || 0).toLocaleString();
+  }
+  
+  // Update MLT balance in create form
+  const createMltEl = document.getElementById('create-mlt-balance');
+  if (createMltEl) {
+    createMltEl.textContent = Math.floor(user.mlt_balance || 0).toLocaleString() + ' MLT';
+  }
+  
+  // Calculate remaining balance
+  const remainingBalance = (user.mlt_balance || 0) - 1800;
+  const remainingEl = document.getElementById('create-remaining-balance');
+  if (remainingEl) {
+    remainingEl.textContent = `創幣後剩餘: ${Math.floor(remainingBalance).toLocaleString()} MLT`;
+  }
+  
+  // Check if balance is sufficient
+  const warningEl = document.getElementById('insufficient-mlt-warning');
+  const step2NextBtn = document.getElementById('step-2-next');
+  
+  if (user.mlt_balance < 1800) {
+    if (warningEl) warningEl.classList.remove('hidden');
+    if (step2NextBtn) {
+      step2NextBtn.disabled = true;
+      step2NextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      step2NextBtn.title = 'MLT 餘額不足';
+    }
+  } else {
+    if (warningEl) warningEl.classList.add('hidden');
+    if (step2NextBtn) {
+      step2NextBtn.disabled = false;
+      step2NextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      step2NextBtn.title = '';
+    }
   }
 };
 
@@ -310,6 +353,15 @@ const setupStep2 = () => {
       coinData.name = nameInput.value;
       coinData.symbol = symbolInput.value.toUpperCase();
       coinData.description = descInput.value;
+      
+      // Get social links
+      const twitterInput = document.getElementById('twitter-url');
+      const telegramInput = document.getElementById('telegram-url');
+      const websiteInput = document.getElementById('website-url');
+      
+      coinData.twitterUrl = twitterInput ? twitterInput.value.trim() : '';
+      coinData.telegramUrl = telegramInput ? telegramInput.value.trim() : '';
+      coinData.websiteUrl = websiteInput ? websiteInput.value.trim() : '';
       
       // Get selected supply
       supplyInputs.forEach(input => {

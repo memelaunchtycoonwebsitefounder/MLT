@@ -1494,6 +1494,15 @@ app.get('/create', (c) => {
                         <a href="/achievements" class="hover:text-orange-500 transition">成就</a>
                         <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
                         <a href="/social" class="hover:text-orange-500 transition">社交</a>
+                        
+                        <!-- MLT Balance -->
+                        <div class="glass-effect px-4 py-2 rounded-lg border border-orange-500/30">
+                            <img src="/static/mlt-token.png" alt="MLT" class="w-5 h-5 inline-block mr-2">
+                            <span id="nav-mlt-balance" class="font-bold bg-gradient-to-r from-orange-400 to-purple-400 bg-clip-text text-transparent">--</span>
+                            <span class="text-xs text-gray-400">MLT</span>
+                        </div>
+                        
+                        <!-- Virtual Balance -->
                         <div class="glass-effect px-4 py-2 rounded-lg">
                             <i class="fas fa-coins text-yellow-500 mr-2"></i>
                             <span id="user-balance">--</span> 金幣
@@ -1584,6 +1593,32 @@ app.get('/create', (c) => {
                         <i class="fas fa-edit mr-2"></i>設置幣種詳情
                     </h2>
 
+                    <!-- MLT Cost Warning -->
+                    <div class="mb-6 p-4 rounded-lg bg-gradient-to-r from-orange-500/20 to-purple-500/20 border border-orange-500/30">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <img src="/static/mlt-token.png" alt="MLT" class="w-10 h-10">
+                                <div>
+                                    <p class="text-sm text-gray-300">創幣成本</p>
+                                    <p class="text-2xl font-bold bg-gradient-to-r from-orange-400 to-purple-400 bg-clip-text text-transparent">
+                                        1,800 MLT
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm text-gray-300">您的餘額</p>
+                                <p id="create-mlt-balance" class="text-xl font-bold text-white">-- MLT</p>
+                                <p id="create-remaining-balance" class="text-xs text-gray-400 mt-1">創幣後剩餘: -- MLT</p>
+                            </div>
+                        </div>
+                        <div id="insufficient-mlt-warning" class="hidden mt-3 p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
+                            <p class="text-sm text-red-300">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                MLT 餘額不足！需要至少 1,800 MLT 才能創建幣種。
+                            </p>
+                        </div>
+                    </div>
+
                     <form id="coin-details-form" class="space-y-6">
                         <!-- Coin Name -->
                         <div>
@@ -1642,6 +1677,57 @@ app.get('/create', (c) => {
                             <div class="flex justify-between text-sm text-gray-400 mt-1">
                                 <span>可選</span>
                                 <span><span id="desc-count">0</span>/500</span>
+                            </div>
+                        </div>
+
+                        <!-- Social Links -->
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-semibold flex items-center">
+                                <i class="fas fa-share-alt mr-2 text-orange-500"></i>
+                                社交連結
+                                <span class="ml-2 text-sm text-gray-400 font-normal">(可選)</span>
+                            </h3>
+                            
+                            <!-- Twitter -->
+                            <div>
+                                <label for="twitter-url" class="block text-sm font-medium mb-2">
+                                    <i class="fab fa-twitter mr-2 text-blue-400"></i>Twitter
+                                </label>
+                                <input
+                                    type="url"
+                                    id="twitter-url"
+                                    name="twitter-url"
+                                    class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
+                                    placeholder="https://twitter.com/your_handle"
+                                />
+                            </div>
+
+                            <!-- Telegram -->
+                            <div>
+                                <label for="telegram-url" class="block text-sm font-medium mb-2">
+                                    <i class="fab fa-telegram mr-2 text-blue-300"></i>Telegram
+                                </label>
+                                <input
+                                    type="url"
+                                    id="telegram-url"
+                                    name="telegram-url"
+                                    class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
+                                    placeholder="https://t.me/your_group"
+                                />
+                            </div>
+
+                            <!-- Website -->
+                            <div>
+                                <label for="website-url" class="block text-sm font-medium mb-2">
+                                    <i class="fas fa-globe mr-2 text-green-400"></i>Website
+                                </label>
+                                <input
+                                    type="url"
+                                    id="website-url"
+                                    name="website-url"
+                                    class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
+                                    placeholder="https://your-website.com"
+                                />
                             </div>
                         </div>
 
