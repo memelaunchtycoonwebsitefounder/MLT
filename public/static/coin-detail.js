@@ -215,7 +215,7 @@ const renderTransactions = (transactions) => {
 };
 
 // Initialize price chart with Lightweight Charts (TradingView-style)
-const initPriceChart = async () => {
+const initPriceChart = async (limit = 100) => {
   const container = document.getElementById('price-chart');
   const volumeContainer = document.getElementById('volume-chart');
   if (!container || !volumeContainer) return;
@@ -231,8 +231,9 @@ const initPriceChart = async () => {
   }
   
   try {
-    // Load real price history from API
-    const response = await axios.get(`/api/coins/${COIN_ID}/price-history?limit=100`);
+    // Load real price history from API with limit parameter
+    console.log('📊 Loading chart data with limit:', limit);
+    const response = await axios.get(`/api/coins/${COIN_ID}/price-history?limit=${limit}`);
     
     // Create main price chart with enhanced settings
     chart = LightweightCharts.createChart(container, {
@@ -311,33 +312,57 @@ const initPriceChart = async () => {
       wickUpColor: '#10b981',
     });
     
-    // Process data
+    // Process data with strict validation
     if (response.data.success && response.data.data.data.length > 0) {
       const history = response.data.data.data;
       
-      // Convert to candlestick data with validation
+      // Convert to candlestick data with STRICT validation
       const candleData = history
-        .filter(h => h.price && h.timestamp) // Filter out null values
+        .filter(h => {
+          // Strict filtering: must have valid price and timestamp
+          return h && 
+                 h.price !== null && 
+                 h.price !== undefined && 
+                 h.timestamp !== null && 
+                 h.timestamp !== undefined &&
+                 !isNaN(parseFloat(h.price)) &&
+                 parseFloat(h.price) > 0;
+        })
         .map(h => {
           const timestamp = new Date(h.timestamp).getTime() / 1000;
-          const price = parseFloat(h.price) || 0;
+          const price = parseFloat(h.price);
           const variance = price * 0.002; // 0.2% variance for candle
+          
+          const open = price - variance;
+          const high = price + variance;
+          const low = price - variance * 1.5;
+          const close = price;
           
           return {
             time: timestamp,
-            open: Math.max(0, price - variance),
-            high: Math.max(0, price + variance),
-            low: Math.max(0, price - variance * 1.5),
-            close: Math.max(0, price),
+            open: open,
+            high: high,
+            low: low,
+            close: close,
           };
         })
-        .filter(candle => candle.time && candle.open > 0 && candle.close > 0); // Filter invalid candles
+        .filter(candle => {
+          // Final validation: all values must be valid numbers
+          return candle.time > 0 &&
+                 !isNaN(candle.open) && candle.open > 0 &&
+                 !isNaN(candle.high) && candle.high > 0 &&
+                 !isNaN(candle.low) && candle.low > 0 &&
+                 !isNaN(candle.close) && candle.close > 0 &&
+                 candle.open !== null && candle.high !== null && 
+                 candle.low !== null && candle.close !== null;
+        });
       
       if (candleData.length === 0) {
-        console.warn('No valid candle data');
+        console.warn('⚠️ No valid candle data after filtering');
         return;
       }
       
+      console.log('📊 Setting', candleData.length, 'candles to chart');
       candlestickSeries.setData(candleData);
       
       // Setup crosshair move event to display OHLC data with validation
@@ -403,24 +428,50 @@ const initPriceChart = async () => {
         priceScaleId: '',
       });
       
-      // Add volume data with validation
+      // Add volume data with STRICT validation
       const volumeData = history
-        .filter(h => h.price && h.timestamp) // Filter out null values
+        .filter(h => {
+          // Must have valid price and timestamp
+          return h && 
+                 h.price !== null && 
+                 h.price !== undefined && 
+                 h.timestamp !== null && 
+                 h.timestamp !== undefined &&
+                 !isNaN(parseFloat(h.price)) &&
+                 parseFloat(h.price) > 0;
+        })
         .map((h, index) => {
-          const prevPrice = index > 0 && history[index - 1] ? parseFloat(history[index - 1].price) : parseFloat(h.price);
-          const currentPrice = parseFloat(h.price) || 0;
+          const prevPrice = index > 0 && history[index - 1] && history[index - 1].price 
+            ? parseFloat(history[index - 1].price) 
+            : parseFloat(h.price);
+          const currentPrice = parseFloat(h.price);
           const isUp = currentPrice >= prevPrice;
           
+          const timestamp = new Date(h.timestamp).getTime() / 1000;
+          const volume = h.volume && !isNaN(parseFloat(h.volume)) 
+            ? parseFloat(h.volume) 
+            : Math.random() * 500 + 500; // Random volume between 500-1000
+          
           return {
-            time: new Date(h.timestamp).getTime() / 1000,
-            value: Math.max(0, h.volume || Math.random() * 1000), // Use real volume or generate
+            time: timestamp,
+            value: volume,
             color: isUp ? '#10b981' : '#ef4444',
           };
         })
-        .filter(v => v.time && v.value >= 0); // Filter invalid volumes
+        .filter(v => {
+          // Final validation
+          return v.time > 0 && 
+                 !isNaN(v.value) && 
+                 v.value > 0 &&
+                 v.value !== null &&
+                 v.value !== undefined;
+        });
       
       if (volumeData.length > 0) {
+        console.log('📊 Setting', volumeData.length, 'volume bars to chart');
         volumeSeries.setData(volumeData);
+      } else {
+        console.warn('⚠️ No valid volume data');
       }
       
       console.log('✅ TradingView chart loaded with', history.length, 'data points');
@@ -469,7 +520,11 @@ const setupTimeframeButtons = () => {
   buttons.forEach(btn => {
     btn.addEventListener('click', async () => {
       // Update active state
-      buttons.forEach(b => b.classList.remove('active', 'bg-orange-500'));
+      buttons.forEach(b => {
+        b.classList.remove('active', 'bg-orange-500');
+        b.classList.add('bg-white/10');
+      });
+      btn.classList.remove('bg-white/10');
       btn.classList.add('active', 'bg-orange-500');
       
       // Get timeframe
@@ -482,7 +537,7 @@ const setupTimeframeButtons = () => {
           limit = 60; // 60 minutes of data
           break;
         case '24h':
-          limit = 24; // 24 hours
+          limit = 100; // 24 hours with more granularity
           break;
         case '7d':
           limit = 168; // 7 days * 24 hours
@@ -492,8 +547,10 @@ const setupTimeframeButtons = () => {
           break;
       }
       
+      console.log('⏰ Switching to timeframe:', timeframe, 'with limit:', limit);
+      
       // Reload chart with new timeframe
-      await initPriceChart();
+      await initPriceChart(limit);
     });
   });
 };
