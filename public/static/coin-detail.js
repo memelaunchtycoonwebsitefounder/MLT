@@ -5,10 +5,6 @@
 
 let coinData = null;
 let userData = null;
-let chart = null;
-let candlestickSeries = null;
-let volumeChart = null;
-let volumeSeries = null;
 let userHoldings = 0;
 let currentTab = 'buy';
 
