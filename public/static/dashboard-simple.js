@@ -259,21 +259,40 @@ async function loadTrendingCoins() {
 
 // Event delegation for button clicks
 document.addEventListener('click', (e) => {
+  // Toggle user dropdown menu
+  if (e.target.closest('#user-menu-btn')) {
+    const dropdown = document.getElementById('user-dropdown');
+    if (dropdown) {
+      dropdown.classList.toggle('hidden');
+    }
+    e.stopPropagation();
+    return;
+  }
+  
+  // Close dropdown when clicking outside
+  const dropdown = document.getElementById('user-dropdown');
+  if (dropdown && !dropdown.classList.contains('hidden')) {
+    if (!e.target.closest('#user-dropdown') && !e.target.closest('#user-menu-btn')) {
+      dropdown.classList.add('hidden');
+    }
+  }
+  
+  // View Profile - from dropdown link
+  if (e.target.id === 'view-profile-link' || e.target.closest('#view-profile-link')) {
+    e.preventDefault();
+    if (currentUserId) {
+      console.log('Dashboard: Navigating to profile:', currentUserId);
+      window.location.href = `/profile/${currentUserId}`;
+    }
+    return;
+  }
+  
   // Logout
   if (e.target.id === 'logout-btn' || e.target.closest('#logout-btn')) {
     console.log('Dashboard: Logging out');
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user');
     window.location.href = '/login';
-    return;
-  }
-  
-  // View Profile - header button
-  if (e.target.id === 'view-profile-btn' || e.target.closest('#view-profile-btn')) {
-    if (currentUserId) {
-      console.log('Dashboard: Navigating to profile:', currentUserId);
-      window.location.href = `/profile/${currentUserId}`;
-    }
     return;
   }
   
