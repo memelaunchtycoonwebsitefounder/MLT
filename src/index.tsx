@@ -950,15 +950,15 @@ app.get('/coin/:id', (c) => {
                             <h2 class="text-2xl font-bold mb-6">
                                 <i class="fas fa-chart-line mr-2"></i>價格走勢
                             </h2>
-                            <div class="mb-4 flex justify-between items-center">
-                                <div class="flex space-x-2">
+                            <div class="mb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                <div class="flex flex-wrap gap-2">
                                     <button class="timeframe-btn active bg-orange-500 px-4 py-2 rounded-lg transition hover:bg-orange-600" data-timeframe="1h">1小時</button>
                                     <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="24h">24小時</button>
                                     <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="7d">7天</button>
                                     <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="30d">30天</button>
                                 </div>
                                 <!-- OHLC Data Display -->
-                                <div id="ohlc-data" class="hidden md:flex space-x-4 text-sm">
+                                <div id="ohlc-data" class="hidden md:flex flex-wrap gap-x-4 gap-y-2 text-sm">
                                     <div class="flex items-center space-x-1">
                                         <span class="text-gray-400">O:</span>
                                         <span id="ohlc-open" class="font-mono text-white">--</span>
@@ -976,7 +976,7 @@ app.get('/coin/:id', (c) => {
                                         <span id="ohlc-close" class="font-mono text-white">--</span>
                                     </div>
                                     <div class="flex items-center space-x-1">
-                                        <span class="text-gray-400">Vol:</span>
+                                        <span class="text-gray-400">V:</span>
                                         <span id="ohlc-volume" class="font-mono text-orange-400">--</span>
                                     </div>
                                 </div>
@@ -1024,8 +1024,8 @@ app.get('/coin/:id', (c) => {
                         </div>
                         
                         <!-- Comments Section -->
-                        <div id="comments-section">
-                            <!-- Comments will be loaded by social.js -->
+                        <div id="comments-section" class="mt-8">
+                            <!-- Comments will be loaded by CommentsSystem -->
                         </div>
                     </div>
 

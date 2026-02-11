@@ -315,42 +315,60 @@ const initPriceChart = async () => {
     if (response.data.success && response.data.data.data.length > 0) {
       const history = response.data.data.data;
       
-      // Convert to candlestick data
-      const candleData = history.map(h => {
-        const timestamp = new Date(h.timestamp).getTime() / 1000;
-        const price = h.price;
-        const variance = price * 0.002; // 0.2% variance for candle
-        
-        return {
-          time: timestamp,
-          open: price - variance,
-          high: price + variance,
-          low: price - variance * 1.5,
-          close: price,
-        };
-      });
+      // Convert to candlestick data with validation
+      const candleData = history
+        .filter(h => h.price && h.timestamp) // Filter out null values
+        .map(h => {
+          const timestamp = new Date(h.timestamp).getTime() / 1000;
+          const price = parseFloat(h.price) || 0;
+          const variance = price * 0.002; // 0.2% variance for candle
+          
+          return {
+            time: timestamp,
+            open: Math.max(0, price - variance),
+            high: Math.max(0, price + variance),
+            low: Math.max(0, price - variance * 1.5),
+            close: Math.max(0, price),
+          };
+        })
+        .filter(candle => candle.time && candle.open > 0 && candle.close > 0); // Filter invalid candles
+      
+      if (candleData.length === 0) {
+        console.warn('No valid candle data');
+        return;
+      }
       
       candlestickSeries.setData(candleData);
       
-      // Setup crosshair move event to display OHLC data
+      // Setup crosshair move event to display OHLC data with validation
       chart.subscribeCrosshairMove((param) => {
         if (param.time) {
           const data = param.seriesData.get(candlestickSeries);
-          if (data) {
-            document.getElementById('ohlc-open').textContent = `$${data.open.toFixed(8)}`;
-            document.getElementById('ohlc-high').textContent = `$${data.high.toFixed(8)}`;
-            document.getElementById('ohlc-low').textContent = `$${data.low.toFixed(8)}`;
-            document.getElementById('ohlc-close').textContent = `$${data.close.toFixed(8)}`;
+          if (data && data.open && data.high && data.low && data.close) {
+            // Safe DOM updates with validation
+            const openEl = document.getElementById('ohlc-open');
+            const highEl = document.getElementById('ohlc-high');
+            const lowEl = document.getElementById('ohlc-low');
+            const closeEl = document.getElementById('ohlc-close');
+            const volumeEl = document.getElementById('ohlc-volume');
+            const panelEl = document.getElementById('ohlc-data');
+            
+            if (openEl) openEl.textContent = `$${data.open.toFixed(8)}`;
+            if (highEl) highEl.textContent = `$${data.high.toFixed(8)}`;
+            if (lowEl) lowEl.textContent = `$${data.low.toFixed(8)}`;
+            if (closeEl) closeEl.textContent = `$${data.close.toFixed(8)}`;
             
             // Find corresponding volume data
             const volumeData = history.find(h => new Date(h.timestamp).getTime() / 1000 === param.time);
-            if (volumeData) {
-              document.getElementById('ohlc-volume').textContent = (volumeData.volume || 0).toLocaleString();
+            if (volumeData && volumeEl) {
+              volumeEl.textContent = (volumeData.volume || 0).toLocaleString();
             }
             
             // Show OHLC panel
-            document.getElementById('ohlc-data').classList.remove('hidden');
-            document.getElementById('ohlc-data').classList.add('flex');
+            if (panelEl) {
+              panelEl.classList.remove('hidden');
+              panelEl.classList.add('flex');
+            }
           }
         }
       });
@@ -385,19 +403,25 @@ const initPriceChart = async () => {
         priceScaleId: '',
       });
       
-      // Add volume data
-      const volumeData = history.map((h, index) => {
-        const prevPrice = index > 0 ? history[index - 1].price : h.price;
-        const isUp = h.price >= prevPrice;
-        
-        return {
-          time: new Date(h.timestamp).getTime() / 1000,
-          value: h.volume || Math.random() * 1000, // Use real volume or generate
-          color: isUp ? '#10b981' : '#ef4444',
-        };
-      });
+      // Add volume data with validation
+      const volumeData = history
+        .filter(h => h.price && h.timestamp) // Filter out null values
+        .map((h, index) => {
+          const prevPrice = index > 0 && history[index - 1] ? parseFloat(history[index - 1].price) : parseFloat(h.price);
+          const currentPrice = parseFloat(h.price) || 0;
+          const isUp = currentPrice >= prevPrice;
+          
+          return {
+            time: new Date(h.timestamp).getTime() / 1000,
+            value: Math.max(0, h.volume || Math.random() * 1000), // Use real volume or generate
+            color: isUp ? '#10b981' : '#ef4444',
+          };
+        })
+        .filter(v => v.time && v.value >= 0); // Filter invalid volumes
       
-      volumeSeries.setData(volumeData);
+      if (volumeData.length > 0) {
+        volumeSeries.setData(volumeData);
+      }
       
       console.log('✅ TradingView chart loaded with', history.length, 'data points');
     } else {
@@ -515,29 +539,61 @@ const switchTab = (tab) => {
 
 // Setup trade inputs and buttons
 const setupTradeInputs = () => {
-  // Amount inputs
-  document.getElementById('buy-amount').addEventListener('input', updateTradeCalculations);
-  document.getElementById('sell-amount').addEventListener('input', updateTradeCalculations);
+  // Amount inputs - safe binding
+  const buyAmountInput = document.getElementById('buy-amount');
+  const sellAmountInput = document.getElementById('sell-amount');
   
-  // Buy preset buttons
-  document.getElementById('buy-preset-10').addEventListener('click', () => setAmount(10));
-  document.getElementById('buy-preset-50').addEventListener('click', () => setAmount(50));
-  document.getElementById('buy-preset-100').addEventListener('click', () => setAmount(100));
-  document.getElementById('buy-preset-500').addEventListener('click', () => setAmount(500));
+  if (buyAmountInput) {
+    buyAmountInput.addEventListener('input', updateTradeCalculations);
+  }
+  if (sellAmountInput) {
+    sellAmountInput.addEventListener('input', updateTradeCalculations);
+  }
   
-  // Sell preset buttons (percentage)
-  document.getElementById('sell-preset-25').addEventListener('click', () => setSellPercentage(0.25));
-  document.getElementById('sell-preset-50').addEventListener('click', () => setSellPercentage(0.5));
-  document.getElementById('sell-preset-75').addEventListener('click', () => setSellPercentage(0.75));
-  document.getElementById('sell-preset-100').addEventListener('click', () => setSellPercentage(1.0));
+  // Buy preset buttons - now using class selector
+  const buyPresets = document.querySelectorAll('.buy-preset');
+  buyPresets.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const value = parseInt(btn.dataset.value);
+      if (buyAmountInput) buyAmountInput.value = value;
+      updateTradeCalculations();
+    });
+  });
   
-  // Max buttons
-  document.getElementById('buy-max-btn').addEventListener('click', setBuyMax);
-  document.getElementById('sell-max-btn').addEventListener('click', setSellMax);
+  // Sell preset buttons - now using class selector
+  const sellPresets = document.querySelectorAll('.sell-preset');
+  sellPresets.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const percent = parseFloat(btn.dataset.percent) / 100;
+      const amount = Math.floor(userHoldings * percent);
+      if (sellAmountInput) sellAmountInput.value = amount;
+      updateTradeCalculations();
+    });
+  });
   
-  // Trade buttons
-  document.getElementById('buy-button').addEventListener('click', executeBuy);
-  document.getElementById('sell-button').addEventListener('click', executeSell);
+  // Max buttons - safe binding
+  const buyMaxBtn = document.getElementById('buy-max-btn');
+  const sellMaxBtn = document.getElementById('sell-max-btn');
+  
+  if (buyMaxBtn) {
+    buyMaxBtn.addEventListener('click', setBuyMax);
+  }
+  if (sellMaxBtn) {
+    sellMaxBtn.addEventListener('click', setSellMax);
+  }
+  
+  // Trade buttons - safe binding
+  const buyButton = document.getElementById('buy-button');
+  const sellButton = document.getElementById('sell-button');
+  
+  if (buyButton) {
+    buyButton.addEventListener('click', executeBuy);
+  }
+  if (sellButton) {
+    sellButton.addEventListener('click', executeSell);
+  }
+  
+  console.log('✅ Trade inputs setup complete');
 };
 
 // Set amount
