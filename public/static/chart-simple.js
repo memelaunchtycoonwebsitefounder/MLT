@@ -40,8 +40,8 @@ async function initSimpleCharts(coinData, priceHistory, limit = 100) {
     const chartData = prepareChartData(priceHistory, limit);
     
     // Initialize charts
-    initPriceChart(chartData, coinData);
-    initVolumeChart(chartData);
+    createPriceChart(chartData, coinData);
+    createVolumeChart(chartData);
 
     console.log('✅ Chart.js charts initialized successfully');
     return true;
@@ -99,7 +99,7 @@ function prepareChartData(priceHistory, limit) {
 /**
  * Initialize price chart (candlestick style)
  */
-function initPriceChart(chartData, coinData) {
+function createPriceChart(chartData, coinData) {
   const canvas = document.getElementById('price-chart');
   if (!canvas) {
     console.error('❌ Price chart canvas not found');
@@ -205,7 +205,7 @@ function initPriceChart(chartData, coinData) {
 /**
  * Initialize volume chart
  */
-function initVolumeChart(chartData) {
+function createVolumeChart(chartData) {
   const canvas = document.getElementById('volume-chart');
   if (!canvas) {
     console.error('❌ Volume chart canvas not found');
