@@ -1,30 +1,50 @@
 # 🎯 Sprint 2 進度報告
 
-## ✅ 完成的階段
+## 🚨 重大更新：Chart.js完全重寫
 
-### 階段0：K線圖最終修復（已完成）
-**問題**：實時價格更新時出現"Value is null"錯誤
-**根本原因**：
-- 實時更新使用 `setData()` 替換所有數據
-- 沒有驗證實時數據的有效性
-- 價格變化使用隨機模擬而非真實計算
+### 🔄 圖表系統徹底替換（已完成 ✅）
 
-**解決方案**：
-1. ✅ 實時更新改用 `update()` 方法添加單個數據點
-2. ✅ 嚴格驗證：`!isNaN(price) && price > 0`
-3. ✅ try-catch 包裹更新邏輯，防止崩潰
-4. ✅ 價格變化使用真實歷史數據：`((current - previous) / previous) * 100`
-5. ✅ 所有DOM操作添加null檢查
+**原問題**：Lightweight Charts 持續出現 "Value is null" 錯誤，無法穩定運行
+
+**決策**：完全放棄 Lightweight Charts，改用 Chart.js
+
+**Chart.js 優勢**：
+- ✅ 開源、免費、無授權問題
+- ✅ 穩定可靠，社區支持強大
+- ✅ 響應式設計，自適應容器
+- ✅ 豐富的插件和配置選項
+- ✅ 輕量級，無複雜依賴
+
+**實現變更**：
+1. **chart-simple.js** - 新增簡潔的Chart.js封裝
+   - `initSimpleCharts(coinData, priceHistory, limit)` - 初始化雙圖表
+   - `updateChartsRealtime(newPrice)` - 實時更新（可選）
+   - 嚴格的數據驗證和fallback機制
+
+2. **HTML更新**
+   - 移除：`<script src="lightweight-charts.standalone.production.js">`
+   - 添加：`<script src="chart.js@4.4.1/dist/chart.umd.min.js">`
+   - 更改：`<div id="price-chart">` → `<canvas id="price-chart">`
+
+3. **coin-detail.js簡化**
+   - 移除：300+ 行複雜的 Lightweight Charts 配置
+   - 添加：25 行簡潔的 Chart.js 調用
+   - 實時更新：只更新價格顯示，不更新圖表（避免衝突）
 
 **測試結果**：
 ```
-✅ K線圖正常顯示（無 Value is null 錯誤）
-✅ 實時更新正常工作
-✅ 價格變化顯示真實數據
-✅ 圖表不再崩潰
+✅ 無 "Value is null" 錯誤
+✅ K線圖正常顯示（綠漲紅跌）
+✅ 成交量圖正常顯示（顏色同步）
+✅ OHLC面板懸停顯示
+✅ 時間框架切換正常（1h/24h/7d/30d）
+✅ 響應式設計
+✅ 無 console 錯誤
 ```
 
 ---
+
+## ✅ 完成的階段
 
 ### 階段1：資料庫遷移（已完成 ✅）
 
@@ -71,29 +91,33 @@
 
 ## 🔄 當前階段
 
-### 階段2：UI更新 - 顯示MLT系統（進行中）
+### 階段2：UI更新 - 顯示MLT系統（75% 完成）
 
-#### 需要更新的UI組件
+#### 已完成的UI組件
 
-1. **導航欄（Navigation Bar）**
-   - [ ] 添加MLT圖標（/static/mlt-token.png）
-   - [ ] 顯示用戶MLT餘額
-   - [ ] 使用金色/橙色漸變設計
-   - [ ] 位置：用戶名旁邊或餘額上方
+1. **導航欄（Navigation Bar）** ✅
+   - ✅ 添加MLT圖標（/static/mlt-token.png）
+   - ✅ 顯示用戶MLT餘額（10,000 MLT）
+   - ✅ 使用橙→紫漸變設計
+   - ✅ 所有頁面統一更新（dashboard, market, coin-detail, profile）
+   - ✅ 後端API返回mlt_balance字段
 
-2. **用戶資料頁（Profile Page）**
-   - [ ] 顯示MLT餘額卡片
-   - [ ] 顯示MLT賺取統計
-   - [ ] 顯示MLT支出統計
-   - [ ] 顯示MLT交易歷史
+2. **用戶資料頁（Profile Page）** ✅
+   - ✅ 顯示MLT餘額卡片
+   - ✅ 顯示總賺取統計
+   - ✅ 顯示總支出統計
+   - ✅ 三列響應式布局
+   - ✅ 只在自己的profile頁面顯示
 
-3. **創幣頁面（Create Coin）**
+#### 待完成的UI組件
+
+3. **創幣頁面（Create Coin）** ⏳
    - [ ] 顯示創幣成本：1,800 MLT
    - [ ] 添加MLT餘額檢查
    - [ ] 顯示創幣後剩餘MLT
-   - [ ] 添加社交連結輸入框
+   - [ ] 添加社交連結輸入框（Twitter, Telegram, Website）
 
-4. **交易面板（Trading Panel）**
+4. **交易面板（Trading Panel）** ⏳
    - [ ] 顯示交易手續費（MLT）
    - [ ] 更新手續費計算邏輯
    - [ ] 顯示MLT餘額是否足夠
