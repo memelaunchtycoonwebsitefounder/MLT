@@ -394,8 +394,28 @@ const initPriceChart = async (limit = 100) => {
         });
       
       if (candleData.length === 0) {
-        console.warn('⚠️ No valid candle data after filtering');
-        return;
+        console.warn('⚠️ No valid candle data after filtering, using current price as fallback');
+        // Use current price as fallback
+        if (coinData && coinData.current_price) {
+          const now = Math.floor(Date.now() / 1000);
+          const price = parseFloat(coinData.current_price);
+          if (!isNaN(price) && price > 0) {
+            const variance = price * 0.002;
+            candleData.push({
+              time: now,
+              open: price,
+              high: price + variance,
+              low: price - variance,
+              close: price,
+            });
+            console.log('📊 Using fallback: 1 candle from current price');
+          }
+        }
+        
+        if (candleData.length === 0) {
+          console.error('❌ Cannot create chart: no valid data');
+          return;
+        }
       }
       
       console.log('📊 Setting', candleData.length, 'candles to chart');
