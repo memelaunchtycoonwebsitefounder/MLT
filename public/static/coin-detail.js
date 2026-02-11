@@ -50,12 +50,21 @@ const checkAuth = async (retryCount = 0) => {
 };
 
 // Update user balance display
-const updateUserBalance = (balance) => {
+const updateUserBalance = (balance, mltBalance) => {
   const balanceEl = document.getElementById('user-balance');
   if (balanceEl) {
     balanceEl.textContent = Number(balance || 0).toLocaleString(undefined, {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
+    });
+  }
+  
+  // Update MLT balance
+  const mltBalanceEl = document.getElementById('user-mlt-balance');
+  if (mltBalanceEl && mltBalance !== undefined) {
+    mltBalanceEl.textContent = Number(mltBalance || 0).toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     });
   }
 };
@@ -820,7 +829,7 @@ const executeBuy = async () => {
       
       // Update user balance
       userData.virtual_balance = response.data.data.newBalance;
-      updateUserBalance(userData.virtual_balance);
+      updateUserBalance(userData.virtual_balance, userData.mlt_balance);
       
       // Reload data (skip chart re-initialization)
       await loadCoinData(true);
@@ -873,7 +882,7 @@ const executeSell = async () => {
       
       // Update user balance
       userData.virtual_balance = response.data.data.newBalance;
-      updateUserBalance(userData.virtual_balance);
+      updateUserBalance(userData.virtual_balance, userData.mlt_balance);
       
       // Reload data (skip chart re-initialization)
       await loadCoinData(true);
