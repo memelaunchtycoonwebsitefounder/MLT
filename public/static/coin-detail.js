@@ -786,6 +786,9 @@ const init = async () => {
       console.warn('⚠️ CommentsSystem not loaded');
     }
     
+    // Start auto-refresh for live price updates (every 5 seconds)
+    startPriceAutoRefresh();
+    
     console.log('✅ Coin detail page fully initialized');
   }
 };
@@ -816,6 +819,41 @@ if (!document.getElementById('animation-styles')) {
 window.loadCoinData = loadCoinData;
 window.loadRecentTransactions = loadRecentTransactions;
 window.initPriceChart = initPriceChart;
+
+// Auto-refresh price data every 5 seconds (like Pump.fun)
+let priceRefreshInterval = null;
+
+const startPriceAutoRefresh = () => {
+  // Clear any existing interval
+  if (priceRefreshInterval) {
+    clearInterval(priceRefreshInterval);
+  }
+  
+  // Refresh price and chart data every 5 seconds
+  priceRefreshInterval = setInterval(async () => {
+    try {
+      // Only refresh data, skip chart reload to avoid flicker
+      await loadCoinData(true); // skipChart = true
+      console.log('🔄 Auto-refreshed price data');
+    } catch (error) {
+      console.error('❌ Auto-refresh failed:', error);
+    }
+  }, 5000); // 5 seconds
+  
+  console.log('✅ Started auto-refresh (5s interval)');
+};
+
+const stopPriceAutoRefresh = () => {
+  if (priceRefreshInterval) {
+    clearInterval(priceRefreshInterval);
+    priceRefreshInterval = null;
+    console.log('⏹ Stopped auto-refresh');
+  }
+};
+
+// Start auto-refresh when page loads
+window.startPriceAutoRefresh = startPriceAutoRefresh;
+window.stopPriceAutoRefresh = stopPriceAutoRefresh;
 
 document.addEventListener('DOMContentLoaded', init);
 // Slider handlers for Pump.fun-style trading

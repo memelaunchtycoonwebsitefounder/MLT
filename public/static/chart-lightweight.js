@@ -107,10 +107,10 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
       timeScale: {
         borderColor: 'rgba(255, 255, 255, 0.1)',
         timeVisible: true,
-        secondsVisible: false,
+        secondsVisible: true, // Show seconds like Pump.fun
         rightOffset: 5,
-        barSpacing: 6, // Tighter spacing for thinner candles
-        minBarSpacing: 3, // Minimum spacing
+        barSpacing: 4, // Very thin candles like Pump.fun
+        minBarSpacing: 2, // Minimum spacing
         fixLeftEdge: false,
         fixRightEdge: false,
         lockVisibleTimeRangeOnResize: true,
