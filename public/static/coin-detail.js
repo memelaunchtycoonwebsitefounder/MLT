@@ -265,11 +265,8 @@ const initPriceChart = async (limit = 100) => {
     console.log('📊 Loaded', history.length, 'price history records');
     
     // Determine timeframe based on limit
-    let timeframe = '1h'; // default
-    if (limit <= 60) timeframe = '1m';
-    else if (limit <= 600) timeframe = '10m';
-    else if (limit <= 1440) timeframe = '1h';
-    else timeframe = '24h';
+    // Use 1m for recent data to show individual trades clearly
+    let timeframe = '1m'; // Always use 1-minute for better visualization
     
     // Call the Lightweight Charts function
     const success = await window.initLightweightCharts(coinData, history, timeframe);
