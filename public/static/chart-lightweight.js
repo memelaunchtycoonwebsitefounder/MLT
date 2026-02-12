@@ -98,19 +98,23 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
         borderColor: 'rgba(255, 255, 255, 0.1)',
         visible: true,
         scaleMargins: {
-          top: 0.1,
-          bottom: 0.2,
+          top: 0.15,    // More margin at top (was 0.1)
+          bottom: 0.15, // More margin at bottom (was 0.2)
         },
+        autoScale: true,
+        mode: 0, // Normal price scale mode
       },
       timeScale: {
         borderColor: 'rgba(255, 255, 255, 0.1)',
         timeVisible: true,
         secondsVisible: false,
         rightOffset: 5,
-        barSpacing: 6, // Tighter spacing (was 8)
-        minBarSpacing: 3, // Minimum spacing (was 4)
+        barSpacing: 3, // Much tighter - thinner candles (was 6)
+        minBarSpacing: 1, // Minimum spacing (was 3)
         fixLeftEdge: false,
         fixRightEdge: false,
+        lockVisibleTimeRangeOnResize: true, // Prevent height jumping
+        rightBarStaysOnScroll: true,
       },
       watermark: {
         visible: true,
@@ -130,6 +134,9 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
       borderUpColor: '#26a69a',
       wickDownColor: '#ef5350',
       wickUpColor: '#26a69a',
+      // Make candles much thinner (30% of default width)
+      priceLineVisible: false,
+      lastValueVisible: false,
     });
 
     // Convert to candlestick format
@@ -154,8 +161,14 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
       }
     });
 
-    // Fit content
-    chart.timeScale().fitContent();
+    // Use scrollToPosition instead of fitContent for smoother scaling
+    const timeScale = chart.timeScale();
+    timeScale.scrollToPosition(5, false); // Scroll to show latest data with 5 bars offset
+    
+    // Auto-scale with padding
+    chart.priceScale('right').applyOptions({
+      autoScale: true,
+    });
 
     // Handle resize
     const resizeObserver = new ResizeObserver(() => {

@@ -80,7 +80,9 @@ const loadCoinData = async (skipChart = false) => {
       await loadUserHoldings();
       loadRecentTransactions();
       if (!skipChart) {
-        initPriceChart();
+        console.log('🔄 Reloading chart with latest data...');
+        await initPriceChart();
+        console.log('✅ Chart reloaded successfully');
       }
       updateTradeCalculations(); // Update calculations after loading
     }
