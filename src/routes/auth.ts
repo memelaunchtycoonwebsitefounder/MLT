@@ -180,8 +180,7 @@ auth.get('/me', async (c) => {
 
     const userProfile = await c.env.DB.prepare(
       `SELECT id, email, username, virtual_balance, premium_balance, 
-              level, experience_points as xp, created_at, last_login,
-              mlt_balance, total_mlt_earned, total_mlt_spent
+              level, experience_points as xp, created_at, last_login
        FROM users WHERE id = ?`
     )
       .bind(payload.userId)

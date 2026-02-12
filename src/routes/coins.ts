@@ -269,7 +269,6 @@ coins.get('/:id/price-history', async (c) => {
         price,
         volume,
         market_cap,
-        circulating_supply,
         timestamp
        FROM price_history
        WHERE coin_id = ?
