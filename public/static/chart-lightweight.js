@@ -107,10 +107,10 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
       timeScale: {
         borderColor: 'rgba(255, 255, 255, 0.1)',
         timeVisible: true,
-        secondsVisible: false, // Don't show seconds - cleaner display
-        rightOffset: 5,
-        barSpacing: 6, // Balanced spacing
-        minBarSpacing: 3, // Minimum spacing
+        secondsVisible: true, // Show seconds for real-time feeling
+        rightOffset: 10,
+        barSpacing: 2, // VERY TIGHT - small rectangles like Pump.fun
+        minBarSpacing: 1, // Minimum spacing
         fixLeftEdge: false,
         fixRightEdge: false,
         lockVisibleTimeRangeOnResize: true,
@@ -134,9 +134,14 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
       borderUpColor: '#26a69a',
       wickDownColor: '#ef5350',
       wickUpColor: '#26a69a',
-      // Make candles much thinner (30% of default width)
-      priceLineVisible: false,
-      lastValueVisible: false,
+      // Very thin candles like Pump.fun small rectangles
+      priceLineVisible: true, // Show current price line
+      lastValueVisible: true, // Show last price value
+      priceFormat: {
+        type: 'price',
+        precision: 8,
+        minMove: 0.00000001,
+      },
     });
 
     // Convert to candlestick format
