@@ -60,11 +60,22 @@ export const calculateHypeMultiplier = (hypeScore: number): number => {
 
 export const calculateFinalPrice = (
   basePrice: number,
-  hypeMultiplier: number
+  hypeMultiplier: number,
+  isBuy: boolean = true
 ): number => {
-  // Add some randomness for price fluctuation (95% - 105%)
-  const randomFactor = 0.95 + Math.random() * 0.1;
-  return basePrice * hypeMultiplier * randomFactor;
+  // Buy: price goes up (1% - 3% increase)
+  // Sell: price goes down (2% - 5% decrease)
+  let priceImpact: number;
+  
+  if (isBuy) {
+    // Buy always increases price slightly (1% - 3%)
+    priceImpact = 1.01 + Math.random() * 0.02; // 1.01 to 1.03
+  } else {
+    // Sell decreases price (2% - 5%)
+    priceImpact = 0.95 + Math.random() * 0.03; // 0.95 to 0.98
+  }
+  
+  return basePrice * hypeMultiplier * priceImpact;
 };
 
 export const calculateMarketCap = (

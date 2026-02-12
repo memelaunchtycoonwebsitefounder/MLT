@@ -142,14 +142,10 @@ trades.post('/buy', async (c) => {
       return errorResponse(`可用供應量不足。剩餘: ${availableSupply}`);
     }
 
-    // Calculate price using bonding curve
-    const basePrice = calculateBondingCurvePrice(
-      0.01,
-      coin.circulating_supply,
-      coin.total_supply
-    );
-    const hypeMultiplier = calculateHypeMultiplier(coin.hype_score);
-    const currentPrice = calculateFinalPrice(basePrice, hypeMultiplier);
+    // Calculate new price based on current price
+    // Buy increases price by 1-3%, sell decreases by 2-5%
+    const priceImpact = 1.01 + Math.random() * 0.02; // 1.01 to 1.03 for buy
+    const currentPrice = coin.current_price * priceImpact;
     const totalCost = currentPrice * amount;
 
     // Check user balance
@@ -302,14 +298,10 @@ trades.post('/sell', async (c) => {
       return errorResponse('幣種未找到', 404);
     }
 
-    // Calculate current price
-    const basePrice = calculateBondingCurvePrice(
-      0.01,
-      coin.circulating_supply - amount, // Selling reduces circulating supply
-      coin.total_supply
-    );
-    const hypeMultiplier = calculateHypeMultiplier(coin.hype_score);
-    const currentPrice = calculateFinalPrice(basePrice, hypeMultiplier);
+    // Calculate new price based on current price  
+    // Sell decreases price by 2-5%
+    const priceImpact = 0.95 + Math.random() * 0.03; // 0.95 to 0.98 for sell
+    const currentPrice = coin.current_price * priceImpact;
     const totalRevenue = currentPrice * amount;
 
     // 1. Add to user balance
