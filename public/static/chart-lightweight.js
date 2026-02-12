@@ -98,19 +98,19 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
         borderColor: 'rgba(255, 255, 255, 0.1)',
         visible: true,
         scaleMargins: {
-          top: 0.1,     // 10% margin at top
-          bottom: 0.2,  // 20% margin at bottom
+          top: 0.1,
+          bottom: 0.2,
         },
         autoScale: true,
-        mode: 1, // Logarithmic mode for better small price visualization
+        mode: 0, // Normal mode - log mode causes visual issues
       },
       timeScale: {
         borderColor: 'rgba(255, 255, 255, 0.1)',
         timeVisible: true,
-        secondsVisible: true, // Show seconds like Pump.fun
+        secondsVisible: false, // Don't show seconds - cleaner display
         rightOffset: 5,
-        barSpacing: 4, // Very thin candles like Pump.fun
-        minBarSpacing: 2, // Minimum spacing
+        barSpacing: 6, // Balanced spacing
+        minBarSpacing: 3, // Minimum spacing
         fixLeftEdge: false,
         fixRightEdge: false,
         lockVisibleTimeRangeOnResize: true,
@@ -199,27 +199,6 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
  * Converts raw transactions to OHLC candles
  */
 function aggregateByTimeframe(priceHistory, timeframe) {
-  // For 1m timeframe, don't aggregate - show each trade as a point
-  if (timeframe === '1m') {
-    return priceHistory
-      .filter(h => h && h.price && h.timestamp)
-      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
-      .map(item => {
-        const timestamp = new Date(item.timestamp).getTime() / 1000; // Convert to Unix seconds
-        const price = parseFloat(item.price);
-        const volume = parseFloat(item.volume) || 0;
-        
-        return {
-          time: Math.floor(timestamp),
-          open: price,
-          high: price,
-          low: price,
-          close: price,
-          volume: volume,
-          count: 1
-        };
-      });
-  }
   
   // For other timeframes, aggregate as before
   const intervals = {

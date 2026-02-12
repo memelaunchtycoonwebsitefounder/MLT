@@ -264,9 +264,12 @@ const initPriceChart = async (limit = 100) => {
     const history = response.data.data.data || [];
     console.log('📊 Loaded', history.length, 'price history records');
     
-    // Determine timeframe based on limit
-    // Use 1m for recent data to show individual trades clearly
-    let timeframe = '1m'; // Always use 1-minute for better visualization
+    // Determine timeframe based on data amount for proper aggregation
+    let timeframe = '1m'; // Default 1-minute candles
+    if (limit > 60) timeframe = '10m';   // 10-minute candles for more data
+    if (limit > 600) timeframe = '1h';   // 1-hour candles for lots of data
+    
+    console.log(`📊 Using ${timeframe} timeframe for ${history.length} records`);
     
     // Call the Lightweight Charts function
     const success = await window.initLightweightCharts(coinData, history, timeframe);
