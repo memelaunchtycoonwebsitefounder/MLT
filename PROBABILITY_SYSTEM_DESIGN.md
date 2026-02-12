@@ -204,7 +204,74 @@ function calculateFinalProbability(baseProb, investmentLevel, protections) {
 
 ## 🎯 其他影響因素（可擴展）
 
-### 1. 圖片質量影響
+### 1. 初始價格策略影響 ⭐ NEW!
+
+**核心邏輯**：初始價格設定會影響市場心理和交易行為
+
+```javascript
+// 根據初始投資和供應量計算初始價格
+const initialPrice = initialInvestment / totalSupply;
+
+// 價格心理學影響
+function calculatePriceImpact(initialPrice) {
+  // 低價幣（< 0.001 MLT）：吸引散戶，但容易被pump & dump
+  if (initialPrice < 0.001) {
+    return {
+      sniperBonus: +0.15,      // 狙擊者更愛低價幣
+      panicSellMalus: +0.10,   // 散戶更容易恐慌
+      whalePenalty: -0.05,     // 巨鯨不太關注低價幣
+      moonBonus: +0.02         // 低價幣pump潛力稍高
+    };
+  }
+  
+  // 中價幣（0.001 - 0.01 MLT）：平衡，最穩定
+  else if (initialPrice < 0.01) {
+    return {
+      sniperBonus: 0,
+      panicSellMalus: 0,
+      whalePenalty: 0,
+      moonBonus: 0             // 無特殊加成
+    };
+  }
+  
+  // 高價幣（> 0.01 MLT）：吸引巨鯨，但流動性差
+  else {
+    return {
+      sniperBonus: -0.10,      // 狙擊者對高價幣興趣低
+      panicSellMalus: -0.05,   // 高價幣持有者更理性
+      whalePenalty: +0.10,     // 巨鯨更關注高價幣
+      moonBonus: +0.05         // 高價幣如果成功，回報更大
+    };
+  }
+}
+
+// 應用價格影響到事件機率
+function applyPriceModifiers(baseProbabilities, initialPrice) {
+  const impact = calculatePriceImpact(initialPrice);
+  
+  return {
+    sniperProb: Math.min(1, baseProbabilities.sniper * (1 + impact.sniperBonus)),
+    panicSellProb: Math.min(1, baseProbabilities.panicSell * (1 + impact.panicSellMalus)),
+    whaleProb: Math.max(0, baseProbabilities.whale * (1 + impact.whalePenalty)),
+    moonProb: Math.min(1, baseProbabilities.moon * (1 + impact.moonBonus))
+  };
+}
+```
+
+**實例分析**：
+
+| 投資額 | 供應量 | 初始價格 | 狙擊者機率 | 恐慌拋售 | 巨鯨機率 | 登月機率 |
+|--------|--------|----------|------------|----------|----------|----------|
+| 2,000 MLT | 1,000,000 | 0.002 | 80% → 92% (+15%) | 25% → 27.5% | 20% → 19% | 5% → 5.1% |
+| 5,000 MLT | 1,000,000 | 0.005 | 80% → 80% | 25% → 25% | 20% → 20% | 5% → 5% |
+| 10,000 MLT | 1,000,000 | 0.010 | 80% → 72% (-10%) | 25% → 23.75% | 20% → 22% | 5% → 5.25% |
+
+**設計意圖**：
+- 低價幣：高風險高回報，適合賭徒
+- 中價幣：平衡穩定，適合大眾
+- 高價幣：吸引大戶，但需要更高初始投資
+
+### 2. 圖片質量影響
 ```javascript
 // AI分析圖片質量
 const imageQuality = analyzeImage(coinImage);
@@ -212,13 +279,13 @@ const imageQuality = analyzeImage(coinImage);
 const attractionBonus = imageQuality / 100 * 0.1; // 最多+10%
 ```
 
-### 2. 描述長度影響
+### 3. 描述長度影響
 ```javascript
 // 有描述的幣更專業
 const descriptionBonus = description.length > 50 ? 0.05 : 0;
 ```
 
-### 3. 社交連結影響
+### 4. 社交連結影響
 ```javascript
 // 有社交連結增加可信度
 const socialBonus = 
@@ -227,7 +294,7 @@ const socialBonus =
   (hasWebsite ? 0.04 : 0); // 最多+10%
 ```
 
-### 4. 總供應量影響
+### 5. 總供應量影響
 ```javascript
 // 稀缺性影響
 const supplyMultiplier = {
@@ -238,13 +305,13 @@ const supplyMultiplier = {
 };
 ```
 
-### 5. 創建時間影響
+### 6. 創建時間影響
 ```javascript
 // 黃金時段創建（UTC 12:00-20:00）增加曝光
 const timeBonus = isGoldenHour() ? 0.1 : 0;
 ```
 
-### 6. 用戶等級影響
+### 7. 用戶等級影響
 ```javascript
 // 高等級用戶更有經驗
 const levelBonus = userLevel / 100 * 0.15; // 最多+15%
