@@ -248,9 +248,9 @@ trades.post('/buy', async (c) => {
 
     // 5. Record price history
     await c.env.DB.prepare(
-      `INSERT INTO price_history (coin_id, price, volume, market_cap, circulating_supply)
-       VALUES (?, ?, ?, ?, ?)`
-    ).bind(coinId, currentPrice, amount, newMarketCap, newCirculatingSupply).run();
+      `INSERT INTO price_history (coin_id, price, volume, market_cap)
+       VALUES (?, ?, ?, ?)`
+    ).bind(coinId, currentPrice, amount, newMarketCap).run();
 
     return successResponse({
       transactionId: txResult.meta.last_row_id,
@@ -392,9 +392,9 @@ trades.post('/sell', async (c) => {
 
     // 5. Record price history
     await c.env.DB.prepare(
-      `INSERT INTO price_history (coin_id, price, volume, market_cap, circulating_supply)
-       VALUES (?, ?, ?, ?, ?)`
-    ).bind(coinId, currentPrice, amount, newMarketCap, newCirculatingSupply).run();
+      `INSERT INTO price_history (coin_id, price, volume, market_cap)
+       VALUES (?, ?, ?, ?)`
+    ).bind(coinId, currentPrice, amount, newMarketCap).run();
 
     return successResponse({
       transactionId: txResult.meta.last_row_id,
