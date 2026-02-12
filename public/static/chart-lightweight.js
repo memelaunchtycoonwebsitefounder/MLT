@@ -102,18 +102,18 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
           bottom: 0.2,  // 20% margin at bottom
         },
         autoScale: true,
-        mode: 0, // Normal price scale mode
+        mode: 1, // Logarithmic mode for better small price visualization
       },
       timeScale: {
         borderColor: 'rgba(255, 255, 255, 0.1)',
         timeVisible: true,
         secondsVisible: false,
         rightOffset: 5,
-        barSpacing: 20, // Wider spacing for better visibility
-        minBarSpacing: 10, // Minimum spacing
+        barSpacing: 12, // Moderate spacing for better visibility
+        minBarSpacing: 6, // Minimum spacing
         fixLeftEdge: false,
         fixRightEdge: false,
-        lockVisibleTimeRangeOnResize: true, // Prevent height jumping
+        lockVisibleTimeRangeOnResize: true,
         rightBarStaysOnScroll: true,
       },
       watermark: {
