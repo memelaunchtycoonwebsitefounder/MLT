@@ -263,9 +263,12 @@ class TradingPanel {
           window.loadRecentTransactions();
         }
         
-        // Reload coin data for updated price
+        // Reload coin data AND chart for updated price
         if (window.loadCoinData) {
-          window.loadCoinData();
+          await window.loadCoinData(); // Don't skip chart - we want it to refresh
+        } else if (window.initPriceChart) {
+          // Fallback: directly reload chart if loadCoinData not available
+          await window.initPriceChart();
         }
 
         // Reset form

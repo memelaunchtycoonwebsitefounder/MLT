@@ -813,6 +813,11 @@ if (!document.getElementById('animation-styles')) {
   document.head.appendChild(style);
 }
 
+// Export functions to window for trading-panel.js
+window.loadCoinData = loadCoinData;
+window.loadRecentTransactions = loadRecentTransactions;
+window.initPriceChart = initPriceChart;
+
 document.addEventListener('DOMContentLoaded', init);
 // Slider handlers for Pump.fun-style trading
 

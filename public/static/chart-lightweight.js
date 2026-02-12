@@ -5,6 +5,7 @@
 
 let chart = null;
 let candlestickSeries = null;
+let volumeChart = null; // Volume chart instance
 let volumeSeries = null;
 let currentTimeframe = '1h'; // Default to 1 hour
 
@@ -30,14 +31,21 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
   }
 
   try {
-    // Destroy existing charts
+    // Destroy existing charts COMPLETELY
     if (chart) {
       chart.remove();
       chart = null;
+      candlestickSeries = null;
     }
-    if (volumeSeries) {
+    if (volumeChart) {
+      volumeChart.remove();
+      volumeChart = null;
       volumeSeries = null;
     }
+    
+    // Clear containers to prevent duplicates
+    container.innerHTML = '';
+    volumeContainer.innerHTML = '';
 
     // Validate and prepare data
     if (!priceHistory || priceHistory.length === 0) {
@@ -99,8 +107,8 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
         timeVisible: true,
         secondsVisible: false,
         rightOffset: 5,
-        barSpacing: 8, // Closer bars like pump.fun
-        minBarSpacing: 4,
+        barSpacing: 6, // Tighter spacing (was 8)
+        minBarSpacing: 3, // Minimum spacing (was 4)
         fixLeftEdge: false,
         fixRightEdge: false,
       },
@@ -256,7 +264,16 @@ function createFallbackData(coinData) {
 function initVolumeChart(container, aggregatedData) {
   if (!container || !aggregatedData || aggregatedData.length === 0) return;
 
-  const volumeChart = LightweightCharts.createChart(container, {
+  // Destroy existing volume chart
+  if (volumeChart) {
+    volumeChart.remove();
+    volumeChart = null;
+  }
+  if (volumeSeries) {
+    volumeSeries = null;
+  }
+
+  volumeChart = LightweightCharts.createChart(container, {
     width: container.clientWidth,
     height: 100,
     layout: {
@@ -356,3 +373,39 @@ function showChartError(container, message) {
 // Export for global use
 window.initLightweightCharts = initLightweightCharts;
 window.currentChartTimeframe = currentTimeframe;
+
+/**
+ * Refresh chart after trade
+ * Called after buy/sell transactions
+ */
+window.refreshChartAfterTrade = async function(coinData) {
+  console.log('🔄 Refreshing chart after trade...');
+  
+  try {
+    // Get current timeframe from active button
+    const activeBtn = document.querySelector('.timeframe-btn.active');
+    const timeframe = activeBtn ? activeBtn.dataset.timeframe : '1m';
+    
+    // Calculate limit based on timeframe
+    let limit = 60;
+    switch(timeframe) {
+      case '1m': limit = 60; break;
+      case '10m': limit = 144; break;
+      case '1h': limit = 168; break;
+      case '24h': limit = 720; break;
+    }
+    
+    // Fetch updated price history
+    const response = await axios.get(`/api/coins/${window.COIN_ID || coinData.id}/price-history?limit=${limit}`);
+    
+    if (response.data.success && response.data.data.data) {
+      const history = response.data.data.data;
+      console.log(`✅ Fetched ${history.length} updated records`);
+      
+      // Re-initialize charts with new data
+      await initLightweightCharts(coinData, history, timeframe);
+    }
+  } catch (error) {
+    console.error('❌ Error refreshing chart:', error);
+  }
+};
