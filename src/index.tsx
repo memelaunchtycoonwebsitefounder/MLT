@@ -958,10 +958,10 @@ app.get('/coin/:id', (c) => {
                             </h2>
                             <div class="mb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                                 <div class="flex flex-wrap gap-2">
-                                    <button class="timeframe-btn active bg-orange-500 px-4 py-2 rounded-lg transition hover:bg-orange-600" data-timeframe="1h">1小時</button>
+                                    <button class="timeframe-btn active bg-orange-500 px-4 py-2 rounded-lg transition hover:bg-orange-600" data-timeframe="1m">1分鐘</button>
+                                    <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="10m">10分鐘</button>
+                                    <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="1h">1小時</button>
                                     <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="24h">24小時</button>
-                                    <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="7d">7天</button>
-                                    <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="30d">30天</button>
                                 </div>
                                 <!-- OHLC Data Display -->
                                 <div id="ohlc-data" class="hidden md:flex flex-wrap gap-x-4 gap-y-2 text-sm">
@@ -987,11 +987,11 @@ app.get('/coin/:id', (c) => {
                                     </div>
                                 </div>
                             </div>
-                            <div class="bg-gray-900/50 rounded-lg p-4">
-                                <canvas id="price-chart" class="w-full" style="height: 384px;"></canvas>
+                            <div class="bg-gray-900/50 rounded-lg p-2">
+                                <div id="price-chart" class="w-full" style="height: 400px;"></div>
                             </div>
                             <div class="bg-gray-900/50 rounded-lg p-2 mt-2">
-                                <canvas id="volume-chart" class="w-full" style="height: 128px;"></canvas>
+                                <div id="volume-chart" class="w-full" style="height: 100px;"></div>
                             </div>
                         </div>
 
@@ -1269,11 +1269,11 @@ app.get('/coin/:id', (c) => {
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+        <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
         <script>
           const COIN_ID = '${coinId}';
         </script>
-        <script src="/static/chart-simple.js"></script>
+        <script src="/static/chart-lightweight.js"></script>
         <script src="/static/trading-panel.js"></script>
         <script src="/static/comments-simple.js"></script>
         <script src="/static/realtime.js"></script>

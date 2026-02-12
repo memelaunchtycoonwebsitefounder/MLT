@@ -262,11 +262,18 @@ const initPriceChart = async (limit = 100) => {
     const history = response.data.data.data || [];
     console.log('📊 Loaded', history.length, 'price history records');
     
-    // Call the simple Chart.js function from chart-simple.js
-    const success = await window.initSimpleCharts(coinData, history, limit);
+    // Determine timeframe based on limit
+    let timeframe = '1h'; // default
+    if (limit <= 60) timeframe = '1m';
+    else if (limit <= 600) timeframe = '10m';
+    else if (limit <= 1440) timeframe = '1h';
+    else timeframe = '24h';
+    
+    // Call the Lightweight Charts function
+    const success = await window.initLightweightCharts(coinData, history, timeframe);
     
     if (success) {
-      console.log('✅ Chart.js charts initialized successfully');
+      console.log('✅ Lightweight Charts initialized successfully');
     }
     
     return success;
@@ -294,20 +301,20 @@ const setupTimeframeButtons = () => {
       // Get timeframe
       const timeframe = btn.dataset.timeframe;
       
-      // Calculate limit based on timeframe
-      let limit = 24; // default 24 hours
+      // Calculate limit based on timeframe (for 1-minute candles)
+      let limit = 60; // default 1 hour
       switch(timeframe) {
+        case '1m':
+          limit = 60; // Last 60 minutes (1 hour of 1-min candles)
+          break;
+        case '10m':
+          limit = 144; // Last 24 hours at 10-min intervals
+          break;
         case '1h':
-          limit = 60; // 60 minutes of data
+          limit = 168; // Last 7 days at 1-hour intervals
           break;
         case '24h':
-          limit = 100; // 24 hours with more granularity
-          break;
-        case '7d':
-          limit = 168; // 7 days * 24 hours
-          break;
-        case '30d':
-          limit = 720; // 30 days * 24 hours
+          limit = 720; // Last 30 days at 24-hour intervals
           break;
       }
       
