@@ -199,7 +199,29 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
  * Converts raw transactions to OHLC candles
  */
 function aggregateByTimeframe(priceHistory, timeframe) {
-  // Determine interval in milliseconds
+  // For 1m timeframe, don't aggregate - show each trade as a point
+  if (timeframe === '1m') {
+    return priceHistory
+      .filter(h => h && h.price && h.timestamp)
+      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+      .map(item => {
+        const timestamp = new Date(item.timestamp).getTime() / 1000; // Convert to Unix seconds
+        const price = parseFloat(item.price);
+        const volume = parseFloat(item.volume) || 0;
+        
+        return {
+          time: Math.floor(timestamp),
+          open: price,
+          high: price,
+          low: price,
+          close: price,
+          volume: volume,
+          count: 1
+        };
+      });
+  }
+  
+  // For other timeframes, aggregate as before
   const intervals = {
     '1m': 60 * 1000,           // 1 minute
     '10m': 10 * 60 * 1000,     // 10 minutes

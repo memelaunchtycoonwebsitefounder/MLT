@@ -832,9 +832,9 @@ const startPriceAutoRefresh = () => {
   // Refresh price and chart data every 5 seconds
   priceRefreshInterval = setInterval(async () => {
     try {
-      // Only refresh data, skip chart reload to avoid flicker
-      await loadCoinData(true); // skipChart = true
-      console.log('🔄 Auto-refreshed price data');
+      // Reload data AND chart for real-time updates
+      await loadCoinData(false); // skipChart = false to show new candles
+      console.log('🔄 Auto-refreshed price data and chart');
     } catch (error) {
       console.error('❌ Auto-refresh failed:', error);
     }
