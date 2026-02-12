@@ -65,7 +65,7 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
     // Create main chart (Pump.fun style)
     chart = LightweightCharts.createChart(container, {
       width: container.clientWidth,
-      height: 400,
+      height: 350,
       layout: {
         background: { color: '#0a0a0a' }, // Dark background like pump.fun
         textColor: '#999',
@@ -109,8 +109,8 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
         timeVisible: true,
         secondsVisible: false,
         rightOffset: 5,
-        barSpacing: 12, // Moderate spacing for better visibility
-        minBarSpacing: 6, // Minimum spacing
+        barSpacing: 6, // Tighter spacing for thinner candles
+        minBarSpacing: 3, // Minimum spacing
         fixLeftEdge: false,
         fixRightEdge: false,
         lockVisibleTimeRangeOnResize: true,
