@@ -98,8 +98,8 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
         borderColor: 'rgba(255, 255, 255, 0.1)',
         visible: true,
         scaleMargins: {
-          top: 0.15,    // More margin at top (was 0.1)
-          bottom: 0.15, // More margin at bottom (was 0.2)
+          top: 0.1,     // 10% margin at top
+          bottom: 0.2,  // 20% margin at bottom
         },
         autoScale: true,
         mode: 0, // Normal price scale mode
@@ -149,7 +149,7 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
     }));
 
     candlestickSeries.setData(candleData);
-    console.log(`✅ Set ${candleData.length} candles`);
+    console.log(`✅ Set ${candleData.length} candles`, candleData);
 
     // Setup crosshair for OHLC display
     chart.subscribeCrosshairMove((param) => {
@@ -161,13 +161,16 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
       }
     });
 
-    // Use scrollToPosition instead of fitContent for smoother scaling
-    const timeScale = chart.timeScale();
-    timeScale.scrollToPosition(5, false); // Scroll to show latest data with 5 bars offset
+    // Fit content to show all data properly
+    chart.timeScale().fitContent();
     
-    // Auto-scale with padding
+    // Auto-scale price with proper margins
     chart.priceScale('right').applyOptions({
       autoScale: true,
+      scaleMargins: {
+        top: 0.1,
+        bottom: 0.2,
+      },
     });
 
     // Handle resize
