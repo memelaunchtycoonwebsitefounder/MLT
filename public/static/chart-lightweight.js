@@ -109,8 +109,8 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
         timeVisible: true,
         secondsVisible: true, // Show seconds for real-time feeling
         rightOffset: 10,
-        barSpacing: 1.5, // ULTRA THIN - even thinner like real Pump.fun
-        minBarSpacing: 0.5, // Super tight minimum spacing
+        barSpacing: 1.2, // Ultra thin - gradual reduction (was 1.5)
+        minBarSpacing: 0.4, // Tighter spacing (was 0.5)
         fixLeftEdge: false,
         fixRightEdge: false,
         lockVisibleTimeRangeOnResize: true,
@@ -128,12 +128,12 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
 
     // Add candlestick series (green/red like pump.fun)
     candlestickSeries = chart.addCandlestickSeries({
-      upColor: '#14b8a6', // More green like Pump.fun (teal-500)
+      upColor: '#10b981', // Even more green - emerald-500 (less blue)
       downColor: '#ef4444', // Brighter red (red-500)
       borderDownColor: '#ef4444',
-      borderUpColor: '#14b8a6',
+      borderUpColor: '#10b981',
       wickDownColor: '#ef4444',
-      wickUpColor: '#14b8a6',
+      wickUpColor: '#10b981',
       // Very thin candles like Pump.fun small rectangles
       priceLineVisible: true, // Show current price line
       lastValueVisible: true, // Show last price value
@@ -316,7 +316,7 @@ function initVolumeChart(container, aggregatedData) {
   });
 
   volumeSeries = volumeChart.addHistogramSeries({
-    color: '#14b8a6', // Match new green color
+    color: '#10b981', // Match even greener color (emerald-500)
     priceFormat: {
       type: 'volume',
     },
@@ -329,7 +329,7 @@ function initVolumeChart(container, aggregatedData) {
     return {
       time: candle.time,
       value: candle.volume || 100,
-      color: isUp ? '#14b8a6' : '#ef4444' // More green like Pump.fun
+      color: isUp ? '#10b981' : '#ef4444' // Greener (less blue)
     };
   });
 
