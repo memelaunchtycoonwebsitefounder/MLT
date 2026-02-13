@@ -166,9 +166,6 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
       }
     });
 
-    // Fit content to show all data properly
-    chart.timeScale().fitContent();
-    
     // Auto-scale price with proper margins
     chart.priceScale('right').applyOptions({
       autoScale: true,
@@ -177,6 +174,13 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
         bottom: 0.2,
       },
     });
+    
+    // Fit content to show all data properly (delayed to avoid flickering)
+    setTimeout(() => {
+      if (chart) {
+        chart.timeScale().fitContent();
+      }
+    }, 100);
 
     // Handle resize
     const resizeObserver = new ResizeObserver(() => {

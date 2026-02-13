@@ -88,10 +88,14 @@ const loadCoinData = async (skipChart = false) => {
     }
   } catch (error) {
     console.error('Failed to load coin:', error);
+    // Don't redirect on error - user might be in middle of trading
     showNotification('載入幣種資料失敗: ' + (error.response?.data?.message || error.message), 'error');
-    setTimeout(() => {
-      window.location.href = '/market';
-    }, 2000);
+    // Only redirect if it's the initial load (no coinData yet)
+    if (!coinData) {
+      setTimeout(() => {
+        window.location.href = '/market';
+      }, 2000);
+    }
   }
 };
 
@@ -577,7 +581,8 @@ const executeBuy = async () => {
     }
   } catch (error) {
     console.error('Buy failed:', error);
-    showNotification(error.response?.data?.message || '買入失敗，請稍後再試', 'error');
+    const errorMsg = error.response?.data?.message || error.response?.data?.error || '買入失敗，請稍後再試';
+    showNotification(errorMsg, 'error');
   } finally {
     button.disabled = false;
     button.innerHTML = originalHTML;
@@ -630,7 +635,8 @@ const executeSell = async () => {
     }
   } catch (error) {
     console.error('Sell failed:', error);
-    showNotification(error.response?.data?.message || '賣出失敗，請稍後再試', 'error');
+    const errorMsg = error.response?.data?.message || error.response?.data?.error || '賣出失敗，請稍後再試';
+    showNotification(errorMsg, 'error');
   } finally {
     button.disabled = false;
     button.innerHTML = originalHTML;
