@@ -205,9 +205,32 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
  */
 function aggregateByTimeframe(priceHistory, timeframe) {
   
+  // For 1-minute timeframe, use raw data without aggregation
+  // Each price_history record is already 1 candle
+  if (timeframe === '1m') {
+    const sorted = priceHistory
+      .filter(h => h && h.price && h.timestamp)
+      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    
+    return sorted.map(item => {
+      const timestamp = Math.floor(new Date(item.timestamp).getTime() / 1000);
+      const price = parseFloat(item.price);
+      const volume = Math.abs(parseFloat(item.volume) || 0);
+      
+      return {
+        time: timestamp,
+        open: price,
+        high: price,
+        low: price,
+        close: price,
+        volume: volume,
+        count: 1
+      };
+    });
+  }
+  
   // For other timeframes, aggregate as before
   const intervals = {
-    '1m': 60 * 1000,           // 1 minute
     '10m': 10 * 60 * 1000,     // 10 minutes
     '1h': 60 * 60 * 1000,      // 1 hour
     '24h': 24 * 60 * 60 * 1000 // 24 hours
