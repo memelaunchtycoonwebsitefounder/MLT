@@ -109,8 +109,8 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
         timeVisible: true,
         secondsVisible: true, // Show seconds for real-time feeling
         rightOffset: 10,
-        barSpacing: 3, // Reasonable spacing for visibility
-        minBarSpacing: 1, // Minimum spacing
+        barSpacing: 1.2, // Ultra thin - gradual reduction (was 1.5)
+        minBarSpacing: 0.4, // Tighter spacing (was 0.5)
         fixLeftEdge: false,
         fixRightEdge: false,
         lockVisibleTimeRangeOnResize: true,
@@ -145,10 +145,6 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
     });
 
     // Convert to candlestick format
-    console.log(`🔍 Before map: aggregatedData has ${aggregatedData.length} items`);
-    console.log('First 3 aggregated items:', aggregatedData.slice(0, 3));
-    console.log('Last 3 aggregated items:', aggregatedData.slice(-3));
-    
     const candleData = aggregatedData.map(item => ({
       time: item.time,
       open: item.open,
@@ -156,34 +152,9 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
       low: item.low,
       close: item.close,
     }));
-    
-    console.log(`📊 Map result: ${candleData.length} items (input was ${aggregatedData.length})`);
-    if (candleData.length !== aggregatedData.length) {
-      console.error(`❌❌❌ DATA LOSS IN MAP! ${aggregatedData.length} → ${candleData.length}`);
-    }
 
-    // Filter out invalid candles (NaN, undefined, null)
-    const validCandles = candleData.filter(c => 
-      c.time && 
-      !isNaN(c.time) &&
-      c.open && !isNaN(c.open) &&
-      c.high && !isNaN(c.high) &&
-      c.low && !isNaN(c.low) &&
-      c.close && !isNaN(c.close)
-    );
-
-    console.log(`📊 Aggregated data: ${aggregatedData.length} items`);
-    console.log(`📊 Candle data before filter: ${candleData.length} items`);
-    console.log(`📊 Valid candles after filter: ${validCandles.length} items`);
-    
-    if (validCandles.length !== candleData.length) {
-      console.warn(`⚠️ Filtered out ${candleData.length - validCandles.length} invalid candles`);
-      console.log('Invalid candles:', candleData.filter(c => !validCandles.includes(c)));
-    }
-
-    candlestickSeries.setData(validCandles);
-    console.log(`✅ Set ${validCandles.length} candles to chart`);
-    console.log('Last 3 candles:', validCandles.slice(-3));
+    candlestickSeries.setData(candleData);
+    console.log(`✅ Set ${candleData.length} candles`, candleData);
 
     // Setup crosshair for OHLC display
     chart.subscribeCrosshairMove((param) => {
@@ -234,32 +205,9 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
  */
 function aggregateByTimeframe(priceHistory, timeframe) {
   
-  // For 1-minute timeframe, use raw data without aggregation
-  // Each price_history record is already 1 candle
-  if (timeframe === '1m') {
-    const sorted = priceHistory
-      .filter(h => h && h.price && h.timestamp)
-      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-    
-    return sorted.map(item => {
-      const timestamp = Math.floor(new Date(item.timestamp).getTime() / 1000);
-      const price = parseFloat(item.price);
-      const volume = Math.abs(parseFloat(item.volume) || 0);
-      
-      return {
-        time: timestamp,
-        open: price,
-        high: price,
-        low: price,
-        close: price,
-        volume: volume,
-        count: 1
-      };
-    });
-  }
-  
   // For other timeframes, aggregate as before
   const intervals = {
+    '1m': 60 * 1000,           // 1 minute
     '10m': 10 * 60 * 1000,     // 10 minutes
     '1h': 60 * 60 * 1000,      // 1 hour
     '24h': 24 * 60 * 60 * 1000 // 24 hours
@@ -280,8 +228,7 @@ function aggregateByTimeframe(priceHistory, timeframe) {
   sorted.forEach(item => {
     const timestamp = new Date(item.timestamp).getTime();
     const price = parseFloat(item.price);
-    // FIX: Always use absolute value for volume to prevent negative numbers
-    const volume = Math.abs(parseFloat(item.volume) || 0);
+    const volume = parseFloat(item.volume) || 0;
 
     // Round down to interval
     const candleTime = Math.floor(timestamp / interval) * interval;
@@ -453,23 +400,13 @@ window.currentChartTimeframe = currentTimeframe;
  * Refresh chart after trade
  * Called after buy/sell transactions
  */
-/**
- * Update chart data without re-initialization (smooth, no flicker)
- */
-window.updateChartData = async function(coinData) {
-  console.log('🔄 Updating chart data (smooth mode)...');
+window.refreshChartAfterTrade = async function(coinData) {
+  console.log('🔄 Refreshing chart after trade...');
   
   try {
-    if (!candlestickSeries || !chart) {
-      console.warn('⚠️ Chart not initialized, calling refreshChartAfterTrade');
-      await window.refreshChartAfterTrade(coinData);
-      return;
-    }
-    
     // Get current timeframe from active button
     const activeBtn = document.querySelector('.timeframe-btn.active');
     const timeframe = activeBtn ? activeBtn.dataset.timeframe : '1m';
-    console.log('📊 Using timeframe:', timeframe);
     
     // Calculate limit based on timeframe
     let limit = 60;
@@ -480,9 +417,6 @@ window.updateChartData = async function(coinData) {
       case '24h': limit = 720; break;
     }
     
-    // Wait a bit for DB to commit
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
     // Fetch updated price history
     const response = await axios.get(`/api/coins/${window.COIN_ID || coinData.id}/price-history?limit=${limit}`);
     
@@ -490,79 +424,10 @@ window.updateChartData = async function(coinData) {
       const history = response.data.data.data;
       console.log(`✅ Fetched ${history.length} updated records`);
       
-      // Aggregate data
-      const aggregatedData = aggregateByTimeframe(history, timeframe);
-      console.log(`📊 Aggregated to ${aggregatedData.length} candles for update`);
-      
-      if (aggregatedData.length === 0) {
-        console.warn('⚠️ No aggregated data, skipping update');
-        return;
-      }
-      
-      // Convert to candlestick format
-      const candleData = aggregatedData.map(item => ({
-        time: item.time,
-        open: item.open,
-        high: item.high,
-        low: item.low,
-        close: item.close,
-      }));
-      
-      // Update candlestick data (NO RE-INIT, just update data)
-      candlestickSeries.setData(candleData);
-      console.log(`✅ Updated ${candleData.length} candles (smooth mode)`);
-      
-      // Update volume data if exists
-      if (volumeSeries) {
-        const volumeData = aggregatedData.map((candle, index) => {
-          const prevClose = index > 0 ? aggregatedData[index - 1].close : candle.open;
-          const isUp = candle.close >= prevClose;
-          return {
-            time: candle.time,
-            value: Math.abs(candle.volume || 0),
-            color: isUp ? '#10b981' : '#ef4444'
-          };
-        });
-        volumeSeries.setData(volumeData);
-        console.log('✅ Volume data updated');
-      }
-      
-      console.log('✅ Chart updated successfully (no flicker, no re-init)');
-    }
-  } catch (error) {
-    console.error('❌ Error updating chart:', error);
-  }
-};
-
-/**
- * Full chart refresh (re-initialization, only use when necessary)
- */
-window.refreshChartAfterTrade = async function(coinData) {
-  console.log('🔄 Full chart refresh (re-init)...');
-  
-  try {
-    // Get current timeframe
-    const activeBtn = document.querySelector('.timeframe-btn.active');
-    const timeframe = activeBtn ? activeBtn.dataset.timeframe : '1m';
-    
-    let limit = 60;
-    switch(timeframe) {
-      case '1m': limit = 60; break;
-      case '10m': limit = 144; break;
-      case '1h': limit = 168; break;
-      case '24h': limit = 720; break;
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
-    const response = await axios.get(`/api/coins/${window.COIN_ID || coinData.id}/price-history?limit=${limit}`);
-    
-    if (response.data.success && response.data.data.data) {
-      const history = response.data.data.data;
-      console.log(`✅ Fetched ${history.length} records for full refresh`);
+      // Re-initialize charts with new data
       await initLightweightCharts(coinData, history, timeframe);
     }
   } catch (error) {
-    console.error('❌ Error in full refresh:', error);
+    console.error('❌ Error refreshing chart:', error);
   }
 };

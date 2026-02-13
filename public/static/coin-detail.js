@@ -88,14 +88,10 @@ const loadCoinData = async (skipChart = false) => {
     }
   } catch (error) {
     console.error('Failed to load coin:', error);
-    // Don't redirect on error - user might be in middle of trading
     showNotification('載入幣種資料失敗: ' + (error.response?.data?.message || error.message), 'error');
-    // Only redirect if it's the initial load (no coinData yet)
-    if (!coinData) {
-      setTimeout(() => {
-        window.location.href = '/market';
-      }, 2000);
-    }
+    setTimeout(() => {
+      window.location.href = '/market';
+    }, 2000);
   }
 };
 
@@ -572,23 +568,8 @@ const executeBuy = async () => {
       userData.virtual_balance = response.data.data.newBalance;
       updateUserBalance(userData.virtual_balance, userData.mlt_balance);
       
-      // Update coin data (price, market cap, etc.)
-      const coinResponse = await axios.get(`/api/coins/${COIN_ID}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (coinResponse.data.success) {
-        coinData = coinResponse.data.data;
-        renderCoinData();
-      }
-      
-      // Refresh chart with updated data (smooth update, no re-init)
-      if (window.updateChartData) {
-        await window.updateChartData(coinData);
-      }
-      
-      // Reload holdings and transactions
-      await loadUserHoldings();
-      loadRecentTransactions();
+      // Reload data (skip chart re-initialization)
+      await loadCoinData(true);
       
       // Reset form
       document.getElementById('buy-amount').value = 100;
@@ -596,8 +577,7 @@ const executeBuy = async () => {
     }
   } catch (error) {
     console.error('Buy failed:', error);
-    const errorMsg = error.response?.data?.message || error.response?.data?.error || '買入失敗，請稍後再試';
-    showNotification(errorMsg, 'error');
+    showNotification(error.response?.data?.message || '買入失敗，請稍後再試', 'error');
   } finally {
     button.disabled = false;
     button.innerHTML = originalHTML;
@@ -641,23 +621,8 @@ const executeSell = async () => {
       userData.virtual_balance = response.data.data.newBalance;
       updateUserBalance(userData.virtual_balance, userData.mlt_balance);
       
-      // Update coin data (price, market cap, etc.)
-      const coinResponse = await axios.get(`/api/coins/${COIN_ID}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (coinResponse.data.success) {
-        coinData = coinResponse.data.data;
-        renderCoinData();
-      }
-      
-      // Refresh chart with updated data (smooth update, no re-init)
-      if (window.updateChartData) {
-        await window.updateChartData(coinData);
-      }
-      
-      // Reload holdings and transactions
-      await loadUserHoldings();
-      loadRecentTransactions();
+      // Reload data (skip chart re-initialization)
+      await loadCoinData(true);
       
       // Reset form
       document.getElementById('sell-amount').value = 10;
@@ -665,8 +630,7 @@ const executeSell = async () => {
     }
   } catch (error) {
     console.error('Sell failed:', error);
-    const errorMsg = error.response?.data?.message || error.response?.data?.error || '賣出失敗，請稍後再試';
-    showNotification(errorMsg, 'error');
+    showNotification(error.response?.data?.message || '賣出失敗，請稍後再試', 'error');
   } finally {
     button.disabled = false;
     button.innerHTML = originalHTML;
@@ -871,24 +835,9 @@ const startPriceAutoRefresh = () => {
   // Refresh price and chart data every 5 seconds
   priceRefreshInterval = setInterval(async () => {
     try {
-      // Only reload coin data, DO NOT re-initialize chart
-      // Chart auto-updates through refreshChartAfterTrade when data changes
-      const token = localStorage.getItem('auth_token');
-      if (!token) return;
-      
-      const response = await axios.get(`/api/coins/${COIN_ID}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      
-      if (response.data.success) {
-        const newData = response.data.data;
-        // Only update if price actually changed
-        if (coinData && newData.current_price !== coinData.current_price) {
-          coinData = newData;
-          renderCoinData(); // Update UI only
-          console.log('🔄 Price updated:', newData.current_price);
-        }
-      }
+      // Reload data AND chart for real-time updates
+      await loadCoinData(false); // skipChart = false to show new candles
+      console.log('🔄 Auto-refreshed price data and chart');
     } catch (error) {
       console.error('❌ Auto-refresh failed:', error);
     }
