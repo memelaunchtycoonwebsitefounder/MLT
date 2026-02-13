@@ -153,8 +153,28 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
       close: item.close,
     }));
 
-    candlestickSeries.setData(candleData);
-    console.log(`✅ Set ${candleData.length} candles`, candleData);
+    // Filter out invalid candles (NaN, undefined, null)
+    const validCandles = candleData.filter(c => 
+      c.time && 
+      !isNaN(c.time) &&
+      c.open && !isNaN(c.open) &&
+      c.high && !isNaN(c.high) &&
+      c.low && !isNaN(c.low) &&
+      c.close && !isNaN(c.close)
+    );
+
+    console.log(`📊 Aggregated data: ${aggregatedData.length} items`);
+    console.log(`📊 Candle data before filter: ${candleData.length} items`);
+    console.log(`📊 Valid candles after filter: ${validCandles.length} items`);
+    
+    if (validCandles.length !== candleData.length) {
+      console.warn(`⚠️ Filtered out ${candleData.length - validCandles.length} invalid candles`);
+      console.log('Invalid candles:', candleData.filter(c => !validCandles.includes(c)));
+    }
+
+    candlestickSeries.setData(validCandles);
+    console.log(`✅ Set ${validCandles.length} candles to chart`);
+    console.log('Last 3 candles:', validCandles.slice(-3));
 
     // Setup crosshair for OHLC display
     chart.subscribeCrosshairMove((param) => {
@@ -430,7 +450,9 @@ window.refreshChartAfterTrade = async function(coinData) {
   try {
     // Get current timeframe from active button
     const activeBtn = document.querySelector('.timeframe-btn.active');
-    const timeframe = activeBtn ? activeBtn.dataset.timeframe : '1h'; // Default to 1h not 1m
+    console.log('🔍 Active button:', activeBtn, activeBtn?.dataset?.timeframe);
+    const timeframe = activeBtn ? activeBtn.dataset.timeframe : '1m'; // Default to 1m for initial chart
+    console.log('📊 Using timeframe:', timeframe);
     
     // Calculate limit based on timeframe
     let limit = 60;
