@@ -98,20 +98,19 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
         borderColor: 'rgba(255, 255, 255, 0.1)',
         visible: true,
         scaleMargins: {
-          top: 0.15,
-          bottom: 0.15,
+          top: 0.1,
+          bottom: 0.2,
         },
         autoScale: true,
         mode: 0, // Normal mode - log mode causes visual issues
-        alignLabels: true,
       },
       timeScale: {
         borderColor: 'rgba(255, 255, 255, 0.1)',
         timeVisible: true,
         secondsVisible: true, // Show seconds for real-time feeling
-        rightOffset: 12,
-        barSpacing: 6, // Pump.fun style spacing - wider for better visibility
-        minBarSpacing: 2, // Minimum spacing
+        rightOffset: 10,
+        barSpacing: 1.2, // Ultra thin - gradual reduction (was 1.5)
+        minBarSpacing: 0.4, // Tighter spacing (was 0.5)
         fixLeftEdge: false,
         fixRightEdge: false,
         lockVisibleTimeRangeOnResize: true,
@@ -167,22 +166,16 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
       }
     });
 
+    // Fit content to show all data properly
+    chart.timeScale().fitContent();
+    
     // Auto-scale price with proper margins
     chart.priceScale('right').applyOptions({
       autoScale: true,
       scaleMargins: {
-        top: 0.15,
-        bottom: 0.15,
+        top: 0.1,
+        bottom: 0.2,
       },
-    });
-    
-    // Fit content to show all data on initial load only
-    // Only on initialization, not on updates (to prevent flicker)
-    requestAnimationFrame(() => {
-      if (chart) {
-        chart.timeScale().fitContent();
-        console.log('✅ Initial fitContent applied');
-      }
     });
 
     // Handle resize
@@ -405,115 +398,16 @@ window.initLightweightCharts = initLightweightCharts;
 window.currentChartTimeframe = currentTimeframe;
 
 /**
- * Update chart data without re-initialization (no flicker)
+ * Refresh chart after trade
  * Called after buy/sell transactions
  */
-window.updateChartData = async function(coinData) {
-  console.log('🔄 Updating chart data after trade (no re-init)...');
-  
-  try {
-    // If chart doesn't exist, initialize it
-    if (!chart || !candlestickSeries) {
-      console.log('⚠️ Chart not initialized, calling init...');
-      await window.refreshChartAfterTrade(coinData);
-      return;
-    }
-    
-    // Small delay to ensure database has been updated
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
-    // Get current timeframe from active button
-    const activeBtn = document.querySelector('.timeframe-btn.active');
-    const timeframe = activeBtn ? activeBtn.dataset.timeframe : '1h';
-    
-    // Calculate limit based on timeframe
-    let limit = 60;
-    switch(timeframe) {
-      case '1m': limit = 60; break;
-      case '10m': limit = 144; break;
-      case '1h': limit = 168; break;
-      case '24h': limit = 720; break;
-    }
-    
-    // Fetch updated price history
-    const response = await axios.get(`/api/coins/${window.COIN_ID || coinData.id}/price-history?limit=${limit}`);
-    
-    if (response.data.success && response.data.data.data) {
-      const history = response.data.data.data;
-      console.log(`✅ Fetched ${history.length} updated records`);
-      
-      // Aggregate data
-      const aggregatedData = aggregateByTimeframe(history, timeframe);
-      console.log(`📊 Aggregated to ${aggregatedData.length} candles for ${timeframe}`);
-      
-      // Show last 3 candles for debugging
-      if (aggregatedData.length > 0) {
-        const lastCandles = aggregatedData.slice(-3);
-        console.log('Last 3 candles:', lastCandles.map(c => ({
-          time: new Date(c.time * 1000).toISOString(),
-          O: c.open.toFixed(8),
-          H: c.high.toFixed(8),
-          L: c.low.toFixed(8),
-          C: c.close.toFixed(8),
-          V: c.volume.toFixed(0),
-          direction: c.close >= c.open ? '🟢 UP' : '🔴 DOWN'
-        })));
-      }
-      
-      if (aggregatedData.length === 0) {
-        console.warn('⚠️ No aggregated data, skipping update');
-        return;
-      }
-      
-      // Update candlestick data (preserve existing series)
-      const candleData = aggregatedData.map(item => ({
-        time: item.time,
-        open: item.open,
-        high: item.high,
-        low: item.low,
-        close: item.close,
-      }));
-      candlestickSeries.setData(candleData);
-      console.log('✅ Candlestick data updated', candleData.slice(-3));
-      
-      // Update volume data if volume series exists
-      if (volumeSeries && aggregatedData.length > 0) {
-        const volumeData = aggregatedData.map(d => ({
-          time: d.time,
-          value: Math.abs(d.volume || 0),
-          color: (d.close >= d.open) ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)'
-        }));
-        volumeSeries.setData(volumeData);
-        console.log('✅ Volume data updated');
-      }
-      
-      // Fit content after data update - only if necessary
-      // Skip fitContent on updates to prevent flickering
-      // User can manually zoom if needed
-      // requestAnimationFrame(() => {
-      //   if (chart) {
-      //     chart.timeScale().fitContent();
-      //   }
-      // });
-      
-      console.log('✅ Chart data updated successfully (no flicker)');
-    }
-  } catch (error) {
-    console.error('❌ Error updating chart data:', error);
-  }
-};
-
-/**
- * Refresh chart after trade (full re-initialization)
- * Use updateChartData() for smooth updates, this is fallback
- */
 window.refreshChartAfterTrade = async function(coinData) {
-  console.log('🔄 Refreshing chart after trade (full re-init)...');
+  console.log('🔄 Refreshing chart after trade...');
   
   try {
     // Get current timeframe from active button
     const activeBtn = document.querySelector('.timeframe-btn.active');
-    const timeframe = activeBtn ? activeBtn.dataset.timeframe : '1h';
+    const timeframe = activeBtn ? activeBtn.dataset.timeframe : '1h'; // Default to 1h not 1m
     
     // Calculate limit based on timeframe
     let limit = 60;

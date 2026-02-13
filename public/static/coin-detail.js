@@ -581,9 +581,9 @@ const executeBuy = async () => {
         renderCoinData();
       }
       
-      // Update chart data smoothly (no flicker)
-      if (window.updateChartData) {
-        await window.updateChartData(coinData);
+      // Refresh chart with updated data
+      if (window.refreshChartAfterTrade) {
+        await window.refreshChartAfterTrade(coinData);
       }
       
       // Reload holdings and transactions
@@ -650,9 +650,9 @@ const executeSell = async () => {
         renderCoinData();
       }
       
-      // Update chart data smoothly (no flicker)
-      if (window.updateChartData) {
-        await window.updateChartData(coinData);
+      // Refresh chart with updated data
+      if (window.refreshChartAfterTrade) {
+        await window.refreshChartAfterTrade(coinData);
       }
       
       // Reload holdings and transactions
@@ -871,9 +871,24 @@ const startPriceAutoRefresh = () => {
   // Refresh price and chart data every 5 seconds
   priceRefreshInterval = setInterval(async () => {
     try {
-      // Reload data AND chart for real-time updates
-      await loadCoinData(false); // skipChart = false to show new candles
-      console.log('🔄 Auto-refreshed price data and chart');
+      // Only reload coin data, DO NOT re-initialize chart
+      // Chart auto-updates through refreshChartAfterTrade when data changes
+      const token = localStorage.getItem('auth_token');
+      if (!token) return;
+      
+      const response = await axios.get(`/api/coins/${COIN_ID}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.data.success) {
+        const newData = response.data.data;
+        // Only update if price actually changed
+        if (coinData && newData.current_price !== coinData.current_price) {
+          coinData = newData;
+          renderCoinData(); // Update UI only
+          console.log('🔄 Price updated:', newData.current_price);
+        }
+      }
     } catch (error) {
       console.error('❌ Auto-refresh failed:', error);
     }
