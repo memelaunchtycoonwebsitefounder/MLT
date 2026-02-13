@@ -98,19 +98,20 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
         borderColor: 'rgba(255, 255, 255, 0.1)',
         visible: true,
         scaleMargins: {
-          top: 0.1,
-          bottom: 0.2,
+          top: 0.15,
+          bottom: 0.15,
         },
         autoScale: true,
         mode: 0, // Normal mode - log mode causes visual issues
+        alignLabels: true,
       },
       timeScale: {
         borderColor: 'rgba(255, 255, 255, 0.1)',
         timeVisible: true,
         secondsVisible: true, // Show seconds for real-time feeling
-        rightOffset: 10,
-        barSpacing: 1.2, // Ultra thin - gradual reduction (was 1.5)
-        minBarSpacing: 0.4, // Tighter spacing (was 0.5)
+        rightOffset: 12,
+        barSpacing: 6, // Pump.fun style spacing - wider for better visibility
+        minBarSpacing: 2, // Minimum spacing
         fixLeftEdge: false,
         fixRightEdge: false,
         lockVisibleTimeRangeOnResize: true,
@@ -170,13 +171,18 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
     chart.priceScale('right').applyOptions({
       autoScale: true,
       scaleMargins: {
-        top: 0.1,
-        bottom: 0.2,
+        top: 0.15,
+        bottom: 0.15,
       },
     });
     
     // Fit content to show all data properly
-    chart.timeScale().fitContent();
+    // Use setTimeout to ensure data is rendered before fitting
+    requestAnimationFrame(() => {
+      if (chart) {
+        chart.timeScale().fitContent();
+      }
+    });
 
     // Handle resize
     const resizeObserver = new ResizeObserver(() => {
@@ -454,6 +460,13 @@ window.updateChartData = async function(coinData) {
         volumeSeries.setData(volumeData);
         console.log('✅ Volume data updated');
       }
+      
+      // Fit content after data update
+      requestAnimationFrame(() => {
+        if (chart) {
+          chart.timeScale().fitContent();
+        }
+      });
       
       console.log('✅ Chart data updated successfully (no flicker)');
     }
