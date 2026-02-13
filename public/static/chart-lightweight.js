@@ -175,12 +175,8 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
       },
     });
     
-    // Fit content to show all data properly (delayed to avoid flickering)
-    setTimeout(() => {
-      if (chart) {
-        chart.timeScale().fitContent();
-      }
-    }, 100);
+    // Fit content to show all data properly
+    chart.timeScale().fitContent();
 
     // Handle resize
     const resizeObserver = new ResizeObserver(() => {
@@ -401,16 +397,82 @@ window.initLightweightCharts = initLightweightCharts;
 window.currentChartTimeframe = currentTimeframe;
 
 /**
- * Refresh chart after trade
+ * Update chart data without re-initialization (no flicker)
  * Called after buy/sell transactions
  */
+window.updateChartData = async function(coinData) {
+  console.log('🔄 Updating chart data (no re-init)...');
+  
+  try {
+    // If chart doesn't exist, initialize it
+    if (!chart || !candlestickSeries) {
+      console.log('⚠️ Chart not initialized, calling init...');
+      await window.refreshChartAfterTrade(coinData);
+      return;
+    }
+    
+    // Get current timeframe from active button
+    const activeBtn = document.querySelector('.timeframe-btn.active');
+    const timeframe = activeBtn ? activeBtn.dataset.timeframe : '1h';
+    
+    // Calculate limit based on timeframe
+    let limit = 60;
+    switch(timeframe) {
+      case '1m': limit = 60; break;
+      case '10m': limit = 144; break;
+      case '1h': limit = 168; break;
+      case '24h': limit = 720; break;
+    }
+    
+    // Fetch updated price history
+    const response = await axios.get(`/api/coins/${window.COIN_ID || coinData.id}/price-history?limit=${limit}`);
+    
+    if (response.data.success && response.data.data.data) {
+      const history = response.data.data.data;
+      console.log(`✅ Fetched ${history.length} updated records`);
+      
+      // Aggregate data
+      const aggregatedData = aggregateByTimeframe(history, timeframe);
+      console.log(`📊 Aggregated to ${aggregatedData.length} candles`);
+      
+      if (aggregatedData.length === 0) {
+        console.warn('⚠️ No aggregated data, skipping update');
+        return;
+      }
+      
+      // Update candlestick data (preserve existing series)
+      candlestickSeries.setData(aggregatedData);
+      console.log('✅ Candlestick data updated');
+      
+      // Update volume data if volume series exists
+      if (volumeSeries && aggregatedData.length > 0) {
+        const volumeData = aggregatedData.map(d => ({
+          time: d.time,
+          value: Math.abs(d.volume || 0),
+          color: (d.close >= d.open) ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)'
+        }));
+        volumeSeries.setData(volumeData);
+        console.log('✅ Volume data updated');
+      }
+      
+      console.log('✅ Chart data updated successfully (no flicker)');
+    }
+  } catch (error) {
+    console.error('❌ Error updating chart data:', error);
+  }
+};
+
+/**
+ * Refresh chart after trade (full re-initialization)
+ * Use updateChartData() for smooth updates, this is fallback
+ */
 window.refreshChartAfterTrade = async function(coinData) {
-  console.log('🔄 Refreshing chart after trade...');
+  console.log('🔄 Refreshing chart after trade (full re-init)...');
   
   try {
     // Get current timeframe from active button
     const activeBtn = document.querySelector('.timeframe-btn.active');
-    const timeframe = activeBtn ? activeBtn.dataset.timeframe : '1m';
+    const timeframe = activeBtn ? activeBtn.dataset.timeframe : '1h';
     
     // Calculate limit based on timeframe
     let limit = 60;

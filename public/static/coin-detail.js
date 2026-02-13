@@ -572,8 +572,23 @@ const executeBuy = async () => {
       userData.virtual_balance = response.data.data.newBalance;
       updateUserBalance(userData.virtual_balance, userData.mlt_balance);
       
-      // Reload data (skip chart re-initialization)
-      await loadCoinData(true);
+      // Update coin data (price, market cap, etc.)
+      const coinResponse = await axios.get(`/api/coins/${COIN_ID}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (coinResponse.data.success) {
+        coinData = coinResponse.data.data;
+        renderCoinData();
+      }
+      
+      // Update chart data smoothly (no flicker)
+      if (window.updateChartData) {
+        await window.updateChartData(coinData);
+      }
+      
+      // Reload holdings and transactions
+      await loadUserHoldings();
+      loadRecentTransactions();
       
       // Reset form
       document.getElementById('buy-amount').value = 100;
@@ -626,8 +641,23 @@ const executeSell = async () => {
       userData.virtual_balance = response.data.data.newBalance;
       updateUserBalance(userData.virtual_balance, userData.mlt_balance);
       
-      // Reload data (skip chart re-initialization)
-      await loadCoinData(true);
+      // Update coin data (price, market cap, etc.)
+      const coinResponse = await axios.get(`/api/coins/${COIN_ID}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (coinResponse.data.success) {
+        coinData = coinResponse.data.data;
+        renderCoinData();
+      }
+      
+      // Update chart data smoothly (no flicker)
+      if (window.updateChartData) {
+        await window.updateChartData(coinData);
+      }
+      
+      // Reload holdings and transactions
+      await loadUserHoldings();
+      loadRecentTransactions();
       
       // Reset form
       document.getElementById('sell-amount').value = 10;
