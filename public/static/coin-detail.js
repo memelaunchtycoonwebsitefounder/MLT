@@ -581,9 +581,9 @@ const executeBuy = async () => {
         renderCoinData();
       }
       
-      // Refresh chart with updated data
-      if (window.refreshChartAfterTrade) {
-        await window.refreshChartAfterTrade(coinData);
+      // Refresh chart with updated data (smooth update, no re-init)
+      if (window.updateChartData) {
+        await window.updateChartData(coinData);
       }
       
       // Reload holdings and transactions
@@ -650,9 +650,9 @@ const executeSell = async () => {
         renderCoinData();
       }
       
-      // Refresh chart with updated data
-      if (window.refreshChartAfterTrade) {
-        await window.refreshChartAfterTrade(coinData);
+      // Refresh chart with updated data (smooth update, no re-init)
+      if (window.updateChartData) {
+        await window.updateChartData(coinData);
       }
       
       // Reload holdings and transactions

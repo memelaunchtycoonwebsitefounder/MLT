@@ -145,6 +145,10 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
     });
 
     // Convert to candlestick format
+    console.log(`🔍 Before map: aggregatedData has ${aggregatedData.length} items`);
+    console.log('First 3 aggregated items:', aggregatedData.slice(0, 3));
+    console.log('Last 3 aggregated items:', aggregatedData.slice(-3));
+    
     const candleData = aggregatedData.map(item => ({
       time: item.time,
       open: item.open,
@@ -152,6 +156,11 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
       low: item.low,
       close: item.close,
     }));
+    
+    console.log(`📊 Map result: ${candleData.length} items (input was ${aggregatedData.length})`);
+    if (candleData.length !== aggregatedData.length) {
+      console.error(`❌❌❌ DATA LOSS IN MAP! ${aggregatedData.length} → ${candleData.length}`);
+    }
 
     // Filter out invalid candles (NaN, undefined, null)
     const validCandles = candleData.filter(c => 
@@ -444,14 +453,22 @@ window.currentChartTimeframe = currentTimeframe;
  * Refresh chart after trade
  * Called after buy/sell transactions
  */
-window.refreshChartAfterTrade = async function(coinData) {
-  console.log('🔄 Refreshing chart after trade...');
+/**
+ * Update chart data without re-initialization (smooth, no flicker)
+ */
+window.updateChartData = async function(coinData) {
+  console.log('🔄 Updating chart data (smooth mode)...');
   
   try {
+    if (!candlestickSeries || !chart) {
+      console.warn('⚠️ Chart not initialized, calling refreshChartAfterTrade');
+      await window.refreshChartAfterTrade(coinData);
+      return;
+    }
+    
     // Get current timeframe from active button
     const activeBtn = document.querySelector('.timeframe-btn.active');
-    console.log('🔍 Active button:', activeBtn, activeBtn?.dataset?.timeframe);
-    const timeframe = activeBtn ? activeBtn.dataset.timeframe : '1m'; // Default to 1m for initial chart
+    const timeframe = activeBtn ? activeBtn.dataset.timeframe : '1m';
     console.log('📊 Using timeframe:', timeframe);
     
     // Calculate limit based on timeframe
@@ -463,6 +480,9 @@ window.refreshChartAfterTrade = async function(coinData) {
       case '24h': limit = 720; break;
     }
     
+    // Wait a bit for DB to commit
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
     // Fetch updated price history
     const response = await axios.get(`/api/coins/${window.COIN_ID || coinData.id}/price-history?limit=${limit}`);
     
@@ -470,10 +490,79 @@ window.refreshChartAfterTrade = async function(coinData) {
       const history = response.data.data.data;
       console.log(`✅ Fetched ${history.length} updated records`);
       
-      // Re-initialize charts with new data
+      // Aggregate data
+      const aggregatedData = aggregateByTimeframe(history, timeframe);
+      console.log(`📊 Aggregated to ${aggregatedData.length} candles for update`);
+      
+      if (aggregatedData.length === 0) {
+        console.warn('⚠️ No aggregated data, skipping update');
+        return;
+      }
+      
+      // Convert to candlestick format
+      const candleData = aggregatedData.map(item => ({
+        time: item.time,
+        open: item.open,
+        high: item.high,
+        low: item.low,
+        close: item.close,
+      }));
+      
+      // Update candlestick data (NO RE-INIT, just update data)
+      candlestickSeries.setData(candleData);
+      console.log(`✅ Updated ${candleData.length} candles (smooth mode)`);
+      
+      // Update volume data if exists
+      if (volumeSeries) {
+        const volumeData = aggregatedData.map((candle, index) => {
+          const prevClose = index > 0 ? aggregatedData[index - 1].close : candle.open;
+          const isUp = candle.close >= prevClose;
+          return {
+            time: candle.time,
+            value: Math.abs(candle.volume || 0),
+            color: isUp ? '#10b981' : '#ef4444'
+          };
+        });
+        volumeSeries.setData(volumeData);
+        console.log('✅ Volume data updated');
+      }
+      
+      console.log('✅ Chart updated successfully (no flicker, no re-init)');
+    }
+  } catch (error) {
+    console.error('❌ Error updating chart:', error);
+  }
+};
+
+/**
+ * Full chart refresh (re-initialization, only use when necessary)
+ */
+window.refreshChartAfterTrade = async function(coinData) {
+  console.log('🔄 Full chart refresh (re-init)...');
+  
+  try {
+    // Get current timeframe
+    const activeBtn = document.querySelector('.timeframe-btn.active');
+    const timeframe = activeBtn ? activeBtn.dataset.timeframe : '1m';
+    
+    let limit = 60;
+    switch(timeframe) {
+      case '1m': limit = 60; break;
+      case '10m': limit = 144; break;
+      case '1h': limit = 168; break;
+      case '24h': limit = 720; break;
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    const response = await axios.get(`/api/coins/${window.COIN_ID || coinData.id}/price-history?limit=${limit}`);
+    
+    if (response.data.success && response.data.data.data) {
+      const history = response.data.data.data;
+      console.log(`✅ Fetched ${history.length} records for full refresh`);
       await initLightweightCharts(coinData, history, timeframe);
     }
   } catch (error) {
-    console.error('❌ Error refreshing chart:', error);
+    console.error('❌ Error in full refresh:', error);
   }
 };
