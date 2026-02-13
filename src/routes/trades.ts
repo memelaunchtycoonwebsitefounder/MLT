@@ -142,10 +142,15 @@ trades.post('/buy', async (c) => {
       return errorResponse(`可用供應量不足。剩餘: ${availableSupply}`);
     }
 
-    // Calculate new price based on current price
-    // Buy increases price by 1-3%, sell decreases by 2-5%
-    const priceImpact = 1.01 + Math.random() * 0.02; // 1.01 to 1.03 for buy
-    const currentPrice = coin.current_price * priceImpact;
+    // Calculate new price based on bonding curve and amount
+    // Larger purchases have bigger price impact
+    const supplyRatio = amount / coin.total_supply;
+    // Base impact: 0.1% to 0.5% per 1% of supply bought
+    const baseImpact = 1 + (supplyRatio * 50); // 50x multiplier for impact
+    // Add randomness: ±0.5%
+    const randomFactor = 0.995 + Math.random() * 0.01;
+    const priceMultiplier = baseImpact * randomFactor;
+    const currentPrice = coin.current_price * priceMultiplier;
     const totalCost = currentPrice * amount;
 
     // Check user balance
@@ -298,10 +303,15 @@ trades.post('/sell', async (c) => {
       return errorResponse('幣種未找到', 404);
     }
 
-    // Calculate new price based on current price  
-    // Sell decreases price by 2-5%
-    const priceImpact = 0.95 + Math.random() * 0.03; // 0.95 to 0.98 for sell
-    const currentPrice = coin.current_price * priceImpact;
+    // Calculate new price based on bonding curve and amount
+    // Larger sells have bigger price impact (negative)
+    const supplyRatio = amount / coin.circulating_supply;
+    // Base impact: -0.2% to -1% per 1% of supply sold
+    const baseImpact = 1 - (supplyRatio * 80); // 80x multiplier for negative impact
+    // Add randomness: ±0.5%
+    const randomFactor = 0.995 + Math.random() * 0.01;
+    const priceMultiplier = Math.max(0.5, baseImpact * randomFactor); // Min 50% of current price
+    const currentPrice = coin.current_price * priceMultiplier;
     const totalRevenue = currentPrice * amount;
 
     // 1. Add to user balance

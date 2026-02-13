@@ -109,8 +109,8 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
         timeVisible: true,
         secondsVisible: true, // Show seconds for real-time feeling
         rightOffset: 10,
-        barSpacing: 1.2, // Ultra thin - gradual reduction (was 1.5)
-        minBarSpacing: 0.4, // Tighter spacing (was 0.5)
+        barSpacing: 3, // Reasonable spacing for visibility
+        minBarSpacing: 1, // Minimum spacing
         fixLeftEdge: false,
         fixRightEdge: false,
         lockVisibleTimeRangeOnResize: true,
