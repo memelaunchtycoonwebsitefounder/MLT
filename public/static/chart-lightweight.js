@@ -176,11 +176,12 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
       },
     });
     
-    // Fit content to show all data properly
-    // Use setTimeout to ensure data is rendered before fitting
+    // Fit content to show all data on initial load only
+    // Only on initialization, not on updates (to prevent flicker)
     requestAnimationFrame(() => {
       if (chart) {
         chart.timeScale().fitContent();
+        console.log('✅ Initial fitContent applied');
       }
     });
 
@@ -234,7 +235,8 @@ function aggregateByTimeframe(priceHistory, timeframe) {
   sorted.forEach(item => {
     const timestamp = new Date(item.timestamp).getTime();
     const price = parseFloat(item.price);
-    const volume = parseFloat(item.volume) || 0;
+    // FIX: Always use absolute value for volume to prevent negative numbers
+    const volume = Math.abs(parseFloat(item.volume) || 0);
 
     // Round down to interval
     const candleTime = Math.floor(timestamp / interval) * interval;
@@ -407,7 +409,7 @@ window.currentChartTimeframe = currentTimeframe;
  * Called after buy/sell transactions
  */
 window.updateChartData = async function(coinData) {
-  console.log('🔄 Updating chart data (no re-init)...');
+  console.log('🔄 Updating chart data after trade (no re-init)...');
   
   try {
     // If chart doesn't exist, initialize it
@@ -416,6 +418,9 @@ window.updateChartData = async function(coinData) {
       await window.refreshChartAfterTrade(coinData);
       return;
     }
+    
+    // Small delay to ensure database has been updated
+    await new Promise(resolve => setTimeout(resolve, 100));
     
     // Get current timeframe from active button
     const activeBtn = document.querySelector('.timeframe-btn.active');
@@ -439,7 +444,21 @@ window.updateChartData = async function(coinData) {
       
       // Aggregate data
       const aggregatedData = aggregateByTimeframe(history, timeframe);
-      console.log(`📊 Aggregated to ${aggregatedData.length} candles`);
+      console.log(`📊 Aggregated to ${aggregatedData.length} candles for ${timeframe}`);
+      
+      // Show last 3 candles for debugging
+      if (aggregatedData.length > 0) {
+        const lastCandles = aggregatedData.slice(-3);
+        console.log('Last 3 candles:', lastCandles.map(c => ({
+          time: new Date(c.time * 1000).toISOString(),
+          O: c.open.toFixed(8),
+          H: c.high.toFixed(8),
+          L: c.low.toFixed(8),
+          C: c.close.toFixed(8),
+          V: c.volume.toFixed(0),
+          direction: c.close >= c.open ? '🟢 UP' : '🔴 DOWN'
+        })));
+      }
       
       if (aggregatedData.length === 0) {
         console.warn('⚠️ No aggregated data, skipping update');
@@ -447,8 +466,15 @@ window.updateChartData = async function(coinData) {
       }
       
       // Update candlestick data (preserve existing series)
-      candlestickSeries.setData(aggregatedData);
-      console.log('✅ Candlestick data updated');
+      const candleData = aggregatedData.map(item => ({
+        time: item.time,
+        open: item.open,
+        high: item.high,
+        low: item.low,
+        close: item.close,
+      }));
+      candlestickSeries.setData(candleData);
+      console.log('✅ Candlestick data updated', candleData.slice(-3));
       
       // Update volume data if volume series exists
       if (volumeSeries && aggregatedData.length > 0) {
@@ -461,12 +487,14 @@ window.updateChartData = async function(coinData) {
         console.log('✅ Volume data updated');
       }
       
-      // Fit content after data update
-      requestAnimationFrame(() => {
-        if (chart) {
-          chart.timeScale().fitContent();
-        }
-      });
+      // Fit content after data update - only if necessary
+      // Skip fitContent on updates to prevent flickering
+      // User can manually zoom if needed
+      // requestAnimationFrame(() => {
+      //   if (chart) {
+      //     chart.timeScale().fitContent();
+      //   }
+      // });
       
       console.log('✅ Chart data updated successfully (no flicker)');
     }
