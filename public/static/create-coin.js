@@ -807,6 +807,38 @@ const launchCoin = async () => {
       image_url: imageUrl
     };
     
+    // 🚨 CRITICAL SAFEGUARD: Ensure pre_purchase_amount is valid
+    if (!formData.pre_purchase_amount || formData.pre_purchase_amount === 0) {
+      console.error('[CRITICAL ERROR] pre_purchase_amount is invalid:', {
+        original: coinData.prePurchaseTokens,
+        converted: safePrePurchaseTokens,
+        final: formData.pre_purchase_amount,
+        step2Data: localStorage.getItem('debug_step2_data')
+      });
+      
+      // Try to recover from Step 2 persisted data
+      const step2Data = localStorage.getItem('debug_step2_data');
+      if (step2Data) {
+        const parsed = JSON.parse(step2Data);
+        if (parsed.prePurchase && parsed.prePurchase > 0) {
+          console.warn('[RECOVERY] Using persisted Step2 prePurchase value:', parsed.prePurchase);
+          formData.pre_purchase_amount = parsed.prePurchase;
+        }
+      }
+      
+      // If still invalid, use minimum calculated value
+      if (!formData.pre_purchase_amount || formData.pre_purchase_amount === 0) {
+        if (minTokens > 0) {
+          console.warn('[RECOVERY] Using calculated minTokens:', minTokens);
+          formData.pre_purchase_amount = Math.ceil(minTokens);
+        } else {
+          // Last resort: use initial coinData value
+          console.warn('[RECOVERY] Using default 50000 tokens');
+          formData.pre_purchase_amount = 50000;
+        }
+      }
+    }
+    
     console.log('[DEBUG] create-coin payload (FINAL):', formData);
     console.log('[DEBUG] JSON payload:', JSON.stringify(formData, null, 2));
     
@@ -915,6 +947,33 @@ const init = async () => {
     setupStep2();
     setupMLTControls();  // Setup MLT investment controls
     setupStep3();
+    
+    // 🔄 SYNC DOM input values to coinData on page load
+    setTimeout(() => {
+      const mltInput = document.getElementById('mlt-investment');
+      const prePurchaseInput = document.getElementById('pre-purchase-amount');
+      
+      if (mltInput && mltInput.value) {
+        const parsed = parseInt(mltInput.value);
+        if (!isNaN(parsed)) {
+          coinData.mltInvestment = parsed;
+          console.log('🔄 [INIT] Synced MLT investment from DOM:', parsed);
+        }
+      }
+      
+      if (prePurchaseInput && prePurchaseInput.value) {
+        const parsed = parseInt(prePurchaseInput.value);
+        if (!isNaN(parsed)) {
+          coinData.prePurchaseTokens = parsed;
+          console.log('🔄 [INIT] Synced pre-purchase tokens from DOM:', parsed);
+        }
+      }
+      
+      console.log('🔄 [INIT] Final coinData after sync:', {
+        mltInvestment: coinData.mltInvestment,
+        prePurchaseTokens: coinData.prePurchaseTokens
+      });
+    }, 500);  // Small delay to ensure DOM is fully rendered
     
     // Logout button
     const logoutBtn = document.getElementById('logout-btn');
