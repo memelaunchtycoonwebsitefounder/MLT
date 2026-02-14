@@ -2280,7 +2280,7 @@ app.get('/create', (c) => {
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="/static/mlt-calculator.js"></script>
-        <script src="/static/create-coin.js"></script>
+        <script src="/static/create-coin.js?v=2.0.0-final"></script>
     </body>
     </html>
   `);

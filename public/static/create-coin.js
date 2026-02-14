@@ -1,7 +1,12 @@
 /**
  * Create Coin JavaScript
  * Handles the 3-step coin creation wizard
+ * Version: 2.0.0-fix-final (2026-02-15)
  */
+
+// 🔥 IMMEDIATE VERSION CHECK - This proves the file is loaded
+console.log('%c🚀 CREATE-COIN.JS VERSION 2.0.0-FIX-FINAL LOADED', 'background: #ff6600; color: white; font-size: 16px; padding: 5px;');
+console.log('%c⚠️ If you see old version, hard refresh: Cmd+Shift+R (Mac) or Ctrl+Shift+F5 (Windows)', 'color: #ff6600; font-size: 14px;');
 
 let currentStep = 1;
 let userData = null;
