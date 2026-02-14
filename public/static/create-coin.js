@@ -663,31 +663,34 @@ const launchCoin = async () => {
     // Prepare coin creation data
     launchText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>創建幣種...';
     
-    // Update coinData with current form values before submitting
+    // Read ALL values directly from form inputs (don't trust coinData object)
+    const nameInput = document.getElementById('coin-name');
+    const symbolInput = document.getElementById('coin-symbol');
+    const descInput = document.getElementById('coin-description');
+    const supplyInput = document.getElementById('total-supply');
+    const mltInput = document.getElementById('mlt-investment');
     const prePurchaseInput = document.getElementById('pre-purchase-amount');
-    if (prePurchaseInput) {
-      coinData.prePurchaseTokens = parseInt(prePurchaseInput.value) || 0;
-    }
+    const twitterInput = document.getElementById('twitter-url');
+    const telegramInput = document.getElementById('telegram-url');
+    const websiteInput = document.getElementById('website-url');
     
-    console.log('📦 Final coin data before submit:', {
-      prePurchaseTokens: coinData.prePurchaseTokens,
-      supply: coinData.supply,
-      mltInvestment: coinData.mltInvestment
-    });
-    
-    const requestData = {
-      name: coinData.name,
-      symbol: coinData.symbol,
-      description: coinData.description,
-      total_supply: coinData.supply,
-      initial_mlt_investment: coinData.mltInvestment,
-      pre_purchase_amount: coinData.prePurchaseTokens,  // Fixed: use pre_purchase_amount
-      twitter_url: coinData.twitterUrl || undefined,
-      telegram_url: coinData.telegramUrl || undefined,
-      website_url: coinData.websiteUrl || undefined,
+    const formData = {
+      name: nameInput?.value || '',
+      symbol: symbolInput?.value || '',
+      description: descInput?.value || '',
+      total_supply: parseInt(supplyInput?.value) || 1000000,
+      initial_mlt_investment: parseInt(mltInput?.value) || 2000,
+      pre_purchase_amount: parseInt(prePurchaseInput?.value) || 0,
+      twitter_url: twitterInput?.value || undefined,
+      telegram_url: telegramInput?.value || undefined,
+      website_url: websiteInput?.value || undefined,
       quality_score: qualityScore.total,
-      image_url: imageUrl  // Use uploaded URL or template/default URL
+      image_url: imageUrl
     };
+    
+    console.log('📦 Form data from DOM:', formData);
+    
+    const requestData = formData;
     
     const response = await axios.post('/api/coins', requestData, {
       headers: {
