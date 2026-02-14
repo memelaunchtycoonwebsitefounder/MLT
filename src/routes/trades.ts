@@ -364,7 +364,7 @@ trades.post('/sell', async (c) => {
       `INSERT INTO transactions (user_id, coin_id, type, amount, price, total_cost) 
        VALUES (?, ?, 'sell', ?, ?, ?)`
     )
-      .bind(user.userId, coinId, amount, currentPrice, totalRevenue)
+      .bind(user.userId, coinId, amount, tradeResult.averagePrice, totalRevenue)
       .run();
 
     // 4. Update holding

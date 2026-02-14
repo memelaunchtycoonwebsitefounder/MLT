@@ -268,7 +268,7 @@ app.get('/', (c) => {
                     <div class="bg-orange-500 w-12 h-12 rounded-full flex items-center justify-center text-2xl font-bold">2</div>
                     <div>
                         <h4 class="text-xl font-bold">創建你的第一個模因幣</h4>
-                        <p class="text-gray-400">僅需 100 金幣，3 步驟完成創建</p>
+                        <p class="text-gray-400">僅需 ~2,100 MLT，3 步驟完成創建</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4 glass-effect p-6 rounded-xl">
@@ -2180,15 +2180,15 @@ app.get('/create', (c) => {
                                 </h3>
                                 <div class="flex items-center justify-between text-2xl mb-4">
                                     <span>總計:</span>
-                                    <span class="font-bold text-orange-500">100 金幣</span>
+                                    <span class="font-bold text-orange-500" id="cost-total-preview">~2,100 MLT</span>
                                 </div>
                                 <div class="flex items-center justify-between text-sm text-gray-400">
                                     <span>當前餘額:</span>
-                                    <span id="preview-balance">--</span>
+                                    <span id="preview-balance">-- MLT</span>
                                 </div>
                                 <div class="flex items-center justify-between text-sm text-gray-400 mt-2">
                                     <span>發射後餘額:</span>
-                                    <span id="preview-after-balance">--</span>
+                                    <span id="preview-after-balance">-- MLT</span>
                                 </div>
                             </div>
 

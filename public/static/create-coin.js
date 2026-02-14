@@ -596,10 +596,32 @@ const updatePreview = () => {
   document.getElementById('desc-quality-score').textContent = qualityScore.desc;
   document.getElementById('desc-quality-bar').style.width = `${qualityScore.desc}%`;
   
-  // Update balances
-  const currentBalance = userData?.virtual_balance || 0;
-  document.getElementById('preview-balance').textContent = currentBalance.toLocaleString() + ' 金幣';
-  document.getElementById('preview-after-balance').textContent = (currentBalance - 100).toLocaleString() + ' 金幣';
+  // Update balances - use MLT instead of virtual_balance
+  const currentMltBalance = userData?.mlt_balance || 0;
+  
+  // Calculate actual creation cost using calculator
+  let totalCost = 2100; // Default estimate
+  if (calculator) {
+    try {
+      const result = calculator.calculateCreationCost(
+        coinData.mltInvestment,
+        coinData.supply,
+        coinData.prePurchaseTokens
+      );
+      totalCost = result.totalCost;
+    } catch (e) {
+      console.error('Cost calculation error:', e);
+    }
+  }
+  
+  document.getElementById('preview-balance').textContent = currentMltBalance.toLocaleString() + ' MLT';
+  document.getElementById('preview-after-balance').textContent = Math.max(0, currentMltBalance - totalCost).toFixed(2) + ' MLT';
+  
+  // Update total cost display
+  const totalCostEl = document.querySelector('.text-orange-500');
+  if (totalCostEl && totalCostEl.textContent.includes('金幣')) {
+    totalCostEl.textContent = totalCost.toFixed(2) + ' MLT';
+  }
   
   // Calculate market cap
   const initialPrice = 0.01;
@@ -706,7 +728,7 @@ const launchCoin = async () => {
   
   // Check balance
   if (userData.virtual_balance < 100) {
-    launchError.textContent = '餘額不足！您需要至少 100 金幣才能創建幣種';
+    launchError.textContent = '餘額不足！您需要至少 2,100 MLT 才能創建幣種';
     launchError.classList.remove('hidden');
     return;
   }
