@@ -663,6 +663,18 @@ const launchCoin = async () => {
     // Prepare coin creation data
     launchText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>創建幣種...';
     
+    // Update coinData with current form values before submitting
+    const prePurchaseInput = document.getElementById('pre-purchase-amount');
+    if (prePurchaseInput) {
+      coinData.prePurchaseTokens = parseInt(prePurchaseInput.value) || 0;
+    }
+    
+    console.log('📦 Final coin data before submit:', {
+      prePurchaseTokens: coinData.prePurchaseTokens,
+      supply: coinData.supply,
+      mltInvestment: coinData.mltInvestment
+    });
+    
     const requestData = {
       name: coinData.name,
       symbol: coinData.symbol,
