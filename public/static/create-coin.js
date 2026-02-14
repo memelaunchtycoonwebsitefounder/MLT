@@ -669,7 +669,7 @@ const launchCoin = async () => {
       description: coinData.description,
       total_supply: coinData.supply,
       initial_mlt_investment: coinData.mltInvestment,
-      pre_purchase_tokens: coinData.prePurchaseTokens,
+      pre_purchase_amount: coinData.prePurchaseTokens,  // Fixed: use pre_purchase_amount
       twitter_url: coinData.twitterUrl || undefined,
       telegram_url: coinData.telegramUrl || undefined,
       website_url: coinData.websiteUrl || undefined,
