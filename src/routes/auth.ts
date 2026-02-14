@@ -181,7 +181,7 @@ auth.get('/me', async (c) => {
     }
 
     const userProfile = await c.env.DB.prepare(
-      `SELECT id, email, username, virtual_balance, premium_balance, 
+      `SELECT id, email, username, virtual_balance, mlt_balance, premium_balance, 
               level, experience_points as xp, created_at, last_login
        FROM users WHERE id = ?`
     )
