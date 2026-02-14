@@ -375,28 +375,43 @@ const setupStep2 = () => {
       if (mltInputEl) {
         const rawMlt = mltInputEl.value;
         const parsedMlt = parseInt(rawMlt);
-        coinData.mltInvestment = parsedMlt || 2000;
-        console.log('[STEP2→3] MLT conversion:', { rawMlt, parsedMlt, final: coinData.mltInvestment });
+        // Use isNaN check instead of || operator
+        coinData.mltInvestment = isNaN(parsedMlt) ? 2000 : parsedMlt;
+        console.log('[STEP2→3] MLT conversion:', { rawMlt, parsedMlt, isNaN: isNaN(parsedMlt), final: coinData.mltInvestment });
+      } else {
+        console.log('[STEP2→3] MLT input element NOT FOUND, keeping existing value:', coinData.mltInvestment);
       }
       
       if (prePurchaseInputEl) {
         const rawPrePurchase = prePurchaseInputEl.value;
         const parsedPrePurchase = parseInt(rawPrePurchase);
-        const fallback = parsedPrePurchase || 0;
-        coinData.prePurchaseTokens = fallback;
+        // CRITICAL FIX: Only fallback to 0 if parsing actually fails
+        // Don't use || operator as it treats valid 0 as falsy
+        coinData.prePurchaseTokens = isNaN(parsedPrePurchase) ? 0 : parsedPrePurchase;
         console.log('[STEP2→3] PrePurchase conversion:', { 
           rawPrePurchase, 
           parsedPrePurchase, 
-          fallback,
+          isNaN: isNaN(parsedPrePurchase),
           final: coinData.prePurchaseTokens,
           isZero: coinData.prePurchaseTokens === 0
         });
+      } else {
+        // If DOM element doesn't exist, keep existing coinData value
+        console.log('[STEP2→3] PrePurchase input element NOT FOUND, keeping existing value:', coinData.prePurchaseTokens);
       }
       
       console.log('💾 Data saved before Step 3:', {
         mlt: coinData.mltInvestment,
         prePurchase: coinData.prePurchaseTokens
       });
+      
+      // PERSIST debug data to localStorage
+      localStorage.setItem('debug_step2_data', JSON.stringify({
+        timestamp: new Date().toISOString(),
+        mlt: coinData.mltInvestment,
+        prePurchase: coinData.prePurchaseTokens,
+        rawPrePurchase: prePurchaseInputEl ? prePurchaseInputEl.value : 'N/A'
+      }));
       
       // Get social links
       const twitterInput = document.getElementById('twitter-url');
@@ -741,6 +756,10 @@ const launchCoin = async () => {
     };
     
     // [DEBUG] Step 1: Log current state
+    // READ persisted debug data
+    const step2Data = localStorage.getItem('debug_step2_data');
+    console.log('[DEBUG] Persisted Step2 data:', step2Data ? JSON.parse(step2Data) : 'NONE');
+    
     console.log('[DEBUG] coinData state:', {
       prePurchaseTokens: coinData.prePurchaseTokens,
       mltInvestment: coinData.mltInvestment,
