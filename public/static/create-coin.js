@@ -359,6 +359,23 @@ const setupStep2 = () => {
       coinData.symbol = symbolInput.value.toUpperCase();
       coinData.description = descInput.value;
       
+      // **CRITICAL FIX: Save MLT and pre-purchase values BEFORE moving to Step 3**
+      const mltInputEl = document.getElementById('mlt-investment');
+      const prePurchaseInputEl = document.getElementById('pre-purchase-amount');
+      
+      if (mltInputEl) {
+        coinData.mltInvestment = parseInt(mltInputEl.value) || 2000;
+      }
+      
+      if (prePurchaseInputEl) {
+        coinData.prePurchaseTokens = parseInt(prePurchaseInputEl.value) || 0;
+      }
+      
+      console.log('💾 Data saved before Step 3:', {
+        mlt: coinData.mltInvestment,
+        prePurchase: coinData.prePurchaseTokens
+      });
+      
       // Get social links
       const twitterInput = document.getElementById('twitter-url');
       const telegramInput = document.getElementById('telegram-url');
@@ -663,44 +680,29 @@ const launchCoin = async () => {
     // Prepare coin creation data
     launchText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>創建幣種...';
     
-    // Read ALL values directly from form inputs (don't trust coinData object)
-    const nameInput = document.getElementById('coin-name');
-    const symbolInput = document.getElementById('coin-symbol');
-    const descInput = document.getElementById('coin-description');
-    const supplyInput = document.getElementById('total-supply');
-    const mltInput = document.getElementById('mlt-investment');
-    const prePurchaseInput = document.getElementById('pre-purchase-amount');
-    const twitterInput = document.getElementById('twitter-url');
-    const telegramInput = document.getElementById('telegram-url');
-    const websiteInput = document.getElementById('website-url');
-    
-    // Debug: Check if elements exist and their values
-    console.log('🔍 DOM Elements Check:', {
-      prePurchaseInput: prePurchaseInput,
-      prePurchaseValue: prePurchaseInput?.value,
-      prePurchaseParsed: parseInt(prePurchaseInput?.value),
-      supplyInput: supplyInput,
-      supplyValue: supplyInput?.value,
-      mltInput: mltInput,
-      mltValue: mltInput?.value
+    // Use data from coinData object (already saved when moving to Step 3)
+    console.log('📤 Using saved coinData:', {
+      prePurchaseTokens: coinData.prePurchaseTokens,
+      mltInvestment: coinData.mltInvestment,
+      supply: coinData.supply,
+      name: coinData.name
     });
     
     const formData = {
-      name: nameInput?.value || '',
-      symbol: symbolInput?.value || '',
-      description: descInput?.value || '',
-      total_supply: parseInt(supplyInput?.value) || 1000000,
-      initial_mlt_investment: parseInt(mltInput?.value) || 2000,
-      pre_purchase_amount: parseInt(prePurchaseInput?.value) || 0,
-      twitter_url: twitterInput?.value || undefined,
-      telegram_url: telegramInput?.value || undefined,
-      website_url: websiteInput?.value || undefined,
+      name: coinData.name,
+      symbol: coinData.symbol,
+      description: coinData.description,
+      total_supply: coinData.supply,
+      initial_mlt_investment: coinData.mltInvestment,
+      pre_purchase_amount: coinData.prePurchaseTokens,
+      twitter_url: coinData.twitterUrl || undefined,
+      telegram_url: coinData.telegramUrl || undefined,
+      website_url: coinData.websiteUrl || undefined,
       quality_score: qualityScore.total,
       image_url: imageUrl
     };
     
-    console.log('📦 Form data from DOM:', formData);
-    console.log('📤 Sending to API:', JSON.stringify(formData, null, 2));
+    console.log('📦 Final request data:', formData);
     
     const requestData = formData;
     
