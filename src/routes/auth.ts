@@ -50,14 +50,15 @@ auth.post('/register', async (c) => {
     // Hash password
     const passwordHash = await hashPassword(password);
 
-    // Create user
+    // Create user with MLT balance
     const startingBalance = parseFloat(c.env.STARTING_BALANCE || '10000');
+    const startingMLT = parseFloat(c.env.STARTING_MLT || '10000');
     
     const result = await c.env.DB.prepare(
-      `INSERT INTO users (email, username, password_hash, virtual_balance) 
-       VALUES (?, ?, ?, ?)`
+      `INSERT INTO users (email, username, password_hash, virtual_balance, mlt_balance) 
+       VALUES (?, ?, ?, ?, ?)`
     )
-      .bind(email, username, passwordHash, startingBalance)
+      .bind(email, username, passwordHash, startingBalance, startingMLT)
       .run();
 
     if (!result.success) {
@@ -66,7 +67,7 @@ auth.post('/register', async (c) => {
 
     // Get the created user
     const newUser = await c.env.DB.prepare(
-      'SELECT id, email, username, virtual_balance FROM users WHERE email = ?'
+      'SELECT id, email, username, virtual_balance, mlt_balance FROM users WHERE email = ?'
     )
       .bind(email)
       .first() as any;
@@ -88,6 +89,7 @@ auth.post('/register', async (c) => {
           email: newUser.email,
           username: newUser.username,
           virtual_balance: newUser.virtual_balance,
+          mlt_balance: newUser.mlt_balance || 10000,
         },
       },
       201
