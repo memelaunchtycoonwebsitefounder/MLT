@@ -1466,7 +1466,7 @@ app.get('/market', (c) => {
 
             <!-- Search and Filters -->
             <div class="glass-effect rounded-2xl p-6 mb-8">
-                <div class="grid md:grid-cols-4 gap-4">
+                <div class="grid md:grid-cols-5 gap-4">
                     <!-- Search Bar -->
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium mb-2">
@@ -1491,12 +1491,34 @@ app.get('/market', (c) => {
                         >
                             <option value="created_at_desc">最新創建</option>
                             <option value="created_at_asc">最早創建</option>
+                            <option value="bonding_curve_progress_desc">🚀 進度最高</option>
+                            <option value="bonding_curve_progress_asc">🐣 進度最低</option>
+                            <option value="ai_trade_count_desc">🤖 AI 活動最多</option>
+                            <option value="real_trade_count_desc">👤 真實交易最多</option>
                             <option value="current_price_desc">價格最高</option>
                             <option value="current_price_asc">價格最低</option>
                             <option value="market_cap_desc">市值最高</option>
                             <option value="market_cap_asc">市值最低</option>
                             <option value="hype_score_desc">最熱門</option>
                             <option value="transaction_count_desc">交易最多</option>
+                        </select>
+                    </div>
+
+                    <!-- Destiny Filter -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            <i class="fas fa-shield-alt mr-2"></i>命運
+                        </label>
+                        <select
+                            id="destiny-filter"
+                            class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
+                        >
+                            <option value="">全部</option>
+                            <option value="SURVIVAL">🛡️ 生存</option>
+                            <option value="EARLY_DEATH">💀 高風險</option>
+                            <option value="LATE_DEATH">⏳ 中風險</option>
+                            <option value="GRADUATION">🎓 畢業</option>
+                            <option value="RUG_PULL">⚠️ Rug</option>
                         </select>
                     </div>
 

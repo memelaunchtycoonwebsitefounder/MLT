@@ -34,6 +34,7 @@ coins.get('/', async (c) => {
     const order = c.req.query('order') || 'DESC';
     const search = c.req.query('search') || '';
     const symbol = c.req.query('symbol') || '';
+    const destinyType = c.req.query('destinyType') || '';
 
     const offset = (page - 1) * limit;
 
@@ -59,6 +60,11 @@ coins.get('/', async (c) => {
       params.push(symbol);
     }
 
+    if (destinyType) {
+      query += ' AND coins.destiny_type = ?';
+      params.push(destinyType);
+    }
+
     query += ` ORDER BY coins.${sortBy} ${order} LIMIT ? OFFSET ?`;
     params.push(limit, offset);
 
@@ -79,6 +85,11 @@ coins.get('/', async (c) => {
     if (symbol) {
       countQuery += ' AND symbol = ?';
       countParams.push(symbol);
+    }
+
+    if (destinyType) {
+      countQuery += ' AND destiny_type = ?';
+      countParams.push(destinyType);
     }
 
     const countResult = await c.env.DB.prepare(countQuery)

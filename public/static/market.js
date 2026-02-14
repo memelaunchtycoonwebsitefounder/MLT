@@ -8,7 +8,8 @@ let totalPages = 1;
 let currentFilters = {
   search: '',
   sortBy: 'created_at',
-  order: 'DESC'
+  order: 'DESC',
+  destinyType: '' // Add destiny filter
 };
 
 // Check authentication with retry mechanism
@@ -93,6 +94,10 @@ const loadCoins = async (page = 1) => {
       params.append('search', currentFilters.search);
     }
     
+    if (currentFilters.destinyType) {
+      params.append('destinyType', currentFilters.destinyType);
+    }
+    
     const response = await axios.get(`/api/coins?${params.toString()}`, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -142,6 +147,17 @@ const renderCoins = (coins) => {
     const priceChangeClass = priceChange >= 0 ? 'text-green-400' : 'text-red-400';
     const priceChangeIcon = priceChange >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
     
+    // Calculate bonding curve progress
+    const progress = coin.bonding_curve_progress || 0;
+    const progressPercent = (progress * 100).toFixed(1);
+    
+    // Get destiny badge
+    const destinyBadge = getDestinyBadge(coin.destiny_type);
+    
+    // AI and real trade counts
+    const aiTrades = coin.ai_trade_count || 0;
+    const realTrades = coin.real_trade_count || 0;
+    
     return `
       <div class="glass-effect rounded-2xl p-6 hover:bg-white/10 transition cursor-pointer transform hover:scale-105" onclick="window.location.href='/coin/${coin.id}'">
         <!-- Coin Header -->
@@ -162,8 +178,34 @@ const renderCoins = (coins) => {
           </div>
         </div>
 
+        <!-- Destiny Badge -->
+        ${destinyBadge ? `<div class="mb-3">${destinyBadge}</div>` : ''}
+
+        <!-- Mini Bonding Curve Progress -->
+        <div class="mb-3">
+          <div class="flex items-center justify-between text-xs mb-1">
+            <span class="text-gray-400">Bonding Curve</span>
+            <span class="text-orange-400 font-bold">${progressPercent}%</span>
+          </div>
+          <div class="h-2 bg-gray-700 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-orange-500 to-pink-500 transition-all" style="width: ${progressPercent}%"></div>
+          </div>
+        </div>
+
+        <!-- AI Activity Indicators -->
+        <div class="flex items-center justify-between text-xs mb-3">
+          <div class="flex items-center space-x-2">
+            <i class="fas fa-robot text-purple-400"></i>
+            <span class="text-gray-400">AI: ${aiTrades}</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <i class="fas fa-user text-green-400"></i>
+            <span class="text-gray-400">真實: ${realTrades}</span>
+          </div>
+        </div>
+
         <!-- Coin Stats -->
-        <div class="grid grid-cols-2 gap-3 text-sm">
+        <div class="grid grid-cols-2 gap-3 text-sm mb-3">
           <div>
             <p class="text-gray-400">市值</p>
             <p class="font-bold">${Number(coin.market_cap || 0).toLocaleString()}</p>
@@ -183,7 +225,7 @@ const renderCoins = (coins) => {
         </div>
 
         <!-- Hype Score -->
-        <div class="mt-4">
+        <div class="mb-3">
           <div class="flex items-center justify-between text-sm mb-1">
             <span class="text-gray-400">
               <i class="fas fa-fire text-orange-500 mr-1"></i>Hype 分數
@@ -196,7 +238,7 @@ const renderCoins = (coins) => {
         </div>
 
         <!-- Creator -->
-        <div class="mt-4 flex items-center justify-between text-sm text-gray-400">
+        <div class="flex items-center justify-between text-sm text-gray-400">
           <a href="/profile/${coin.creator_id}" class="flex items-center hover:text-orange-500 transition" onclick="event.stopPropagation()">
             <i class="fas fa-user mr-1"></i>
             創建者: ${coin.creator_username || 'Unknown'}
@@ -280,14 +322,41 @@ const setupEventListeners = () => {
   // Sort select
   const sortSelect = document.getElementById('sort-select');
   sortSelect.addEventListener('change', (e) => {
-    const [sortBy, order] = e.target.value.split('_');
-    currentFilters.sortBy = sortBy === 'created' ? 'created_at' : 
-                            sortBy === 'current' ? 'current_price' :
-                            sortBy === 'market' ? 'market_cap' :
-                            sortBy === 'hype' ? 'hype_score' :
-                            sortBy === 'transaction' ? 'transaction_count' : 'created_at';
-    currentFilters.order = order === 'desc' ? 'DESC' : 'ASC';
+    const value = e.target.value;
+    let [field, order] = value.split('_');
+    
+    // Handle multi-word field names
+    if (value.includes('bonding_curve_progress')) {
+      currentFilters.sortBy = 'bonding_curve_progress';
+      currentFilters.order = value.endsWith('desc') ? 'DESC' : 'ASC';
+    } else if (value.includes('ai_trade_count')) {
+      currentFilters.sortBy = 'ai_trade_count';
+      currentFilters.order = value.endsWith('desc') ? 'DESC' : 'ASC';
+    } else if (value.includes('real_trade_count')) {
+      currentFilters.sortBy = 'real_trade_count';
+      currentFilters.order = value.endsWith('desc') ? 'DESC' : 'ASC';
+    } else {
+      // Handle other sorting options
+      currentFilters.sortBy = field === 'created' ? 'created_at' : 
+                              field === 'current' ? 'current_price' :
+                              field === 'market' ? 'market_cap' :
+                              field === 'hype' ? 'hype_score' :
+                              field === 'transaction' ? 'transaction_count' : 'created_at';
+      currentFilters.order = order === 'desc' ? 'DESC' : 'ASC';
+    }
+    
+    // Auto-apply when sort changes
+    loadCoins(1);
   });
+  
+  // Destiny filter
+  const destinyFilter = document.getElementById('destiny-filter');
+  if (destinyFilter) {
+    destinyFilter.addEventListener('change', (e) => {
+      currentFilters.destinyType = e.target.value;
+      loadCoins(1);
+    });
+  }
   
   // Apply filters button
   const applyFiltersBtn = document.getElementById('apply-filters-btn');
@@ -333,5 +402,24 @@ const init = async () => {
     await loadCoins(1);
   }
 };
+
+// ========================================
+// Helper Functions for Enhanced Display
+// ========================================
+
+/**
+ * Get destiny badge HTML
+ */
+function getDestinyBadge(destinyType) {
+  const badges = {
+    'SURVIVAL': '<span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs font-bold">🛡️ 生存</span>',
+    'EARLY_DEATH': '<span class="px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs font-bold">💀 高風險</span>',
+    'LATE_DEATH': '<span class="px-2 py-1 bg-orange-500/20 text-orange-400 rounded text-xs font-bold">⏳ 中風險</span>',
+    'GRADUATION': '<span class="px-2 py-1 bg-purple-500/20 text-purple-400 rounded text-xs font-bold">🎓 畢業</span>',
+    'RUG_PULL': '<span class="px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded text-xs font-bold">⚠️ Rug</span>',
+    'unknown': ''
+  };
+  return badges[destinyType] || badges['unknown'];
+}
 
 document.addEventListener('DOMContentLoaded', init);
