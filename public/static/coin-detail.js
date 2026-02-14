@@ -167,6 +167,11 @@ const renderCoinData = async () => {
   document.getElementById('bonding-remaining').textContent = `剩餘 ${remaining.toLocaleString()}`;
   document.getElementById('bonding-progress-percent').textContent = `${progressPercent}%`;
   document.getElementById('bonding-progress-bar').style.width = `${progressPercent}%`;
+  
+  // Update enhanced bonding curve display
+  updateBondingCurveDetails(coinData);
+  updateDestinyStatus(coinData);
+  updateAIActivity(coinData);
 };
 
 // Load user holdings
@@ -690,6 +695,7 @@ const init = async () => {
     updateUserBalance(userData.virtual_balance, userData.mlt_balance);
     
     await loadCoinData();
+    await loadEventTimeline(COIN_ID);
     
     setupTradingTabs();
     setupTradeInputs();
@@ -983,3 +989,293 @@ const setupSellPresets = () => {
 };
 
 console.log('✅ Slider handlers loaded');
+
+// ========================================
+// Enhanced Bonding Curve Display Functions
+// ========================================
+
+/**
+ * Update bonding curve details with price milestones
+ */
+function updateBondingCurveDetails(coin) {
+  const progress = coin.bonding_curve_progress || 0;
+  const k = coin.bonding_curve_k || 4.0;
+  
+  // Calculate initial price from current state
+  const currentPrice = coin.current_price || 0.01;
+  const initialPrice = currentPrice / Math.exp(k * progress);
+  
+  // Update progress elements if they exist
+  const progressPercentEl = document.getElementById('curve-progress-percent');
+  if (progressPercentEl) {
+    progressPercentEl.textContent = (progress * 100).toFixed(2) + '%';
+  }
+  
+  const progressBarEl = document.getElementById('curve-progress-bar');
+  if (progressBarEl) {
+    progressBarEl.style.width = (progress * 100) + '%';
+  }
+  
+  // Update price milestones
+  const milestones = [0, 0.25, 0.5, 0.75, 1.0];
+  milestones.forEach(p => {
+    const price = initialPrice * Math.exp(k * p);
+    const priceEl = document.getElementById(`price-${Math.floor(p * 100)}`);
+    if (priceEl) {
+      priceEl.textContent = price.toFixed(6);
+    }
+  });
+}
+
+/**
+ * Update destiny status display
+ */
+function updateDestinyStatus(coin) {
+  const destinyType = coin.destiny_type || 'unknown';
+  
+  const destinyConfig = {
+    'SURVIVAL': {
+      icon: 'fa-shield-alt',
+      text: '生存模式 - 穩定發展中',
+      color: 'text-green-400',
+      bgColor: 'bg-green-500/20 border-green-500/30'
+    },
+    'EARLY_DEATH': {
+      icon: 'fa-skull-crossbones',
+      text: '早期死亡 - 5 分鐘內面臨風險',
+      color: 'text-red-400',
+      bgColor: 'bg-red-500/20 border-red-500/30'
+    },
+    'LATE_DEATH': {
+      icon: 'fa-hourglass-half',
+      text: '後期死亡 - 10 分鐘內面臨風險',
+      color: 'text-orange-400',
+      bgColor: 'bg-orange-500/20 border-orange-500/30'
+    },
+    'GRADUATION': {
+      icon: 'fa-graduation-cap',
+      text: '已畢業 - 達到 100% 進度! 🎉',
+      color: 'text-purple-400',
+      bgColor: 'bg-purple-500/20 border-purple-500/30'
+    },
+    'RUG_PULL': {
+      icon: 'fa-exclamation-triangle',
+      text: 'Rug Pull 風險 - 小心詐騙!',
+      color: 'text-yellow-400',
+      bgColor: 'bg-yellow-500/20 border-yellow-500/30'
+    },
+    'unknown': {
+      icon: 'fa-question-circle',
+      text: '命運未知...',
+      color: 'text-gray-400',
+      bgColor: 'bg-gray-500/20 border-gray-500/30'
+    }
+  };
+  
+  const config = destinyConfig[destinyType] || destinyConfig['unknown'];
+  
+  const statusDiv = document.getElementById('destiny-status');
+  if (statusDiv) {
+    statusDiv.className = `mt-4 p-3 rounded-lg border ${config.bgColor}`;
+    
+    const iconEl = document.getElementById('destiny-icon');
+    if (iconEl) {
+      iconEl.className = `fas ${config.icon} ${config.color}`;
+    }
+    
+    const textEl = document.getElementById('destiny-text');
+    if (textEl) {
+      textEl.className = config.color;
+      textEl.textContent = config.text;
+    }
+  }
+}
+
+/**
+ * Update AI activity statistics
+ */
+function updateAIActivity(coin) {
+  const aiTradeCountEl = document.getElementById('ai-trade-count');
+  if (aiTradeCountEl) {
+    aiTradeCountEl.textContent = coin.ai_trade_count || 0;
+  }
+  
+  const realTradeCountEl = document.getElementById('real-trade-count');
+  if (realTradeCountEl) {
+    realTradeCountEl.textContent = coin.real_trade_count || 0;
+  }
+  
+  const uniqueTradersEl = document.getElementById('unique-traders');
+  if (uniqueTradersEl) {
+    uniqueTradersEl.textContent = coin.unique_real_traders || 0;
+  }
+  
+  // Update AI status indicator
+  const aiStatusEl = document.getElementById('ai-status');
+  if (aiStatusEl && coin.is_ai_active !== undefined) {
+    if (coin.is_ai_active) {
+      aiStatusEl.innerHTML = `
+        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+        <span class="text-sm text-green-400 font-bold">運行中</span>
+      `;
+    } else {
+      aiStatusEl.innerHTML = `
+        <div class="w-2 h-2 bg-gray-500 rounded-full"></div>
+        <span class="text-sm text-gray-400">已停止</span>
+      `;
+    }
+  }
+}
+
+/**
+ * Load and display event timeline
+ */
+async function loadEventTimeline(coinId) {
+  // For now, we'll create events from coin data
+  // In future, add a proper /api/coins/:id/events endpoint
+  const timeline = document.getElementById('event-timeline');
+  if (!timeline) return;
+  
+  timeline.innerHTML = '';
+  
+  // Add coin creation event
+  if (coinData) {
+    const events = [];
+    
+    events.push({
+      type: 'COIN_CREATED',
+      timestamp: coinData.created_at,
+      description: `幣種創建 - 初始投資 ${coinData.initial_mlt_investment || 2000} MLT`
+    });
+    
+    // Add events based on flags
+    if (coinData.has_sniper_attack) {
+      events.push({
+        type: 'SNIPER_ATTACK',
+        timestamp: coinData.created_at,
+        description: '狙擊手快速買入大量代幣'
+      });
+    }
+    
+    if (coinData.has_whale_buy) {
+      events.push({
+        type: 'WHALE_BUY',
+        timestamp: coinData.created_at,
+        description: '鯨魚買入,大幅推高價格'
+      });
+    }
+    
+    if (coinData.has_rug_pull) {
+      events.push({
+        type: 'RUG_PULL',
+        timestamp: coinData.created_at,
+        description: '⚠️ Rug Pull 事件發生'
+      });
+    }
+    
+    if (coinData.has_panic_sell) {
+      events.push({
+        type: 'PANIC_SELL',
+        timestamp: coinData.created_at,
+        description: '恐慌拋售,價格下跌'
+      });
+    }
+    
+    if (coinData.has_fomo_buy) {
+      events.push({
+        type: 'FOMO_BUY',
+        timestamp: coinData.created_at,
+        description: 'FOMO 買入潮,價格飆升'
+      });
+    }
+    
+    if (coinData.has_viral_moment) {
+      events.push({
+        type: 'VIRAL_MOMENT',
+        timestamp: coinData.created_at,
+        description: '🔥 病毒式傳播,熱度爆表'
+      });
+    }
+    
+    if (coinData.death_time) {
+      events.push({
+        type: 'COIN_DEATH',
+        timestamp: coinData.death_time,
+        description: '💀 幣種死亡'
+      });
+    }
+    
+    if (coinData.graduation_time) {
+      events.push({
+        type: 'COIN_GRADUATION',
+        timestamp: coinData.graduation_time,
+        description: '🎓 成功畢業到 DEX'
+      });
+    }
+    
+    if (events.length === 0) {
+      timeline.innerHTML = '<p class="text-gray-400 text-center py-4">暫無事件</p>';
+      return;
+    }
+    
+    events.forEach(event => {
+      const eventEl = createEventElement(event);
+      timeline.appendChild(eventEl);
+    });
+  }
+}
+
+/**
+ * Create event timeline element
+ */
+function createEventElement(event) {
+  const eventConfig = {
+    'COIN_CREATED': { icon: 'fa-rocket', color: 'text-blue-400', label: '幣種創建' },
+    'SNIPER_ATTACK': { icon: 'fa-crosshairs', color: 'text-red-400', label: '狙擊手攻擊' },
+    'WHALE_BUY': { icon: 'fa-fish', color: 'text-green-400', label: '鯨魚買入' },
+    'RUG_PULL': { icon: 'fa-exclamation-triangle', color: 'text-yellow-400', label: 'Rug Pull' },
+    'PANIC_SELL': { icon: 'fa-arrow-down', color: 'text-orange-400', label: '恐慌拋售' },
+    'FOMO_BUY': { icon: 'fa-arrow-up', color: 'text-green-400', label: 'FOMO 買入' },
+    'VIRAL_MOMENT': { icon: 'fa-fire', color: 'text-pink-400', label: '病毒式傳播' },
+    'COIN_DEATH': { icon: 'fa-skull', color: 'text-gray-400', label: '幣種死亡' },
+    'COIN_GRADUATION': { icon: 'fa-graduation-cap', color: 'text-purple-400', label: '幣種畢業' }
+  };
+  
+  const config = eventConfig[event.type] || eventConfig['COIN_CREATED'];
+  
+  const div = document.createElement('div');
+  div.className = 'flex items-start space-x-3 p-3 rounded-lg bg-gray-800/50 hover:bg-gray-800 transition';
+  div.innerHTML = `
+    <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-gray-700">
+      <i class="fas ${config.icon} ${config.color}"></i>
+    </div>
+    <div class="flex-1">
+      <div class="flex items-center justify-between mb-1">
+        <span class="font-bold text-white">${config.label}</span>
+        <span class="text-xs text-gray-500">${formatTime(event.timestamp)}</span>
+      </div>
+      <p class="text-sm text-gray-400">${event.description || '無詳情'}</p>
+    </div>
+  `;
+  
+  return div;
+}
+
+/**
+ * Format timestamp for display
+ */
+function formatTime(timestamp) {
+  if (!timestamp) return '剛剛';
+  
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMins = Math.floor(diffMs / 60000);
+  
+  if (diffMins < 1) return '剛剛';
+  if (diffMins < 60) return `${diffMins} 分鐘前`;
+  if (diffMins < 1440) return `${Math.floor(diffMins / 60)} 小時前`;
+  return date.toLocaleDateString('zh-TW');
+}
+
+console.log('✅ Enhanced bonding curve functions loaded');

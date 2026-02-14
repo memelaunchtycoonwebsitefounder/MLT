@@ -1045,9 +1045,118 @@ app.get('/coin/:id', (c) => {
 
                     <!-- Right Column - Trading & Info -->
                     <div class="space-y-6">
+                        <!-- Enhanced Bonding Curve Panel -->
+                        <div class="glass-effect rounded-2xl p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-xl font-bold text-white">
+                                    <i class="fas fa-chart-line mr-2 text-orange-500"></i>Bonding Curve 進度
+                                </h3>
+                                <span id="curve-progress-percent" class="text-2xl font-bold text-orange-400">0%</span>
+                            </div>
+                            
+                            <!-- Progress Bar -->
+                            <div class="relative h-8 bg-gray-800 rounded-full overflow-hidden mb-4">
+                                <div id="curve-progress-bar" class="absolute top-0 left-0 h-full bg-gradient-to-r from-orange-500 to-pink-500 transition-all duration-500" style="width: 0%"></div>
+                                <div class="absolute inset-0 flex items-center justify-between px-4 text-xs font-bold text-white">
+                                    <span>0%</span>
+                                    <span>25%</span>
+                                    <span>50%</span>
+                                    <span>75%</span>
+                                    <span>100% 🎓</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Price Milestones -->
+                            <div class="grid grid-cols-5 gap-2 text-xs">
+                                <div class="text-center">
+                                    <div class="text-gray-400">初始</div>
+                                    <div id="price-0" class="font-mono text-white">0.002</div>
+                                    <div class="text-gray-500">1.00×</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-gray-400">25%</div>
+                                    <div id="price-25" class="font-mono text-white">0.005</div>
+                                    <div class="text-gray-500">2.72×</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-gray-400">50%</div>
+                                    <div id="price-50" class="font-mono text-white">0.015</div>
+                                    <div class="text-gray-500">7.39×</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-gray-400">75%</div>
+                                    <div id="price-75" class="font-mono text-white">0.040</div>
+                                    <div class="text-gray-500">20.09×</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-gray-400">畢業</div>
+                                    <div id="price-100" class="font-mono text-white">0.109</div>
+                                    <div class="text-green-400">54.60×</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Destiny Status -->
+                            <div id="destiny-status" class="mt-4 p-3 rounded-lg border bg-gray-500/20 border-gray-500/30">
+                                <div class="flex items-center space-x-2">
+                                    <i id="destiny-icon" class="fas fa-question-circle text-gray-400"></i>
+                                    <span id="destiny-text" class="text-gray-300">命運未知...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Activity Panel -->
+                        <div class="glass-effect rounded-2xl p-6">
+                            <h3 class="text-xl font-bold text-white mb-4">
+                                <i class="fas fa-robot mr-2 text-purple-500"></i>AI 交易活動
+                            </h3>
+                            
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div class="p-4 rounded-lg bg-purple-500/10 border border-purple-500/30">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-300">
+                                            <i class="fas fa-robot mr-1"></i>AI 交易
+                                        </span>
+                                        <span id="ai-trade-count" class="text-xl font-bold text-purple-400">0</span>
+                                    </div>
+                                    <div class="text-xs text-gray-400">自動市場做市商</div>
+                                </div>
+                                
+                                <div class="p-4 rounded-lg bg-green-500/10 border border-green-500/30">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-300">
+                                            <i class="fas fa-user mr-1"></i>真實交易
+                                        </span>
+                                        <span id="real-trade-count" class="text-xl font-bold text-green-400">0</span>
+                                    </div>
+                                    <div class="text-xs text-gray-400">
+                                        <span id="unique-traders">0</span> 位獨立交易者
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-3 rounded-lg bg-gray-800">
+                                <span class="text-sm text-gray-300">AI 系統狀態</span>
+                                <div id="ai-status" class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span class="text-sm text-green-400 font-bold">運行中</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Event Timeline -->
+                        <div class="glass-effect rounded-2xl p-6">
+                            <h3 class="text-xl font-bold text-white mb-4">
+                                <i class="fas fa-history mr-2 text-blue-500"></i>事件時間線
+                            </h3>
+                            
+                            <div id="event-timeline" class="space-y-3 max-h-96 overflow-y-auto">
+                                <p class="text-gray-400 text-center py-4">載入中...</p>
+                            </div>
+                        </div>
+
                         <!-- Trading Panel -->
                         <div class="glass-effect rounded-2xl p-6">
-                            <!-- Bonding Curve Progress -->
+                            <!-- Simple Bonding Curve Progress (Keep for compatibility) -->
                             <div class="mb-6 p-4 bg-gradient-to-r from-orange-500/20 to-purple-500/20 rounded-xl border border-orange-500/30">
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="text-sm font-bold">
