@@ -206,7 +206,20 @@ coins.post('/', async (c) => {
 
     // Validate pre-purchase amount
     if (!pre_purchase_amount || pre_purchase_amount < minimumPrePurchase) {
-      return errorResponse(`必須預購至少 ${minimumPrePurchase.toLocaleString()} 個幣 (價值 100 MLT)`);
+      // Calculate actual cost for validation
+      const actualCost = calculateBuyTrade(
+        initial_mlt_investment,
+        total_supply,
+        0,
+        pre_purchase_amount || 0,
+        4.0
+      );
+      
+      return errorResponse(
+        `預購數量不足! 您選擇的 ${(pre_purchase_amount || 0).toLocaleString()} 個幣僅價值 ${actualCost.mltAmount.toFixed(2)} MLT。` +
+        `最低要求至少 ${minimumPrePurchase.toLocaleString()} 個幣 (價值 100 MLT)。`,
+        400
+      );
     }
 
     if (pre_purchase_amount > total_supply * 0.5) {
