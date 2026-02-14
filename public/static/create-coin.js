@@ -674,6 +674,17 @@ const launchCoin = async () => {
     const telegramInput = document.getElementById('telegram-url');
     const websiteInput = document.getElementById('website-url');
     
+    // Debug: Check if elements exist and their values
+    console.log('🔍 DOM Elements Check:', {
+      prePurchaseInput: prePurchaseInput,
+      prePurchaseValue: prePurchaseInput?.value,
+      prePurchaseParsed: parseInt(prePurchaseInput?.value),
+      supplyInput: supplyInput,
+      supplyValue: supplyInput?.value,
+      mltInput: mltInput,
+      mltValue: mltInput?.value
+    });
+    
     const formData = {
       name: nameInput?.value || '',
       symbol: symbolInput?.value || '',
@@ -689,6 +700,7 @@ const launchCoin = async () => {
     };
     
     console.log('📦 Form data from DOM:', formData);
+    console.log('📤 Sending to API:', JSON.stringify(formData, null, 2));
     
     const requestData = formData;
     
