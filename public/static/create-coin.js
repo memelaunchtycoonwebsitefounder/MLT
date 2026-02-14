@@ -631,6 +631,37 @@ const launchCoin = async () => {
   const launchText = document.getElementById('launch-text');
   const launchError = document.getElementById('launch-error');
   
+  // Helper: Safe number conversion
+  const toNumber = (v) => {
+    const cleaned = String(v || '0').replace(/,/g, '').trim();
+    const num = Number(cleaned);
+    return isNaN(num) ? 0 : num;
+  };
+  
+  // [GUARD] Validate pre-purchase amount before API call
+  const safePrePurchaseTokens = toNumber(coinData.prePurchaseTokens);
+  const safeMltInvestment = toNumber(coinData.mltInvestment);
+  const safeTotalSupply = toNumber(coinData.supply);
+  
+  // Calculate minimum required tokens
+  if (calculator) {
+    const initialPrice = calculator.calculateInitialPrice(safeMltInvestment, safeTotalSupply);
+    const minPurchase = calculator.calculateMinimumPrePurchase(initialPrice, safeTotalSupply, 100);
+    const minTokens = minPurchase.tokens || 0;
+    
+    console.log('[GUARD] Pre-launch validation:', {
+      prePurchaseTokens: safePrePurchaseTokens,
+      minTokens: minTokens,
+      isPassing: safePrePurchaseTokens >= minTokens
+    });
+    
+    if (safePrePurchaseTokens < minTokens) {
+      launchError.textContent = `預購數量不足！您輸入 ${safePrePurchaseTokens.toLocaleString()} 個幣，但最低需要 ${minTokens.toLocaleString()} 個幣（價值 100 MLT）`;
+      launchError.classList.remove('hidden');
+      return;
+    }
+  }
+  
   // Check balance
   if (userData.virtual_balance < 100) {
     launchError.textContent = '餘額不足！您需要至少 100 金幣才能創建幣種';
@@ -680,21 +711,54 @@ const launchCoin = async () => {
     // Prepare coin creation data
     launchText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>創建幣種...';
     
-    // Use data from coinData object (already saved when moving to Step 3)
-    console.log('📤 Using saved coinData:', {
+    // Helper: Safe number conversion (remove commas, trim, convert)
+    const toNumber = (v) => {
+      const cleaned = String(v || '0').replace(/,/g, '').trim();
+      const num = Number(cleaned);
+      return isNaN(num) ? 0 : num;
+    };
+    
+    // [DEBUG] Step 1: Log current state
+    console.log('[DEBUG] coinData state:', {
       prePurchaseTokens: coinData.prePurchaseTokens,
       mltInvestment: coinData.mltInvestment,
       supply: coinData.supply,
-      name: coinData.name
+      name: coinData.name,
+      symbol: coinData.symbol
     });
     
+    // Convert to safe numbers
+    const safePrePurchaseTokens = toNumber(coinData.prePurchaseTokens);
+    const safeMltInvestment = toNumber(coinData.mltInvestment);
+    const safeTotalSupply = toNumber(coinData.supply);
+    
+    console.log('[DEBUG] Converted to numbers:', {
+      safePrePurchaseTokens,
+      safeMltInvestment,
+      safeTotalSupply
+    });
+    
+    // Calculate minimum tokens if calculator is available
+    let minTokens = 0;
+    if (calculator) {
+      const initialPrice = calculator.calculateInitialPrice(safeMltInvestment, safeTotalSupply);
+      const minPurchase = calculator.calculateMinimumPrePurchase(initialPrice, safeTotalSupply, 100);
+      minTokens = minPurchase.tokens || 0;
+      console.log('[DEBUG] Calculated minimums:', {
+        initialPrice,
+        minTokens,
+        isPassing: safePrePurchaseTokens >= minTokens
+      });
+    }
+    
+    // Build payload with correct field names
     const formData = {
       name: coinData.name,
       symbol: coinData.symbol,
       description: coinData.description,
-      total_supply: coinData.supply,
-      initial_mlt_investment: coinData.mltInvestment,
-      pre_purchase_amount: coinData.prePurchaseTokens,
+      total_supply: safeTotalSupply,
+      initial_mlt_investment: safeMltInvestment,
+      pre_purchase_amount: safePrePurchaseTokens,  // Backend expects this field
       twitter_url: coinData.twitterUrl || undefined,
       telegram_url: coinData.telegramUrl || undefined,
       website_url: coinData.websiteUrl || undefined,
@@ -702,7 +766,8 @@ const launchCoin = async () => {
       image_url: imageUrl
     };
     
-    console.log('📦 Final request data:', formData);
+    console.log('[DEBUG] create-coin payload (FINAL):', formData);
+    console.log('[DEBUG] JSON payload:', JSON.stringify(formData, null, 2));
     
     const requestData = formData;
     
