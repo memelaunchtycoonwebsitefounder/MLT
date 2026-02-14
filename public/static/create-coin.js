@@ -705,12 +705,15 @@ const launchCoin = async () => {
     }
   } catch (error) {
     console.error('Launch error:', error);
+    console.error('Error response:', error.response?.data);
     
     let errorMsg = '發射失敗，請稍後再試';
     if (error.response?.data?.error) {
       errorMsg = error.response.data.error;
     } else if (error.response?.data?.message) {
       errorMsg = error.response.data.message;
+    } else if (error.message) {
+      errorMsg = error.message;
     }
     
     launchError.textContent = errorMsg;

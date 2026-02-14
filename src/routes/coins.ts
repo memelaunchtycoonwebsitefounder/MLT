@@ -164,6 +164,15 @@ coins.post('/', async (c) => {
       website_url
     } = body;
 
+    // Debug logging
+    console.log('📊 Create coin request:', {
+      name,
+      symbol,
+      total_supply,
+      initial_mlt_investment,
+      pre_purchase_amount
+    });
+
     // Validation
     if (!name || !total_supply || !initial_mlt_investment) {
       return errorResponse('幣種名稱、總供應量和初始 MLT 投資是必填的');
@@ -203,6 +212,13 @@ coins.post('/', async (c) => {
     // Calculate initial price and minimum pre-purchase
     const initialPrice = calculateInitialPrice(initial_mlt_investment, total_supply);
     const minimumPrePurchase = calculateMinimumPrePurchase(100, initial_mlt_investment, total_supply);
+
+    console.log('💰 Calculated values:', {
+      initialPrice,
+      minimumPrePurchase,
+      pre_purchase_amount,
+      isValid: pre_purchase_amount >= minimumPrePurchase
+    });
 
     // Validate pre-purchase amount
     if (!pre_purchase_amount || pre_purchase_amount < minimumPrePurchase) {
