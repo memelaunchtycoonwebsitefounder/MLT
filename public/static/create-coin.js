@@ -16,10 +16,15 @@ const coinData = {
   symbol: '',
   description: '',
   supply: 1000000,
+  mltInvestment: 2000,
+  prePurchaseTokens: 50000,
   twitterUrl: '',
   telegramUrl: '',
   websiteUrl: ''
 };
+
+// MLT Calculator instance (will be initialized after loading)
+let calculator = null;
 
 // Check authentication with retry mechanism
 const checkAuth = async (retryCount = 0) => {
@@ -375,6 +380,143 @@ const setupStep2 = () => {
   });
 };
 
+// MLT Cost Calculator
+const updateCostSummary = () => {
+  if (!calculator) return;
+  
+  const investment = coinData.mltInvestment;
+  const supply = coinData.supply;
+  const prePurchase = coinData.prePurchaseTokens;
+  
+  try {
+    const result = calculator.calculateCreationCost(investment, supply, prePurchase);
+    
+    // Update UI elements if they exist
+    const minPrePurchaseEl = document.getElementById('min-pre-purchase');
+    if (minPrePurchaseEl) {
+      minPrePurchaseEl.textContent = result.minimumPrePurchase.tokens.toLocaleString();
+    }
+    
+    const costInitialEl = document.getElementById('cost-initial-investment');
+    if (costInitialEl) {
+      costInitialEl.textContent = investment.toLocaleString() + ' MLT';
+    }
+    
+    const costPrePurchaseEl = document.getElementById('cost-pre-purchase');
+    if (costPrePurchaseEl) {
+      costPrePurchaseEl.textContent = result.prePurchaseCost.toFixed(2) + ' MLT';
+    }
+    
+    const costInitialPriceEl = document.getElementById('cost-initial-price');
+    if (costInitialPriceEl) {
+      costInitialPriceEl.textContent = result.initialPrice.toFixed(6) + ' MLT/token';
+    }
+    
+    const costCurrentPriceEl = document.getElementById('cost-current-price');
+    if (costCurrentPriceEl) {
+      costCurrentPriceEl.textContent = result.currentPrice.toFixed(6) + ' MLT/token';
+    }
+    
+    const costProgressEl = document.getElementById('cost-progress');
+    if (costProgressEl) {
+      costProgressEl.textContent = (result.progress * 100).toFixed(2) + '%';
+    }
+    
+    const costTotalEl = document.getElementById('cost-total');
+    if (costTotalEl) {
+      costTotalEl.textContent = result.totalCost.toFixed(2) + ' MLT';
+    }
+    
+    const remaining = (userData?.mlt_balance || 0) - result.totalCost;
+    const costRemainingEl = document.getElementById('cost-remaining');
+    if (costRemainingEl) {
+      costRemainingEl.textContent = Math.max(0, remaining).toFixed(2) + ' MLT';
+    }
+    
+    // Check if pre-purchase meets minimum
+    const warningEl = document.getElementById('prepurchase-warning');
+    const warningMinEl = document.getElementById('prepurchase-warning-min');
+    if (prePurchase < result.minimumPrePurchase.tokens) {
+      if (warningEl) warningEl.classList.remove('hidden');
+      if (warningMinEl) warningMinEl.textContent = result.minimumPrePurchase.tokens.toLocaleString();
+    } else {
+      if (warningEl) warningEl.classList.add('hidden');
+    }
+    
+    // Check if balance is sufficient
+    const step2NextBtn = document.getElementById('step-2-next');
+    if (step2NextBtn) {
+      if (remaining < 0) {
+        step2NextBtn.disabled = true;
+        step2NextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        step2NextBtn.title = 'MLT 餘額不足';
+      } else {
+        step2NextBtn.disabled = false;
+        step2NextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        step2NextBtn.title = '';
+      }
+    }
+  } catch (error) {
+    console.error('Cost calculation error:', error);
+  }
+};
+
+// Setup MLT Investment Controls
+const setupMLTControls = () => {
+  // MLT Investment Slider
+  const mltSlider = document.getElementById('mlt-investment-slider');
+  const mltValue = document.getElementById('mlt-investment-value');
+  
+  if (mltSlider && mltValue) {
+    mltSlider.addEventListener('input', (e) => {
+      const value = parseInt(e.target.value);
+      coinData.mltInvestment = value;
+      mltValue.textContent = value.toLocaleString();
+      updateCostSummary();
+    });
+  }
+  
+  // Pre-Purchase Amount
+  const prePurchaseInput = document.getElementById('pre-purchase-amount');
+  if (prePurchaseInput) {
+    prePurchaseInput.addEventListener('input', (e) => {
+      const value = parseInt(e.target.value) || 0;
+      coinData.prePurchaseTokens = value;
+      updateCostSummary();
+    });
+  }
+  
+  // Set Minimum Pre-Purchase Button
+  const setMinBtn = document.getElementById('set-min-prepurchase-btn');
+  if (setMinBtn) {
+    setMinBtn.addEventListener('click', () => {
+      if (!calculator) return;
+      const initialPrice = calculator.calculateInitialPrice(coinData.mltInvestment, coinData.supply);
+      const minPrePurchase = calculator.calculateMinimumPrePurchase(initialPrice, coinData.supply, 100);
+      
+      coinData.prePurchaseTokens = minPrePurchase.tokens;
+      if (prePurchaseInput) {
+        prePurchaseInput.value = minPrePurchase.tokens;
+      }
+      updateCostSummary();
+    });
+  }
+  
+  // Supply change listener
+  const supplyInputs = document.querySelectorAll('input[name="supply"]');
+  supplyInputs.forEach(input => {
+    input.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        coinData.supply = parseInt(e.target.value);
+        updateCostSummary();
+      }
+    });
+  });
+  
+  // Initial calculation
+  updateCostSummary();
+};
+
 // Step 3: Preview and launch
 const updatePreview = () => {
   // Update coin preview
@@ -526,6 +668,11 @@ const launchCoin = async () => {
       symbol: coinData.symbol,
       description: coinData.description,
       total_supply: coinData.supply,
+      initial_mlt_investment: coinData.mltInvestment,
+      pre_purchase_tokens: coinData.prePurchaseTokens,
+      twitter_url: coinData.twitterUrl || undefined,
+      telegram_url: coinData.telegramUrl || undefined,
+      website_url: coinData.websiteUrl || undefined,
       quality_score: qualityScore.total,
       image_url: imageUrl  // Use uploaded URL or template/default URL
     };
@@ -614,6 +761,11 @@ const handleLogout = () => {
 
 // Initialize
 const init = async () => {
+  // Initialize MLT Calculator
+  if (typeof MLTCalculator !== 'undefined') {
+    calculator = new MLTCalculator();
+  }
+  
   userData = await checkAuth();
   
   if (userData) {
@@ -623,6 +775,7 @@ const init = async () => {
     loadTemplates();
     setupStep1();
     setupStep2();
+    setupMLTControls();  // Setup MLT investment controls
     setupStep3();
     
     // Logout button
