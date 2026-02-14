@@ -798,6 +798,50 @@ const init = async () => {
     // Start auto-refresh for live price updates (every 5 seconds)
     startPriceAutoRefresh();
     
+    // Start realtime service if available
+    if (window.realtimeService) {
+      // Subscribe to coin updates
+      window.realtimeService.subscribeToCoin(COIN_ID, (updatedCoin) => {
+        // Update bonding curve progress bar with animation
+        const progressBar = document.getElementById('bonding-progress-bar');
+        const progressText = document.getElementById('bonding-progress-percent');
+        if (progressBar && progressText && updatedCoin.bonding_curve_progress !== undefined) {
+          const newProgress = (updatedCoin.bonding_curve_progress * 100).toFixed(1);
+          progressText.textContent = `${newProgress}%`;
+          window.realtimeService.animateProgressBar(progressBar, parseFloat(newProgress));
+        }
+        
+        // Update AI trade counts
+        const aiCountEl = document.getElementById('ai-trade-count');
+        if (aiCountEl && updatedCoin.ai_trade_count !== undefined) {
+          aiCountEl.textContent = updatedCoin.ai_trade_count;
+        }
+        
+        const realCountEl = document.getElementById('real-trade-count');
+        if (realCountEl && updatedCoin.real_trade_count !== undefined) {
+          realCountEl.textContent = updatedCoin.real_trade_count;
+        }
+        
+        console.log('🔄 Realtime service updated coin data');
+      });
+      
+      // Subscribe to trade notifications
+      window.realtimeService.subscribeToNotifications((trade) => {
+        if (trade.coin_id === parseInt(COIN_ID)) {
+          const tradeType = trade.type === 'BUY' ? 'bought' : 'sold';
+          const message = `🔔 ${trade.trader_username || 'Someone'} ${tradeType} ${Number(trade.amount).toLocaleString()} tokens`;
+          window.realtimeService.showNotification(message, trade.type === 'BUY' ? 'success' : 'warning');
+          
+          // Reload event timeline to show new activity
+          setTimeout(() => loadEventTimeline(COIN_ID), 1000);
+        }
+      });
+      
+      // Start the service
+      window.realtimeService.start();
+      console.log('✅ Realtime service started for coin', COIN_ID);
+    }
+    
     console.log('✅ Coin detail page fully initialized');
   }
 };

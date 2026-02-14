@@ -1389,6 +1389,7 @@ app.get('/coin/:id', (c) => {
         <script src="/static/chart-lightweight.js"></script>
         <script src="/static/trading-panel.js"></script>
         <script src="/static/comments-simple.js"></script>
+        <script src="/static/realtime-service.js"></script>
         <script src="/static/realtime.js"></script>
         <script src="/static/coin-detail.js"></script>
     </body>
@@ -1594,6 +1595,7 @@ app.get('/market', (c) => {
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="/static/realtime-service.js"></script>
         <script src="/static/market.js"></script>
     </body>
     </html>
