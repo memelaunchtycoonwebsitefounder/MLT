@@ -1187,72 +1187,84 @@ async function loadEventTimeline(coinId) {
     const events = [];
     
     events.push({
-      type: 'COIN_CREATED',
-      timestamp: coinData.created_at,
+      event_type: 'COIN_CREATED',
+      created_at: coinData.created_at,
+      is_ai_trade: false,
       description: `幣種創建 - 初始投資 ${coinData.initial_mlt_investment || 2000} MLT`
     });
     
     // Add events based on flags
     if (coinData.has_sniper_attack) {
       events.push({
-        type: 'SNIPER_ATTACK',
-        timestamp: coinData.created_at,
+        event_type: 'SNIPER_ATTACK',
+        created_at: coinData.created_at,
+        is_ai_trade: true,
         description: '狙擊手快速買入大量代幣'
       });
     }
     
     if (coinData.has_whale_buy) {
       events.push({
-        type: 'WHALE_BUY',
-        timestamp: coinData.created_at,
+        event_type: 'WHALE_BUY',
+        created_at: coinData.created_at,
+        is_ai_trade: true,
         description: '鯨魚買入,大幅推高價格'
       });
     }
     
     if (coinData.has_rug_pull) {
       events.push({
-        type: 'RUG_PULL',
-        timestamp: coinData.created_at,
+        event_type: 'RUG_PULL',
+        created_at: coinData.created_at,
+        is_ai_trade: false,
         description: '⚠️ Rug Pull 事件發生'
       });
     }
     
     if (coinData.has_panic_sell) {
       events.push({
-        type: 'PANIC_SELL',
-        timestamp: coinData.created_at,
+        event_type: 'PANIC_SELL',
+        created_at: coinData.created_at,
+        is_ai_trade: true,
         description: '恐慌拋售,價格下跌'
       });
     }
     
     if (coinData.has_fomo_buy) {
       events.push({
-        type: 'FOMO_BUY',
-        timestamp: coinData.created_at,
+        event_type: 'FOMO_BUY',
+        created_at: coinData.created_at,
+        is_ai_trade: true,
         description: 'FOMO 買入潮,價格飆升'
       });
     }
     
     if (coinData.has_viral_moment) {
       events.push({
-        type: 'VIRAL_MOMENT',
-        timestamp: coinData.created_at,
+        event_type: 'VIRAL_MOMENT',
+        created_at: coinData.created_at,
+        is_ai_trade: false,
         description: '🔥 病毒式傳播,熱度爆表'
       });
     }
     
+    // Store events globally for chart access
+    window.marketEvents = events;
+    
     if (coinData.death_time) {
       events.push({
-        type: 'COIN_DEATH',
-        timestamp: coinData.death_time,
+        event_type: 'COIN_DEATH',
+        created_at: coinData.death_time,
+        is_ai_trade: false,
         description: '💀 幣種死亡'
       });
     }
     
     if (coinData.graduation_time) {
       events.push({
-        type: 'COIN_GRADUATION',
-        timestamp: coinData.graduation_time,
+        event_type: 'COIN_GRADUATION',
+        created_at: coinData.graduation_time,
+        is_ai_trade: false,
         description: '🎓 成功畢業到 DEX'
       });
     }
@@ -1285,7 +1297,14 @@ function createEventElement(event) {
     'COIN_GRADUATION': { icon: 'fa-graduation-cap', color: 'text-purple-400', label: '幣種畢業' }
   };
   
-  const config = eventConfig[event.type] || eventConfig['COIN_CREATED'];
+  const eventType = event.event_type || event.type;
+  const eventTime = event.created_at || event.timestamp;
+  const config = eventConfig[eventType] || eventConfig['COIN_CREATED'];
+  
+  // Add AI/Real indicator
+  const tradeIndicator = event.is_ai_trade !== undefined 
+    ? `<span class="text-xs ${event.is_ai_trade ? 'text-purple-400' : 'text-green-400'}">${event.is_ai_trade ? '🤖 AI' : '👤 真實'}</span>`
+    : '';
   
   const div = document.createElement('div');
   div.className = 'flex items-start space-x-3 p-3 rounded-lg bg-gray-800/50 hover:bg-gray-800 transition';
@@ -1295,8 +1314,11 @@ function createEventElement(event) {
     </div>
     <div class="flex-1">
       <div class="flex items-center justify-between mb-1">
-        <span class="font-bold text-white">${config.label}</span>
-        <span class="text-xs text-gray-500">${formatTime(event.timestamp)}</span>
+        <div class="flex items-center space-x-2">
+          <span class="font-bold text-white">${config.label}</span>
+          ${tradeIndicator}
+        </div>
+        <span class="text-xs text-gray-500">${formatTime(eventTime)}</span>
       </div>
       <p class="text-sm text-gray-400">${event.description || '無詳情'}</p>
     </div>

@@ -155,6 +155,11 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
 
     candlestickSeries.setData(candleData);
     console.log(`✅ Set ${candleData.length} candles`, candleData);
+    
+    // Add event markers if available (from market events)
+    if (window.marketEvents && window.marketEvents.length > 0) {
+      addEventMarkers(candlestickSeries, window.marketEvents, timeframe);
+    }
 
     // Setup crosshair for OHLC display
     chart.subscribeCrosshairMove((param) => {
@@ -431,3 +436,113 @@ window.refreshChartAfterTrade = async function(coinData) {
     console.error('❌ Error refreshing chart:', error);
   }
 };
+
+/**
+ * Add event markers to chart
+ * @param {Object} series - Candlestick series
+ * @param {Array} events - Market events from API
+ * @param {string} timeframe - Current timeframe
+ */
+function addEventMarkers(series, events, timeframe) {
+  if (!series || !events || events.length === 0) return;
+  
+  console.log(`📍 Adding ${events.length} event markers to chart`);
+  
+  const markers = events
+    .filter(event => event.created_at) // Only events with timestamp
+    .map(event => {
+      // Convert timestamp to chart time (Unix timestamp in seconds)
+      const timestamp = Math.floor(new Date(event.created_at).getTime() / 1000);
+      
+      // Define marker styles based on event type
+      const markerConfig = getMarkerConfig(event.event_type, event.is_ai_trade);
+      
+      return {
+        time: timestamp,
+        position: markerConfig.position,
+        color: markerConfig.color,
+        shape: markerConfig.shape,
+        text: markerConfig.text,
+      };
+    });
+  
+  if (markers.length > 0) {
+    series.setMarkers(markers);
+    console.log(`✅ Added ${markers.length} markers to chart`);
+  }
+}
+
+/**
+ * Get marker configuration based on event type
+ * @param {string} eventType - Event type (e.g., 'WHALE_BUY', 'SNIPER_ATTACK')
+ * @param {boolean} isAiTrade - Whether this is an AI trade
+ * @returns {Object} Marker configuration
+ */
+function getMarkerConfig(eventType, isAiTrade = true) {
+  // AI trades - purple/blue markers
+  // Real trades - green/red markers
+  
+  const configs = {
+    'COIN_CREATED': {
+      position: 'belowBar',
+      color: '#8b5cf6', // purple-500
+      shape: 'circle',
+      text: '🎉',
+    },
+    'SNIPER_ATTACK': {
+      position: 'belowBar',
+      color: isAiTrade ? '#a855f7' : '#22c55e', // purple-500 or green-500
+      shape: 'arrowUp',
+      text: isAiTrade ? '🤖⚡' : '👤⚡',
+    },
+    'WHALE_BUY': {
+      position: 'belowBar',
+      color: isAiTrade ? '#6366f1' : '#10b981', // indigo-500 or emerald-500
+      shape: 'arrowUp',
+      text: isAiTrade ? '🤖🐋' : '👤🐋',
+    },
+    'WHALE_SELL': {
+      position: 'aboveBar',
+      color: isAiTrade ? '#f59e0b' : '#ef4444', // amber-500 or red-500
+      shape: 'arrowDown',
+      text: isAiTrade ? '🤖📉' : '👤📉',
+    },
+    'PUMP_EVENT': {
+      position: 'belowBar',
+      color: '#10b981', // emerald-500
+      shape: 'arrowUp',
+      text: '🚀',
+    },
+    'DUMP_EVENT': {
+      position: 'aboveBar',
+      color: '#ef4444', // red-500
+      shape: 'arrowDown',
+      text: '💥',
+    },
+    'RUG_PULL_WARNING': {
+      position: 'aboveBar',
+      color: '#fbbf24', // yellow-400
+      shape: 'circle',
+      text: '⚠️',
+    },
+    'WHALE_MANIPULATION': {
+      position: 'aboveBar',
+      color: '#f97316', // orange-500
+      shape: 'circle',
+      text: '🎯',
+    },
+    'VOLUME_SPIKE': {
+      position: 'belowBar',
+      color: '#06b6d4', // cyan-500
+      shape: 'circle',
+      text: '📊',
+    },
+  };
+  
+  return configs[eventType] || {
+    position: 'belowBar',
+    color: '#6b7280', // gray-500
+    shape: 'circle',
+    text: '•',
+  };
+}
