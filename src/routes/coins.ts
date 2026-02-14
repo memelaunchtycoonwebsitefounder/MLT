@@ -4,11 +4,24 @@ import {
   errorResponse,
   successResponse,
   generateCoinSymbol,
-  calculateBondingCurvePrice,
-  calculateHypeMultiplier,
-  calculateFinalPrice,
   calculateMarketCap,
 } from '../utils';
+import {
+  calculateInitialPrice,
+  calculateMinimumPrePurchase,
+  calculateBuyTrade,
+} from '../utils/bonding-curve';
+import {
+  determineDestiny,
+  initializeAITraders,
+} from '../services/ai-trader-engine';
+import {
+  scheduleEventsForCoin,
+  recordEvent,
+} from '../services/market-events';
+import {
+  startCoinScheduler,
+} from '../services/scheduler';
 
 const coins = new Hono<{ Bindings: Env }>();
 
@@ -117,7 +130,7 @@ coins.get('/:id', async (c) => {
   }
 });
 
-// Create new coin
+// Create new coin with MLT economy and AI system
 coins.post('/', async (c) => {
   try {
     const user = c.get('user') as JWTPayload;
@@ -127,11 +140,22 @@ coins.post('/', async (c) => {
     }
 
     const body = await c.req.json();
-    const { name, symbol, description, image_url, total_supply, quality_score } = body;
+    const { 
+      name, 
+      symbol, 
+      description, 
+      image_url, 
+      total_supply,
+      initial_mlt_investment,
+      pre_purchase_amount,
+      twitter_url,
+      telegram_url,
+      website_url
+    } = body;
 
     // Validation
-    if (!name || !total_supply) {
-      return errorResponse('幣種名稱和總供應量是必填的');
+    if (!name || !total_supply || !initial_mlt_investment) {
+      return errorResponse('幣種名稱、總供應量和初始 MLT 投資是必填的');
     }
 
     if (name.length < 3 || name.length > 50) {
@@ -144,6 +168,11 @@ coins.post('/', async (c) => {
 
     if (total_supply <= 0 || total_supply > 1000000000) {
       return errorResponse('總供應量必須在 1 到 1,000,000,000 之間');
+    }
+
+    // Validate MLT investment (1,800 - 10,000)
+    if (initial_mlt_investment < 1800 || initial_mlt_investment > 10000) {
+      return errorResponse('初始 MLT 投資必須在 1,800 到 10,000 之間');
     }
 
     // Auto-generate symbol if not provided
@@ -160,32 +189,59 @@ coins.post('/', async (c) => {
       return errorResponse('該幣種代號已被使用');
     }
 
-    // Check user balance for creation fee (100 gold coins)
-    const creationFee = 100;
+    // Calculate initial price and minimum pre-purchase
+    const initialPrice = calculateInitialPrice(initial_mlt_investment, total_supply);
+    const minimumPrePurchase = calculateMinimumPrePurchase(100, initial_mlt_investment, total_supply);
+
+    // Validate pre-purchase amount
+    if (!pre_purchase_amount || pre_purchase_amount < minimumPrePurchase) {
+      return errorResponse(`必須預購至少 ${minimumPrePurchase.toLocaleString()} 個幣 (價值 100 MLT)`);
+    }
+
+    if (pre_purchase_amount > total_supply * 0.5) {
+      return errorResponse('預購數量不能超過總供應量的 50%');
+    }
+
+    // Calculate pre-purchase cost
+    const prePurchaseTrade = calculateBuyTrade(
+      initial_mlt_investment,
+      total_supply,
+      0,
+      pre_purchase_amount,
+      4.0
+    );
+
+    // Total cost = initial investment + pre-purchase cost
+    const totalCost = initial_mlt_investment + prePurchaseTrade.mltAmount;
+
+    // Check user MLT balance
     const userBalance = await c.env.DB.prepare(
-      'SELECT virtual_balance FROM users WHERE id = ?'
+      'SELECT mlt_balance FROM users WHERE id = ?'
     )
       .bind(user.userId)
       .first() as any;
 
-    if (!userBalance || userBalance.virtual_balance < creationFee) {
-      return errorResponse(`余額不足。創建幣種需要 ${creationFee} 金幣`);
+    if (!userBalance || userBalance.mlt_balance < totalCost) {
+      return errorResponse(`MLT 餘額不足。需要: ${totalCost.toFixed(2)} MLT，當前: ${userBalance?.mlt_balance || 0} MLT`);
     }
 
-    // Calculate initial values
-    const initialPrice = 0.01;
-    const baseHype = 100;
-    const qualityBonus = quality_score ? Math.floor((quality_score - 50) / 2) : 0;
-    const initialHype = Math.max(50, Math.min(200, baseHype + qualityBonus));
+    // Determine destiny for this coin
+    const destinyType = determineDestiny();
 
     // Use provided image URL or default
     const finalImageUrl = image_url || '/static/default-coin.svg';
 
-    // Create coin
+    // Create coin with MLT economy parameters
     const result = await c.env.DB.prepare(
-      `INSERT INTO coins (creator_id, name, symbol, description, image_url, 
-                          total_supply, current_price, hype_score) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO coins (
+        creator_id, name, symbol, description, image_url,
+        total_supply, circulating_supply, current_price, market_cap,
+        hype_score, holders_count,
+        initial_mlt_investment, bonding_curve_progress, bonding_curve_k,
+        destiny_type, is_ai_active,
+        creation_cost_mlt,
+        twitter_url, telegram_url, website_url
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
       .bind(
         user.userId,
@@ -194,8 +250,20 @@ coins.post('/', async (c) => {
         description || '',
         finalImageUrl,
         total_supply,
-        initialPrice,
-        initialHype
+        pre_purchase_amount,                    // Initial circulating supply
+        prePurchaseTrade.newPrice,              // Price after pre-purchase
+        prePurchaseTrade.newMarketCap,          // Market cap
+        100,                                     // Initial hype score
+        1,                                       // Creator is first holder
+        initial_mlt_investment,
+        prePurchaseTrade.newProgress,           // Progress after pre-purchase
+        4.0,                                     // Bonding curve k
+        destinyType,
+        1,                                       // AI active
+        totalCost,
+        twitter_url || null,
+        telegram_url || null,
+        website_url || null
       )
       .run();
 
@@ -203,35 +271,103 @@ coins.post('/', async (c) => {
       return errorResponse('創建幣種失敗', 500);
     }
 
-    // Get the created coin ID
     const coinId = result.meta.last_row_id;
 
-    // Deduct creation fee
+    // Deduct total MLT cost from user
     await c.env.DB.prepare(
-      'UPDATE users SET virtual_balance = virtual_balance - ? WHERE id = ?'
+      'UPDATE users SET mlt_balance = mlt_balance - ?, total_mlt_spent = total_mlt_spent + ? WHERE id = ?'
     )
-      .bind(creationFee, user.userId)
+      .bind(totalCost, totalCost, user.userId)
       .run();
 
-    // Record transaction
+    // Create holding record for creator
     await c.env.DB.prepare(
-      `INSERT INTO transactions (user_id, coin_id, type, amount, price, total_cost) 
-       VALUES (?, ?, 'create', 0, 0, ?)`
+      `INSERT INTO holdings (user_id, coin_id, amount, avg_buy_price, current_value)
+       VALUES (?, ?, ?, ?, ?)`
     )
-      .bind(user.userId, result.meta.last_row_id, creationFee)
+      .bind(
+        user.userId,
+        coinId,
+        pre_purchase_amount,
+        prePurchaseTrade.averagePrice,
+        prePurchaseTrade.newPrice * pre_purchase_amount
+      )
       .run();
+
+    // Record creation transaction
+    await c.env.DB.prepare(
+      `INSERT INTO transactions (user_id, coin_id, type, amount, price, total_cost)
+       VALUES (?, ?, 'create', ?, ?, ?)`
+    )
+      .bind(user.userId, coinId, pre_purchase_amount, prePurchaseTrade.averagePrice, totalCost)
+      .run();
+
+    // Record initial price history
+    await c.env.DB.prepare(
+      `INSERT INTO price_history (coin_id, price, volume, market_cap, circulating_supply)
+       VALUES (?, ?, ?, ?, ?)`
+    )
+      .bind(
+        coinId,
+        prePurchaseTrade.newPrice,
+        pre_purchase_amount,
+        prePurchaseTrade.newMarketCap,
+        pre_purchase_amount
+      )
+      .run();
+
+    // Initialize AI traders
+    await initializeAITraders(c.env.DB, coinId, total_supply, destinyType);
+
+    // Schedule market events
+    const scheduledEvents = await scheduleEventsForCoin(
+      coinId,
+      destinyType,
+      new Date()
+    );
+
+    // Start scheduler for this coin
+    startCoinScheduler(coinId, new Date(), scheduledEvents);
+
+    // Record coin creation event
+    await recordEvent(c.env.DB, {
+      coin_id: coinId,
+      event_type: 'COIN_CREATED',
+      event_data: `Destiny: ${destinyType}, Initial Investment: ${initial_mlt_investment} MLT, Pre-purchase: ${pre_purchase_amount} tokens`,
+      impact_percent: 0
+    });
 
     // Get the created coin
     const newCoin = await c.env.DB.prepare(
       'SELECT * FROM coins WHERE id = ?'
     )
-      .bind(result.meta.last_row_id)
+      .bind(coinId)
       .first();
 
-    return successResponse(newCoin, 201);
+    console.log(`🚀 New coin created: ${name} (${coinSymbol}) - Destiny: ${destinyType}, AI Traders initialized`);
+
+    return successResponse({
+      coin: newCoin,
+      cost: {
+        initial_investment: initial_mlt_investment,
+        pre_purchase_cost: prePurchaseTrade.mltAmount,
+        total_cost: totalCost
+      },
+      pre_purchase: {
+        amount: pre_purchase_amount,
+        average_price: prePurchaseTrade.averagePrice,
+        final_price: prePurchaseTrade.newPrice,
+        progress: prePurchaseTrade.newProgress
+      },
+      ai_system: {
+        destiny: destinyType,
+        events_scheduled: scheduledEvents.length,
+        scheduler_started: true
+      }
+    }, 201);
   } catch (error: any) {
     console.error('Create coin error:', error);
-    return errorResponse('創建幣種時發生錯誤', 500);
+    return errorResponse('創建幣種時發生錯誤: ' + error.message, 500);
   }
 });
 
