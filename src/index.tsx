@@ -18,6 +18,7 @@ import realtime from './routes/realtime';
 import social from './routes/social';
 import gamification from './routes/gamification';
 import profile from './routes/profile';
+import admin from './routes/admin';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -82,6 +83,9 @@ const uploadRoutes = new Hono<{ Bindings: Env }>();
 uploadRoutes.use('*', authMiddleware);
 uploadRoutes.route('/', upload);
 app.route('/api/upload', uploadRoutes);
+
+// Admin routes (no auth for testing, add auth in production)
+app.route('/api/admin', admin);
 
 // Image serving from R2
 app.get('/images/*', async (c) => {
