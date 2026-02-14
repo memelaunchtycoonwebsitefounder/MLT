@@ -363,12 +363,34 @@ const setupStep2 = () => {
       const mltInputEl = document.getElementById('mlt-investment');
       const prePurchaseInputEl = document.getElementById('pre-purchase-amount');
       
+      // DEBUG: Log DOM element state
+      console.log('[STEP2→3] DOM Elements:', {
+        mltExists: !!mltInputEl,
+        mltValue: mltInputEl ? mltInputEl.value : 'N/A',
+        prePurchaseExists: !!prePurchaseInputEl,
+        prePurchaseValue: prePurchaseInputEl ? prePurchaseInputEl.value : 'N/A',
+        prePurchaseValueType: prePurchaseInputEl ? typeof prePurchaseInputEl.value : 'N/A'
+      });
+      
       if (mltInputEl) {
-        coinData.mltInvestment = parseInt(mltInputEl.value) || 2000;
+        const rawMlt = mltInputEl.value;
+        const parsedMlt = parseInt(rawMlt);
+        coinData.mltInvestment = parsedMlt || 2000;
+        console.log('[STEP2→3] MLT conversion:', { rawMlt, parsedMlt, final: coinData.mltInvestment });
       }
       
       if (prePurchaseInputEl) {
-        coinData.prePurchaseTokens = parseInt(prePurchaseInputEl.value) || 0;
+        const rawPrePurchase = prePurchaseInputEl.value;
+        const parsedPrePurchase = parseInt(rawPrePurchase);
+        const fallback = parsedPrePurchase || 0;
+        coinData.prePurchaseTokens = fallback;
+        console.log('[STEP2→3] PrePurchase conversion:', { 
+          rawPrePurchase, 
+          parsedPrePurchase, 
+          fallback,
+          final: coinData.prePurchaseTokens,
+          isZero: coinData.prePurchaseTokens === 0
+        });
       }
       
       console.log('💾 Data saved before Step 3:', {
