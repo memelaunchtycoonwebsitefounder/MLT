@@ -20,13 +20,34 @@ import gamification from './routes/gamification';
 import profile from './routes/profile';
 import admin from './routes/admin';
 
+// Import AI Scheduler
+import { initializeGlobalScheduler, getSchedulerStatus } from './services/scheduler';
+
 const app = new Hono<{ Bindings: Env }>();
+
+// Flag to ensure scheduler is initialized only once
+let schedulerInitialized = false;
 
 // Enable CORS
 app.use('/api/*', cors());
 
 // Serve static files
 app.use('/static/*', serveStatic({ root: './public' }));
+
+// Middleware to initialize AI scheduler on first request
+app.use('*', async (c, next) => {
+  if (!schedulerInitialized && c.env.DB) {
+    try {
+      console.log('🤖 Initializing AI Trading Scheduler...');
+      initializeGlobalScheduler(c.env.DB);
+      schedulerInitialized = true;
+      console.log('✅ AI Trading Scheduler initialized successfully');
+    } catch (error) {
+      console.error('❌ Failed to initialize AI Scheduler:', error);
+    }
+  }
+  await next();
+});
 
 // API Routes
 app.route('/api/auth', auth);
@@ -122,6 +143,19 @@ app.get('/api/health', (c) => {
   return c.json({ 
     status: 'ok', 
     message: 'MemeLaunch Tycoon API is running',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// AI Scheduler status endpoint
+app.get('/api/scheduler/status', (c) => {
+  const status = getSchedulerStatus();
+  return c.json({
+    success: true,
+    scheduler: {
+      ...status,
+      initialized: schedulerInitialized
+    },
     timestamp: new Date().toISOString()
   });
 });

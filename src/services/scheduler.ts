@@ -192,6 +192,49 @@ export async function initializeGlobalScheduler(db: any): Promise<void> {
   
   console.log('🚀 Starting global AI trading scheduler...');
   
+  // Load existing AI-active coins and register their schedulers
+  try {
+    const existingCoins = await db.prepare(
+      'SELECT id, created_at, destiny_type FROM coins WHERE is_ai_active = 1 AND status = ?'
+    ).bind('active').all();
+    
+    if (existingCoins.results && existingCoins.results.length > 0) {
+      console.log(`📊 Found ${existingCoins.results.length} existing AI-active coins, registering schedulers...`);
+      
+      for (const coin of existingCoins.results) {
+        // Generate basic scheduled events for existing coins
+        // In a real app, you'd load these from the database
+        const createdAt = new Date(coin.created_at);
+        const now = new Date();
+        const ageInSeconds = (now.getTime() - createdAt.getTime()) / 1000;
+        
+        // Only add future events (skip past events)
+        const scheduledEvents: Array<{ eventType: EventType; triggerTime: Date }> = [];
+        
+        // Add events based on destiny_type if they haven't happened yet
+        if (coin.destiny_type.startsWith('DEATH_')) {
+          const deathMinutes = parseInt(coin.destiny_type.split('_')[1].replace('MIN', ''));
+          const deathTime = new Date(createdAt.getTime() + deathMinutes * 60 * 1000);
+          
+          if (deathTime > now) {
+            scheduledEvents.push({
+              eventType: 'COIN_DEATH',
+              triggerTime: deathTime
+            });
+          }
+        }
+        
+        // Register scheduler
+        if (!activeSchedulers.has(coin.id)) {
+          startCoinScheduler(coin.id, createdAt, scheduledEvents);
+          console.log(`  ✅ Registered scheduler for coin ${coin.id} (${scheduledEvents.length} future events)`);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('❌ Error loading existing coins:', error);
+  }
+  
   // Main loop: runs every 10 seconds
   schedulerInterval = setInterval(async () => {
     try {
@@ -205,7 +248,19 @@ export async function initializeGlobalScheduler(db: any): Promise<void> {
       
       if (activeCoins.results && activeCoins.results.length > 0) {
         for (const coin of activeCoins.results) {
-          // Only execute if scheduler exists
+          // Auto-register scheduler if it doesn't exist
+          if (!activeSchedulers.has(coin.id)) {
+            const coinData = await db.prepare(
+              'SELECT created_at FROM coins WHERE id = ?'
+            ).bind(coin.id).first();
+            
+            if (coinData) {
+              startCoinScheduler(coin.id, new Date(coinData.created_at), []);
+              console.log(`📝 Auto-registered scheduler for coin ${coin.id}`);
+            }
+          }
+          
+          // Execute AI trading cycle
           if (activeSchedulers.has(coin.id)) {
             await executeAITradingCycle(db, coin.id);
             
