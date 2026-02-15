@@ -132,10 +132,40 @@ class RealtimeService {
       if (response.data.success && response.data.data.length > 0) {
         const trades = response.data.data;
         
-        // Notify callbacks about new trades
-        trades.forEach(trade => {
+        // Track shown notifications to avoid duplicates
+        if (!this.shownNotifications) {
+          this.shownNotifications = new Set();
+        }
+        
+        // Filter out old/duplicate trades
+        const newTrades = trades.filter(trade => {
+          const tradeKey = `${trade.id}-${trade.timestamp}`;
+          if (this.shownNotifications.has(tradeKey)) {
+            return false; // Skip already shown
+          }
+          
+          // Check if trade is recent (within last 30 seconds)
+          const tradeTime = new Date(trade.timestamp).getTime();
+          const now = Date.now();
+          const isRecent = (now - tradeTime) < 30000; // 30 seconds
+          
+          if (isRecent) {
+            this.shownNotifications.add(tradeKey);
+            return true;
+          }
+          return false;
+        });
+        
+        // Notify callbacks about NEW trades only
+        newTrades.forEach(trade => {
           this.notificationCallbacks.forEach(callback => callback(trade));
         });
+        
+        // Clean up old notifications (keep only last 50)
+        if (this.shownNotifications.size > 50) {
+          const arr = Array.from(this.shownNotifications);
+          this.shownNotifications = new Set(arr.slice(-50));
+        }
       }
     } catch (error) {
       console.error('[Realtime] Failed to fetch notifications:', error);

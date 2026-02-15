@@ -247,12 +247,15 @@ function aggregateByTimeframe(priceHistory, timeframe) {
         low: price,
         close: price,
         volume: volume,
-        count: 1
+        count: 1,
+        firstTimestamp: timestamp // Track first trade in candle
       });
     } else {
       const candle = candles.get(candleKey);
+      // Update high/low
       candle.high = Math.max(candle.high, price);
       candle.low = Math.min(candle.low, price);
+      // Close is ALWAYS the last price (sorted by time)
       candle.close = price;
       candle.volume += volume;
       candle.count++;
@@ -328,13 +331,14 @@ function initVolumeChart(container, aggregatedData) {
   });
 
   const volumeData = aggregatedData.map((candle, index) => {
-    const prevClose = index > 0 ? aggregatedData[index - 1].close : candle.open;
-    const isUp = candle.close >= prevClose;
+    // Determine if candle is up or down by comparing close to open
+    // This ensures green candles go UP and red candles go DOWN
+    const isUp = candle.close >= candle.open;
     
     return {
       time: candle.time,
       value: candle.volume || 100,
-      color: isUp ? '#10b981' : '#ef4444' // Greener (less blue)
+      color: isUp ? '#10b981' : '#ef4444' // Green = up, Red = down
     };
   });
 
