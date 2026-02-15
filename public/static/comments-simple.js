@@ -48,14 +48,18 @@ class CommentsSystem {
       });
       
       if (response.data.success) {
-        this.comments = response.data.data || [];
+        // API returns { success: true, data: { comments: [...] } }
+        const data = response.data.data;
+        this.comments = Array.isArray(data?.comments) ? data.comments : (Array.isArray(data) ? data : []);
         console.log(`✅ Loaded ${this.comments.length} comments`);
         this.render();
       } else {
+        this.comments = [];
         this.renderError('載入評論失敗');
       }
     } catch (error) {
       console.error('Load comments error:', error);
+      this.comments = [];
       this.renderError('載入評論失敗: ' + error.message);
     }
   }
@@ -146,7 +150,7 @@ class CommentsSystem {
               ${comment.pinned ? '<span class="text-yellow-500 text-sm"><i class="fas fa-thumbtack mr-1"></i>已釘選</span>' : ''}
             </div>
             
-            <p class="text-gray-300 mb-3 whitespace-pre-wrap break-words">${this.escapeHtml(comment.content)}</p>
+            <p class="comment-content text-gray-300 mb-3 whitespace-pre-wrap break-words">${this.escapeHtml(comment.content)}</p>
             
             <div class="flex items-center space-x-4 text-sm">
               <button class="like-btn flex items-center space-x-1 ${userLiked ? 'text-red-500' : 'text-gray-400'} hover:text-red-500 transition" data-id="${comment.id}">
@@ -224,7 +228,7 @@ class CommentsSystem {
             <span class="text-gray-400 text-xs">${timeAgo}</span>
           </div>
           
-          <p class="text-gray-300 text-sm mb-2 whitespace-pre-wrap break-words">${this.escapeHtml(reply.content)}</p>
+          <p class="comment-content text-gray-300 text-sm mb-2 whitespace-pre-wrap break-words">${this.escapeHtml(reply.content)}</p>
           
           <div class="flex items-center space-x-3 text-xs">
             <button class="like-btn flex items-center space-x-1 ${userLiked ? 'text-red-500' : 'text-gray-400'} hover:text-red-500 transition" data-id="${reply.id}">
@@ -342,6 +346,15 @@ class CommentsSystem {
       });
     });
     
+    // Edit buttons
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.dataset.id;
+        this.editComment(id);
+      });
+    });
+    
     // Delete buttons
     document.querySelectorAll('.delete-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -438,6 +451,60 @@ class CommentsSystem {
       console.error('Toggle like error:', error);
       alert('操作失敗');
     }
+  }
+  
+  async editComment(commentId) {
+    const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
+    if (!commentElement) return;
+    
+    const contentElement = commentElement.querySelector('.comment-content');
+    const originalContent = contentElement.textContent.trim();
+    
+    // Replace content with textarea
+    contentElement.innerHTML = `
+      <textarea class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm resize-none" rows="3" maxlength="1000">${originalContent}</textarea>
+      <div class="flex justify-end space-x-2 mt-2">
+        <button class="cancel-edit-btn px-3 py-1 text-sm bg-gray-600 hover:bg-gray-700 rounded transition">取消</button>
+        <button class="save-edit-btn px-3 py-1 text-sm bg-orange-500 hover:bg-orange-600 rounded transition">保存</button>
+      </div>
+    `;
+    
+    const textarea = contentElement.querySelector('textarea');
+    const cancelBtn = contentElement.querySelector('.cancel-edit-btn');
+    const saveBtn = contentElement.querySelector('.save-edit-btn');
+    
+    // Cancel edit
+    cancelBtn.addEventListener('click', () => {
+      contentElement.textContent = originalContent;
+    });
+    
+    // Save edit
+    saveBtn.addEventListener('click', async () => {
+      const newContent = textarea.value.trim();
+      if (!newContent) {
+        alert('評論內容不能為空');
+        return;
+      }
+      
+      try {
+        const token = localStorage.getItem('auth_token');
+        const response = await axios.put(`/api/social/comments/${commentId}`, 
+          { content: newContent },
+          { headers: { 'Authorization': `Bearer ${token}` } }
+        );
+        
+        if (response.data.success) {
+          await this.loadComments();
+          this.showSuccess('評論已更新');
+        }
+      } catch (error) {
+        console.error('Edit comment error:', error);
+        alert('編輯失敗');
+        contentElement.textContent = originalContent;
+      }
+    });
+    
+    textarea.focus();
   }
   
   async deleteComment(commentId) {

@@ -263,9 +263,18 @@ class TradingPanel {
           window.loadRecentTransactions();
         }
         
-        // Reload coin data for updated price
+        // Reload coin data AND chart for updated price
+        console.log('🔄 Reloading chart after trade...');
         if (window.loadCoinData) {
-          window.loadCoinData();
+          console.log('✅ Found window.loadCoinData, calling it...');
+          await window.loadCoinData(); // Don't skip chart - we want it to refresh
+          console.log('✅ Chart reloaded');
+        } else if (window.initPriceChart) {
+          console.log('⚠️ window.loadCoinData not found, using initPriceChart...');
+          // Fallback: directly reload chart if loadCoinData not available
+          await window.initPriceChart();
+        } else {
+          console.error('❌ Neither window.loadCoinData nor window.initPriceChart found!');
         }
 
         // Reset form

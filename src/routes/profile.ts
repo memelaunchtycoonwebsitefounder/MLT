@@ -14,7 +14,7 @@ profile.get('/:userId', async (c) => {
   try {
     // Get user basic info
     const user = await DB.prepare(`
-      SELECT u.id, u.username, u.email, u.level, u.xp, u.virtual_balance, u.premium_balance,
+      SELECT u.id, u.username, u.email, u.level, u.xp, u.virtual_balance, u.mlt_balance, u.premium_balance,
              p.bio, p.avatar_url, p.banner_url, p.location, p.website, 
              p.twitter_handle, p.discord_handle, p.joined_date, p.last_active,
              p.is_verified, p.is_premium

@@ -18,6 +18,7 @@ import realtime from './routes/realtime';
 import social from './routes/social';
 import gamification from './routes/gamification';
 import profile from './routes/profile';
+import admin from './routes/admin';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -82,6 +83,9 @@ const uploadRoutes = new Hono<{ Bindings: Env }>();
 uploadRoutes.use('*', authMiddleware);
 uploadRoutes.route('/', upload);
 app.route('/api/upload', uploadRoutes);
+
+// Admin routes (no auth for testing, add auth in production)
+app.route('/api/admin', admin);
 
 // Image serving from R2
 app.get('/images/*', async (c) => {
@@ -264,7 +268,7 @@ app.get('/', (c) => {
                     <div class="bg-orange-500 w-12 h-12 rounded-full flex items-center justify-center text-2xl font-bold">2</div>
                     <div>
                         <h4 class="text-xl font-bold">創建你的第一個模因幣</h4>
-                        <p class="text-gray-400">僅需 100 金幣，3 步驟完成創建</p>
+                        <p class="text-gray-400">僅需 ~2,100 MLT，3 步驟完成創建</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4 glass-effect p-6 rounded-xl">
@@ -871,7 +875,6 @@ app.get('/coin/:id', (c) => {
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <!-- Navigation -->
@@ -891,9 +894,16 @@ app.get('/coin/:id', (c) => {
                         <a href="/social" class="hover:text-orange-500 transition">社交</a>
                     </div>
                     <div class="flex items-center space-x-4">
+                        <!-- Virtual Balance (Gold Coins) -->
                         <div class="glass-effect px-4 py-2 rounded-lg">
                             <i class="fas fa-coins text-yellow-500 mr-2"></i>
                             <span id="user-balance">--</span> 金幣
+                        </div>
+                        <!-- MLT Balance -->
+                        <div class="glass-effect px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20">
+                            <img src="/static/mlt-token.png" class="inline-block w-5 h-5 mr-2" alt="MLT" />
+                            <span id="user-mlt-balance" class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">--</span>
+                            <span class="text-xs text-gray-400 ml-1">MLT</span>
                         </div>
                         <button id="logout-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
                             登出
@@ -950,14 +960,42 @@ app.get('/coin/:id', (c) => {
                             <h2 class="text-2xl font-bold mb-6">
                                 <i class="fas fa-chart-line mr-2"></i>價格走勢
                             </h2>
-                            <div class="mb-4 flex space-x-2">
-                                <button class="timeframe-btn active px-4 py-2 rounded-lg transition" data-timeframe="1h">1小時</button>
-                                <button class="timeframe-btn px-4 py-2 rounded-lg transition" data-timeframe="24h">24小時</button>
-                                <button class="timeframe-btn px-4 py-2 rounded-lg transition" data-timeframe="7d">7天</button>
-                                <button class="timeframe-btn px-4 py-2 rounded-lg transition" data-timeframe="30d">30天</button>
+                            <div class="mb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                <div class="flex flex-wrap gap-2">
+                                    <button class="timeframe-btn active bg-orange-500 px-4 py-2 rounded-lg transition hover:bg-orange-600" data-timeframe="1m">1分鐘</button>
+                                    <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="10m">10分鐘</button>
+                                    <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="1h">1小時</button>
+                                    <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="24h">24小時</button>
+                                </div>
+                                <!-- OHLC Data Display -->
+                                <div id="ohlc-data" class="hidden md:flex flex-wrap gap-x-4 gap-y-2 text-sm">
+                                    <div class="flex items-center space-x-1">
+                                        <span class="text-gray-400">O:</span>
+                                        <span id="ohlc-open" class="font-mono text-white">--</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1">
+                                        <span class="text-gray-400">H:</span>
+                                        <span id="ohlc-high" class="font-mono text-green-400">--</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1">
+                                        <span class="text-gray-400">L:</span>
+                                        <span id="ohlc-low" class="font-mono text-red-400">--</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1">
+                                        <span class="text-gray-400">C:</span>
+                                        <span id="ohlc-close" class="font-mono text-white">--</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1">
+                                        <span class="text-gray-400">V:</span>
+                                        <span id="ohlc-volume" class="font-mono text-orange-400">--</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="relative h-80">
-                                <canvas id="price-chart"></canvas>
+                            <div class="bg-gray-900/50 rounded-lg p-2">
+                                <div id="price-chart" class="w-full" style="height: 400px;"></div>
+                            </div>
+                            <div class="bg-gray-900/50 rounded-lg p-2 mt-2">
+                                <div id="volume-chart" class="w-full" style="height: 100px;"></div>
                             </div>
                         </div>
 
@@ -1000,15 +1038,142 @@ app.get('/coin/:id', (c) => {
                         </div>
                         
                         <!-- Comments Section -->
-                        <div id="comments-section">
-                            <!-- Comments will be loaded by social.js -->
+                        <div id="comments-section" class="mt-8">
+                            <!-- Comments will be loaded by CommentsSystem -->
                         </div>
                     </div>
 
                     <!-- Right Column - Trading & Info -->
                     <div class="space-y-6">
+                        <!-- Enhanced Bonding Curve Panel -->
+                        <div class="glass-effect rounded-2xl p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-xl font-bold text-white">
+                                    <i class="fas fa-chart-line mr-2 text-orange-500"></i>Bonding Curve 進度
+                                </h3>
+                                <span id="curve-progress-percent" class="text-2xl font-bold text-orange-400">0%</span>
+                            </div>
+                            
+                            <!-- Progress Bar -->
+                            <div class="relative h-8 bg-gray-800 rounded-full overflow-hidden mb-4">
+                                <div id="curve-progress-bar" class="absolute top-0 left-0 h-full bg-gradient-to-r from-orange-500 to-pink-500 transition-all duration-500" style="width: 0%"></div>
+                                <div class="absolute inset-0 flex items-center justify-between px-4 text-xs font-bold text-white">
+                                    <span>0%</span>
+                                    <span>25%</span>
+                                    <span>50%</span>
+                                    <span>75%</span>
+                                    <span>100% 🎓</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Price Milestones -->
+                            <div class="grid grid-cols-5 gap-2 text-xs">
+                                <div class="text-center">
+                                    <div class="text-gray-400">初始</div>
+                                    <div id="price-0" class="font-mono text-white">0.002</div>
+                                    <div class="text-gray-500">1.00×</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-gray-400">25%</div>
+                                    <div id="price-25" class="font-mono text-white">0.005</div>
+                                    <div class="text-gray-500">2.72×</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-gray-400">50%</div>
+                                    <div id="price-50" class="font-mono text-white">0.015</div>
+                                    <div class="text-gray-500">7.39×</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-gray-400">75%</div>
+                                    <div id="price-75" class="font-mono text-white">0.040</div>
+                                    <div class="text-gray-500">20.09×</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-gray-400">畢業</div>
+                                    <div id="price-100" class="font-mono text-white">0.109</div>
+                                    <div class="text-green-400">54.60×</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Destiny Status -->
+                            <div id="destiny-status" class="mt-4 p-3 rounded-lg border bg-gray-500/20 border-gray-500/30">
+                                <div class="flex items-center space-x-2">
+                                    <i id="destiny-icon" class="fas fa-question-circle text-gray-400"></i>
+                                    <span id="destiny-text" class="text-gray-300">命運未知...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Activity Panel -->
+                        <div class="glass-effect rounded-2xl p-6">
+                            <h3 class="text-xl font-bold text-white mb-4">
+                                <i class="fas fa-robot mr-2 text-purple-500"></i>AI 交易活動
+                            </h3>
+                            
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div class="p-4 rounded-lg bg-purple-500/10 border border-purple-500/30">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-300">
+                                            <i class="fas fa-robot mr-1"></i>AI 交易
+                                        </span>
+                                        <span id="ai-trade-count" class="text-xl font-bold text-purple-400">0</span>
+                                    </div>
+                                    <div class="text-xs text-gray-400">自動市場做市商</div>
+                                </div>
+                                
+                                <div class="p-4 rounded-lg bg-green-500/10 border border-green-500/30">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-300">
+                                            <i class="fas fa-user mr-1"></i>真實交易
+                                        </span>
+                                        <span id="real-trade-count" class="text-xl font-bold text-green-400">0</span>
+                                    </div>
+                                    <div class="text-xs text-gray-400">
+                                        <span id="unique-traders">0</span> 位獨立交易者
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-3 rounded-lg bg-gray-800">
+                                <span class="text-sm text-gray-300">AI 系統狀態</span>
+                                <div id="ai-status" class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span class="text-sm text-green-400 font-bold">運行中</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Event Timeline -->
+                        <div class="glass-effect rounded-2xl p-6">
+                            <h3 class="text-xl font-bold text-white mb-4">
+                                <i class="fas fa-history mr-2 text-blue-500"></i>事件時間線
+                            </h3>
+                            
+                            <div id="event-timeline" class="space-y-3 max-h-96 overflow-y-auto">
+                                <p class="text-gray-400 text-center py-4">載入中...</p>
+                            </div>
+                        </div>
+
                         <!-- Trading Panel -->
                         <div class="glass-effect rounded-2xl p-6">
+                            <!-- Simple Bonding Curve Progress (Keep for compatibility) -->
+                            <div class="mb-6 p-4 bg-gradient-to-r from-orange-500/20 to-purple-500/20 rounded-xl border border-orange-500/30">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-bold">
+                                        <i class="fas fa-chart-line mr-1"></i>
+                                        Bonding Curve 進度
+                                    </span>
+                                    <span id="bonding-progress-percent" class="text-sm font-bold text-orange-500">0%</span>
+                                </div>
+                                <div class="relative h-3 bg-black/30 rounded-full overflow-hidden">
+                                    <div id="bonding-progress-bar" class="absolute inset-y-0 left-0 bg-gradient-to-r from-orange-500 to-purple-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                                <div class="flex justify-between mt-2 text-xs text-gray-400">
+                                    <span><span id="bonding-circulating">0</span> / <span id="bonding-total">0</span></span>
+                                    <span id="bonding-remaining">剩餘 0</span>
+                                </div>
+                            </div>
+                            
                             <h2 class="text-2xl font-bold mb-6">
                                 <i class="fas fa-exchange-alt mr-2"></i>交易
                             </h2>
@@ -1025,35 +1190,46 @@ app.get('/coin/:id', (c) => {
 
                             <!-- Buy Panel -->
                             <div id="buy-panel">
+                                <!-- Amount Slider -->
                                 <div class="mb-4">
                                     <div class="flex justify-between items-center mb-2">
                                         <label class="block text-sm font-medium">購買數量</label>
-                                        <button id="buy-max-btn" class="text-xs px-3 py-1 bg-orange-500 hover:bg-orange-600 rounded-full transition">
-                                            最大
-                                        </button>
+                                        <span class="text-sm text-orange-500 font-bold" id="buy-amount-display">100</span>
                                     </div>
+                                    <input
+                                        type="range"
+                                        id="buy-amount-slider"
+                                        min="1"
+                                        max="1000"
+                                        value="100"
+                                        class="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer slider-orange mb-2"
+                                    />
                                     <input
                                         type="number"
                                         id="buy-amount"
                                         min="1"
                                         value="100"
                                         class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition text-white"
+                                        placeholder="輸入數量..."
                                     />
                                 </div>
                                 
                                 <!-- Quick Presets -->
-                                <div class="mb-4 grid grid-cols-4 gap-2">
-                                    <button id="buy-preset-10" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                <div class="mb-4 grid grid-cols-5 gap-2">
+                                    <button class="buy-preset px-3 py-2 bg-white/10 hover:bg-orange-500 rounded-lg text-sm font-bold transition" data-value="10">
                                         10
                                     </button>
-                                    <button id="buy-preset-50" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                    <button class="buy-preset px-3 py-2 bg-white/10 hover:bg-orange-500 rounded-lg text-sm font-bold transition" data-value="50">
                                         50
                                     </button>
-                                    <button id="buy-preset-100" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                    <button class="buy-preset px-3 py-2 bg-white/10 hover:bg-orange-500 rounded-lg text-sm font-bold transition" data-value="100">
                                         100
                                     </button>
-                                    <button id="buy-preset-500" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                    <button class="buy-preset px-3 py-2 bg-white/10 hover:bg-orange-500 rounded-lg text-sm font-bold transition" data-value="500">
                                         500
+                                    </button>
+                                    <button id="buy-max-btn" class="px-3 py-2 bg-gradient-to-r from-orange-500 to-purple-500 hover:from-orange-600 hover:to-purple-600 rounded-lg text-sm font-bold transition">
+                                        最大
                                     </button>
                                 </div>
                                 
@@ -1086,38 +1262,50 @@ app.get('/coin/:id', (c) => {
 
                             <!-- Sell Panel -->
                             <div id="sell-panel" class="hidden">
+                                <!-- Amount Slider -->
                                 <div class="mb-4">
                                     <div class="flex justify-between items-center mb-2">
                                         <span class="text-sm font-medium">賣出數量</span>
-                                        <div class="flex items-center space-x-2">
-                                            <span class="text-sm text-gray-400">持有: <span id="holdings-amount">0</span> <span id="holdings-symbol">--</span></span>
-                                            <button id="sell-max-btn" class="text-xs px-3 py-1 bg-orange-500 hover:bg-orange-600 rounded-full transition">
-                                                最大
-                                            </button>
-                                        </div>
+                                        <span class="text-sm text-gray-400">持有: <span id="holdings-amount">0</span> <span id="holdings-symbol">--</span></span>
                                     </div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-red-500 font-bold" id="sell-amount-display">10</span>
+                                        <span class="text-xs text-gray-400" id="sell-percentage-display">0%</span>
+                                    </div>
+                                    <input
+                                        type="range"
+                                        id="sell-amount-slider"
+                                        min="0"
+                                        max="100"
+                                        value="10"
+                                        class="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer slider-red mb-2"
+                                    />
                                     <input
                                         type="number"
                                         id="sell-amount"
                                         min="1"
                                         value="10"
                                         class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition text-white"
+                                        placeholder="輸入數量..."
                                     />
                                 </div>
                                 
                                 <!-- Quick Presets (Percentage) -->
-                                <div class="mb-4 grid grid-cols-4 gap-2">
-                                    <button id="sell-preset-25" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                <div class="mb-4 grid grid-cols-5 gap-2">
+                                    <button class="sell-preset px-3 py-2 bg-white/10 hover:bg-red-500 rounded-lg text-sm font-bold transition" data-percent="25">
                                         25%
                                     </button>
-                                    <button id="sell-preset-50" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                    <button class="sell-preset px-3 py-2 bg-white/10 hover:bg-red-500 rounded-lg text-sm font-bold transition" data-percent="50">
                                         50%
                                     </button>
-                                    <button id="sell-preset-75" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                    <button class="sell-preset px-3 py-2 bg-white/10 hover:bg-red-500 rounded-lg text-sm font-bold transition" data-percent="75">
                                         75%
                                     </button>
-                                    <button id="sell-preset-100" class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition">
+                                    <button class="sell-preset px-3 py-2 bg-white/10 hover:bg-red-500 rounded-lg text-sm font-bold transition" data-percent="100">
                                         100%
+                                    </button>
+                                    <button id="sell-max-btn" class="px-3 py-2 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 rounded-lg text-sm font-bold transition">
+                                        全部
                                     </button>
                                 </div>
                                 
@@ -1194,11 +1382,14 @@ app.get('/coin/:id', (c) => {
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
         <script>
           const COIN_ID = '${coinId}';
         </script>
+        <script src="/static/chart-lightweight.js"></script>
         <script src="/static/trading-panel.js"></script>
         <script src="/static/comments-simple.js"></script>
+        <script src="/static/realtime-service.js"></script>
         <script src="/static/realtime.js"></script>
         <script src="/static/coin-detail.js"></script>
     </body>
@@ -1237,9 +1428,16 @@ app.get('/market', (c) => {
                         <a href="/social" class="hover:text-orange-500 transition">社交</a>
                     </div>
                     <div class="flex items-center space-x-4">
+                        <!-- Virtual Balance (Gold Coins) -->
                         <div class="glass-effect px-4 py-2 rounded-lg">
                             <i class="fas fa-coins text-yellow-500 mr-2"></i>
                             <span id="user-balance">--</span> 金幣
+                        </div>
+                        <!-- MLT Balance -->
+                        <div class="glass-effect px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20">
+                            <img src="/static/mlt-token.png" class="inline-block w-5 h-5 mr-2" alt="MLT" />
+                            <span id="user-mlt-balance" class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">--</span>
+                            <span class="text-xs text-gray-400 ml-1">MLT</span>
                         </div>
                         <button id="logout-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
                             登出
@@ -1269,7 +1467,7 @@ app.get('/market', (c) => {
 
             <!-- Search and Filters -->
             <div class="glass-effect rounded-2xl p-6 mb-8">
-                <div class="grid md:grid-cols-4 gap-4">
+                <div class="grid md:grid-cols-5 gap-4">
                     <!-- Search Bar -->
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium mb-2">
@@ -1294,12 +1492,34 @@ app.get('/market', (c) => {
                         >
                             <option value="created_at_desc">最新創建</option>
                             <option value="created_at_asc">最早創建</option>
+                            <option value="bonding_curve_progress_desc">🚀 進度最高</option>
+                            <option value="bonding_curve_progress_asc">🐣 進度最低</option>
+                            <option value="ai_trade_count_desc">🤖 AI 活動最多</option>
+                            <option value="real_trade_count_desc">👤 真實交易最多</option>
                             <option value="current_price_desc">價格最高</option>
                             <option value="current_price_asc">價格最低</option>
                             <option value="market_cap_desc">市值最高</option>
                             <option value="market_cap_asc">市值最低</option>
                             <option value="hype_score_desc">最熱門</option>
                             <option value="transaction_count_desc">交易最多</option>
+                        </select>
+                    </div>
+
+                    <!-- Destiny Filter -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            <i class="fas fa-shield-alt mr-2"></i>命運
+                        </label>
+                        <select
+                            id="destiny-filter"
+                            class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
+                        >
+                            <option value="">全部</option>
+                            <option value="SURVIVAL">🛡️ 生存</option>
+                            <option value="EARLY_DEATH">💀 高風險</option>
+                            <option value="LATE_DEATH">⏳ 中風險</option>
+                            <option value="GRADUATION">🎓 畢業</option>
+                            <option value="RUG_PULL">⚠️ Rug</option>
                         </select>
                     </div>
 
@@ -1375,6 +1595,7 @@ app.get('/market', (c) => {
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="/static/realtime-service.js"></script>
         <script src="/static/market.js"></script>
     </body>
     </html>
@@ -1410,6 +1631,15 @@ app.get('/create', (c) => {
                         <a href="/achievements" class="hover:text-orange-500 transition">成就</a>
                         <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
                         <a href="/social" class="hover:text-orange-500 transition">社交</a>
+                        
+                        <!-- MLT Balance -->
+                        <div class="glass-effect px-4 py-2 rounded-lg border border-orange-500/30">
+                            <img src="/static/mlt-token.png" alt="MLT" class="w-5 h-5 inline-block mr-2">
+                            <span id="nav-mlt-balance" class="font-bold bg-gradient-to-r from-orange-400 to-purple-400 bg-clip-text text-transparent">--</span>
+                            <span class="text-xs text-gray-400">MLT</span>
+                        </div>
+                        
+                        <!-- Virtual Balance -->
                         <div class="glass-effect px-4 py-2 rounded-lg">
                             <i class="fas fa-coins text-yellow-500 mr-2"></i>
                             <span id="user-balance">--</span> 金幣
@@ -1500,6 +1730,32 @@ app.get('/create', (c) => {
                         <i class="fas fa-edit mr-2"></i>設置幣種詳情
                     </h2>
 
+                    <!-- MLT Cost Warning -->
+                    <div class="mb-6 p-4 rounded-lg bg-gradient-to-r from-orange-500/20 to-purple-500/20 border border-orange-500/30">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <img src="/static/mlt-token.png" alt="MLT" class="w-10 h-10">
+                                <div>
+                                    <p class="text-sm text-gray-300">創幣成本</p>
+                                    <p class="text-2xl font-bold bg-gradient-to-r from-orange-400 to-purple-400 bg-clip-text text-transparent">
+                                        1,800 MLT
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm text-gray-300">您的餘額</p>
+                                <p id="create-mlt-balance" class="text-xl font-bold text-white">-- MLT</p>
+                                <p id="create-remaining-balance" class="text-xs text-gray-400 mt-1">創幣後剩餘: -- MLT</p>
+                            </div>
+                        </div>
+                        <div id="insufficient-mlt-warning" class="hidden mt-3 p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
+                            <p class="text-sm text-red-300">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                MLT 餘額不足！需要至少 1,800 MLT 才能創建幣種。
+                            </p>
+                        </div>
+                    </div>
+
                     <form id="coin-details-form" class="space-y-6">
                         <!-- Coin Name -->
                         <div>
@@ -1561,6 +1817,57 @@ app.get('/create', (c) => {
                             </div>
                         </div>
 
+                        <!-- Social Links -->
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-semibold flex items-center">
+                                <i class="fas fa-share-alt mr-2 text-orange-500"></i>
+                                社交連結
+                                <span class="ml-2 text-sm text-gray-400 font-normal">(可選)</span>
+                            </h3>
+                            
+                            <!-- Twitter -->
+                            <div>
+                                <label for="twitter-url" class="block text-sm font-medium mb-2">
+                                    <i class="fab fa-twitter mr-2 text-blue-400"></i>Twitter
+                                </label>
+                                <input
+                                    type="url"
+                                    id="twitter-url"
+                                    name="twitter-url"
+                                    class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
+                                    placeholder="https://twitter.com/your_handle"
+                                />
+                            </div>
+
+                            <!-- Telegram -->
+                            <div>
+                                <label for="telegram-url" class="block text-sm font-medium mb-2">
+                                    <i class="fab fa-telegram mr-2 text-blue-300"></i>Telegram
+                                </label>
+                                <input
+                                    type="url"
+                                    id="telegram-url"
+                                    name="telegram-url"
+                                    class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
+                                    placeholder="https://t.me/your_group"
+                                />
+                            </div>
+
+                            <!-- Website -->
+                            <div>
+                                <label for="website-url" class="block text-sm font-medium mb-2">
+                                    <i class="fas fa-globe mr-2 text-green-400"></i>Website
+                                </label>
+                                <input
+                                    type="url"
+                                    id="website-url"
+                                    name="website-url"
+                                    class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
+                                    placeholder="https://your-website.com"
+                                />
+                            </div>
+                        </div>
+
                         <!-- Initial Supply -->
                         <div>
                             <label class="block text-sm font-medium mb-2">
@@ -1599,6 +1906,177 @@ app.get('/create', (c) => {
                                         <span class="option-desc">超大供應</span>
                                     </span>
                                 </label>
+                            </div>
+                        </div>
+
+                        <!-- MLT Investment Slider -->
+                        <div class="mb-6">
+                            <label class="block text-white mb-3">
+                                <i class="fas fa-coins mr-2 text-orange-500"></i>初始 MLT 投資
+                                <span class="text-gray-400 text-sm ml-2">(決定初始價格)</span>
+                            </label>
+                            <div class="flex items-center space-x-4">
+                                <input 
+                                    type="range" 
+                                    id="mlt-investment-slider" 
+                                    min="1800" 
+                                    max="10000" 
+                                    step="100" 
+                                    value="2000" 
+                                    class="flex-1 h-3 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                                />
+                                <div class="text-right min-w-[140px] p-3 rounded-lg bg-gradient-to-r from-orange-500/20 to-purple-500/20 border border-orange-500/30">
+                                    <span id="mlt-investment-value" class="text-2xl font-bold bg-gradient-to-r from-orange-400 to-purple-400 bg-clip-text text-transparent">2,000</span>
+                                    <span class="text-gray-400 ml-1 text-sm">MLT</span>
+                                </div>
+                            </div>
+                            <div class="mt-2 flex justify-between text-xs text-gray-400">
+                                <span>最低: 1,800 MLT</span>
+                                <span>推薦: 2,000-5,000 MLT</span>
+                                <span>最高: 10,000 MLT</span>
+                            </div>
+                            <div class="mt-3 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                                <p class="text-xs text-blue-300">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    投資越高,初始價格越高,但代幣越稀有。適合高質量項目。
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Pre-Purchase Amount -->
+                        <div class="mb-6">
+                            <label class="block text-white mb-3">
+                                <i class="fas fa-shopping-cart mr-2 text-green-500"></i>預購數量
+                                <span class="text-gray-400 text-sm ml-2">(強制購買,確保流動性)</span>
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    type="number" 
+                                    id="pre-purchase-amount" 
+                                    min="0" 
+                                    step="1000" 
+                                    value="50000"
+                                    class="w-full px-4 py-3 pr-24 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white text-lg font-mono"
+                                    placeholder="50000"
+                                />
+                                <span class="absolute right-4 top-3 text-gray-400 font-bold">代幣</span>
+                            </div>
+                            <div class="mt-2 flex items-center justify-between text-sm">
+                                <p class="text-gray-400">
+                                    最小預購: <span id="min-pre-purchase" class="text-orange-400 font-bold">45,618</span> 代幣
+                                    <span class="text-gray-500">(成本 100 MLT)</span>
+                                </p>
+                                <button 
+                                    type="button" 
+                                    id="set-min-prepurchase-btn" 
+                                    class="px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 rounded transition"
+                                >
+                                    使用最小值
+                                </button>
+                            </div>
+                            <div id="prepurchase-warning" class="hidden mt-3 p-3 rounded-lg bg-red-500/20 border border-red-500/30">
+                                <p class="text-sm text-red-300">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                    預購數量不足!至少需要 <span id="prepurchase-warning-min">45,618</span> 代幣 (100 MLT 成本)。
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Cost Calculation Summary -->
+                        <div class="p-6 rounded-xl bg-gradient-to-br from-orange-500/10 via-purple-500/10 to-pink-500/10 border border-orange-500/30 backdrop-blur-sm">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="text-lg font-bold text-white">
+                                    <i class="fas fa-calculator mr-2 text-orange-500"></i>創幣成本摘要
+                                </h4>
+                                <div class="px-3 py-1 rounded-full bg-green-500/20 border border-green-500/30">
+                                    <span class="text-xs text-green-400 font-bold">
+                                        <i class="fas fa-check-circle mr-1"></i>實時計算
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-piggy-bank text-orange-400"></i>
+                                        <span class="text-gray-300">初始投資</span>
+                                    </div>
+                                    <span id="cost-initial-investment" class="font-mono text-white font-bold">2,000 MLT</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-shopping-bag text-green-400"></i>
+                                        <span class="text-gray-300">預購成本</span>
+                                    </div>
+                                    <span id="cost-pre-purchase" class="font-mono text-white font-bold">110.59 MLT</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-tag text-blue-400"></i>
+                                        <span class="text-gray-300">初始價格</span>
+                                    </div>
+                                    <span id="cost-initial-price" class="font-mono text-xs text-gray-400">0.002000 MLT/token</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-chart-line text-purple-400"></i>
+                                        <span class="text-gray-300">當前價格</span>
+                                        <span class="text-xs text-gray-500">(預購後)</span>
+                                    </div>
+                                    <span id="cost-current-price" class="font-mono text-xs text-purple-300">0.002222 MLT/token</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-percentage text-pink-400"></i>
+                                        <span class="text-gray-300">Bonding Curve 進度</span>
+                                    </div>
+                                    <span id="cost-progress" class="font-mono text-pink-300 font-bold">5.00%</span>
+                                </div>
+                                
+                                <div class="border-t border-gray-700/50 my-2"></div>
+                                
+                                <div class="flex items-center justify-between p-4 rounded-lg bg-gradient-to-r from-orange-500/20 to-purple-500/20 border border-orange-500/40">
+                                    <span class="text-white font-bold text-lg">
+                                        <i class="fas fa-coins mr-2"></i>總成本
+                                    </span>
+                                    <span id="cost-total" class="text-2xl font-bold bg-gradient-to-r from-orange-400 to-purple-400 bg-clip-text text-transparent">2,110.59 MLT</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between text-sm p-3 rounded-lg bg-gray-800/30">
+                                    <span class="text-gray-400">
+                                        <i class="fas fa-wallet mr-1"></i>創幣後餘額
+                                    </span>
+                                    <span id="cost-remaining" class="font-mono text-gray-300">7,889.41 MLT</span>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 p-3 rounded-lg bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-500/20">
+                                <p class="text-xs text-gray-300 mb-2">
+                                    <i class="fas fa-rocket mr-1 text-green-400"></i>
+                                    <strong>價格增長潛力:</strong>
+                                </p>
+                                <div class="grid grid-cols-4 gap-2 text-xs text-center">
+                                    <div>
+                                        <div class="text-gray-400">25%</div>
+                                        <div class="text-green-400 font-bold">2.72×</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-400">50%</div>
+                                        <div class="text-green-400 font-bold">7.39×</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-400">75%</div>
+                                        <div class="text-yellow-400 font-bold">20.09×</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-400">100%</div>
+                                        <div class="text-purple-400 font-bold">54.60×</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -1702,15 +2180,15 @@ app.get('/create', (c) => {
                                 </h3>
                                 <div class="flex items-center justify-between text-2xl mb-4">
                                     <span>總計:</span>
-                                    <span class="font-bold text-orange-500">100 金幣</span>
+                                    <span class="font-bold text-orange-500" id="cost-total-preview">~2,100 MLT</span>
                                 </div>
                                 <div class="flex items-center justify-between text-sm text-gray-400">
                                     <span>當前餘額:</span>
-                                    <span id="preview-balance">--</span>
+                                    <span id="preview-balance">-- MLT</span>
                                 </div>
                                 <div class="flex items-center justify-between text-sm text-gray-400 mt-2">
                                     <span>發射後餘額:</span>
-                                    <span id="preview-after-balance">--</span>
+                                    <span id="preview-after-balance">-- MLT</span>
                                 </div>
                             </div>
 
@@ -1801,7 +2279,8 @@ app.get('/create', (c) => {
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
-        <script src="/static/create-coin.js"></script>
+        <script src="/static/mlt-calculator.js"></script>
+        <script src="/static/create-coin.js?v=2.0.0-final"></script>
     </body>
     </html>
   `);
@@ -1844,20 +2323,37 @@ app.get('/dashboard', (c) => {
                         <a href="/social" class="text-gray-300 hover:text-coinbase-blue transition">社交</a>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <div class="glass-card px-4 py-2 rounded-lg">
+                        <div class="glass-card px-4 py-2 rounded-lg flex items-center">
                             <i class="fas fa-coins text-yellow-400 mr-2"></i>
-                            <span id="balance-display" class="text-white font-semibold">--</span> 金幣
+                            <span id="balance-display" class="text-white font-semibold">--</span>
+                            <span class="text-white ml-1">金幣</span>
                         </div>
-                        <button id="view-profile-btn" class="glass-card px-4 py-2 rounded-lg hover:bg-white/10 transition cursor-pointer flex items-center space-x-2">
-                            <i class="fas fa-user text-coinbase-blue"></i>
-                            <span id="username-display" class="text-white">載入中...</span>
-                        </button>
-                        <button id="auth-btn" onclick="window.location.href='/login'" class="btn-primary hidden">
-                            登入
-                        </button>
-                        <button id="logout-btn" class="btn-secondary">
-                            <i class="fas fa-sign-out-alt mr-2"></i>登出
-                        </button>
+                        
+                        <!-- User Dropdown Menu -->
+                        <div class="relative">
+                            <button id="user-menu-btn" class="glass-card px-3 py-2 rounded-lg hover:bg-white/10 transition cursor-pointer flex items-center space-x-2 whitespace-nowrap">
+                                <i class="fas fa-user text-coinbase-blue"></i>
+                                <span id="username-display" class="text-white text-sm">載入中...</span>
+                                <i class="fas fa-chevron-down text-gray-400 text-xs ml-1"></i>
+                            </button>
+                            
+                            <!-- Dropdown Menu -->
+                            <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 glass-card rounded-lg shadow-xl border border-white/10 overflow-hidden z-50">
+                                <a id="view-profile-link" href="#" class="block px-4 py-3 text-white hover:bg-white/10 transition">
+                                    <i class="fas fa-user mr-2 text-coinbase-blue"></i>我的資料
+                                </a>
+                                <a href="/portfolio" class="block px-4 py-3 text-white hover:bg-white/10 transition">
+                                    <i class="fas fa-wallet mr-2 text-green-400"></i>我的組合
+                                </a>
+                                <a href="/achievements" class="block px-4 py-3 text-white hover:bg-white/10 transition">
+                                    <i class="fas fa-trophy mr-2 text-yellow-400"></i>成就
+                                </a>
+                                <div class="border-t border-white/10"></div>
+                                <button id="logout-btn" class="w-full text-left px-4 py-3 text-red-400 hover:bg-white/10 transition">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>登出
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2165,9 +2661,16 @@ app.get('/achievements', (c) => {
                         <a href="/social" class="hover:text-orange-500 transition">社交</a>
                     </div>
                     <div class="flex items-center space-x-4">
+                        <!-- Virtual Balance (Gold Coins) -->
                         <div class="glass-effect px-4 py-2 rounded-lg">
                             <i class="fas fa-coins text-yellow-500 mr-2"></i>
                             <span id="user-balance">--</span> 金幣
+                        </div>
+                        <!-- MLT Balance -->
+                        <div class="glass-effect px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20">
+                            <img src="/static/mlt-token.png" class="inline-block w-5 h-5 mr-2" alt="MLT" />
+                            <span id="user-mlt-balance" class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">--</span>
+                            <span class="text-xs text-gray-400 ml-1">MLT</span>
                         </div>
                         <button id="logout-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
                             登出
@@ -2498,9 +3001,16 @@ app.get('/social', (c) => {
                         <a href="/social" class="text-orange-500 border-b-2 border-orange-500">社交</a>
                     </div>
                     <div class="flex items-center space-x-4">
+                        <!-- Virtual Balance (Gold Coins) -->
                         <div class="glass-effect px-4 py-2 rounded-lg">
                             <i class="fas fa-coins text-yellow-500 mr-2"></i>
                             <span id="user-balance">--</span> 金幣
+                        </div>
+                        <!-- MLT Balance -->
+                        <div class="glass-effect px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20">
+                            <img src="/static/mlt-token.png" class="inline-block w-5 h-5 mr-2" alt="MLT" />
+                            <span id="user-mlt-balance" class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">--</span>
+                            <span class="text-xs text-gray-400 ml-1">MLT</span>
                         </div>
                         <button id="logout-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
                             登出
@@ -2664,13 +3174,44 @@ app.get('/profile/:userId', (c) => {
                         <a href="/social" class="hover:text-orange-500 transition">社交</a>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <div class="glass-effect px-4 py-2 rounded-lg">
+                        <!-- Virtual Balance -->
+                        <div class="glass-effect px-4 py-2 rounded-lg flex items-center">
                             <i class="fas fa-coins text-yellow-500 mr-2"></i>
-                            <span id="user-balance">--</span> 金幣
+                            <span id="user-balance">--</span>
+                            <span class="ml-1">金幣</span>
                         </div>
-                        <button id="logout-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
-                            登出
-                        </button>
+                        <!-- MLT Balance -->
+                        <div class="glass-effect px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20">
+                            <img src="/static/mlt-token.png" class="inline-block w-5 h-5 mr-2" alt="MLT" />
+                            <span id="user-mlt-balance" class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">--</span>
+                            <span class="text-xs text-gray-400 ml-1">MLT</span>
+                        </div>
+                        
+                        <!-- User Dropdown Menu -->
+                        <div class="relative">
+                            <button id="user-menu-btn" class="glass-effect px-3 py-2 rounded-lg hover:bg-white/10 transition cursor-pointer flex items-center space-x-2 whitespace-nowrap">
+                                <i class="fas fa-user text-orange-500"></i>
+                                <span id="username-display" class="text-white text-sm">載入中...</span>
+                                <i class="fas fa-chevron-down text-gray-400 text-xs ml-1"></i>
+                            </button>
+                            
+                            <!-- Dropdown Menu -->
+                            <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 glass-effect rounded-lg shadow-xl border border-white/10 overflow-hidden z-50">
+                                <a href="/dashboard" class="block px-4 py-3 text-white hover:bg-white/10 transition">
+                                    <i class="fas fa-tachometer-alt mr-2 text-orange-500"></i>儀表板
+                                </a>
+                                <a href="/portfolio" class="block px-4 py-3 text-white hover:bg-white/10 transition">
+                                    <i class="fas fa-wallet mr-2 text-green-400"></i>我的組合
+                                </a>
+                                <a href="/achievements" class="block px-4 py-3 text-white hover:bg-white/10 transition">
+                                    <i class="fas fa-trophy mr-2 text-yellow-400"></i>成就
+                                </a>
+                                <div class="border-t border-white/10"></div>
+                                <button id="logout-btn-dropdown" class="w-full text-left px-4 py-3 text-red-400 hover:bg-white/10 transition">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>登出
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

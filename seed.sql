@@ -1,21 +1,34 @@
--- Seed data for testing
+-- Seed data for fresh database
 
--- Insert test users
-INSERT OR IGNORE INTO users (id, email, username, password_hash, virtual_balance, premium_balance, level, xp) VALUES
-(27, 'trade1770651466@example.com', 'trade1770651466', '$2a$10$YourHashedPasswordHere', 9950.77, 0, 2, 150),
-(16, 'yhomg1@example.com', 'yhomg1', '$2a$10$YourHashedPasswordHere', 10000, 0, 1, 50);
+-- Insert test user (password: Test123!)
+INSERT OR IGNORE INTO users (id, email, username, password_hash, mlt_balance, virtual_balance, created_at) 
+VALUES (1, 'test@example.com', 'testuser', '$2a$10$YourHashHere', 10000.0, 10000.0, datetime('now'));
 
--- Insert some test coins
-INSERT OR IGNORE INTO coins (id, name, symbol, creator_id, current_price, market_cap, total_supply, image_url) VALUES
-(9, 'testing3', 'T3', 27, 0.0164, 65.76, 4000, '/static/default-coin.svg'),
-(7, 'newyear', 'CNE', 16, 0.0106, 42.4, 4000, '/images/coins/1770640963717-0g554.png');
+-- Insert test coins with MLT economy
+INSERT OR IGNORE INTO coins (
+  id, creator_id, name, symbol, description, image_url,
+  total_supply, circulating_supply, current_price, market_cap,
+  hype_score, holders_count, transaction_count,
+  initial_mlt_investment, bonding_curve_progress, bonding_curve_k,
+  destiny_type, is_ai_active,
+  created_at
+) VALUES 
+(1, 1, 'Test Coin', 'TEST', 'A test meme coin', '/static/default-coin.svg',
+ 1000000, 50000, 0.01, 500, 100, 1, 0,
+ 2000.0, 0.05, 4.0, 'unknown', 1,
+ datetime('now')),
+ 
+(2, 1, 'Moon Token', 'MOON', 'To the moon! 🚀', '/static/default-coin.svg',
+ 1000000, 100000, 0.02, 2000, 150, 2, 5,
+ 2000.0, 0.10, 4.0, 'unknown', 1,
+ datetime('now')),
+ 
+(3, 1, 'Doge Plus', 'DOGE+', 'Much wow, such coin', '/static/default-coin.svg',
+ 10000000, 500000, 0.005, 2500, 200, 5, 12,
+ 5000.0, 0.05, 4.0, 'unknown', 1,
+ datetime('now'));
 
--- Insert user profiles
-INSERT OR IGNORE INTO user_profiles (user_id, bio, location) VALUES
-(27, '', ''),
-(16, '', '');
-
--- Insert user stats
-INSERT OR IGNORE INTO user_stats (user_id, total_trades, total_volume, coins_created) VALUES
-(27, 5, 150.50, 1),
-(16, 3, 80.25, 1);
+-- Insert initial price history
+INSERT OR IGNORE INTO price_history (coin_id, price, volume, market_cap, circulating_supply, timestamp)
+SELECT id, current_price, 0, market_cap, circulating_supply, created_at
+FROM coins WHERE id IN (1, 2, 3);

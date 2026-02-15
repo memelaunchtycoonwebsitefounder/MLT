@@ -3,11 +3,12 @@ import { Env, Coin, JWTPayload, Transaction } from '../types';
 import {
   errorResponse,
   successResponse,
-  calculateBondingCurvePrice,
-  calculateHypeMultiplier,
-  calculateFinalPrice,
   calculateMarketCap,
 } from '../utils';
+import {
+  calculateBuyTrade,
+  calculateSellTrade,
+} from '../utils/bonding-curve';
 
 const trades = new Hono<{ Bindings: Env }>();
 
@@ -142,38 +143,41 @@ trades.post('/buy', async (c) => {
       return errorResponse(`可用供應量不足。剩餘: ${availableSupply}`);
     }
 
-    // Calculate price using bonding curve
-    const basePrice = calculateBondingCurvePrice(
-      0.01,
+    // Calculate buy trade using Bonding Curve
+    const tradeResult = calculateBuyTrade(
+      coin.initial_mlt_investment || 2000,
+      coin.total_supply,
       coin.circulating_supply,
-      coin.total_supply
+      amount,
+      coin.bonding_curve_k || 4.0
     );
-    const hypeMultiplier = calculateHypeMultiplier(coin.hype_score);
-    const currentPrice = calculateFinalPrice(basePrice, hypeMultiplier);
-    const totalCost = currentPrice * amount;
 
-    // Check user balance
+    const totalCost = tradeResult.mltAmount;
+    const newPrice = tradeResult.newPrice;
+    const newProgress = tradeResult.newProgress;
+
+    // Check user balance (use mlt_balance instead of virtual_balance)
     const userBalance = await c.env.DB.prepare(
-      'SELECT virtual_balance FROM users WHERE id = ?'
+      'SELECT mlt_balance FROM users WHERE id = ?'
     )
       .bind(user.userId)
       .first() as any;
 
-    if (userBalance.virtual_balance < totalCost) {
-      return errorResponse(`余額不足。需要: ${totalCost.toFixed(2)} 金幣`);
+    if (userBalance.mlt_balance < totalCost) {
+      return errorResponse(`MLT 余額不足。需要: ${totalCost.toFixed(2)} MLT`);
     }
 
     // Start transaction (simulated - D1 doesn't support transactions yet)
-    // 1. Deduct user balance
+    // 1. Deduct user MLT balance
     await c.env.DB.prepare(
-      'UPDATE users SET virtual_balance = virtual_balance - ? WHERE id = ?'
+      'UPDATE users SET mlt_balance = mlt_balance - ? WHERE id = ?'
     )
       .bind(totalCost, user.userId)
       .run();
 
-    // 2. Update coin stats
-    const newCirculatingSupply = coin.circulating_supply + amount;
-    const newMarketCap = calculateMarketCap(currentPrice, newCirculatingSupply);
+    // 2. Update coin stats with Bonding Curve data
+    const newCirculatingSupply = tradeResult.newCirculatingSupply;
+    const newMarketCap = tradeResult.newMarketCap;
     const newTransactionCount = coin.transaction_count + 1;
 
     await c.env.DB.prepare(
@@ -181,14 +185,17 @@ trades.post('/buy', async (c) => {
        SET circulating_supply = ?, 
            current_price = ?, 
            market_cap = ?, 
+           bonding_curve_progress = ?,
            transaction_count = ?,
+           real_trade_count = real_trade_count + 1,
            hype_score = hype_score + ?
        WHERE id = ?`
     )
       .bind(
         newCirculatingSupply,
-        currentPrice,
+        newPrice,
         newMarketCap,
+        newProgress,
         newTransactionCount,
         amount * 0.01, // Small hype boost per transaction
         coinId
@@ -200,7 +207,7 @@ trades.post('/buy', async (c) => {
       `INSERT INTO transactions (user_id, coin_id, type, amount, price, total_cost) 
        VALUES (?, ?, 'buy', ?, ?, ?)`
     )
-      .bind(user.userId, coinId, amount, currentPrice, totalCost)
+      .bind(user.userId, coinId, amount, tradeResult.averagePrice, totalCost)
       .run();
 
     // 4. Update or create holding
@@ -214,7 +221,7 @@ trades.post('/buy', async (c) => {
       const newAmount = existingHolding.amount + amount;
       const newAvgPrice =
         (existingHolding.avg_buy_price * existingHolding.amount +
-          currentPrice * amount) /
+          tradeResult.averagePrice * amount) /
         newAmount;
 
       await c.env.DB.prepare(
@@ -225,14 +232,14 @@ trades.post('/buy', async (c) => {
              last_updated = CURRENT_TIMESTAMP
          WHERE user_id = ? AND coin_id = ?`
       )
-        .bind(newAmount, newAvgPrice, currentPrice * newAmount, user.userId, coinId)
+        .bind(newAmount, newAvgPrice, newPrice * newAmount, user.userId, coinId)
         .run();
     } else {
       await c.env.DB.prepare(
         `INSERT INTO holdings (user_id, coin_id, amount, avg_buy_price, current_value) 
          VALUES (?, ?, ?, ?, ?)`
       )
-        .bind(user.userId, coinId, amount, currentPrice, currentPrice * amount)
+        .bind(user.userId, coinId, amount, tradeResult.averagePrice, newPrice * amount)
         .run();
 
       // Update holders count
@@ -246,12 +253,21 @@ trades.post('/buy', async (c) => {
     // Check and update achievements
     await checkTradeAchievements(c.env.DB, user.userId, totalCost);
 
+    // 5. Record price history
+    await c.env.DB.prepare(
+      `INSERT INTO price_history (coin_id, price, volume, market_cap, circulating_supply)
+       VALUES (?, ?, ?, ?, ?)`
+    ).bind(coinId, newPrice, amount, newMarketCap, newCirculatingSupply).run();
+
     return successResponse({
       transactionId: txResult.meta.last_row_id,
       amount,
-      price: currentPrice,
+      price: newPrice,
+      averagePrice: tradeResult.averagePrice,
       totalCost,
-      newBalance: userBalance.virtual_balance - totalCost,
+      newBalance: userBalance.mlt_balance - totalCost,
+      bondingCurveProgress: newProgress,
+      priceIncrease: ((newPrice - tradeResult.oldPrice) / tradeResult.oldPrice * 100).toFixed(2) + '%',
     });
   } catch (error: any) {
     console.error('Buy error:', error);
@@ -296,26 +312,29 @@ trades.post('/sell', async (c) => {
       return errorResponse('幣種未找到', 404);
     }
 
-    // Calculate current price
-    const basePrice = calculateBondingCurvePrice(
-      0.01,
-      coin.circulating_supply - amount, // Selling reduces circulating supply
-      coin.total_supply
+    // Calculate sell trade using Bonding Curve
+    const tradeResult = calculateSellTrade(
+      coin.initial_mlt_investment || 2000,
+      coin.total_supply,
+      coin.circulating_supply,
+      amount,
+      coin.bonding_curve_k || 4.0
     );
-    const hypeMultiplier = calculateHypeMultiplier(coin.hype_score);
-    const currentPrice = calculateFinalPrice(basePrice, hypeMultiplier);
-    const totalRevenue = currentPrice * amount;
 
-    // 1. Add to user balance
+    const totalRevenue = tradeResult.mltAmount;
+    const newPrice = tradeResult.newPrice;
+    const newProgress = tradeResult.newProgress;
+
+    // 1. Add to user MLT balance
     await c.env.DB.prepare(
-      'UPDATE users SET virtual_balance = virtual_balance + ? WHERE id = ?'
+      'UPDATE users SET mlt_balance = mlt_balance + ? WHERE id = ?'
     )
       .bind(totalRevenue, user.userId)
       .run();
 
-    // 2. Update coin stats
-    const newCirculatingSupply = coin.circulating_supply - amount;
-    const newMarketCap = calculateMarketCap(currentPrice, newCirculatingSupply);
+    // 2. Update coin stats with Bonding Curve data
+    const newCirculatingSupply = tradeResult.newCirculatingSupply;
+    const newMarketCap = tradeResult.newMarketCap;
     const newTransactionCount = coin.transaction_count + 1;
 
     await c.env.DB.prepare(
@@ -323,14 +342,17 @@ trades.post('/sell', async (c) => {
        SET circulating_supply = ?, 
            current_price = ?, 
            market_cap = ?, 
+           bonding_curve_progress = ?,
            transaction_count = ?,
+           real_trade_count = real_trade_count + 1,
            hype_score = hype_score - ?
        WHERE id = ?`
     )
       .bind(
         newCirculatingSupply,
-        currentPrice,
+        newPrice,
         newMarketCap,
+        newProgress,
         newTransactionCount,
         amount * 0.005, // Small hype decrease when selling
         coinId
@@ -342,7 +364,7 @@ trades.post('/sell', async (c) => {
       `INSERT INTO transactions (user_id, coin_id, type, amount, price, total_cost) 
        VALUES (?, ?, 'sell', ?, ?, ?)`
     )
-      .bind(user.userId, coinId, amount, currentPrice, totalRevenue)
+      .bind(user.userId, coinId, amount, tradeResult.averagePrice, totalRevenue)
       .run();
 
     // 4. Update holding
@@ -370,13 +392,13 @@ trades.post('/sell', async (c) => {
              last_updated = CURRENT_TIMESTAMP
          WHERE user_id = ? AND coin_id = ?`
       )
-        .bind(newHoldingAmount, currentPrice * newHoldingAmount, user.userId, coinId)
+        .bind(newHoldingAmount, newPrice * newHoldingAmount, user.userId, coinId)
         .run();
     }
 
     // Get new balance
     const newBalance = await c.env.DB.prepare(
-      'SELECT virtual_balance FROM users WHERE id = ?'
+      'SELECT mlt_balance FROM users WHERE id = ?'
     )
       .bind(user.userId)
       .first() as any;
@@ -384,12 +406,21 @@ trades.post('/sell', async (c) => {
     // Check and update achievements
     await checkTradeAchievements(c.env.DB, user.userId, totalRevenue);
 
+    // 5. Record price history
+    await c.env.DB.prepare(
+      `INSERT INTO price_history (coin_id, price, volume, market_cap, circulating_supply)
+       VALUES (?, ?, ?, ?, ?)`
+    ).bind(coinId, newPrice, amount, newMarketCap, newCirculatingSupply).run();
+
     return successResponse({
       transactionId: txResult.meta.last_row_id,
       amount,
-      price: currentPrice,
+      price: newPrice,
+      averagePrice: tradeResult.averagePrice,
       totalRevenue,
-      newBalance: newBalance.virtual_balance,
+      newBalance: newBalance.mlt_balance,
+      bondingCurveProgress: newProgress,
+      priceDecrease: ((tradeResult.oldPrice - newPrice) / tradeResult.oldPrice * 100).toFixed(2) + '%',
     });
   } catch (error: any) {
     console.error('Sell error:', error);

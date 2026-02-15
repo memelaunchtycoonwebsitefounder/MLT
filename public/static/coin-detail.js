@@ -5,7 +5,6 @@
 
 let coinData = null;
 let userData = null;
-let priceChart = null;
 let userHoldings = 0;
 let currentTab = 'buy';
 
@@ -47,12 +46,21 @@ const checkAuth = async (retryCount = 0) => {
 };
 
 // Update user balance display
-const updateUserBalance = (balance) => {
+const updateUserBalance = (balance, mltBalance) => {
   const balanceEl = document.getElementById('user-balance');
   if (balanceEl) {
     balanceEl.textContent = Number(balance || 0).toLocaleString(undefined, {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
+    });
+  }
+  
+  // Update MLT balance
+  const mltBalanceEl = document.getElementById('user-mlt-balance');
+  if (mltBalanceEl && mltBalance !== undefined) {
+    mltBalanceEl.textContent = Number(mltBalance || 0).toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     });
   }
 };
@@ -72,7 +80,9 @@ const loadCoinData = async (skipChart = false) => {
       await loadUserHoldings();
       loadRecentTransactions();
       if (!skipChart) {
-        initPriceChart();
+        console.log('🔄 Reloading chart with latest data...');
+        await initPriceChart();
+        console.log('✅ Chart reloaded successfully');
       }
       updateTradeCalculations(); // Update calculations after loading
     }
@@ -86,7 +96,7 @@ const loadCoinData = async (skipChart = false) => {
 };
 
 // Render coin data
-const renderCoinData = () => {
+const renderCoinData = async () => {
   document.getElementById('loading-state').classList.add('hidden');
   document.getElementById('coin-content').classList.remove('hidden');
   
@@ -97,13 +107,40 @@ const renderCoinData = () => {
   document.getElementById('coin-creator').textContent = coinData.creator_username || 'Unknown';
   document.getElementById('coin-price').textContent = `$${Number(coinData.current_price || 0).toFixed(8)}`;
   
-  // Price change (simulated for now)
-  const priceChange = Math.random() * 20 - 10;
-  const priceChangeEl = document.getElementById('coin-price-change');
-  const priceChangeClass = priceChange >= 0 ? 'text-green-400' : 'text-red-400';
-  const priceChangeIcon = priceChange >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
-  priceChangeEl.innerHTML = `<i class="fas ${priceChangeIcon} mr-1"></i>${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}%`;
-  priceChangeEl.className = priceChangeClass + ' text-lg mt-2';
+  // Calculate real price change from price history
+  try {
+    const response = await axios.get(`/api/coins/${COIN_ID}/price-history?limit=2`);
+    let priceChange = 0;
+    
+    if (response.data.success && response.data.data.data.length >= 2) {
+      const history = response.data.data.data;
+      const currentPrice = parseFloat(history[0].price);
+      const previousPrice = parseFloat(history[1].price);
+      
+      if (currentPrice && previousPrice && previousPrice > 0) {
+        priceChange = ((currentPrice - previousPrice) / previousPrice) * 100;
+      }
+    }
+    
+    // Update price change display
+    const priceChangeEl = document.getElementById('coin-price-change');
+    if (priceChangeEl) {
+      const isPositive = priceChange >= 0;
+      priceChangeEl.innerHTML = `
+        <i class="fas fa-arrow-${isPositive ? 'up' : 'down'} mr-1"></i>
+        ${isPositive ? '+' : ''}${priceChange.toFixed(2)}%
+      `;
+      priceChangeEl.className = `${isPositive ? 'text-green-400' : 'text-red-400'} text-lg mt-2`;
+    }
+  } catch (error) {
+    console.warn('Could not calculate price change:', error);
+    // Fallback to neutral display
+    const priceChangeEl = document.getElementById('coin-price-change');
+    if (priceChangeEl) {
+      priceChangeEl.innerHTML = `<i class="fas fa-minus mr-1"></i>0.00%`;
+      priceChangeEl.className = 'text-gray-400 text-lg mt-2';
+    }
+  }
   
   // Stats
   document.getElementById('stat-market-cap').textContent = `$${Number(coinData.market_cap || 0).toFixed(4)}`;
@@ -118,6 +155,23 @@ const renderCoinData = () => {
   const hypeScore = coinData.hype_score || 0;
   document.getElementById('hype-score').textContent = Math.floor(hypeScore);
   document.getElementById('hype-bar').style.width = `${Math.min(hypeScore / 200 * 100, 100)}%`;
+  
+  // Bonding Curve Progress
+  const circulatingSupply = Number(coinData.circulating_supply || 0);
+  const totalSupply = Number(coinData.total_supply || 10000);
+  const progressPercent = (circulatingSupply / totalSupply * 100).toFixed(2);
+  const remaining = totalSupply - circulatingSupply;
+  
+  document.getElementById('bonding-circulating').textContent = circulatingSupply.toLocaleString();
+  document.getElementById('bonding-total').textContent = totalSupply.toLocaleString();
+  document.getElementById('bonding-remaining').textContent = `剩餘 ${remaining.toLocaleString()}`;
+  document.getElementById('bonding-progress-percent').textContent = `${progressPercent}%`;
+  document.getElementById('bonding-progress-bar').style.width = `${progressPercent}%`;
+  
+  // Update enhanced bonding curve display
+  updateBondingCurveDetails(coinData);
+  updateDestinyStatus(coinData);
+  updateAIActivity(coinData);
 };
 
 // Load user holdings
@@ -157,18 +211,12 @@ const loadUserHoldings = async () => {
 // Load recent transactions
 const loadRecentTransactions = async () => {
   try {
-    const token = localStorage.getItem('auth_token');
-    
-    const response = await axios.get(`/api/trades/history/${COIN_ID}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    
-    if (response.data.success) {
-      const transactions = response.data.data.transactions || [];
-      renderTransactions(transactions);
-    }
+    // Note: Coin-specific transaction history endpoint not implemented yet
+    // For now, show empty state
+    renderTransactions([]);
   } catch (error) {
     console.error('Failed to load transactions:', error);
+    renderTransactions([]);
   }
 };
 
@@ -205,67 +253,83 @@ const renderTransactions = (transactions) => {
   `).join('');
 };
 
-// Initialize price chart
-const initPriceChart = () => {
-  const ctx = document.getElementById('price-chart');
-  if (!ctx) return;
+// Initialize price chart with Lightweight Charts (TradingView-style)
+const initPriceChart = async (limit = 100) => {
+  console.log('📊 Loading chart data with limit:', limit);
   
-  // Destroy existing chart if it exists
-  if (priceChart) {
-    priceChart.destroy();
-    priceChart = null;
-  }
-  
-  // Generate sample price data
-  const now = Date.now();
-  const labels = [];
-  const prices = [];
-  const basePrice = coinData.current_price;
-  
-  for (let i = 23; i >= 0; i--) {
-    labels.push(new Date(now - i * 3600000).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' }));
-    prices.push(basePrice * (1 + (Math.random() * 0.2 - 0.1)));
-  }
-  
-  priceChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: '價格',
-        data: prices,
-        borderColor: 'rgb(249, 115, 22)',
-        backgroundColor: 'rgba(249, 115, 22, 0.1)',
-        borderWidth: 2,
-        fill: true,
-        tension: 0.4
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: (context) => `$${context.parsed.y.toFixed(8)}`
-          }
-        }
-      },
-      scales: {
-        y: {
-          ticks: {
-            callback: (value) => `$${value.toFixed(8)}`,
-            color: '#9ca3af'
-          },
-          grid: { color: 'rgba(255, 255, 255, 0.1)' }
-        },
-        x: {
-          ticks: { color: '#9ca3af' },
-          grid: { color: 'rgba(255, 255, 255, 0.1)' }
-        }
-      }
+  try {
+    // Load real price history from API
+    const response = await axios.get(`/api/coins/${COIN_ID}/price-history?limit=${limit}`);
+    
+    if (!response.data.success) {
+      console.error('❌ Failed to load price history');
+      return false;
     }
+    
+    const history = response.data.data.data || [];
+    console.log('📊 Loaded', history.length, 'price history records');
+    
+    // Determine timeframe based on data amount for proper aggregation
+    let timeframe = '1m'; // Default 1-minute candles
+    if (limit > 60) timeframe = '10m';   // 10-minute candles for more data
+    if (limit > 600) timeframe = '1h';   // 1-hour candles for lots of data
+    
+    console.log(`📊 Using ${timeframe} timeframe for ${history.length} records`);
+    
+    // Call the Lightweight Charts function
+    const success = await window.initLightweightCharts(coinData, history, timeframe);
+    
+    if (success) {
+      console.log('✅ Lightweight Charts initialized successfully');
+    }
+    
+    return success;
+  } catch (error) {
+    console.error('❌ Price chart error:', error);
+    showNotification('無法載入價格圖表', 'error');
+    return false;
+  }
+};
+
+// Setup timeframe buttons for chart
+const setupTimeframeButtons = () => {
+  const buttons = document.querySelectorAll('.timeframe-btn');
+  
+  buttons.forEach(btn => {
+    btn.addEventListener('click', async () => {
+      // Update active state
+      buttons.forEach(b => {
+        b.classList.remove('active', 'bg-orange-500');
+        b.classList.add('bg-white/10');
+      });
+      btn.classList.remove('bg-white/10');
+      btn.classList.add('active', 'bg-orange-500');
+      
+      // Get timeframe
+      const timeframe = btn.dataset.timeframe;
+      
+      // Calculate limit based on timeframe (for 1-minute candles)
+      let limit = 60; // default 1 hour
+      switch(timeframe) {
+        case '1m':
+          limit = 60; // Last 60 minutes (1 hour of 1-min candles)
+          break;
+        case '10m':
+          limit = 144; // Last 24 hours at 10-min intervals
+          break;
+        case '1h':
+          limit = 168; // Last 7 days at 1-hour intervals
+          break;
+        case '24h':
+          limit = 720; // Last 30 days at 24-hour intervals
+          break;
+      }
+      
+      console.log('⏰ Switching to timeframe:', timeframe, 'with limit:', limit);
+      
+      // Reload chart with new timeframe
+      await initPriceChart(limit);
+    });
   });
 };
 
@@ -310,29 +374,61 @@ const switchTab = (tab) => {
 
 // Setup trade inputs and buttons
 const setupTradeInputs = () => {
-  // Amount inputs
-  document.getElementById('buy-amount').addEventListener('input', updateTradeCalculations);
-  document.getElementById('sell-amount').addEventListener('input', updateTradeCalculations);
+  // Amount inputs - safe binding
+  const buyAmountInput = document.getElementById('buy-amount');
+  const sellAmountInput = document.getElementById('sell-amount');
   
-  // Buy preset buttons
-  document.getElementById('buy-preset-10').addEventListener('click', () => setAmount(10));
-  document.getElementById('buy-preset-50').addEventListener('click', () => setAmount(50));
-  document.getElementById('buy-preset-100').addEventListener('click', () => setAmount(100));
-  document.getElementById('buy-preset-500').addEventListener('click', () => setAmount(500));
+  if (buyAmountInput) {
+    buyAmountInput.addEventListener('input', updateTradeCalculations);
+  }
+  if (sellAmountInput) {
+    sellAmountInput.addEventListener('input', updateTradeCalculations);
+  }
   
-  // Sell preset buttons (percentage)
-  document.getElementById('sell-preset-25').addEventListener('click', () => setSellPercentage(0.25));
-  document.getElementById('sell-preset-50').addEventListener('click', () => setSellPercentage(0.5));
-  document.getElementById('sell-preset-75').addEventListener('click', () => setSellPercentage(0.75));
-  document.getElementById('sell-preset-100').addEventListener('click', () => setSellPercentage(1.0));
+  // Buy preset buttons - now using class selector
+  const buyPresets = document.querySelectorAll('.buy-preset');
+  buyPresets.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const value = parseInt(btn.dataset.value);
+      if (buyAmountInput) buyAmountInput.value = value;
+      updateTradeCalculations();
+    });
+  });
   
-  // Max buttons
-  document.getElementById('buy-max-btn').addEventListener('click', setBuyMax);
-  document.getElementById('sell-max-btn').addEventListener('click', setSellMax);
+  // Sell preset buttons - now using class selector
+  const sellPresets = document.querySelectorAll('.sell-preset');
+  sellPresets.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const percent = parseFloat(btn.dataset.percent) / 100;
+      const amount = Math.floor(userHoldings * percent);
+      if (sellAmountInput) sellAmountInput.value = amount;
+      updateTradeCalculations();
+    });
+  });
   
-  // Trade buttons
-  document.getElementById('buy-button').addEventListener('click', executeBuy);
-  document.getElementById('sell-button').addEventListener('click', executeSell);
+  // Max buttons - safe binding
+  const buyMaxBtn = document.getElementById('buy-max-btn');
+  const sellMaxBtn = document.getElementById('sell-max-btn');
+  
+  if (buyMaxBtn) {
+    buyMaxBtn.addEventListener('click', setBuyMax);
+  }
+  if (sellMaxBtn) {
+    sellMaxBtn.addEventListener('click', setSellMax);
+  }
+  
+  // Trade buttons - safe binding
+  const buyButton = document.getElementById('buy-button');
+  const sellButton = document.getElementById('sell-button');
+  
+  if (buyButton) {
+    buyButton.addEventListener('click', executeBuy);
+  }
+  if (sellButton) {
+    sellButton.addEventListener('click', executeSell);
+  }
+  
+  console.log('✅ Trade inputs setup complete');
 };
 
 // Set amount
@@ -475,7 +571,7 @@ const executeBuy = async () => {
       
       // Update user balance
       userData.virtual_balance = response.data.data.newBalance;
-      updateUserBalance(userData.virtual_balance);
+      updateUserBalance(userData.virtual_balance, userData.mlt_balance);
       
       // Reload data (skip chart re-initialization)
       await loadCoinData(true);
@@ -528,7 +624,7 @@ const executeSell = async () => {
       
       // Update user balance
       userData.virtual_balance = response.data.data.newBalance;
-      updateUserBalance(userData.virtual_balance);
+      updateUserBalance(userData.virtual_balance, userData.mlt_balance);
       
       // Reload data (skip chart re-initialization)
       await loadCoinData(true);
@@ -596,13 +692,19 @@ const init = async () => {
   
   if (userData) {
     console.log('User authenticated:', userData.username);
-    updateUserBalance(userData.virtual_balance);
+    updateUserBalance(userData.virtual_balance, userData.mlt_balance);
     
     await loadCoinData();
+    await loadEventTimeline(COIN_ID);
     
     setupTradingTabs();
     setupTradeInputs();
+    setupBuySlider();
+    setupSellSlider();
+    setupBuyPresets();
+    setupSellPresets();
     setupShareButtons();
+    setupTimeframeButtons();
     
     document.getElementById('logout-btn')?.addEventListener('click', handleLogout);
     
@@ -618,17 +720,56 @@ const init = async () => {
         if (data.coins && coinData) {
           const updatedCoin = data.coins.find(c => c.id === parseInt(COIN_ID));
           if (updatedCoin) {
+            // Store old price for comparison
+            const oldPrice = coinData.current_price;
+            
+            // Update coinData
             coinData.current_price = updatedCoin.current_price;
             coinData.market_cap = updatedCoin.market_cap;
             coinData.hype_score = updatedCoin.hype_score;
             
             // Update display
-            document.getElementById('coin-price').textContent = `$${updatedCoin.current_price.toFixed(8)}`;
-            document.getElementById('stat-market-cap').textContent = `$${updatedCoin.market_cap.toFixed(4)}`;
-            document.getElementById('hype-score').textContent = Math.floor(updatedCoin.hype_score || 0);
+            const priceEl = document.getElementById('coin-price');
+            if (priceEl) {
+              priceEl.textContent = `$${updatedCoin.current_price.toFixed(8)}`;
+            }
             
-            const percentage = Math.min((updatedCoin.hype_score / 200) * 100, 100);
-            document.getElementById('hype-bar').style.width = `${percentage}%`;
+            const marketCapEl = document.getElementById('stat-market-cap');
+            if (marketCapEl) {
+              marketCapEl.textContent = `$${updatedCoin.market_cap.toFixed(4)}`;
+            }
+            
+            const hypeScoreEl = document.getElementById('hype-score');
+            if (hypeScoreEl) {
+              hypeScoreEl.textContent = Math.floor(updatedCoin.hype_score || 0);
+            }
+            
+            const hypeBarEl = document.getElementById('hype-bar');
+            if (hypeBarEl) {
+              const percentage = Math.min((updatedCoin.hype_score / 200) * 100, 100);
+              hypeBarEl.style.width = `${percentage}%`;
+            }
+            
+            // Update price change indicator
+            const priceChangeEl = document.getElementById('price-change');
+            if (priceChangeEl && oldPrice) {
+              const change = ((updatedCoin.current_price - oldPrice) / oldPrice) * 100;
+              const isPositive = change >= 0;
+              
+              priceChangeEl.innerHTML = `
+                <i class="fas fa-arrow-${isPositive ? 'up' : 'down'}"></i>
+                ${isPositive ? '+' : ''}${change.toFixed(2)}%
+              `;
+              priceChangeEl.className = `text-lg mt-2 ${isPositive ? 'text-green-500' : 'text-red-500'}`;
+            }
+            
+            // Update chart with new data point (safely)
+            // IMPORTANT: Don't update chart on every price update - only update display
+            // The chart will be refreshed on timeframe change or manual reload
+            // Real-time chart updates can cause issues with duplicate timestamps
+            
+            // Just update the display, not the chart
+            // Chart will update on next manual refresh or timeframe change
             
             // Update calculations
             updateTradeCalculations();
@@ -652,6 +793,53 @@ const init = async () => {
       }
     } else {
       console.warn('⚠️ CommentsSystem not loaded');
+    }
+    
+    // Start auto-refresh for live price updates (every 5 seconds)
+    startPriceAutoRefresh();
+    
+    // Start realtime service if available
+    if (window.realtimeService) {
+      // Subscribe to coin updates
+      window.realtimeService.subscribeToCoin(COIN_ID, (updatedCoin) => {
+        // Update bonding curve progress bar with animation
+        const progressBar = document.getElementById('bonding-progress-bar');
+        const progressText = document.getElementById('bonding-progress-percent');
+        if (progressBar && progressText && updatedCoin.bonding_curve_progress !== undefined) {
+          const newProgress = (updatedCoin.bonding_curve_progress * 100).toFixed(1);
+          progressText.textContent = `${newProgress}%`;
+          window.realtimeService.animateProgressBar(progressBar, parseFloat(newProgress));
+        }
+        
+        // Update AI trade counts
+        const aiCountEl = document.getElementById('ai-trade-count');
+        if (aiCountEl && updatedCoin.ai_trade_count !== undefined) {
+          aiCountEl.textContent = updatedCoin.ai_trade_count;
+        }
+        
+        const realCountEl = document.getElementById('real-trade-count');
+        if (realCountEl && updatedCoin.real_trade_count !== undefined) {
+          realCountEl.textContent = updatedCoin.real_trade_count;
+        }
+        
+        console.log('🔄 Realtime service updated coin data');
+      });
+      
+      // Subscribe to trade notifications
+      window.realtimeService.subscribeToNotifications((trade) => {
+        if (trade.coin_id === parseInt(COIN_ID)) {
+          const tradeType = trade.type === 'BUY' ? 'bought' : 'sold';
+          const message = `🔔 ${trade.trader_username || 'Someone'} ${tradeType} ${Number(trade.amount).toLocaleString()} tokens`;
+          window.realtimeService.showNotification(message, trade.type === 'BUY' ? 'success' : 'warning');
+          
+          // Reload event timeline to show new activity
+          setTimeout(() => loadEventTimeline(COIN_ID), 1000);
+        }
+      });
+      
+      // Start the service
+      window.realtimeService.start();
+      console.log('✅ Realtime service started for coin', COIN_ID);
     }
     
     console.log('✅ Coin detail page fully initialized');
@@ -680,4 +868,480 @@ if (!document.getElementById('animation-styles')) {
   document.head.appendChild(style);
 }
 
+// Export functions to window for trading-panel.js
+window.loadCoinData = loadCoinData;
+window.loadRecentTransactions = loadRecentTransactions;
+window.initPriceChart = initPriceChart;
+
+// Auto-refresh price data every 5 seconds (like Pump.fun)
+let priceRefreshInterval = null;
+
+const startPriceAutoRefresh = () => {
+  // Clear any existing interval
+  if (priceRefreshInterval) {
+    clearInterval(priceRefreshInterval);
+  }
+  
+  // Refresh price and chart data every 5 seconds
+  priceRefreshInterval = setInterval(async () => {
+    try {
+      // Reload data AND chart for real-time updates
+      await loadCoinData(false); // skipChart = false to show new candles
+      console.log('🔄 Auto-refreshed price data and chart');
+    } catch (error) {
+      console.error('❌ Auto-refresh failed:', error);
+    }
+  }, 5000); // 5 seconds
+  
+  console.log('✅ Started auto-refresh (5s interval)');
+};
+
+const stopPriceAutoRefresh = () => {
+  if (priceRefreshInterval) {
+    clearInterval(priceRefreshInterval);
+    priceRefreshInterval = null;
+    console.log('⏹ Stopped auto-refresh');
+  }
+};
+
+// Start auto-refresh when page loads
+window.startPriceAutoRefresh = startPriceAutoRefresh;
+window.stopPriceAutoRefresh = stopPriceAutoRefresh;
+
 document.addEventListener('DOMContentLoaded', init);
+// Slider handlers for Pump.fun-style trading
+
+// Setup buy amount slider
+const setupBuySlider = () => {
+  const slider = document.getElementById('buy-amount-slider');
+  const input = document.getElementById('buy-amount');
+  const display = document.getElementById('buy-amount-display');
+  
+  if (!slider || !input || !display) return;
+  
+  // Sync slider with input
+  slider.addEventListener('input', (e) => {
+    const value = e.target.value;
+    input.value = value;
+    display.textContent = value;
+    updateTradeCalculations();
+  });
+  
+  // Sync input with slider
+  input.addEventListener('input', (e) => {
+    let value = parseInt(e.target.value) || 1;
+    const max = parseInt(slider.max);
+    if (value > max) value = max;
+    if (value < 1) value = 1;
+    
+    slider.value = value;
+    display.textContent = value;
+    updateTradeCalculations();
+  });
+};
+
+// Setup sell amount slider
+const setupSellSlider = () => {
+  const slider = document.getElementById('sell-amount-slider');
+  const input = document.getElementById('sell-amount');
+  const display = document.getElementById('sell-amount-display');
+  const percentDisplay = document.getElementById('sell-percentage-display');
+  
+  if (!slider || !input || !display) return;
+  
+  // Update max when holdings change
+  const updateSliderMax = () => {
+    const maxAmount = userHoldings || 100;
+    slider.max = maxAmount;
+    input.max = maxAmount;
+  };
+  
+  // Sync slider with input
+  slider.addEventListener('input', (e) => {
+    const value = e.target.value;
+    const maxAmount = userHoldings || 100;
+    const percent = maxAmount > 0 ? ((value / maxAmount) * 100).toFixed(0) : 0;
+    
+    input.value = value;
+    display.textContent = value;
+    percentDisplay.textContent = `${percent}%`;
+    updateTradeCalculations();
+  });
+  
+  // Sync input with slider
+  input.addEventListener('input', (e) => {
+    let value = parseInt(e.target.value) || 1;
+    const maxAmount = userHoldings || 100;
+    if (value > maxAmount) value = maxAmount;
+    if (value < 1) value = 1;
+    
+    const percent = maxAmount > 0 ? ((value / maxAmount) * 100).toFixed(0) : 0;
+    
+    slider.value = value;
+    display.textContent = value;
+    percentDisplay.textContent = `${percent}%`;
+    updateTradeCalculations();
+  });
+  
+  // Initial update
+  updateSliderMax();
+};
+
+// Setup quick preset buttons (buy)
+const setupBuyPresets = () => {
+  const presets = document.querySelectorAll('.buy-preset');
+  const slider = document.getElementById('buy-amount-slider');
+  const input = document.getElementById('buy-amount');
+  const display = document.getElementById('buy-amount-display');
+  
+  presets.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const value = btn.dataset.value;
+      if (slider && input && display) {
+        slider.value = value;
+        input.value = value;
+        display.textContent = value;
+        updateTradeCalculations();
+      }
+    });
+  });
+};
+
+// Setup quick preset buttons (sell)
+const setupSellPresets = () => {
+  const presets = document.querySelectorAll('.sell-preset');
+  const slider = document.getElementById('sell-amount-slider');
+  const input = document.getElementById('sell-amount');
+  const display = document.getElementById('sell-amount-display');
+  const percentDisplay = document.getElementById('sell-percentage-display');
+  
+  presets.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const percent = parseInt(btn.dataset.percent);
+      const maxAmount = userHoldings || 100;
+      const value = Math.floor(maxAmount * percent / 100);
+      
+      if (slider && input && display) {
+        slider.value = value;
+        input.value = value;
+        display.textContent = value;
+        percentDisplay.textContent = `${percent}%`;
+        updateTradeCalculations();
+      }
+    });
+  });
+};
+
+console.log('✅ Slider handlers loaded');
+
+// ========================================
+// Enhanced Bonding Curve Display Functions
+// ========================================
+
+/**
+ * Update bonding curve details with price milestones
+ */
+function updateBondingCurveDetails(coin) {
+  const progress = coin.bonding_curve_progress || 0;
+  const k = coin.bonding_curve_k || 4.0;
+  
+  // Calculate initial price from current state
+  const currentPrice = coin.current_price || 0.01;
+  const initialPrice = currentPrice / Math.exp(k * progress);
+  
+  // Update progress elements if they exist
+  const progressPercentEl = document.getElementById('curve-progress-percent');
+  if (progressPercentEl) {
+    progressPercentEl.textContent = (progress * 100).toFixed(2) + '%';
+  }
+  
+  const progressBarEl = document.getElementById('curve-progress-bar');
+  if (progressBarEl) {
+    progressBarEl.style.width = (progress * 100) + '%';
+  }
+  
+  // Update price milestones
+  const milestones = [0, 0.25, 0.5, 0.75, 1.0];
+  milestones.forEach(p => {
+    const price = initialPrice * Math.exp(k * p);
+    const priceEl = document.getElementById(`price-${Math.floor(p * 100)}`);
+    if (priceEl) {
+      priceEl.textContent = price.toFixed(6);
+    }
+  });
+}
+
+/**
+ * Update destiny status display
+ */
+function updateDestinyStatus(coin) {
+  const destinyType = coin.destiny_type || 'unknown';
+  
+  const destinyConfig = {
+    'SURVIVAL': {
+      icon: 'fa-shield-alt',
+      text: '生存模式 - 穩定發展中',
+      color: 'text-green-400',
+      bgColor: 'bg-green-500/20 border-green-500/30'
+    },
+    'EARLY_DEATH': {
+      icon: 'fa-skull-crossbones',
+      text: '早期死亡 - 5 分鐘內面臨風險',
+      color: 'text-red-400',
+      bgColor: 'bg-red-500/20 border-red-500/30'
+    },
+    'LATE_DEATH': {
+      icon: 'fa-hourglass-half',
+      text: '後期死亡 - 10 分鐘內面臨風險',
+      color: 'text-orange-400',
+      bgColor: 'bg-orange-500/20 border-orange-500/30'
+    },
+    'GRADUATION': {
+      icon: 'fa-graduation-cap',
+      text: '已畢業 - 達到 100% 進度! 🎉',
+      color: 'text-purple-400',
+      bgColor: 'bg-purple-500/20 border-purple-500/30'
+    },
+    'RUG_PULL': {
+      icon: 'fa-exclamation-triangle',
+      text: 'Rug Pull 風險 - 小心詐騙!',
+      color: 'text-yellow-400',
+      bgColor: 'bg-yellow-500/20 border-yellow-500/30'
+    },
+    'unknown': {
+      icon: 'fa-question-circle',
+      text: '命運未知...',
+      color: 'text-gray-400',
+      bgColor: 'bg-gray-500/20 border-gray-500/30'
+    }
+  };
+  
+  const config = destinyConfig[destinyType] || destinyConfig['unknown'];
+  
+  const statusDiv = document.getElementById('destiny-status');
+  if (statusDiv) {
+    statusDiv.className = `mt-4 p-3 rounded-lg border ${config.bgColor}`;
+    
+    const iconEl = document.getElementById('destiny-icon');
+    if (iconEl) {
+      iconEl.className = `fas ${config.icon} ${config.color}`;
+    }
+    
+    const textEl = document.getElementById('destiny-text');
+    if (textEl) {
+      textEl.className = config.color;
+      textEl.textContent = config.text;
+    }
+  }
+}
+
+/**
+ * Update AI activity statistics
+ */
+function updateAIActivity(coin) {
+  const aiTradeCountEl = document.getElementById('ai-trade-count');
+  if (aiTradeCountEl) {
+    aiTradeCountEl.textContent = coin.ai_trade_count || 0;
+  }
+  
+  const realTradeCountEl = document.getElementById('real-trade-count');
+  if (realTradeCountEl) {
+    realTradeCountEl.textContent = coin.real_trade_count || 0;
+  }
+  
+  const uniqueTradersEl = document.getElementById('unique-traders');
+  if (uniqueTradersEl) {
+    uniqueTradersEl.textContent = coin.unique_real_traders || 0;
+  }
+  
+  // Update AI status indicator
+  const aiStatusEl = document.getElementById('ai-status');
+  if (aiStatusEl && coin.is_ai_active !== undefined) {
+    if (coin.is_ai_active) {
+      aiStatusEl.innerHTML = `
+        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+        <span class="text-sm text-green-400 font-bold">運行中</span>
+      `;
+    } else {
+      aiStatusEl.innerHTML = `
+        <div class="w-2 h-2 bg-gray-500 rounded-full"></div>
+        <span class="text-sm text-gray-400">已停止</span>
+      `;
+    }
+  }
+}
+
+/**
+ * Load and display event timeline
+ */
+async function loadEventTimeline(coinId) {
+  // For now, we'll create events from coin data
+  // In future, add a proper /api/coins/:id/events endpoint
+  const timeline = document.getElementById('event-timeline');
+  if (!timeline) return;
+  
+  timeline.innerHTML = '';
+  
+  // Add coin creation event
+  if (coinData) {
+    const events = [];
+    
+    events.push({
+      event_type: 'COIN_CREATED',
+      created_at: coinData.created_at,
+      is_ai_trade: false,
+      description: `幣種創建 - 初始投資 ${coinData.initial_mlt_investment || 2000} MLT`
+    });
+    
+    // Add events based on flags
+    if (coinData.has_sniper_attack) {
+      events.push({
+        event_type: 'SNIPER_ATTACK',
+        created_at: coinData.created_at,
+        is_ai_trade: true,
+        description: '狙擊手快速買入大量代幣'
+      });
+    }
+    
+    if (coinData.has_whale_buy) {
+      events.push({
+        event_type: 'WHALE_BUY',
+        created_at: coinData.created_at,
+        is_ai_trade: true,
+        description: '鯨魚買入,大幅推高價格'
+      });
+    }
+    
+    if (coinData.has_rug_pull) {
+      events.push({
+        event_type: 'RUG_PULL',
+        created_at: coinData.created_at,
+        is_ai_trade: false,
+        description: '⚠️ Rug Pull 事件發生'
+      });
+    }
+    
+    if (coinData.has_panic_sell) {
+      events.push({
+        event_type: 'PANIC_SELL',
+        created_at: coinData.created_at,
+        is_ai_trade: true,
+        description: '恐慌拋售,價格下跌'
+      });
+    }
+    
+    if (coinData.has_fomo_buy) {
+      events.push({
+        event_type: 'FOMO_BUY',
+        created_at: coinData.created_at,
+        is_ai_trade: true,
+        description: 'FOMO 買入潮,價格飆升'
+      });
+    }
+    
+    if (coinData.has_viral_moment) {
+      events.push({
+        event_type: 'VIRAL_MOMENT',
+        created_at: coinData.created_at,
+        is_ai_trade: false,
+        description: '🔥 病毒式傳播,熱度爆表'
+      });
+    }
+    
+    // Store events globally for chart access
+    window.marketEvents = events;
+    
+    if (coinData.death_time) {
+      events.push({
+        event_type: 'COIN_DEATH',
+        created_at: coinData.death_time,
+        is_ai_trade: false,
+        description: '💀 幣種死亡'
+      });
+    }
+    
+    if (coinData.graduation_time) {
+      events.push({
+        event_type: 'COIN_GRADUATION',
+        created_at: coinData.graduation_time,
+        is_ai_trade: false,
+        description: '🎓 成功畢業到 DEX'
+      });
+    }
+    
+    if (events.length === 0) {
+      timeline.innerHTML = '<p class="text-gray-400 text-center py-4">暫無事件</p>';
+      return;
+    }
+    
+    events.forEach(event => {
+      const eventEl = createEventElement(event);
+      timeline.appendChild(eventEl);
+    });
+  }
+}
+
+/**
+ * Create event timeline element
+ */
+function createEventElement(event) {
+  const eventConfig = {
+    'COIN_CREATED': { icon: 'fa-rocket', color: 'text-blue-400', label: '幣種創建' },
+    'SNIPER_ATTACK': { icon: 'fa-crosshairs', color: 'text-red-400', label: '狙擊手攻擊' },
+    'WHALE_BUY': { icon: 'fa-fish', color: 'text-green-400', label: '鯨魚買入' },
+    'RUG_PULL': { icon: 'fa-exclamation-triangle', color: 'text-yellow-400', label: 'Rug Pull' },
+    'PANIC_SELL': { icon: 'fa-arrow-down', color: 'text-orange-400', label: '恐慌拋售' },
+    'FOMO_BUY': { icon: 'fa-arrow-up', color: 'text-green-400', label: 'FOMO 買入' },
+    'VIRAL_MOMENT': { icon: 'fa-fire', color: 'text-pink-400', label: '病毒式傳播' },
+    'COIN_DEATH': { icon: 'fa-skull', color: 'text-gray-400', label: '幣種死亡' },
+    'COIN_GRADUATION': { icon: 'fa-graduation-cap', color: 'text-purple-400', label: '幣種畢業' }
+  };
+  
+  const eventType = event.event_type || event.type;
+  const eventTime = event.created_at || event.timestamp;
+  const config = eventConfig[eventType] || eventConfig['COIN_CREATED'];
+  
+  // Add AI/Real indicator
+  const tradeIndicator = event.is_ai_trade !== undefined 
+    ? `<span class="text-xs ${event.is_ai_trade ? 'text-purple-400' : 'text-green-400'}">${event.is_ai_trade ? '🤖 AI' : '👤 真實'}</span>`
+    : '';
+  
+  const div = document.createElement('div');
+  div.className = 'flex items-start space-x-3 p-3 rounded-lg bg-gray-800/50 hover:bg-gray-800 transition';
+  div.innerHTML = `
+    <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-gray-700">
+      <i class="fas ${config.icon} ${config.color}"></i>
+    </div>
+    <div class="flex-1">
+      <div class="flex items-center justify-between mb-1">
+        <div class="flex items-center space-x-2">
+          <span class="font-bold text-white">${config.label}</span>
+          ${tradeIndicator}
+        </div>
+        <span class="text-xs text-gray-500">${formatTime(eventTime)}</span>
+      </div>
+      <p class="text-sm text-gray-400">${event.description || '無詳情'}</p>
+    </div>
+  `;
+  
+  return div;
+}
+
+/**
+ * Format timestamp for display
+ */
+function formatTime(timestamp) {
+  if (!timestamp) return '剛剛';
+  
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMins = Math.floor(diffMs / 60000);
+  
+  if (diffMins < 1) return '剛剛';
+  if (diffMins < 60) return `${diffMins} 分鐘前`;
+  if (diffMins < 1440) return `${Math.floor(diffMins / 60)} 小時前`;
+  return date.toLocaleDateString('zh-TW');
+}
+
+console.log('✅ Enhanced bonding curve functions loaded');

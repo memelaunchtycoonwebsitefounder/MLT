@@ -257,50 +257,42 @@ async function loadTrendingCoins() {
   }
 }
 
-// Profile navigation functionality
-let currentUserId = null;
-
-// Save userId when user data is loaded
-function updateUserUI(user) {
-  console.log('Dashboard: Updating UI for user:', user.username);
-  currentUserId = user.id;  // Store user ID for profile navigation
-  
-  // Update balance in navbar
-  const balanceEl = document.getElementById('balance-display');
-  if (balanceEl) {
-    balanceEl.textContent = user.virtual_balance.toFixed(2);
-  }
-  
-  // Update total balance in stats
-  const totalBalanceEl = document.getElementById('total-balance');
-  if (totalBalanceEl) {
-    totalBalanceEl.textContent = user.virtual_balance.toFixed(2);
-  }
-  
-  // Update username
-  const usernameEl = document.getElementById('username-display');
-  if (usernameEl) {
-    usernameEl.textContent = user.username;
-  }
-}
-
 // Event delegation for button clicks
 document.addEventListener('click', (e) => {
+  // Toggle user dropdown menu
+  if (e.target.closest('#user-menu-btn')) {
+    const dropdown = document.getElementById('user-dropdown');
+    if (dropdown) {
+      dropdown.classList.toggle('hidden');
+    }
+    e.stopPropagation();
+    return;
+  }
+  
+  // Close dropdown when clicking outside
+  const dropdown = document.getElementById('user-dropdown');
+  if (dropdown && !dropdown.classList.contains('hidden')) {
+    if (!e.target.closest('#user-dropdown') && !e.target.closest('#user-menu-btn')) {
+      dropdown.classList.add('hidden');
+    }
+  }
+  
+  // View Profile - from dropdown link
+  if (e.target.id === 'view-profile-link' || e.target.closest('#view-profile-link')) {
+    e.preventDefault();
+    if (currentUserId) {
+      console.log('Dashboard: Navigating to profile:', currentUserId);
+      window.location.href = `/profile/${currentUserId}`;
+    }
+    return;
+  }
+  
   // Logout
   if (e.target.id === 'logout-btn' || e.target.closest('#logout-btn')) {
     console.log('Dashboard: Logging out');
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user');
     window.location.href = '/login';
-    return;
-  }
-  
-  // View Profile - header button
-  if (e.target.id === 'view-profile-btn' || e.target.closest('#view-profile-btn')) {
-    if (currentUserId) {
-      console.log('Dashboard: Navigating to profile:', currentUserId);
-      window.location.href = `/profile/${currentUserId}`;
-    }
     return;
   }
   
