@@ -1528,7 +1528,6 @@ app.get('/market', (c) => {
                             <option value="created_at_asc">最早創建</option>
                             <option value="bonding_curve_progress_desc">🚀 進度最高</option>
                             <option value="bonding_curve_progress_asc">🐣 進度最低</option>
-                            <option value="ai_trade_count_desc">🤖 AI 活動最多</option>
                             <option value="real_trade_count_desc">👤 真實交易最多</option>
                             <option value="current_price_desc">價格最高</option>
                             <option value="current_price_asc">價格最低</option>

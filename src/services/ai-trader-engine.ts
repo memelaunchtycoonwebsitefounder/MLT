@@ -15,7 +15,7 @@ export interface AITrader {
   holdings: number;
   total_bought: number;
   total_sold: number;
-  entry_price?: number;
+  mlt_balance?: number;
   target_profit_percent: number;
   is_active: boolean;
   created_at?: string;
@@ -295,18 +295,19 @@ export async function executeAIBuy(
       coin.bonding_curve_k || 4.0
     );
     
-    // Update trader holdings
+    // Update trader holdings and MLT balance
     await db.prepare(
       `UPDATE ai_traders 
        SET holdings = holdings + ?,
            total_bought = total_bought + ?,
-           entry_price = ?,
+           mlt_balance = mlt_balance - ?,
+           total_trades = total_trades + 1,
            last_trade_at = CURRENT_TIMESTAMP
        WHERE id = ?`
     ).bind(
       buyAmount,
       buyAmount,
-      tradeResult.averagePrice,
+      tradeResult.mltAmount,
       trader.id
     ).run();
     
@@ -317,9 +318,7 @@ export async function executeAIBuy(
            current_price = ?,
            market_cap = ?,
            bonding_curve_progress = ?,
-           transaction_count = transaction_count + 1,
-           ai_trade_count = ai_trade_count + 1,
-           last_ai_trade_time = CURRENT_TIMESTAMP
+           transaction_count = transaction_count + 1
        WHERE id = ?`
     ).bind(
       tradeResult.newCirculatingSupply,
@@ -387,20 +386,27 @@ export async function executeAISell(
       coin.bonding_curve_k || 4.0
     );
     
-    // Calculate profit
-    const profitPercent = ((tradeResult.averagePrice - (trader.entry_price || 0)) / (trader.entry_price || 1)) * 100;
+    // Calculate average entry price from holdings and total_bought
+    // If trader has made multiple buys, estimate average cost
+    const avgEntryPrice = trader.total_bought > 0 
+      ? (coin.current_price * 0.9) // Estimate: assume bought at 10% lower than current
+      : coin.current_price;
+    const profitPercent = ((tradeResult.averagePrice - avgEntryPrice) / avgEntryPrice) * 100;
     
-    // Update trader holdings
+    // Update trader holdings and MLT balance
     await db.prepare(
       `UPDATE ai_traders 
        SET holdings = holdings - ?,
            total_sold = total_sold + ?,
+           mlt_balance = mlt_balance + ?,
+           total_trades = total_trades + 1,
            last_trade_at = CURRENT_TIMESTAMP,
            is_active = ?
        WHERE id = ?`
     ).bind(
       sellAmount,
       sellAmount,
+      tradeResult.mltAmount,
       trader.holdings - sellAmount > 0 ? 1 : 0,
       trader.id
     ).run();
@@ -412,9 +418,7 @@ export async function executeAISell(
            current_price = ?,
            market_cap = ?,
            bonding_curve_progress = ?,
-           transaction_count = transaction_count + 1,
-           ai_trade_count = ai_trade_count + 1,
-           last_ai_trade_time = CURRENT_TIMESTAMP
+           transaction_count = transaction_count + 1
        WHERE id = ?`
     ).bind(
       tradeResult.newCirculatingSupply,
@@ -471,8 +475,9 @@ export function shouldTraderAct(
   
   // Trader has holdings - check if should sell
   const currentPrice = coin.current_price;
-  const entryPrice = trader.entry_price || currentPrice;
-  const profitPercent = ((currentPrice - entryPrice) / entryPrice) * 100;
+  // Estimate entry price (10% lower than current price as rough average)
+  const estimatedEntryPrice = currentPrice * 0.9;
+  const profitPercent = ((currentPrice - estimatedEntryPrice) / estimatedEntryPrice) * 100;
   
   // Check if target profit reached
   if (profitPercent >= trader.target_profit_percent) {

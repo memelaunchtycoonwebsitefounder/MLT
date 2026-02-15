@@ -231,7 +231,7 @@ export async function checkCoinDeath(
   coin: any
 ): Promise<boolean> {
   // Check if bonding curve progress dropped below 1%
-  if (coin.bonding_curve_progress < 0.01 && coin.ai_trade_count > 10) {
+  if (coin.bonding_curve_progress < 0.01 && coin.transaction_count > 10) {
     await handleCoinDeath(db, coin.id, 'Bonding curve progress dropped below 1%');
     return true;
   }
@@ -242,7 +242,7 @@ export async function checkCoinDeath(
     const now = Date.now();
     const inactiveTime = (now - lastTradeTime) / 1000 / 60; // minutes
     
-    if (inactiveTime > 10 && coin.ai_trade_count > 5) {
+    if (inactiveTime > 10 && coin.transaction_count > 5) {
       await handleCoinDeath(db, coin.id, 'No trading activity for 10 minutes');
       return true;
     }

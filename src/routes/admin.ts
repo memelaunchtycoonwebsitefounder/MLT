@@ -171,7 +171,7 @@ admin.get('/stats', async (c) => {
         SUM(CASE WHEN status = 'dead' THEN 1 ELSE 0 END) as dead_coins,
         SUM(CASE WHEN status = 'graduated' THEN 1 ELSE 0 END) as graduated_coins,
         AVG(bonding_curve_progress) as avg_progress,
-        SUM(ai_trade_count) as total_ai_trades,
+        SUM(transaction_count) as total_trades,
         SUM(real_trade_count) as total_real_trades
       FROM coins`
     ).first();
