@@ -22,5 +22,20 @@
       "binding": "IMAGES",
       "bucket_name": "memelaunch-images"
     }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "REALTIME",
+        "class_name": "RealtimeDurableObject",
+        "script_name": "webapp"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_classes": ["RealtimeDurableObject"]
+    }
   ]
 }

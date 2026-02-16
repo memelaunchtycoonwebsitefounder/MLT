@@ -741,6 +741,29 @@ const init = async () => {
     setupShareButtons();
     setupTimeframeButtons();
     
+    // Setup manual refresh button
+    const refreshBtn = document.getElementById('refresh-chart-btn');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', async () => {
+        console.log('[CHART] Manual refresh triggered');
+        refreshBtn.disabled = true;
+        refreshBtn.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i>';
+        
+        try {
+          await loadCoinData(false); // Reload with chart update
+          console.log('[CHART] Manual refresh completed');
+          showNotification('圖表已刷新', 'success');
+        } catch (error) {
+          console.error('[CHART] Manual refresh failed:', error);
+          showNotification('刷新失敗', 'error');
+        } finally {
+          refreshBtn.disabled = false;
+          refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+        }
+      });
+      console.log('[CHART] Manual refresh button initialized');
+    }
+    
     document.getElementById('logout-btn')?.addEventListener('click', handleLogout);
     
     // Initialize social UI if available
@@ -833,8 +856,55 @@ const init = async () => {
     // Start auto-refresh for live price updates (every 5 seconds)
     startPriceAutoRefresh();
     
-    // Start realtime service if available
-    if (window.realtimeService) {
+    // Start WebSocket service if available (preferred), otherwise fall back to polling
+    if (window.websocketService && window.websocketService.isWebSocketConnected()) {
+      console.log('✅ Using WebSocket for real-time updates');
+      
+      // Subscribe to coin updates via WebSocket
+      window.websocketService.subscribeToCoin(parseInt(COIN_ID), (updatedCoin) => {
+        // Update bonding curve progress bar with animation
+        const progressBar = document.getElementById('bonding-progress-bar');
+        const progressText = document.getElementById('bonding-progress-percent');
+        if (progressBar && progressText && updatedCoin.bonding_curve_progress !== undefined) {
+          const newProgress = (updatedCoin.bonding_curve_progress * 100).toFixed(1);
+          progressText.textContent = `${newProgress}%`;
+          if (window.realtimeService && window.realtimeService.animateProgressBar) {
+            window.realtimeService.animateProgressBar(progressBar, parseFloat(newProgress));
+          }
+        }
+        
+        // Update AI trade counts
+        const aiCountEl = document.getElementById('ai-trade-count');
+        if (aiCountEl && updatedCoin.ai_trade_count !== undefined) {
+          aiCountEl.textContent = updatedCoin.ai_trade_count;
+        }
+        
+        const realCountEl = document.getElementById('real-trade-count');
+        if (realCountEl && updatedCoin.real_trade_count !== undefined) {
+          realCountEl.textContent = updatedCoin.real_trade_count;
+        }
+        
+        console.log('🔄 WebSocket updated coin data');
+      });
+      
+      // Subscribe to trade notifications via WebSocket
+      window.websocketService.subscribeToNotifications((trade) => {
+        if (trade.coin_id === parseInt(COIN_ID)) {
+          const tradeType = trade.type === 'BUY' ? 'bought' : 'sold';
+          const message = `🔔 ${trade.trader_username || 'Someone'} ${tradeType} ${Number(trade.amount).toLocaleString()} tokens`;
+          if (window.websocketService && window.websocketService.showNotification) {
+            window.websocketService.showNotification(message, trade.type === 'BUY' ? 'success' : 'warning');
+          }
+          
+          // Reload event timeline to show new activity
+          setTimeout(() => loadEventTimeline(COIN_ID), 1000);
+        }
+      });
+      
+    } else if (window.realtimeService) {
+      // Fallback to polling if WebSocket not available
+      console.log('⚠️ WebSocket not available, using polling fallback');
+      
       // Subscribe to coin updates
       window.realtimeService.subscribeToCoin(COIN_ID, (updatedCoin) => {
         // Update bonding curve progress bar with animation
@@ -872,9 +942,9 @@ const init = async () => {
         }
       });
       
-      // Start the service
+      // Start the polling service
       window.realtimeService.start();
-      console.log('✅ Realtime service started for coin', COIN_ID);
+      console.log('✅ Realtime polling service started for coin', COIN_ID);
     }
     
     console.log('✅ Coin detail page fully initialized');

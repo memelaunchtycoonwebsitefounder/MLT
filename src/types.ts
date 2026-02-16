@@ -3,6 +3,7 @@ export interface Env {
   IMAGES?: R2Bucket;  // Optional R2 bucket for image storage
   JWT_SECRET: string;
   STARTING_BALANCE: string;
+  REALTIME: DurableObjectNamespace; // WebSocket Durable Object
 }
 
 export interface User {

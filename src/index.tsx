@@ -23,6 +23,9 @@ import admin from './routes/admin';
 // Import AI Scheduler
 import { initializeGlobalScheduler, getSchedulerStatus } from './services/scheduler';
 
+// Import Durable Object
+import { RealtimeDurableObject } from './realtime-durable-object';
+
 const app = new Hono<{ Bindings: Env }>();
 
 // Flag to ensure scheduler is initialized only once
@@ -1000,6 +1003,10 @@ app.get('/coin/:id', (c) => {
                                     <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="10m">10分鐘</button>
                                     <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="1h">1小時</button>
                                     <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="24h">24小時</button>
+                                    <!-- Manual Refresh Button -->
+                                    <button id="refresh-chart-btn" class="px-4 py-2 rounded-lg transition bg-blue-500 hover:bg-blue-600 ml-2" title="手動刷新圖表">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
                                 </div>
                                 <!-- OHLC Data Display -->
                                 <div id="ohlc-data" class="hidden md:flex flex-wrap gap-x-4 gap-y-2 text-sm">
@@ -1423,6 +1430,7 @@ app.get('/coin/:id', (c) => {
         <script src="/static/chart-lightweight.js"></script>
         <script src="/static/trading-panel.js"></script>
         <script src="/static/comments-simple.js"></script>
+        <script src="/static/websocket-service.js"></script>
         <script src="/static/realtime-service.js"></script>
         <script src="/static/realtime.js"></script>
         <script src="/static/coin-detail.js"></script>
@@ -1628,6 +1636,7 @@ app.get('/market', (c) => {
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="/static/websocket-service.js"></script>
         <script src="/static/realtime-service.js"></script>
         <script src="/static/market.js"></script>
     </body>
@@ -3277,4 +3286,22 @@ app.get('/dashboard/register', (c) => {
   return c.redirect('/signup?redirect=/dashboard', 308)
 })
 
+// WebSocket endpoint
+app.get('/ws', async (c) => {
+  const upgradeHeader = c.req.header('Upgrade');
+  if (!upgradeHeader || upgradeHeader !== 'websocket') {
+    return c.text('Expected Upgrade: websocket', 426);
+  }
+
+  // Get Durable Object ID
+  const id = c.env.REALTIME.idFromName('global');
+  const stub = c.env.REALTIME.get(id);
+  
+  // Forward the request to the Durable Object
+  return stub.fetch(c.req.raw);
+});
+
 export default app;
+
+// Export Durable Object
+export { RealtimeDurableObject };
