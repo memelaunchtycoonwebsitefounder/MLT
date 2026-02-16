@@ -246,7 +246,8 @@ export async function initializeAITraders(
   const traders = createAITraders(coinId, destinyType, totalSupply);
   
   for (const trader of traders) {
-    await db.prepare(
+    // Insert AI trader
+    const result = await db.prepare(
       `INSERT INTO ai_traders 
        (coin_id, trader_type, holdings, total_bought, total_sold, target_profit_percent, is_active)
        VALUES (?, ?, ?, ?, ?, ?, ?)`
@@ -259,6 +260,27 @@ export async function initializeAITraders(
       trader.target_profit_percent,
       trader.is_active ? 1 : 0
     ).run();
+    
+    const traderId = result.meta.last_row_id;
+    
+    // Create corresponding user record for this AI trader
+    // Username format: ai_trader_<id>_<type>
+    const aiUsername = `ai_trader_${traderId}_${trader.trader_type.toLowerCase()}`;
+    const aiEmail = `${aiUsername}@ai.memelaunch.system`;
+    
+    await db.prepare(
+      `INSERT INTO users 
+       (username, email, password_hash, virtual_balance, mlt_balance)
+       VALUES (?, ?, ?, ?, ?)`
+    ).bind(
+      aiUsername,
+      aiEmail,
+      'AI_TRADER_NO_LOGIN', // Special marker - AI traders don't login
+      0, // Virtual balance (not used for AI traders)
+      0  // MLT balance (tracked in ai_traders table)
+    ).run();
+    
+    console.log(`✅ Created user record for AI trader ${traderId}: ${aiUsername}`);
   }
   
   console.log(`✅ Initialized ${traders.length} AI traders for coin ${coinId}`);
@@ -340,6 +362,19 @@ export async function executeAIBuy(
       tradeResult.newMarketCap,
       tradeResult.newCirculatingSupply,
       trader.trader_type
+    ).run();
+    
+    // Record transaction (AI traders use their trader.id as user_id)
+    // Since AI trader IDs start from 81+, they won't conflict with real users
+    await db.prepare(
+      `INSERT INTO transactions (user_id, coin_id, type, amount, price, total_cost)
+       VALUES (?, ?, 'buy', ?, ?, ?)`
+    ).bind(
+      trader.id,  // Use trader.id directly (starts from 81+, safe from user conflicts)
+      coin.id,
+      buyAmount,
+      tradeResult.averagePrice,
+      tradeResult.mltAmount
     ).run();
     
     console.log(
@@ -440,6 +475,19 @@ export async function executeAISell(
       tradeResult.newMarketCap,
       tradeResult.newCirculatingSupply,
       trader.trader_type
+    ).run();
+    
+    // Record transaction (AI traders use their trader.id as user_id)
+    // Since AI trader IDs start from 81+, they won't conflict with real users
+    await db.prepare(
+      `INSERT INTO transactions (user_id, coin_id, type, amount, price, total_cost)
+       VALUES (?, ?, 'sell', ?, ?, ?)`
+    ).bind(
+      trader.id,  // Use trader.id directly (starts from 81+, safe from user conflicts)
+      coin.id,
+      sellAmount,
+      tradeResult.averagePrice,
+      tradeResult.mltAmount  // Revenue from sell
     ).run();
     
     console.log(

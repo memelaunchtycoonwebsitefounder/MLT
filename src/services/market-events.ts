@@ -269,7 +269,6 @@ export async function handleCoinDeath(
   await db.prepare(
     `UPDATE coins 
      SET status = 'dead',
-         death_time = CURRENT_TIMESTAMP,
          is_ai_active = 0
      WHERE id = ?`
   ).bind(coinId).run();
