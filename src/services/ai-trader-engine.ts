@@ -5,7 +5,7 @@
 
 import { calculateBuyTrade, calculateSellTrade } from '../utils/bonding-curve';
 
-export type TraderType = 'SNIPER' | 'WHALE' | 'RETAIL' | 'BOT' | 'MARKET_MAKER';
+export type TraderType = 'SNIPER' | 'WHALE' | 'RETAIL' | 'BOT' | 'MARKET_MAKER' | 'SWING_TRADER' | 'DAY_TRADER' | 'HODLER';
 export type DestinyType = 'GRADUATED' | 'DEATH_5MIN' | 'DEATH_10MIN' | 'SURVIVAL' | 'RUG_PULL';
 
 export interface AITrader {
@@ -104,6 +104,45 @@ export const TRADER_BEHAVIORS: Record<TraderType, TraderBehavior> = {
     tradeFrequencyMin: 60,
     tradeFrequencyMax: 300,
     maxHoldings: 0.10
+  },
+  SWING_TRADER: {
+    entryDelayMin: 240,      // 4 minutes
+    entryDelayMax: 1200,     // 20 minutes
+    buyAmountMin: 0.02,      // 2% of supply
+    buyAmountMax: 0.08,      // 8% of supply
+    targetProfitMin: 15,
+    targetProfitMax: 30,
+    sellDelayMin: 14400,     // 4 hours
+    sellDelayMax: 172800,    // 48 hours
+    tradeFrequencyMin: 3600, // 1 hour
+    tradeFrequencyMax: 21600,// 6 hours
+    maxHoldings: 0.12
+  },
+  DAY_TRADER: {
+    entryDelayMin: 30,       // 30 seconds
+    entryDelayMax: 300,      // 5 minutes
+    buyAmountMin: 0.005,     // 0.5% of supply
+    buyAmountMax: 0.03,      // 3% of supply
+    targetProfitMin: 5,
+    targetProfitMax: 15,
+    sellDelayMin: 300,       // 5 minutes
+    sellDelayMax: 3600,      // 1 hour
+    tradeFrequencyMin: 60,   // 1 minute
+    tradeFrequencyMax: 600,  // 10 minutes
+    maxHoldings: 0.08
+  },
+  HODLER: {
+    entryDelayMin: 600,      // 10 minutes
+    entryDelayMax: 3600,     // 1 hour
+    buyAmountMin: 0.03,      // 3% of supply
+    buyAmountMax: 0.20,      // 20% of supply
+    targetProfitMin: 100,
+    targetProfitMax: 500,
+    sellDelayMin: 604800,    // 1 week
+    sellDelayMax: 2592000,   // 30 days
+    tradeFrequencyMin: 86400,// 1 day
+    tradeFrequencyMax: 604800,// 1 week
+    maxHoldings: 0.25
   }
 };
 
@@ -223,6 +262,54 @@ export function createAITraders(
     traders.push({
       coin_id: coinId,
       trader_type: 'MARKET_MAKER',
+      holdings: 0,
+      total_bought: 0,
+      total_sold: 0,
+      target_profit_percent: random(behavior.targetProfitMin, behavior.targetProfitMax),
+      is_active: true
+    });
+  }
+  
+  // Add swing traders (30% chance, 1-2 traders)
+  if (Math.random() < 0.30) {
+    const behavior = TRADER_BEHAVIORS.SWING_TRADER;
+    const numSwing = Math.floor(random(1, 3));
+    for (let i = 0; i < numSwing; i++) {
+      traders.push({
+        coin_id: coinId,
+        trader_type: 'SWING_TRADER',
+        holdings: 0,
+        total_bought: 0,
+        total_sold: 0,
+        target_profit_percent: random(behavior.targetProfitMin, behavior.targetProfitMax),
+        is_active: true
+      });
+    }
+  }
+  
+  // Add day traders (50% chance, 2-4 traders)
+  if (Math.random() < 0.50) {
+    const behavior = TRADER_BEHAVIORS.DAY_TRADER;
+    const numDay = Math.floor(random(2, 5));
+    for (let i = 0; i < numDay; i++) {
+      traders.push({
+        coin_id: coinId,
+        trader_type: 'DAY_TRADER',
+        holdings: 0,
+        total_bought: 0,
+        total_sold: 0,
+        target_profit_percent: random(behavior.targetProfitMin, behavior.targetProfitMax),
+        is_active: true
+      });
+    }
+  }
+  
+  // Add hodlers (15% chance, 1 trader for long-term stability)
+  if (Math.random() < 0.15) {
+    const behavior = TRADER_BEHAVIORS.HODLER;
+    traders.push({
+      coin_id: coinId,
+      trader_type: 'HODLER',
       holdings: 0,
       total_bought: 0,
       total_sold: 0,
