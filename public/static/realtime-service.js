@@ -124,8 +124,8 @@ class RealtimeService {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
 
-      // Fetch recent trades
-      const response = await axios.get('/api/trades/recent?limit=5', {
+      // Fetch recent trades (including AI traders)
+      const response = await axios.get('/api/trades/recent?limit=10&includeAI=true', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -156,8 +156,29 @@ class RealtimeService {
           return false;
         });
         
-        // Notify callbacks about NEW trades only
+        // Show notifications for AI trades (user_id >= 10001)
         newTrades.forEach(trade => {
+          // Check if this is an AI trader (user_id >= 10001 or username starts with 'ai_trader_')
+          const isAITrader = trade.user_id >= 10001 || (trade.username && trade.username.startsWith('ai_trader_'));
+          
+          if (isAITrader) {
+            // Extract trader type from username (e.g., "ai_trader_10001_sniper" -> "SNIPER")
+            let traderType = 'AI';
+            if (trade.username) {
+              const parts = trade.username.split('_');
+              if (parts.length >= 4) {
+                traderType = parts[3].toUpperCase();
+              }
+            }
+            
+            // Show AI trade notification
+            const action = trade.type === 'buy' ? '買入' : '賣出';
+            const icon = trade.type === 'buy' ? '📈' : '📉';
+            const message = `${icon} AI Trader (${traderType}) ${action} ${Math.floor(trade.amount).toLocaleString()} ${trade.coin_symbol || 'tokens'}`;
+            this.showNotification(message, trade.type === 'buy' ? 'info' : 'warning');
+          }
+          
+          // Notify registered callbacks
           this.notificationCallbacks.forEach(callback => callback(trade));
         });
         

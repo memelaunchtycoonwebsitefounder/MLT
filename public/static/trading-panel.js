@@ -252,10 +252,23 @@ class TradingPanel {
           'success'
         );
 
-        // Update user balance
+        // Update user balance (both virtual and MLT)
         this.userData.virtual_balance = response.data.data.newBalance;
         document.getElementById('user-balance').textContent = 
           this.userData.virtual_balance.toLocaleString();
+        
+        // Update MLT balance if provided in response
+        if (response.data.data.mlt_balance !== undefined) {
+          this.userData.mlt_balance = response.data.data.mlt_balance;
+          const mltBalanceEl = document.getElementById('user-mlt-balance');
+          if (mltBalanceEl) {
+            mltBalanceEl.textContent = Math.floor(this.userData.mlt_balance).toLocaleString();
+          }
+          const navMltBalanceEl = document.getElementById('nav-mlt-balance');
+          if (navMltBalanceEl) {
+            navMltBalanceEl.textContent = Math.floor(this.userData.mlt_balance).toLocaleString();
+          }
+        }
 
         // Reload holdings and transactions
         await this.loadHoldings();
