@@ -14,28 +14,7 @@
     {
       "binding": "DB",
       "database_name": "memelaunch-db",
-      "database_id": "local-dev"
-    }
-  ],
-  "r2_buckets": [
-    {
-      "binding": "IMAGES",
-      "bucket_name": "memelaunch-images"
-    }
-  ],
-  "durable_objects": {
-    "bindings": [
-      {
-        "name": "REALTIME",
-        "class_name": "RealtimeDurableObject",
-        "script_name": "webapp"
-      }
-    ]
-  },
-  "migrations": [
-    {
-      "tag": "v1",
-      "new_classes": ["RealtimeDurableObject"]
+      "database_id": "21402e76-3247-4655-bb05-b2e3b52c608c"
     }
   ]
 }
