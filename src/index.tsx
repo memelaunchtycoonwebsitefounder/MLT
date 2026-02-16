@@ -19,6 +19,7 @@ import social from './routes/social';
 import gamification from './routes/gamification';
 import profile from './routes/profile';
 import admin from './routes/admin';
+import websocket from './routes/websocket';
 
 // Import AI Scheduler
 import { initializeGlobalScheduler, getSchedulerStatus } from './services/scheduler';
@@ -110,6 +111,9 @@ app.route('/api/upload', uploadRoutes);
 
 // Admin routes (no auth for testing, add auth in production)
 app.route('/api/admin', admin);
+
+// WebSocket routes for real-time price updates
+app.route('/api/ws', websocket);
 
 // Image serving from R2
 app.get('/images/*', async (c) => {

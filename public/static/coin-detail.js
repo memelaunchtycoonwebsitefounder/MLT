@@ -947,6 +947,29 @@ const init = async () => {
       console.log('✅ Realtime polling service started for coin', COIN_ID);
     }
     
+    // Periodic balance refresh (every 10 seconds)
+    setInterval(async () => {
+      try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) return;
+        
+        const response = await axios.get('/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (response.data.success) {
+          const latestUserData = response.data.data;
+          console.log('[BALANCE_REFRESH] Updating balance from server');
+          console.log('[BALANCE_REFRESH] New MLT balance:', latestUserData.mlt_balance);
+          updateUserBalance(latestUserData.virtual_balance, latestUserData.mlt_balance);
+          // Update global userData
+          userData = latestUserData;
+        }
+      } catch (error) {
+        console.error('[BALANCE_REFRESH] Failed to refresh balance:', error);
+      }
+    }, 10000); // Refresh every 10 seconds
+    
     console.log('✅ Coin detail page fully initialized');
   }
 };

@@ -125,9 +125,21 @@ export async function executeAITradingCycle(
     const now = Date.now();
     const coinAgeSeconds = (now - coinCreatedTime) / 1000;
     
+    // Detect market sentiment and herd behavior (Phase 3B & 3C)
+    const { detectMarketSentiment, calculateHerdBehavior } = await import('./ai-trader-engine');
+    const sentiment = await detectMarketSentiment(db, coinId);
+    const herdBehavior = await calculateHerdBehavior(db, coinId);
+    
+    if (sentiment !== 'NEUTRAL') {
+      console.log(`📊 Market Sentiment for Coin ${coinId}: ${sentiment}`);
+    }
+    if (herdBehavior.sentiment !== 'balanced' && herdBehavior.sentiment !== 'quiet') {
+      console.log(`🌊 Herd Behavior for Coin ${coinId}: ${herdBehavior.sentiment}`);
+    }
+    
     // Execute trades for each trader
     for (const trader of traders.results) {
-      const action = shouldTraderAct(trader as AITrader, coin, coinAgeSeconds);
+      const action = shouldTraderAct(trader as AITrader, coin, coinAgeSeconds, sentiment, herdBehavior);
       
       if (action === 'buy') {
         await executeAIBuy(db, trader as AITrader, coin);
