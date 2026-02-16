@@ -18,21 +18,27 @@ const auth = new Hono<{ Bindings: Env }>();
 auth.post('/register', async (c) => {
   try {
     const { email, username, password } = await c.req.json();
+    
+    console.log('[REGISTER] Attempt for:', email, username);
 
     // Validation
     if (!email || !username || !password) {
+      console.log('[REGISTER] Missing fields');
       return errorResponse('所有欄位都是必填的');
     }
 
     if (!validateEmail(email)) {
+      console.log('[REGISTER] Invalid email format');
       return errorResponse('無效的電子郵件格式');
     }
 
     if (!validateUsername(username)) {
+      console.log('[REGISTER] Invalid username format');
       return errorResponse('用戶名必須是 3-20 個字符，只能包含字母、數字和下劃線');
     }
 
     if (!validatePassword(password)) {
+      console.log('[REGISTER] Invalid password format');
       return errorResponse('密碼必須至少 6 個字符');
     }
 
@@ -44,15 +50,26 @@ auth.post('/register', async (c) => {
       .first();
 
     if (existingUser) {
+      console.log('[REGISTER] User already exists');
       return errorResponse('電子郵件或用戶名已被使用');
     }
 
     // Hash password
-    const passwordHash = await hashPassword(password);
+    console.log('[REGISTER] Hashing password...');
+    let passwordHash;
+    try {
+      passwordHash = await hashPassword(password);
+      console.log('[REGISTER] Password hashed successfully, length:', passwordHash.length);
+    } catch (hashError: any) {
+      console.error('[REGISTER] Password hashing error:', hashError.message);
+      return errorResponse('密碼處理失敗，請稍後再試', 500);
+    }
 
     // Create user with MLT balance
     const startingBalance = parseFloat(c.env.STARTING_BALANCE || '10000');
     const startingMLT = parseFloat(c.env.STARTING_MLT || '10000');
+    
+    console.log('[REGISTER] Creating user with balances:', startingBalance, startingMLT);
     
     const result = await c.env.DB.prepare(
       `INSERT INTO users (email, username, password_hash, virtual_balance, mlt_balance) 
@@ -62,6 +79,7 @@ auth.post('/register', async (c) => {
       .run();
 
     if (!result.success) {
+      console.error('[REGISTER] Database insert failed');
       return errorResponse('註冊失敗，請稍後再試', 500);
     }
 
@@ -71,6 +89,8 @@ auth.post('/register', async (c) => {
     )
       .bind(email)
       .first() as any;
+      
+    console.log('[REGISTER] User created successfully:', newUser.id, newUser.username);
 
     // Generate token
     const tokenPayload: JWTPayload = {
@@ -95,8 +115,8 @@ auth.post('/register', async (c) => {
       201
     );
   } catch (error: any) {
-    console.error('Registration error:', error);
-    return errorResponse('註冊過程中發生錯誤', 500);
+    console.error('[REGISTER] Unexpected error:', error.message, error.stack);
+    return errorResponse('註冊過程中發生錯誤: ' + error.message, 500);
   }
 });
 
@@ -104,8 +124,11 @@ auth.post('/register', async (c) => {
 auth.post('/login', async (c) => {
   try {
     const { email, password } = await c.req.json();
+    
+    console.log('[LOGIN] Attempt for email:', email);
 
     if (!email || !password) {
+      console.log('[LOGIN] Missing credentials');
       return errorResponse('電子郵件和密碼都是必填的');
     }
 
@@ -117,14 +140,25 @@ auth.post('/login', async (c) => {
       .first() as User | null;
 
     if (!user) {
+      console.log('[LOGIN] User not found:', email);
       return errorResponse('無效的電子郵件或密碼');
     }
+    
+    console.log('[LOGIN] User found:', user.id, user.username);
+    console.log('[LOGIN] Password hash length:', user.password_hash?.length);
 
     // Verify password
-    const isValid = await comparePassword(password, user.password_hash);
-
-    if (!isValid) {
-      return errorResponse('無效的電子郵件或密碼');
+    try {
+      const isValid = await comparePassword(password, user.password_hash);
+      console.log('[LOGIN] Password verification result:', isValid);
+      
+      if (!isValid) {
+        console.log('[LOGIN] Invalid password for user:', email);
+        return errorResponse('無效的電子郵件或密碼');
+      }
+    } catch (pwdError: any) {
+      console.error('[LOGIN] Password comparison error:', pwdError.message, pwdError.stack);
+      return errorResponse('密碼驗證失敗，請稍後再試', 500);
     }
 
     // Update last login
@@ -142,6 +176,8 @@ auth.post('/login', async (c) => {
     };
     
     const token = await generateToken(tokenPayload, c.env.JWT_SECRET);
+    
+    console.log('[LOGIN] Success for user:', user.username);
 
     return successResponse({
       token,
@@ -150,14 +186,15 @@ auth.post('/login', async (c) => {
         email: user.email,
         username: user.username,
         virtual_balance: user.virtual_balance,
+        mlt_balance: user.mlt_balance || 10000,
         premium_balance: user.premium_balance,
         level: user.level,
         xp: user.xp,
       },
     });
   } catch (error: any) {
-    console.error('Login error:', error);
-    return errorResponse('登入過程中發生錯誤', 500);
+    console.error('[LOGIN] Unexpected error:', error.message, error.stack);
+    return errorResponse('登入過程中發生錯誤: ' + error.message, 500);
   }
 });
 

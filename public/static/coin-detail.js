@@ -10,9 +10,11 @@ let currentTab = 'buy';
 
 // Check authentication
 const checkAuth = async (retryCount = 0) => {
+  console.log('[AUTH] Checking authentication, retry:', retryCount);
   const token = localStorage.getItem('auth_token');
   
   if (!token) {
+    console.log('[AUTH] No token found in localStorage');
     if (retryCount < 3) {
       await new Promise(resolve => setTimeout(resolve, 200));
       return checkAuth(retryCount + 1);
@@ -22,22 +24,34 @@ const checkAuth = async (retryCount = 0) => {
     window.location.href = `/login?redirect=/coin/${coinId}`;
     return null;
   }
+  
+  console.log('[AUTH] Token found, length:', token.length);
 
   try {
     const response = await axios.get('/api/auth/me', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
+    
+    console.log('[AUTH] API response:', response.data);
 
     if (response.data.success) {
-      return response.data.data;
+      const userData = response.data.data;
+      console.log('[AUTH] User authenticated:', userData.username);
+      console.log('[AUTH] MLT Balance:', userData.mlt_balance);
+      console.log('[AUTH] Virtual Balance:', userData.virtual_balance);
+      return userData;
     } else {
+      console.log('[AUTH] API returned success=false');
       localStorage.removeItem('auth_token');
       const coinId = window.location.pathname.split('/').pop();
       window.location.href = `/login?redirect=/coin/${coinId}`;
       return null;
     }
   } catch (error) {
-    console.error('Auth check failed:', error);
+    console.error('[AUTH] Check failed:', error);
+    if (error.response) {
+      console.error('[AUTH] Error response:', error.response.status, error.response.data);
+    }
     localStorage.removeItem('auth_token');
     const coinId = window.location.pathname.split('/').pop();
     window.location.href = `/login?redirect=/coin/${coinId}`;
@@ -47,21 +61,42 @@ const checkAuth = async (retryCount = 0) => {
 
 // Update user balance display
 const updateUserBalance = (balance, mltBalance) => {
+  console.log('[BALANCE] Updating balance display');
+  console.log('[BALANCE] Virtual balance:', balance);
+  console.log('[BALANCE] MLT balance:', mltBalance);
+  
   const balanceEl = document.getElementById('user-balance');
   if (balanceEl) {
     balanceEl.textContent = Number(balance || 0).toLocaleString(undefined, {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     });
+    console.log('[BALANCE] Updated user-balance element:', balanceEl.textContent);
+  } else {
+    console.warn('[BALANCE] user-balance element not found');
   }
   
   // Update MLT balance
   const mltBalanceEl = document.getElementById('user-mlt-balance');
   if (mltBalanceEl && mltBalance !== undefined) {
-    mltBalanceEl.textContent = Number(mltBalance || 0).toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    });
+    const displayValue = Math.floor(mltBalance || 0).toLocaleString();
+    mltBalanceEl.textContent = displayValue;
+    console.log('[BALANCE] Updated user-mlt-balance element:', displayValue);
+  } else {
+    if (!mltBalanceEl) {
+      console.warn('[BALANCE] user-mlt-balance element not found');
+    }
+    if (mltBalance === undefined) {
+      console.warn('[BALANCE] mltBalance is undefined');
+    }
+  }
+  
+  // Also update nav balance if exists
+  const navMltEl = document.getElementById('nav-mlt-balance');
+  if (navMltEl && mltBalance !== undefined) {
+    const displayValue = Math.floor(mltBalance || 0).toLocaleString();
+    navMltEl.textContent = displayValue;
+    console.log('[BALANCE] Updated nav-mlt-balance element:', displayValue);
   }
 };
 
