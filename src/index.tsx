@@ -175,21 +175,22 @@ app.get('/', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="MemeLaunch Tycoon - 模因幣發射大亨。無風險模擬交易遊戲，創建並交易你的模因幣。">
         <title>MemeLaunch Tycoon - 模因幣發射大亨</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
         
-        <!-- Resource Hints for Performance -->
-        <link rel="preconnect" href="https://cdn.tailwindcss.com">
-        <link rel="preconnect" href="https://cdn.jsdelivr.net">
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-        
-        <!-- Critical CSS (inline for faster FCP) -->
+        <!-- Google Analytics 4 -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-XXXXXXXXXX');
+        </script>
         <style>
-          body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            -webkit-font-smoothing: antialiased;
-          }
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+          body { font-family: 'Inter', sans-serif; }
           .gradient-bg {
             background: linear-gradient(135deg, #1A1A2E 0%, #16213E 50%, #0F3460 100%);
           }
@@ -202,28 +203,6 @@ app.get('/', (c) => {
             box-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
           }
         </style>
-        
-        <!-- Non-critical CSS (deferred) -->
-        <link href="/static/styles.css" rel="stylesheet">
-        <link href="/static/mobile-optimizations.css" rel="stylesheet">
-        
-        <!-- Deferred JavaScript (non-blocking) -->
-        <script defer src="https://cdn.tailwindcss.com"></script>
-        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'">
-        <noscript><link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"></noscript>
-        
-        <!-- Google Analytics (deferred) -->
-        <script defer src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-XXXXXXXXXX');
-        </script>
-        
-        <!-- PWA Manifest -->
-        <link rel="manifest" href="/manifest.json">
-        <meta name="theme-color" content="#0A0B0D">
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <!-- Navigation -->
@@ -416,9 +395,9 @@ app.get('/', (c) => {
           </div>
         </nav>
 
-        <script defer src="/static/fetch-utils.js"></script>
-        <script defer src="/static/performance-monitor.js"></script>
-        <script defer src="/static/pwa-manager.js"></script>
+        
+        
+        
         <script defer src="/static/landing.js"></script>
         <script>
           // Redirect to signup/login pages
@@ -610,9 +589,9 @@ app.get('/signup', (c) => {
             </div>
         </div>
 
-        <script defer src="/static/fetch-utils.js"></script>
-        <script defer src="/static/performance-monitor.js"></script>
-        <script defer src="/static/pwa-manager.js"></script>
+        
+        
+        
         <script src="/static/auth.js"></script>
     </body>
     </html>
@@ -754,9 +733,9 @@ app.get('/login', (c) => {
             </div>
         </div>
 
-        <script defer src="/static/fetch-utils.js"></script>
-        <script defer src="/static/performance-monitor.js"></script>
-        <script defer src="/static/pwa-manager.js"></script>
+        
+        
+        
         <script src="/static/auth.js"></script>
     </body>
     </html>
@@ -840,9 +819,9 @@ app.get('/forgot-password', (c) => {
             </div>
         </div>
 
-        <script defer src="/static/fetch-utils.js"></script>
-        <script defer src="/static/performance-monitor.js"></script>
-        <script defer src="/static/pwa-manager.js"></script>
+        
+        
+        
         <script src="/static/auth.js"></script>
     </body>
     </html>
@@ -950,9 +929,9 @@ app.get('/reset-password', (c) => {
             </div>
         </div>
 
-        <script defer src="/static/fetch-utils.js"></script>
-        <script defer src="/static/performance-monitor.js"></script>
-        <script defer src="/static/pwa-manager.js"></script>
+        
+        
+        
         <script src="/static/auth.js"></script>
     </body>
     </html>
@@ -1483,9 +1462,9 @@ app.get('/coin/:id', (c) => {
             </div>
         </div>
 
-        <script defer src="/static/fetch-utils.js"></script>
-        <script defer src="/static/performance-monitor.js"></script>
-        <script defer src="/static/pwa-manager.js"></script>
+        
+        
+        
         <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
         <script>
           const COIN_ID = '${coinId}';
@@ -1698,9 +1677,9 @@ app.get('/market', (c) => {
             </div>
         </div>
 
-        <script defer src="/static/fetch-utils.js"></script>
-        <script defer src="/static/performance-monitor.js"></script>
-        <script defer src="/static/pwa-manager.js"></script>
+        
+        
+        
         <script src="/static/websocket-service.js"></script>
         <script src="/static/realtime-service.js"></script>
         <script src="/static/market.js"></script>
@@ -2385,9 +2364,9 @@ app.get('/create', (c) => {
             </div>
         </div>
 
-        <script defer src="/static/fetch-utils.js"></script>
-        <script defer src="/static/performance-monitor.js"></script>
-        <script defer src="/static/pwa-manager.js"></script>
+        
+        
+        
         <script src="/static/mlt-calculator.js"></script>
         <script src="/static/create-coin.js?v=2.0.0-final"></script>
     </body>
@@ -2577,9 +2556,9 @@ app.get('/dashboard', (c) => {
             </div>
         </div>
 
-        <script defer src="/static/fetch-utils.js"></script>
-        <script defer src="/static/performance-monitor.js"></script>
-        <script defer src="/static/pwa-manager.js"></script>
+        
+        
+        
         <script src="/static/dashboard-simple.js"></script>
     </body>
     </html>
@@ -2734,9 +2713,9 @@ app.get('/portfolio', (c) => {
             </div>
         </div>
 
-        <script defer src="/static/fetch-utils.js"></script>
-        <script defer src="/static/performance-monitor.js"></script>
-        <script defer src="/static/pwa-manager.js"></script>
+        
+        
+        
         <script src="/static/portfolio.js"></script>
     </body>
     </html>
@@ -2920,9 +2899,9 @@ app.get('/achievements', (c) => {
             </div>
         </div>
 
-        <script defer src="/static/fetch-utils.js"></script>
-        <script defer src="/static/performance-monitor.js"></script>
-        <script defer src="/static/pwa-manager.js"></script>
+        
+        
+        
         <script src="/static/achievements-page.js"></script>
     </body>
     </html>
@@ -3077,9 +3056,9 @@ app.get('/leaderboard', (c) => {
             </div>
         </div>
 
-        <script defer src="/static/fetch-utils.js"></script>
-        <script defer src="/static/performance-monitor.js"></script>
-        <script defer src="/static/pwa-manager.js"></script>
+        
+        
+        
         <script src="/static/leaderboard-page.js"></script>
     </body>
     </html>
@@ -3248,9 +3227,9 @@ app.get('/social', (c) => {
             </div>
         </div>
 
-        <script defer src="/static/fetch-utils.js"></script>
-        <script defer src="/static/performance-monitor.js"></script>
-        <script defer src="/static/pwa-manager.js"></script>
+        
+        
+        
         <script src="/static/auth.js"></script>
         <script src="/static/social-page-simple.js"></script>
     </body>
@@ -3347,9 +3326,9 @@ app.get('/profile/:userId', (c) => {
             </div>
         </div>
 
-        <script defer src="/static/fetch-utils.js"></script>
-        <script defer src="/static/performance-monitor.js"></script>
-        <script defer src="/static/pwa-manager.js"></script>
+        
+        
+        
         <script src="/static/profile-page.js"></script>
     </body>
     </html>
