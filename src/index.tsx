@@ -989,7 +989,7 @@ app.get('/coin/:id', (c) => {
                         </div>
                         <!-- MLT Balance -->
                         <div class="glass-effect px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20">
-                            <img src="/static/mlt-token.png" class="inline-block w-5 h-5 mr-2" alt="MLT" />
+                            <img src="/static/mlt-token.png" class="inline-block w-5 h-5 mr-2" alt="MLT" loading="lazy" decoding="async" />
                             <span id="user-mlt-balance" class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">--</span>
                             <span class="text-xs text-gray-400 ml-1">MLT</span>
                         </div>
@@ -1022,7 +1022,7 @@ app.get('/coin/:id', (c) => {
                 <div class="glass-effect rounded-2xl p-8 mb-8">
                     <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                         <div class="flex items-center space-x-6">
-                            <img id="coin-image" class="w-24 h-24 rounded-full" />
+                            <img id="coin-image" class="w-24 h-24 rounded-full" loading="lazy" decoding="async" />
                             <div>
                                 <h1 id="coin-name" class="text-4xl font-bold mb-2">--</h1>
                                 <p id="coin-symbol" class="text-2xl text-orange-500">$--</p>
@@ -1528,7 +1528,7 @@ app.get('/market', (c) => {
                         </div>
                         <!-- MLT Balance -->
                         <div class="glass-effect px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20">
-                            <img src="/static/mlt-token.png" class="inline-block w-5 h-5 mr-2" alt="MLT" />
+                            <img src="/static/mlt-token.png" class="inline-block w-5 h-5 mr-2" alt="MLT" loading="lazy" decoding="async" />
                             <span id="user-mlt-balance" class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">--</span>
                             <span class="text-xs text-gray-400 ml-1">MLT</span>
                         </div>
@@ -1727,7 +1727,7 @@ app.get('/create', (c) => {
                         
                         <!-- MLT Balance -->
                         <div class="glass-effect px-4 py-2 rounded-lg border border-orange-500/30">
-                            <img src="/static/mlt-token.png" alt="MLT" class="w-5 h-5 inline-block mr-2">
+                            <img src="/static/mlt-token.png" alt="MLT" class="w-5 h-5 inline-block mr-2" loading="lazy" decoding="async">
                             <span id="nav-mlt-balance" class="font-bold bg-gradient-to-r from-orange-400 to-purple-400 bg-clip-text text-transparent">--</span>
                             <span class="text-xs text-gray-400">MLT</span>
                         </div>
@@ -1788,7 +1788,7 @@ app.get('/create', (c) => {
                                 <p class="text-sm text-gray-500 mt-4">支持 JPG, PNG, GIF (最大 5MB)</p>
                             </div>
                             <div id="upload-preview" class="hidden">
-                                <img id="preview-image" class="max-w-full max-h-96 mx-auto rounded-lg" />
+                                <img id="preview-image" class="max-w-full max-h-96 mx-auto rounded-lg" loading="lazy" decoding="async" />
                                 <button id="change-image" class="mt-4 px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg transition">
                                     <i class="fas fa-sync-alt mr-2"></i>更換圖片
                                 </button>
@@ -1827,7 +1827,7 @@ app.get('/create', (c) => {
                     <div class="mb-6 p-4 rounded-lg bg-gradient-to-r from-orange-500/20 to-purple-500/20 border border-orange-500/30">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
-                                <img src="/static/mlt-token.png" alt="MLT" class="w-10 h-10">
+                                <img src="/static/mlt-token.png" alt="MLT" class="w-10 h-10" loading="lazy" decoding="async">
                                 <div>
                                     <p class="text-sm text-gray-300">創幣成本</p>
                                     <p class="text-2xl font-bold bg-gradient-to-r from-orange-400 to-purple-400 bg-clip-text text-transparent">
@@ -2198,7 +2198,7 @@ app.get('/create', (c) => {
                         <div class="glass-effect rounded-2xl p-6">
                             <h3 class="text-xl font-bold mb-4">幣種預覽</h3>
                             <div class="text-center mb-6">
-                                <img id="preview-coin-image" class="w-32 h-32 mx-auto rounded-full mb-4" />
+                                <img id="preview-coin-image" class="w-32 h-32 mx-auto rounded-full mb-4" loading="lazy" decoding="async" />
                                 <h4 id="preview-coin-name" class="text-2xl font-bold">--</h4>
                                 <p id="preview-coin-symbol" class="text-xl text-orange-500">$--</p>
                             </div>
@@ -2336,7 +2336,7 @@ app.get('/create', (c) => {
                         <p class="text-gray-300 mb-6">恭喜！您的 Meme 幣已成功發射到市場</p>
                         
                         <div class="glass-effect rounded-lg p-6 mb-6">
-                            <img id="success-coin-image" class="w-24 h-24 mx-auto rounded-full mb-4" />
+                            <img id="success-coin-image" class="w-24 h-24 mx-auto rounded-full mb-4" loading="lazy" decoding="async" />
                             <h3 id="success-coin-name" class="text-2xl font-bold mb-2">--</h3>
                             <p id="success-coin-symbol" class="text-xl text-orange-500 mb-4">$--</p>
                             <div class="flex justify-around text-sm">
@@ -2761,7 +2761,7 @@ app.get('/achievements', (c) => {
                         </div>
                         <!-- MLT Balance -->
                         <div class="glass-effect px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20">
-                            <img src="/static/mlt-token.png" class="inline-block w-5 h-5 mr-2" alt="MLT" />
+                            <img src="/static/mlt-token.png" class="inline-block w-5 h-5 mr-2" alt="MLT" loading="lazy" decoding="async" />
                             <span id="user-mlt-balance" class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">--</span>
                             <span class="text-xs text-gray-400 ml-1">MLT</span>
                         </div>
@@ -3101,7 +3101,7 @@ app.get('/social', (c) => {
                         </div>
                         <!-- MLT Balance -->
                         <div class="glass-effect px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20">
-                            <img src="/static/mlt-token.png" class="inline-block w-5 h-5 mr-2" alt="MLT" />
+                            <img src="/static/mlt-token.png" class="inline-block w-5 h-5 mr-2" alt="MLT" loading="lazy" decoding="async" />
                             <span id="user-mlt-balance" class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">--</span>
                             <span class="text-xs text-gray-400 ml-1">MLT</span>
                         </div>
@@ -3275,7 +3275,7 @@ app.get('/profile/:userId', (c) => {
                         </div>
                         <!-- MLT Balance -->
                         <div class="glass-effect px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20">
-                            <img src="/static/mlt-token.png" class="inline-block w-5 h-5 mr-2" alt="MLT" />
+                            <img src="/static/mlt-token.png" class="inline-block w-5 h-5 mr-2" alt="MLT" loading="lazy" decoding="async" />
                             <span id="user-mlt-balance" class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">--</span>
                             <span class="text-xs text-gray-400 ml-1">MLT</span>
                         </div>
