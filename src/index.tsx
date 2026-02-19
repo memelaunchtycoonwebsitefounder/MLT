@@ -169,6 +169,11 @@ app.get('/api/scheduler/status', (c) => {
 
 // Landing page - Meta redirect to index.html (served as static file)
 app.get('/', (c) => {
+  // Set cache control headers to prevent HTML caching
+  c.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+  c.header('Pragma', 'no-cache');
+  c.header('Expires', '0');
+  
   return c.html(`<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -178,7 +183,7 @@ app.get('/', (c) => {
     <title>MemeLaunch Tycoon - Launch Your Meme Coin Empire</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="/static/styles.css" rel="stylesheet">
+    <link href="/static/styles.css?v=20260219" rel="stylesheet">
     
     <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
@@ -667,9 +672,9 @@ app.get('/', (c) => {
     </footer>
 
     <!-- Scripts -->
-    <script src="/static/i18n.js"></script>
-    <script src="/static/language-switcher.js"></script>
-    <script src="/static/landing-new.js"></script>
+    <script src="/static/i18n.js?v=20260219"></script>
+    <script src="/static/language-switcher.js?v=20260219"></script>
+    <script src="/static/landing-new.js?v=20260219"></script>
     <script>
       // Navigation button handlers
       document.getElementById('loginBtn')?.addEventListener('click', () => {
