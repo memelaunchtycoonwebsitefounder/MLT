@@ -266,6 +266,7 @@ trades.post('/buy', async (c) => {
       averagePrice: tradeResult.averagePrice,
       totalCost,
       newBalance: userBalance.mlt_balance - totalCost,
+      mlt_balance: userBalance.mlt_balance - totalCost, // Explicitly return MLT balance
       bondingCurveProgress: newProgress,
       priceIncrease: ((newPrice - tradeResult.oldPrice) / tradeResult.oldPrice * 100).toFixed(2) + '%',
     });
@@ -419,6 +420,7 @@ trades.post('/sell', async (c) => {
       averagePrice: tradeResult.averagePrice,
       totalRevenue,
       newBalance: newBalance.mlt_balance,
+      mlt_balance: newBalance.mlt_balance, // Explicitly return MLT balance
       bondingCurveProgress: newProgress,
       priceDecrease: ((tradeResult.oldPrice - newPrice) / tradeResult.oldPrice * 100).toFixed(2) + '%',
     });
@@ -485,11 +487,12 @@ trades.get('/recent', async (c) => {
       return errorResponse('未授權', 401);
     }
 
-    const limit = parseInt(c.req.query('limit') || '5');
+    const limit = parseInt(c.req.query('limit') || '10');
+    const includeAI = c.req.query('includeAI') === 'true'; // New parameter
 
-    const result = await c.env.DB.prepare(
-      `SELECT 
+    let query = `SELECT 
          t.id,
+         t.user_id,
          t.type,
          t.amount,
          t.price,
@@ -498,17 +501,23 @@ trades.get('/recent', async (c) => {
          c.id as coin_id,
          c.name as coin_name,
          c.symbol as coin_symbol,
-         c.image_url as coin_image
+         c.image_url as coin_image,
+         u.username
        FROM transactions t
        LEFT JOIN coins c ON t.coin_id = c.id
-       WHERE t.user_id = ?
-       ORDER BY t.timestamp DESC
-       LIMIT ?`
-    )
-      .bind(user.userId, limit)
-      .all();
-
-    return successResponse(result.results || []);
+       LEFT JOIN users u ON t.user_id = u.id`;
+    
+    // If includeAI is true, get all recent trades (including AI traders)
+    // Otherwise, only get user's own trades
+    if (includeAI) {
+      query += ` ORDER BY t.timestamp DESC LIMIT ?`;
+      const result = await c.env.DB.prepare(query).bind(limit).all();
+      return successResponse(result.results || []);
+    } else {
+      query += ` WHERE t.user_id = ? ORDER BY t.timestamp DESC LIMIT ?`;
+      const result = await c.env.DB.prepare(query).bind(user.userId, limit).all();
+      return successResponse(result.results || []);
+    }
   } catch (error: any) {
     console.error('Get recent transactions error:', error);
     return errorResponse('獲取最近交易時發生錯誤', 500);

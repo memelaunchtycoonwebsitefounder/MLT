@@ -10,9 +10,11 @@ let currentTab = 'buy';
 
 // Check authentication
 const checkAuth = async (retryCount = 0) => {
+  console.log('[AUTH] Checking authentication, retry:', retryCount);
   const token = localStorage.getItem('auth_token');
   
   if (!token) {
+    console.log('[AUTH] No token found in localStorage');
     if (retryCount < 3) {
       await new Promise(resolve => setTimeout(resolve, 200));
       return checkAuth(retryCount + 1);
@@ -22,22 +24,34 @@ const checkAuth = async (retryCount = 0) => {
     window.location.href = `/login?redirect=/coin/${coinId}`;
     return null;
   }
+  
+  console.log('[AUTH] Token found, length:', token.length);
 
   try {
     const response = await axios.get('/api/auth/me', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
+    
+    console.log('[AUTH] API response:', response.data);
 
     if (response.data.success) {
-      return response.data.data;
+      const userData = response.data.data;
+      console.log('[AUTH] User authenticated:', userData.username);
+      console.log('[AUTH] MLT Balance:', userData.mlt_balance);
+      console.log('[AUTH] Virtual Balance:', userData.virtual_balance);
+      return userData;
     } else {
+      console.log('[AUTH] API returned success=false');
       localStorage.removeItem('auth_token');
       const coinId = window.location.pathname.split('/').pop();
       window.location.href = `/login?redirect=/coin/${coinId}`;
       return null;
     }
   } catch (error) {
-    console.error('Auth check failed:', error);
+    console.error('[AUTH] Check failed:', error);
+    if (error.response) {
+      console.error('[AUTH] Error response:', error.response.status, error.response.data);
+    }
     localStorage.removeItem('auth_token');
     const coinId = window.location.pathname.split('/').pop();
     window.location.href = `/login?redirect=/coin/${coinId}`;
@@ -47,21 +61,42 @@ const checkAuth = async (retryCount = 0) => {
 
 // Update user balance display
 const updateUserBalance = (balance, mltBalance) => {
+  console.log('[BALANCE] Updating balance display');
+  console.log('[BALANCE] Virtual balance:', balance);
+  console.log('[BALANCE] MLT balance:', mltBalance);
+  
   const balanceEl = document.getElementById('user-balance');
   if (balanceEl) {
     balanceEl.textContent = Number(balance || 0).toLocaleString(undefined, {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     });
+    console.log('[BALANCE] Updated user-balance element:', balanceEl.textContent);
+  } else {
+    console.warn('[BALANCE] user-balance element not found');
   }
   
   // Update MLT balance
   const mltBalanceEl = document.getElementById('user-mlt-balance');
   if (mltBalanceEl && mltBalance !== undefined) {
-    mltBalanceEl.textContent = Number(mltBalance || 0).toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    });
+    const displayValue = Math.floor(mltBalance || 0).toLocaleString();
+    mltBalanceEl.textContent = displayValue;
+    console.log('[BALANCE] Updated user-mlt-balance element:', displayValue);
+  } else {
+    if (!mltBalanceEl) {
+      console.warn('[BALANCE] user-mlt-balance element not found');
+    }
+    if (mltBalance === undefined) {
+      console.warn('[BALANCE] mltBalance is undefined');
+    }
+  }
+  
+  // Also update nav balance if exists
+  const navMltEl = document.getElementById('nav-mlt-balance');
+  if (navMltEl && mltBalance !== undefined) {
+    const displayValue = Math.floor(mltBalance || 0).toLocaleString();
+    navMltEl.textContent = displayValue;
+    console.log('[BALANCE] Updated nav-mlt-balance element:', displayValue);
   }
 };
 
@@ -706,6 +741,29 @@ const init = async () => {
     setupShareButtons();
     setupTimeframeButtons();
     
+    // Setup manual refresh button
+    const refreshBtn = document.getElementById('refresh-chart-btn');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', async () => {
+        console.log('[CHART] Manual refresh triggered');
+        refreshBtn.disabled = true;
+        refreshBtn.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i>';
+        
+        try {
+          await loadCoinData(false); // Reload with chart update
+          console.log('[CHART] Manual refresh completed');
+          showNotification('圖表已刷新', 'success');
+        } catch (error) {
+          console.error('[CHART] Manual refresh failed:', error);
+          showNotification('刷新失敗', 'error');
+        } finally {
+          refreshBtn.disabled = false;
+          refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+        }
+      });
+      console.log('[CHART] Manual refresh button initialized');
+    }
+    
     document.getElementById('logout-btn')?.addEventListener('click', handleLogout);
     
     // Initialize social UI if available
@@ -798,8 +856,55 @@ const init = async () => {
     // Start auto-refresh for live price updates (every 5 seconds)
     startPriceAutoRefresh();
     
-    // Start realtime service if available
-    if (window.realtimeService) {
+    // Start WebSocket service if available (preferred), otherwise fall back to polling
+    if (window.websocketService && window.websocketService.isWebSocketConnected()) {
+      console.log('✅ Using WebSocket for real-time updates');
+      
+      // Subscribe to coin updates via WebSocket
+      window.websocketService.subscribeToCoin(parseInt(COIN_ID), (updatedCoin) => {
+        // Update bonding curve progress bar with animation
+        const progressBar = document.getElementById('bonding-progress-bar');
+        const progressText = document.getElementById('bonding-progress-percent');
+        if (progressBar && progressText && updatedCoin.bonding_curve_progress !== undefined) {
+          const newProgress = (updatedCoin.bonding_curve_progress * 100).toFixed(1);
+          progressText.textContent = `${newProgress}%`;
+          if (window.realtimeService && window.realtimeService.animateProgressBar) {
+            window.realtimeService.animateProgressBar(progressBar, parseFloat(newProgress));
+          }
+        }
+        
+        // Update AI trade counts
+        const aiCountEl = document.getElementById('ai-trade-count');
+        if (aiCountEl && updatedCoin.ai_trade_count !== undefined) {
+          aiCountEl.textContent = updatedCoin.ai_trade_count;
+        }
+        
+        const realCountEl = document.getElementById('real-trade-count');
+        if (realCountEl && updatedCoin.real_trade_count !== undefined) {
+          realCountEl.textContent = updatedCoin.real_trade_count;
+        }
+        
+        console.log('🔄 WebSocket updated coin data');
+      });
+      
+      // Subscribe to trade notifications via WebSocket
+      window.websocketService.subscribeToNotifications((trade) => {
+        if (trade.coin_id === parseInt(COIN_ID)) {
+          const tradeType = trade.type === 'BUY' ? 'bought' : 'sold';
+          const message = `🔔 ${trade.trader_username || 'Someone'} ${tradeType} ${Number(trade.amount).toLocaleString()} tokens`;
+          if (window.websocketService && window.websocketService.showNotification) {
+            window.websocketService.showNotification(message, trade.type === 'BUY' ? 'success' : 'warning');
+          }
+          
+          // Reload event timeline to show new activity
+          setTimeout(() => loadEventTimeline(COIN_ID), 1000);
+        }
+      });
+      
+    } else if (window.realtimeService) {
+      // Fallback to polling if WebSocket not available
+      console.log('⚠️ WebSocket not available, using polling fallback');
+      
       // Subscribe to coin updates
       window.realtimeService.subscribeToCoin(COIN_ID, (updatedCoin) => {
         // Update bonding curve progress bar with animation
@@ -837,10 +942,33 @@ const init = async () => {
         }
       });
       
-      // Start the service
+      // Start the polling service
       window.realtimeService.start();
-      console.log('✅ Realtime service started for coin', COIN_ID);
+      console.log('✅ Realtime polling service started for coin', COIN_ID);
     }
+    
+    // Periodic balance refresh (every 10 seconds)
+    setInterval(async () => {
+      try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) return;
+        
+        const response = await axios.get('/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (response.data.success) {
+          const latestUserData = response.data.data;
+          console.log('[BALANCE_REFRESH] Updating balance from server');
+          console.log('[BALANCE_REFRESH] New MLT balance:', latestUserData.mlt_balance);
+          updateUserBalance(latestUserData.virtual_balance, latestUserData.mlt_balance);
+          // Update global userData
+          userData = latestUserData;
+        }
+      } catch (error) {
+        console.error('[BALANCE_REFRESH] Failed to refresh balance:', error);
+      }
+    }, 10000); // Refresh every 10 seconds
     
     console.log('✅ Coin detail page fully initialized');
   }

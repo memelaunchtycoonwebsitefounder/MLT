@@ -124,18 +124,69 @@ class RealtimeService {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
 
-      // Fetch recent trades
-      const response = await axios.get('/api/trades/recent?limit=5', {
+      // Fetch recent trades (including AI traders)
+      const response = await axios.get('/api/trades/recent?limit=10&includeAI=true', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
       if (response.data.success && response.data.data.length > 0) {
         const trades = response.data.data;
         
-        // Notify callbacks about new trades
-        trades.forEach(trade => {
+        // Track shown notifications to avoid duplicates
+        if (!this.shownNotifications) {
+          this.shownNotifications = new Set();
+        }
+        
+        // Filter out old/duplicate trades
+        const newTrades = trades.filter(trade => {
+          const tradeKey = `${trade.id}-${trade.timestamp}`;
+          if (this.shownNotifications.has(tradeKey)) {
+            return false; // Skip already shown
+          }
+          
+          // Check if trade is recent (within last 30 seconds)
+          const tradeTime = new Date(trade.timestamp).getTime();
+          const now = Date.now();
+          const isRecent = (now - tradeTime) < 30000; // 30 seconds
+          
+          if (isRecent) {
+            this.shownNotifications.add(tradeKey);
+            return true;
+          }
+          return false;
+        });
+        
+        // Show notifications for AI trades (user_id >= 10001)
+        newTrades.forEach(trade => {
+          // Check if this is an AI trader (user_id >= 10001 or username starts with 'ai_trader_')
+          const isAITrader = trade.user_id >= 10001 || (trade.username && trade.username.startsWith('ai_trader_'));
+          
+          if (isAITrader) {
+            // Extract trader type from username (e.g., "ai_trader_10001_sniper" -> "SNIPER")
+            let traderType = 'AI';
+            if (trade.username) {
+              const parts = trade.username.split('_');
+              if (parts.length >= 4) {
+                traderType = parts[3].toUpperCase();
+              }
+            }
+            
+            // Show AI trade notification
+            const action = trade.type === 'buy' ? '買入' : '賣出';
+            const icon = trade.type === 'buy' ? '📈' : '📉';
+            const message = `${icon} AI Trader (${traderType}) ${action} ${Math.floor(trade.amount).toLocaleString()} ${trade.coin_symbol || 'tokens'}`;
+            this.showNotification(message, trade.type === 'buy' ? 'info' : 'warning');
+          }
+          
+          // Notify registered callbacks
           this.notificationCallbacks.forEach(callback => callback(trade));
         });
+        
+        // Clean up old notifications (keep only last 50)
+        if (this.shownNotifications.size > 50) {
+          const arr = Array.from(this.shownNotifications);
+          this.shownNotifications = new Set(arr.slice(-50));
+        }
       }
     } catch (error) {
       console.error('[Realtime] Failed to fetch notifications:', error);

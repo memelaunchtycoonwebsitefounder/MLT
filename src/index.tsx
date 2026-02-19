@@ -19,14 +19,39 @@ import social from './routes/social';
 import gamification from './routes/gamification';
 import profile from './routes/profile';
 import admin from './routes/admin';
+import websocket from './routes/websocket';
+
+// Import AI Scheduler
+import { initializeGlobalScheduler, getSchedulerStatus } from './services/scheduler';
+
+// Import Durable Object
+import { RealtimeDurableObject } from './realtime-durable-object';
 
 const app = new Hono<{ Bindings: Env }>();
+
+// Flag to ensure scheduler is initialized only once
+let schedulerInitialized = false;
 
 // Enable CORS
 app.use('/api/*', cors());
 
 // Serve static files
 app.use('/static/*', serveStatic({ root: './public' }));
+
+// Middleware to initialize AI scheduler on first request
+app.use('*', async (c, next) => {
+  if (!schedulerInitialized && c.env.DB) {
+    try {
+      console.log('🤖 Initializing AI Trading Scheduler...');
+      initializeGlobalScheduler(c.env.DB);
+      schedulerInitialized = true;
+      console.log('✅ AI Trading Scheduler initialized successfully');
+    } catch (error) {
+      console.error('❌ Failed to initialize AI Scheduler:', error);
+    }
+  }
+  await next();
+});
 
 // API Routes
 app.route('/api/auth', auth);
@@ -87,6 +112,9 @@ app.route('/api/upload', uploadRoutes);
 // Admin routes (no auth for testing, add auth in production)
 app.route('/api/admin', admin);
 
+// WebSocket routes for real-time price updates
+app.route('/api/ws', websocket);
+
 // Image serving from R2
 app.get('/images/*', async (c) => {
   try {
@@ -122,6 +150,19 @@ app.get('/api/health', (c) => {
   return c.json({ 
     status: 'ok', 
     message: 'MemeLaunch Tycoon API is running',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// AI Scheduler status endpoint
+app.get('/api/scheduler/status', (c) => {
+  const status = getSchedulerStatus();
+  return c.json({
+    success: true,
+    scheduler: {
+      ...status,
+      initialized: schedulerInitialized
+    },
     timestamp: new Date().toISOString()
   });
 });
@@ -966,6 +1007,10 @@ app.get('/coin/:id', (c) => {
                                     <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="10m">10分鐘</button>
                                     <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="1h">1小時</button>
                                     <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="24h">24小時</button>
+                                    <!-- Manual Refresh Button -->
+                                    <button id="refresh-chart-btn" class="px-4 py-2 rounded-lg transition bg-blue-500 hover:bg-blue-600 ml-2" title="手動刷新圖表">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
                                 </div>
                                 <!-- OHLC Data Display -->
                                 <div id="ohlc-data" class="hidden md:flex flex-wrap gap-x-4 gap-y-2 text-sm">
@@ -1389,6 +1434,7 @@ app.get('/coin/:id', (c) => {
         <script src="/static/chart-lightweight.js"></script>
         <script src="/static/trading-panel.js"></script>
         <script src="/static/comments-simple.js"></script>
+        <script src="/static/websocket-service.js"></script>
         <script src="/static/realtime-service.js"></script>
         <script src="/static/realtime.js"></script>
         <script src="/static/coin-detail.js"></script>
@@ -1494,7 +1540,6 @@ app.get('/market', (c) => {
                             <option value="created_at_asc">最早創建</option>
                             <option value="bonding_curve_progress_desc">🚀 進度最高</option>
                             <option value="bonding_curve_progress_asc">🐣 進度最低</option>
-                            <option value="ai_trade_count_desc">🤖 AI 活動最多</option>
                             <option value="real_trade_count_desc">👤 真實交易最多</option>
                             <option value="current_price_desc">價格最高</option>
                             <option value="current_price_asc">價格最低</option>
@@ -1595,6 +1640,7 @@ app.get('/market', (c) => {
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="/static/websocket-service.js"></script>
         <script src="/static/realtime-service.js"></script>
         <script src="/static/market.js"></script>
     </body>
@@ -3244,4 +3290,22 @@ app.get('/dashboard/register', (c) => {
   return c.redirect('/signup?redirect=/dashboard', 308)
 })
 
+// WebSocket endpoint
+app.get('/ws', async (c) => {
+  const upgradeHeader = c.req.header('Upgrade');
+  if (!upgradeHeader || upgradeHeader !== 'websocket') {
+    return c.text('Expected Upgrade: websocket', 426);
+  }
+
+  // Get Durable Object ID
+  const id = c.env.REALTIME.idFromName('global');
+  const stub = c.env.REALTIME.get(id);
+  
+  // Forward the request to the Durable Object
+  return stub.fetch(c.req.raw);
+});
+
 export default app;
+
+// Export Durable Object
+export { RealtimeDurableObject };
