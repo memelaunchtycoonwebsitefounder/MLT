@@ -1,0 +1,72 @@
+{
+  "name": "MemeLaunch Tycoon",
+  "short_name": "MemeLaunch",
+  "description": "模因幣發射大亨 - 創建、交易和管理你的模因幣投資組合",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0B0D",
+  "theme_color": "#0A0B0D",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "games"],
+  "screenshots": [
+    {
+      "src": "/screenshot-mobile.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "市場",
+      "short_name": "Market",
+      "description": "查看代幣市場",
+      "url": "/market",
+      "icons": [{ "src": "/icon-market.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "創建代幣",
+      "short_name": "Create",
+      "description": "創建新代幣",
+      "url": "/create-coin",
+      "icons": [{ "src": "/icon-create.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "投資組合",
+      "short_name": "Portfolio",
+      "description": "查看你的投資組合",
+      "url": "/portfolio",
+      "icons": [{ "src": "/icon-portfolio.png", "sizes": "96x96" }]
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}
