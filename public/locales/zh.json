@@ -1,0 +1,157 @@
+{
+  "nav": {
+    "features": "特色功能",
+    "howItWorks": "如何開始",
+    "market": "市場",
+    "login": "登入",
+    "signUp": "開始遊戲"
+  },
+  "hero": {
+    "title": "打造你的",
+    "titleHighlight": "模因幣帝國",
+    "subtitle": "無風險模擬交易遊戲。創建模因幣、交易、競爭排行榜！",
+    "ctaPrimary": "免費獲得 10,000 金幣",
+    "ctaSecondary": "觀看演示",
+    "stats": {
+      "startingBalance": "起始資金",
+      "activePlayers": "活躍玩家",
+      "coinsCreated": "已創建幣種",
+      "totalVolume": "24小時交易量"
+    }
+  },
+  "liveMarket": {
+    "title": "實時市場",
+    "trending": "🔥 熱門",
+    "new": "✨ 新上線",
+    "graduating": "🎓 即將畢業"
+  },
+  "howItWorks": {
+    "title": "如何開始",
+    "step1": {
+      "title": "註冊並獲得 10,000 金幣",
+      "desc": "100% 免費，無需信用卡"
+    },
+    "step2": {
+      "title": "創建你的第一個模因幣",
+      "desc": "上傳圖片、設定名稱和供應量、發射！"
+    },
+    "step3": {
+      "title": "交易並賺取虛擬利潤",
+      "desc": "低買高賣，追蹤你的投資組合"
+    },
+    "step4": {
+      "title": "攀登排行榜",
+      "desc": "與全球玩家競爭"
+    }
+  },
+  "features": {
+    "title": "為什麼選擇 MemeLaunch Tycoon？",
+    "riskFree": {
+      "title": "100% 無風險",
+      "desc": "沒有真實金錢，純粹的模擬樂趣"
+    },
+    "realMarket": {
+      "title": "真實市場機制",
+      "desc": "聯合曲線、價格發現、流動性"
+    },
+    "leaderboard": {
+      "title": "競爭性排行榜",
+      "desc": "獲得徽章、攀升排名、獲得 VIP 狀態"
+    },
+    "vipPerks": {
+      "title": "VIP 特權",
+      "desc": "頂級交易員的專屬功能"
+    },
+    "aiTraders": {
+      "title": "AI 交易機器人",
+      "desc": "使用 AI 進行真實市場模擬"
+    },
+    "charts": {
+      "title": "專業圖表",
+      "desc": "TradingView 風格的 K 線圖"
+    }
+  },
+  "stats": {
+    "title": "加入數千名玩家",
+    "users": "總用戶數",
+    "coins": "已創建幣種",
+    "volume": "總交易量",
+    "trades": "今日交易"
+  },
+  "testimonials": {
+    "title": "玩家評價",
+    "user1": {
+      "name": "加密鯨魚99",
+      "role": "頂級交易員",
+      "text": "最好的模因幣模擬器！第一次交易就賺了 100 倍。"
+    },
+    "user2": {
+      "name": "登月計劃",
+      "role": "內容創作者",
+      "text": "喜歡即時圖表和競爭性排行榜！"
+    },
+    "user3": {
+      "name": "鑽石之手",
+      "role": "VIP 會員",
+      "text": "令人上癮的遊戲玩法，超棒的社區！"
+    }
+  },
+  "pricing": {
+    "title": "選擇你的方案",
+    "free": {
+      "name": "免費",
+      "price": "0",
+      "features": [
+        "10,000 起始金幣",
+        "無限創建幣種",
+        "基礎圖表",
+        "社區訪問"
+      ],
+      "cta": "免費開始"
+    },
+    "vip": {
+      "name": "VIP",
+      "price": "即將推出",
+      "features": [
+        "免費版所有功能",
+        "高級分析",
+        "優先支持",
+        "專屬徽章",
+        "新功能搶先體驗"
+      ],
+      "cta": "即將推出"
+    }
+  },
+  "faq": {
+    "title": "常見問題",
+    "q1": {
+      "question": "這是真正的加密貨幣交易嗎？",
+      "answer": "不，MemeLaunch Tycoon 是 100% 模擬的。不涉及真實金錢。"
+    },
+    "q2": {
+      "question": "如何賺取金幣？",
+      "answer": "交易模因幣、創建熱門幣種、完成成就。"
+    },
+    "q3": {
+      "question": "我可以提取我的金幣嗎？",
+      "answer": "不可以，所有金幣都是虛擬的，僅供遊戲使用。"
+    },
+    "q4": {
+      "question": "這是免費的嗎？",
+      "answer": "是的！100% 免費遊玩。無需信用卡。"
+    }
+  },
+  "cta": {
+    "title": "準備啟動你的帝國了嗎？",
+    "subtitle": "加入數千名玩家，今天就開始你的模因幣之旅！",
+    "button": "免費開始",
+    "disclaimer": "無需信用卡 • 100% 免費 • 立即訪問"
+  },
+  "footer": {
+    "about": "關於",
+    "privacy": "隱私政策",
+    "terms": "服務條款",
+    "contact": "聯繫",
+    "copyright": "© 2026 MemeLaunch Tycoon. 版權所有。"
+  }
+}
