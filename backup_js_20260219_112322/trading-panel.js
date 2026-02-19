@@ -203,7 +203,7 @@ class TradingPanel {
   async loadHoldings() {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetchUtils.get('/api/portfolio', {
+      const response = await axios.get('/api/portfolio', {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -236,7 +236,7 @@ class TradingPanel {
 
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetchUtils.post(`/api/trades/${type}`, {
+      const response = await axios.post(`/api/trades/${type}`, {
         coinId: this.coinId,
         amount: this.amount
       }, {

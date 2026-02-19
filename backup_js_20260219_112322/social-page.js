@@ -19,7 +19,7 @@ const checkAuth = async () => {
   }
 
   try {
-    const response = await fetchUtils.get('/api/auth/me', {
+    const response = await axios.get('/api/auth/me', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
@@ -104,7 +104,7 @@ const loadActivityFeed = async (reset = false) => {
       endpoint = '/api/social/popular-comments';
     }
 
-    const response = await fetchUtils.get(endpoint, {
+    const response = await axios.get(endpoint, {
       headers: { 'Authorization': `Bearer ${token}` },
       params: {
         page: currentPage,
@@ -291,7 +291,7 @@ const renderGenericActivity = (activity) => {
 // Load trending coins
 const loadTrendingCoins = async () => {
   try {
-    const response = await fetchUtils.get('/api/coins?sort=hype&limit=5');
+    const response = await axios.get('/api/coins?sort=hype&limit=5');
     
     if (response.data.success) {
       const coins = response.data.data || [];
@@ -322,7 +322,7 @@ const loadTrendingCoins = async () => {
 const loadActiveUsers = async () => {
   try {
     const token = localStorage.getItem('auth_token');
-    const response = await fetchUtils.get('/api/leaderboard/rankings', {
+    const response = await axios.get('/api/leaderboard/rankings', {
       headers: { 'Authorization': `Bearer ${token}` },
       params: {
         category: 'trades',
@@ -361,7 +361,7 @@ const loadActiveUsers = async () => {
 const loadSocialStats = async () => {
   try {
     const token = localStorage.getItem('auth_token');
-    const response = await fetchUtils.get('/api/social/stats', {
+    const response = await axios.get('/api/social/stats', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     

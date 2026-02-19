@@ -27,7 +27,7 @@ class SocialUI {
   async loadComments() {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetchUtils.get(`/api/social/comments/${this.coinId}`, {
+      const response = await axios.get(`/api/social/comments/${this.coinId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -260,7 +260,7 @@ class SocialUI {
 
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetchUtils.post('/api/social/comments', {
+      const response = await axios.post('/api/social/comments', {
         coinId: this.coinId,
         content: content
       }, {
@@ -285,11 +285,11 @@ class SocialUI {
       const isLiked = button.dataset.liked === 'true';
       
       if (isLiked) {
-        await fetchUtils.delete(`/api/social/comments/${commentId}/unlike`, {
+        await axios.delete(`/api/social/comments/${commentId}/unlike`, {
           headers: { Authorization: `Bearer ${token}` }
         });
       } else {
-        await fetchUtils.post(`/api/social/comments/${commentId}/like`, {}, {
+        await axios.post(`/api/social/comments/${commentId}/like`, {}, {
           headers: { Authorization: `Bearer ${token}` }
         });
       }
@@ -319,7 +319,7 @@ class SocialUI {
 
     try {
       const token = localStorage.getItem('auth_token');
-      await fetchUtils.delete(`/api/social/comments/${commentId}`, {
+      await axios.delete(`/api/social/comments/${commentId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -359,7 +359,7 @@ class SocialUI {
 
     try {
       const token = localStorage.getItem('auth_token');
-      await fetchUtils.post('/api/social/comments', {
+      await axios.post('/api/social/comments', {
         coinId: this.coinId,
         content: content,
         parentId: parentId

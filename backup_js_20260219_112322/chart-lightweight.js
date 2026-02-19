@@ -427,7 +427,7 @@ window.refreshChartAfterTrade = async function(coinData) {
     }
     
     // Fetch updated price history
-    const response = await fetchUtils.get(`/api/coins/${window.COIN_ID || coinData.id}/price-history?limit=${limit}`);
+    const response = await axios.get(`/api/coins/${window.COIN_ID || coinData.id}/price-history?limit=${limit}`);
     
     if (response.data.success && response.data.data.data) {
       const history = response.data.data.data;

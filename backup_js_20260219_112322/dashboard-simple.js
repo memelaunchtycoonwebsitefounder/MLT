@@ -28,7 +28,7 @@ async function init() {
   // Verify token with API
   try {
     console.log('Dashboard: Verifying token with API');
-    const response = await fetchUtils.get('/api/auth/me', {
+    const response = await axios.get('/api/auth/me', {
       headers: { Authorization: `Bearer ${token}` }
     });
     
@@ -82,7 +82,7 @@ async function loadDashboardData(user) {
   
   try {
     // Load portfolio stats
-    const portfolioResponse = await fetchUtils.get('/api/portfolio', {
+    const portfolioResponse = await axios.get('/api/portfolio', {
       headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
     });
     
@@ -166,7 +166,7 @@ async function loadDashboardData(user) {
 async function loadRecentTransactions() {
   try {
     console.log('Dashboard: Loading recent transactions');
-    const response = await fetchUtils.get('/api/trades/recent', {
+    const response = await axios.get('/api/trades/recent', {
       headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` },
       params: { limit: 5 }
     });
@@ -217,7 +217,7 @@ async function loadRecentTransactions() {
 async function loadTrendingCoins() {
   try {
     console.log('Dashboard: Loading trending coins');
-    const response = await fetchUtils.get('/api/coins/trending/list', {
+    const response = await axios.get('/api/coins/trending/list', {
       params: { limit: 5 }
     });
     

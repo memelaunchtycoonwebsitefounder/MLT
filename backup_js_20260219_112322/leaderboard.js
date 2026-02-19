@@ -27,7 +27,7 @@ class LeaderboardUI {
         this.showLoading();
       }
 
-      const response = await fetchUtils.get(`/api/gamification/leaderboard?type=${category}&limit=100`);
+      const response = await axios.get(`/api/gamification/leaderboard?type=${category}&limit=100`);
 
       if (response.data.success) {
         this.leaderboardData = response.data.data.leaderboard;

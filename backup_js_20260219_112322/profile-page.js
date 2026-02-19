@@ -33,7 +33,7 @@ class UserProfile {
 
     try {
       // Get current user
-      const userResponse = await fetchUtils.get('/api/auth/me', {
+      const userResponse = await axios.get('/api/auth/me', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -56,7 +56,7 @@ class UserProfile {
   async loadProfile() {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetchUtils.get(`/api/profile/${this.userId}`, {
+      const response = await axios.get(`/api/profile/${this.userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -260,7 +260,7 @@ class UserProfile {
   async loadTrades() {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetchUtils.get(`/api/profile/${this.userId}/trades?limit=20`, {
+      const response = await axios.get(`/api/profile/${this.userId}/trades?limit=20`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -317,7 +317,7 @@ class UserProfile {
   async loadAchievements() {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetchUtils.get(`/api/profile/${this.userId}/achievements`, {
+      const response = await axios.get(`/api/profile/${this.userId}/achievements`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 

@@ -68,7 +68,7 @@ async function checkAuth() {
     // Token found, verify with API
     console.log('Dashboard: Token found! Verifying with API...');
     
-    const response = await fetchUtils.get('/api/auth/me', {
+    const response = await axios.get('/api/auth/me', {
       headers: { Authorization: `Bearer ${token}` },
       timeout: 10000 // 10 second timeout
     });
@@ -175,7 +175,7 @@ async function loadDashboardData(user) {
 async function loadPortfolioStats() {
   try {
     const token = localStorage.getItem('auth_token');
-    const response = await fetchUtils.get('/api/portfolio', {
+    const response = await axios.get('/api/portfolio', {
       headers: { Authorization: `Bearer ${token}` }
     });
     
@@ -208,7 +208,7 @@ async function loadPortfolioStats() {
 async function loadRecentTransactions() {
   try {
     const token = localStorage.getItem('auth_token');
-    const response = await fetchUtils.get('/api/trades/history?limit=5', {
+    const response = await axios.get('/api/trades/history?limit=5', {
       headers: { Authorization: `Bearer ${token}` }
     });
     
@@ -268,7 +268,7 @@ async function loadRecentTransactions() {
 
 async function loadTrendingCoins() {
   try {
-    const response = await fetchUtils.get('/api/coins/trending/list?limit=5');
+    const response = await axios.get('/api/coins/trending/list?limit=5');
     const coins = response.data.data;
     const container = document.getElementById('trending-coins');
     
@@ -304,7 +304,7 @@ async function loadTrendingCoins() {
 async function loadUserHoldings() {
   try {
     const token = localStorage.getItem('auth_token');
-    const response = await fetchUtils.get('/api/portfolio', {
+    const response = await axios.get('/api/portfolio', {
       headers: { Authorization: `Bearer ${token}` }
     });
     
@@ -352,7 +352,7 @@ if (logoutBtn) {
     
     try {
       const token = localStorage.getItem('auth_token');
-      await fetchUtils.post('/api/auth/logout', {}, {
+      await axios.post('/api/auth/logout', {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       console.log('Dashboard: Logout API call successful');

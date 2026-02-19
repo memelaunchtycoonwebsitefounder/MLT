@@ -119,7 +119,7 @@ const setupEmailCollection = () => {
       button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>處理中...';
       
       try {
-        const response = await fetchUtils.post(`${API_BASE}/email`, {
+        const response = await axios.post(`${API_BASE}/email`, {
           email,
           source
         });
@@ -190,7 +190,7 @@ const setupSignup = () => {
     setButtonLoading('submit-btn', true);
     
     try {
-      const response = await fetchUtils.post(`${API_BASE}/auth/register`, {
+      const response = await axios.post(`${API_BASE}/auth/register`, {
         email,
         username,
         password
@@ -270,7 +270,7 @@ const setupLogin = () => {
     setButtonLoading('submit-btn', true);
     
     try {
-      const response = await fetchUtils.post(`${API_BASE}/auth/login`, {
+      const response = await axios.post(`${API_BASE}/auth/login`, {
         email,
         password
       });
@@ -351,7 +351,7 @@ const setupForgotPassword = () => {
     setButtonLoading('submit-btn', true);
     
     try {
-      const response = await fetchUtils.post(`${API_BASE}/auth/forgot-password`, {
+      const response = await axios.post(`${API_BASE}/auth/forgot-password`, {
         email
       });
       
@@ -409,7 +409,7 @@ const setupResetPassword = () => {
     setButtonLoading('submit-btn', true);
     
     try {
-      const response = await fetchUtils.post(`${API_BASE}/auth/reset-password`, {
+      const response = await axios.post(`${API_BASE}/auth/reset-password`, {
         token,
         password
       });

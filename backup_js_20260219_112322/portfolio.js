@@ -53,7 +53,7 @@ async function loadPortfolio() {
     const token = localStorage.getItem('auth_token');
     
     // Load user data first for balance
-    const userResponse = await fetchUtils.get('/api/auth/me', {
+    const userResponse = await axios.get('/api/auth/me', {
       headers: { Authorization: `Bearer ${token}` }
     });
     
@@ -65,7 +65,7 @@ async function loadPortfolio() {
     }
     
     // Load portfolio data
-    const response = await fetchUtils.get('/api/portfolio', {
+    const response = await axios.get('/api/portfolio', {
       headers: { Authorization: `Bearer ${token}` }
     });
     

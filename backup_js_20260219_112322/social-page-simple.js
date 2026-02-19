@@ -18,7 +18,7 @@ const checkAuth = async () => {
   }
 
   try {
-    const response = await fetchUtils.get('/api/auth/me', {
+    const response = await axios.get('/api/auth/me', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
@@ -86,7 +86,7 @@ const loadFeed = async () => {
   
   try {
     const token = localStorage.getItem('auth_token');
-    const response = await fetchUtils.get('/api/social/feed?limit=20', {
+    const response = await axios.get('/api/social/feed?limit=20', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     
@@ -130,7 +130,7 @@ const loadRecentComments = async () => {
   
   try {
     const token = localStorage.getItem('auth_token');
-    const response = await fetchUtils.get('/api/social/recent-comments?limit=20', {
+    const response = await axios.get('/api/social/recent-comments?limit=20', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     
@@ -171,7 +171,7 @@ const loadPopularComments = async () => {
   
   try {
     const token = localStorage.getItem('auth_token');
-    const response = await fetchUtils.get('/api/social/popular-comments?limit=20', {
+    const response = await axios.get('/api/social/popular-comments?limit=20', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     
@@ -319,7 +319,7 @@ const renderComment = (comment) => {
 // Load trending coins
 const loadTrendingCoins = async () => {
   try {
-    const response = await fetchUtils.get('/api/coins?sort=hype&limit=5');
+    const response = await axios.get('/api/coins?sort=hype&limit=5');
     
     if (response.data.success) {
       const coins = response.data.data.coins || [];
@@ -352,7 +352,7 @@ const loadTrendingCoins = async () => {
 const loadSocialStats = async () => {
   try {
     const token = localStorage.getItem('auth_token');
-    const response = await fetchUtils.get('/api/social/stats', {
+    const response = await axios.get('/api/social/stats', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     

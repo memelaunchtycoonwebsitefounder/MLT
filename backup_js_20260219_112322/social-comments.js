@@ -93,7 +93,7 @@ class SocialComments {
   async loadComments() {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetchUtils.get(`/api/social/comments/${this.coinId}`, {
+      const response = await axios.get(`/api/social/comments/${this.coinId}`, {
         params: {
           sortBy: this.sortBy,
           userId: this.userId
@@ -387,7 +387,7 @@ class SocialComments {
         return;
       }
       
-      const response = await fetchUtils.post('/api/social/comments', {
+      const response = await axios.post('/api/social/comments', {
         coinId: this.coinId,
         content,
         parentId
@@ -537,7 +537,7 @@ class SocialComments {
         return;
       }
       
-      const response = await fetchUtils.post(`/api/social/comments/${commentId}/like`, {}, {
+      const response = await axios.post(`/api/social/comments/${commentId}/like`, {}, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -586,7 +586,7 @@ class SocialComments {
     
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetchUtils.delete(`/api/social/comments/${commentId}`, {
+      const response = await axios.delete(`/api/social/comments/${commentId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -611,7 +611,7 @@ class SocialComments {
     
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetchUtils.put(`/api/social/comments/${commentId}`, {
+      const response = await axios.put(`/api/social/comments/${commentId}`, {
         content: newContent
       }, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -633,7 +633,7 @@ class SocialComments {
     
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetchUtils.post(`/api/social/comments/${commentId}/report`, {
+      const response = await axios.post(`/api/social/comments/${commentId}/report`, {
         reason: reason.trim()
       }, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -651,7 +651,7 @@ class SocialComments {
   async loadMoreReplies(commentId, offset) {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetchUtils.get(`/api/social/comments/${commentId}/replies`, {
+      const response = await axios.get(`/api/social/comments/${commentId}/replies`, {
         params: { offset, userId: this.userId },
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });

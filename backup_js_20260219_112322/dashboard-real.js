@@ -17,7 +17,7 @@ const checkAuthAndLoadDashboard = async () => {
   }
 
   try {
-    const response = await fetchUtils.get(`${API_BASE}/auth/me`, {
+    const response = await axios.get(`${API_BASE}/auth/me`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -106,7 +106,7 @@ const loadDashboardData = async () => {
 // Load user's created coins
 const loadMyCoins = async (token) => {
   try {
-    const response = await fetchUtils.get(`${API_BASE}/coins/my-coins`, {
+    const response = await axios.get(`${API_BASE}/coins/my-coins`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     
@@ -174,7 +174,7 @@ const updateMyCoinsStats = (coins) => {
 // Load portfolio statistics
 const loadPortfolioStats = async (token) => {
   try {
-    const response = await fetchUtils.get(`${API_BASE}/portfolio`, {
+    const response = await axios.get(`${API_BASE}/portfolio`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     
@@ -206,7 +206,7 @@ const displayPortfolioStats = (portfolio) => {
 // Load recent trading activity
 const loadRecentActivity = async (token) => {
   try {
-    const response = await fetchUtils.get(`${API_BASE}/trades/history?limit=5`, {
+    const response = await axios.get(`${API_BASE}/trades/history?limit=5`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     
@@ -259,7 +259,7 @@ const displayRecentActivity = (trades) => {
 // Load trending coins
 const loadTrendingCoins = async () => {
   try {
-    const response = await fetchUtils.get(`${API_BASE}/coins/trending/list?limit=5`);
+    const response = await axios.get(`${API_BASE}/coins/trending/list?limit=5`);
     
     if (response.data.success) {
       const coins = response.data.data;

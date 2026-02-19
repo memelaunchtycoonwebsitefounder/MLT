@@ -23,7 +23,7 @@ class CommentsSystem {
         return;
       }
       
-      const userResponse = await fetchUtils.get('/api/auth/me', {
+      const userResponse = await axios.get('/api/auth/me', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -43,7 +43,7 @@ class CommentsSystem {
   async loadComments() {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetchUtils.get(`/api/social/comments/${this.coinId}?userId=${this.userId}`, {
+      const response = await axios.get(`/api/social/comments/${this.coinId}?userId=${this.userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -376,7 +376,7 @@ class CommentsSystem {
     
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetchUtils.post('/api/social/comments', {
+      const response = await axios.post('/api/social/comments', {
         coinId: this.coinId,
         content: content
       }, {
@@ -403,7 +403,7 @@ class CommentsSystem {
     
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetchUtils.post('/api/social/comments', {
+      const response = await axios.post('/api/social/comments', {
         coinId: this.coinId,
         content: content.trim(),
         parentId: parseInt(parentId)
@@ -426,7 +426,7 @@ class CommentsSystem {
   async toggleLike(commentId, btn) {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetchUtils.post(`/api/social/comments/${commentId}/like`, {}, {
+      const response = await axios.post(`/api/social/comments/${commentId}/like`, {}, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -488,7 +488,7 @@ class CommentsSystem {
       
       try {
         const token = localStorage.getItem('auth_token');
-        const response = await fetchUtils.put(`/api/social/comments/${commentId}`, 
+        const response = await axios.put(`/api/social/comments/${commentId}`, 
           { content: newContent },
           { headers: { 'Authorization': `Bearer ${token}` } }
         );
@@ -514,7 +514,7 @@ class CommentsSystem {
     
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetchUtils.delete(`/api/social/comments/${commentId}`, {
+      const response = await axios.delete(`/api/social/comments/${commentId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       

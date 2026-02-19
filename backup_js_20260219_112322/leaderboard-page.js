@@ -50,7 +50,7 @@ const checkAuth = async () => {
 
   try {
     console.log('🔐 Checking authentication...');
-    const response = await fetchUtils.get('/api/auth/me', {
+    const response = await axios.get('/api/auth/me', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
@@ -91,7 +91,7 @@ const loadRankings = async () => {
   console.log(`📊 Loading ${currentCategory} rankings...`);
 
   try {
-    const response = await fetchUtils.get('/api/leaderboard/rankings', {
+    const response = await axios.get('/api/leaderboard/rankings', {
       params: {
         category: currentCategory,
         limit: 100,

@@ -19,7 +19,7 @@ const checkAuth = async () => {
 
   try {
     console.log('🔐 Checking authentication...');
-    const response = await fetchUtils.get('/api/auth/me', {
+    const response = await axios.get('/api/auth/me', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
@@ -44,7 +44,7 @@ const checkAuth = async () => {
 const loadAchievements = async () => {
   try {
     const token = localStorage.getItem('auth_token');
-    const response = await fetchUtils.get('/api/gamification/achievements', {
+    const response = await axios.get('/api/gamification/achievements', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 

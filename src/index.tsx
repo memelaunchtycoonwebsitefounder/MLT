@@ -416,7 +416,9 @@ app.get('/', (c) => {
           </div>
         </nav>
 
-        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="/static/fetch-utils.js"></script>
+        <script defer src="/static/performance-monitor.js"></script>
+        <script defer src="/static/pwa-manager.js"></script>
         <script defer src="/static/landing.js"></script>
         <script>
           // Redirect to signup/login pages
@@ -608,7 +610,9 @@ app.get('/signup', (c) => {
             </div>
         </div>
 
-        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="/static/fetch-utils.js"></script>
+        <script defer src="/static/performance-monitor.js"></script>
+        <script defer src="/static/pwa-manager.js"></script>
         <script src="/static/auth.js"></script>
     </body>
     </html>
@@ -750,7 +754,9 @@ app.get('/login', (c) => {
             </div>
         </div>
 
-        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="/static/fetch-utils.js"></script>
+        <script defer src="/static/performance-monitor.js"></script>
+        <script defer src="/static/pwa-manager.js"></script>
         <script src="/static/auth.js"></script>
     </body>
     </html>
@@ -834,7 +840,9 @@ app.get('/forgot-password', (c) => {
             </div>
         </div>
 
-        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="/static/fetch-utils.js"></script>
+        <script defer src="/static/performance-monitor.js"></script>
+        <script defer src="/static/pwa-manager.js"></script>
         <script src="/static/auth.js"></script>
     </body>
     </html>
@@ -942,7 +950,9 @@ app.get('/reset-password', (c) => {
             </div>
         </div>
 
-        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="/static/fetch-utils.js"></script>
+        <script defer src="/static/performance-monitor.js"></script>
+        <script defer src="/static/pwa-manager.js"></script>
         <script src="/static/auth.js"></script>
     </body>
     </html>
@@ -1473,7 +1483,9 @@ app.get('/coin/:id', (c) => {
             </div>
         </div>
 
-        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="/static/fetch-utils.js"></script>
+        <script defer src="/static/performance-monitor.js"></script>
+        <script defer src="/static/pwa-manager.js"></script>
         <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
         <script>
           const COIN_ID = '${coinId}';
@@ -1686,7 +1698,9 @@ app.get('/market', (c) => {
             </div>
         </div>
 
-        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="/static/fetch-utils.js"></script>
+        <script defer src="/static/performance-monitor.js"></script>
+        <script defer src="/static/pwa-manager.js"></script>
         <script src="/static/websocket-service.js"></script>
         <script src="/static/realtime-service.js"></script>
         <script src="/static/market.js"></script>
@@ -2371,7 +2385,9 @@ app.get('/create', (c) => {
             </div>
         </div>
 
-        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="/static/fetch-utils.js"></script>
+        <script defer src="/static/performance-monitor.js"></script>
+        <script defer src="/static/pwa-manager.js"></script>
         <script src="/static/mlt-calculator.js"></script>
         <script src="/static/create-coin.js?v=2.0.0-final"></script>
     </body>
@@ -2561,7 +2577,9 @@ app.get('/dashboard', (c) => {
             </div>
         </div>
 
-        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="/static/fetch-utils.js"></script>
+        <script defer src="/static/performance-monitor.js"></script>
+        <script defer src="/static/pwa-manager.js"></script>
         <script src="/static/dashboard-simple.js"></script>
     </body>
     </html>
@@ -2716,7 +2734,9 @@ app.get('/portfolio', (c) => {
             </div>
         </div>
 
-        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="/static/fetch-utils.js"></script>
+        <script defer src="/static/performance-monitor.js"></script>
+        <script defer src="/static/pwa-manager.js"></script>
         <script src="/static/portfolio.js"></script>
     </body>
     </html>
@@ -2900,7 +2920,9 @@ app.get('/achievements', (c) => {
             </div>
         </div>
 
-        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="/static/fetch-utils.js"></script>
+        <script defer src="/static/performance-monitor.js"></script>
+        <script defer src="/static/pwa-manager.js"></script>
         <script src="/static/achievements-page.js"></script>
     </body>
     </html>
@@ -3055,7 +3077,9 @@ app.get('/leaderboard', (c) => {
             </div>
         </div>
 
-        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="/static/fetch-utils.js"></script>
+        <script defer src="/static/performance-monitor.js"></script>
+        <script defer src="/static/pwa-manager.js"></script>
         <script src="/static/leaderboard-page.js"></script>
     </body>
     </html>
@@ -3224,7 +3248,9 @@ app.get('/social', (c) => {
             </div>
         </div>
 
-        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="/static/fetch-utils.js"></script>
+        <script defer src="/static/performance-monitor.js"></script>
+        <script defer src="/static/pwa-manager.js"></script>
         <script src="/static/auth.js"></script>
         <script src="/static/social-page-simple.js"></script>
     </body>
@@ -3321,7 +3347,9 @@ app.get('/profile/:userId', (c) => {
             </div>
         </div>
 
-        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="/static/fetch-utils.js"></script>
+        <script defer src="/static/performance-monitor.js"></script>
+        <script defer src="/static/pwa-manager.js"></script>
         <script src="/static/profile-page.js"></script>
     </body>
     </html>

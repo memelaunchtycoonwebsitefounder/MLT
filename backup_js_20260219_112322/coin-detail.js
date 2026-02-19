@@ -28,7 +28,7 @@ const checkAuth = async (retryCount = 0) => {
   console.log('[AUTH] Token found, length:', token.length);
 
   try {
-    const response = await fetchUtils.get('/api/auth/me', {
+    const response = await axios.get('/api/auth/me', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     
@@ -105,7 +105,7 @@ const loadCoinData = async (skipChart = false) => {
   try {
     const token = localStorage.getItem('auth_token');
     
-    const response = await fetchUtils.get(`/api/coins/${COIN_ID}`, {
+    const response = await axios.get(`/api/coins/${COIN_ID}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     
@@ -144,7 +144,7 @@ const renderCoinData = async () => {
   
   // Calculate real price change from price history
   try {
-    const response = await fetchUtils.get(`/api/coins/${COIN_ID}/price-history?limit=2`);
+    const response = await axios.get(`/api/coins/${COIN_ID}/price-history?limit=2`);
     let priceChange = 0;
     
     if (response.data.success && response.data.data.data.length >= 2) {
@@ -214,7 +214,7 @@ const loadUserHoldings = async () => {
   try {
     const token = localStorage.getItem('auth_token');
     
-    const response = await fetchUtils.get('/api/portfolio', {
+    const response = await axios.get('/api/portfolio', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     
@@ -294,7 +294,7 @@ const initPriceChart = async (limit = 100) => {
   
   try {
     // Load real price history from API
-    const response = await fetchUtils.get(`/api/coins/${COIN_ID}/price-history?limit=${limit}`);
+    const response = await axios.get(`/api/coins/${COIN_ID}/price-history?limit=${limit}`);
     
     if (!response.data.success) {
       console.error('❌ Failed to load price history');
@@ -594,7 +594,7 @@ const executeBuy = async () => {
   try {
     const token = localStorage.getItem('auth_token');
     
-    const response = await fetchUtils.post('/api/trades/buy', {
+    const response = await axios.post('/api/trades/buy', {
       coinId: parseInt(COIN_ID),
       amount: amount
     }, {
@@ -647,7 +647,7 @@ const executeSell = async () => {
   try {
     const token = localStorage.getItem('auth_token');
     
-    const response = await fetchUtils.post('/api/trades/sell', {
+    const response = await axios.post('/api/trades/sell', {
       coinId: parseInt(COIN_ID),
       amount: amount
     }, {
@@ -953,7 +953,7 @@ const init = async () => {
         const token = localStorage.getItem('auth_token');
         if (!token) return;
         
-        const response = await fetchUtils.get('/api/auth/me', {
+        const response = await axios.get('/api/auth/me', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         

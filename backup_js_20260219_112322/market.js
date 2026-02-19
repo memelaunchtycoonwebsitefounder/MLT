@@ -33,7 +33,7 @@ const checkAuth = async (retryCount = 0) => {
 
   try {
     console.log('Market: Verifying token with API...');
-    const response = await fetchUtils.get('/api/auth/me', {
+    const response = await axios.get('/api/auth/me', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -98,7 +98,7 @@ const loadCoins = async (page = 1) => {
       params.append('destinyType', currentFilters.destinyType);
     }
     
-    const response = await fetchUtils.get(`/api/coins?${params.toString()}`, {
+    const response = await axios.get(`/api/coins?${params.toString()}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }

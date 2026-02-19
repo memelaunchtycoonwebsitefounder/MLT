@@ -52,7 +52,7 @@ const checkAuth = async (retryCount = 0) => {
 
   try {
     console.log('CreateCoin: Verifying token with API...');
-    const response = await fetchUtils.get('/api/auth/me', {
+    const response = await axios.get('/api/auth/me', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -310,7 +310,7 @@ const setupStep2 = () => {
       symbolCheckTimeout = setTimeout(async () => {
         try {
           const token = localStorage.getItem('auth_token');
-          const response = await fetchUtils.get(`/api/coins?symbol=${symbol}`, {
+          const response = await axios.get(`/api/coins?symbol=${symbol}`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           
@@ -748,7 +748,7 @@ const launchCoin = async () => {
         launchText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>上傳圖片...';
         
         // Convert image file to base64 (already done in imagePreview)
-        const uploadResponse = await fetchUtils.post('/api/upload/image', {
+        const uploadResponse = await axios.post('/api/upload/image', {
           image: imagePreview,  // base64 data
           filename: coinData.image.name
         }, {
@@ -871,7 +871,7 @@ const launchCoin = async () => {
     
     const requestData = formData;
     
-    const response = await fetchUtils.post('/api/coins', requestData, {
+    const response = await axios.post('/api/coins', requestData, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'

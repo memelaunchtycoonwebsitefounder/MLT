@@ -97,7 +97,7 @@ class RealtimeService {
 
       // Fetch updates for each coin
       for (const coinId of coinIds) {
-        const response = await fetchUtils.get(`/api/coins/${coinId}`, {
+        const response = await axios.get(`/api/coins/${coinId}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -125,7 +125,7 @@ class RealtimeService {
       if (!token) return;
 
       // Fetch recent trades (including AI traders)
-      const response = await fetchUtils.get('/api/trades/recent?limit=10&includeAI=true', {
+      const response = await axios.get('/api/trades/recent?limit=10&includeAI=true', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 

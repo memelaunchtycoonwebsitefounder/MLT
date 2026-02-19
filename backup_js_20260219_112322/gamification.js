@@ -21,7 +21,7 @@ class GamificationUI {
   async loadAchievements() {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetchUtils.get('/api/gamification/achievements', {
+      const response = await axios.get('/api/gamification/achievements', {
         headers: { Authorization: `Bearer ${token}` }
       });
 
