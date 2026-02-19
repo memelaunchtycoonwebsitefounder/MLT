@@ -175,22 +175,21 @@ app.get('/', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="MemeLaunch Tycoon - 模因幣發射大亨。無風險模擬交易遊戲，創建並交易你的模因幣。">
         <title>MemeLaunch Tycoon - 模因幣發射大亨</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
-        <link href="/static/styles.css" rel="stylesheet">
         
-        <!-- Google Analytics 4 -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-XXXXXXXXXX');
-        </script>
+        <!-- Resource Hints for Performance -->
+        <link rel="preconnect" href="https://cdn.tailwindcss.com">
+        <link rel="preconnect" href="https://cdn.jsdelivr.net">
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+        
+        <!-- Critical CSS (inline for faster FCP) -->
         <style>
-          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
-          body { font-family: 'Inter', sans-serif; }
+          body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+          }
           .gradient-bg {
             background: linear-gradient(135deg, #1A1A2E 0%, #16213E 50%, #0F3460 100%);
           }
@@ -203,6 +202,28 @@ app.get('/', (c) => {
             box-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
           }
         </style>
+        
+        <!-- Non-critical CSS (deferred) -->
+        <link href="/static/styles.css" rel="stylesheet">
+        <link href="/static/mobile-optimizations.css" rel="stylesheet">
+        
+        <!-- Deferred JavaScript (non-blocking) -->
+        <script defer src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'">
+        <noscript><link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"></noscript>
+        
+        <!-- Google Analytics (deferred) -->
+        <script defer src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-XXXXXXXXXX');
+        </script>
+        
+        <!-- PWA Manifest -->
+        <link rel="manifest" href="/manifest.json">
+        <meta name="theme-color" content="#0A0B0D">
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <!-- Navigation -->
@@ -368,9 +389,35 @@ app.get('/', (c) => {
                 </div>
             </div>
         </footer>
+        
+        <!-- Mobile Bottom Navigation -->
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-md border-t border-gray-800 z-50 safe-area-inset-bottom">
+          <div class="flex justify-around py-2">
+            <a href="/market" class="flex flex-col items-center py-2 px-3 text-gray-400 hover:text-white transition">
+              <i class="fas fa-chart-line text-xl mb-1"></i>
+              <span class="text-xs">市場</span>
+            </a>
+            <a href="/portfolio" class="flex flex-col items-center py-2 px-3 text-gray-400 hover:text-white transition">
+              <i class="fas fa-wallet text-xl mb-1"></i>
+              <span class="text-xs">投資組合</span>
+            </a>
+            <a href="/create-coin" class="flex flex-col items-center py-2 px-3 text-orange-500">
+              <i class="fas fa-plus-circle text-2xl mb-1"></i>
+              <span class="text-xs">創建</span>
+            </a>
+            <a href="/leaderboard" class="flex flex-col items-center py-2 px-3 text-gray-400 hover:text-white transition">
+              <i class="fas fa-trophy text-xl mb-1"></i>
+              <span class="text-xs">排行榜</span>
+            </a>
+            <a href="/dashboard/profile" class="flex flex-col items-center py-2 px-3 text-gray-400 hover:text-white transition">
+              <i class="fas fa-user text-xl mb-1"></i>
+              <span class="text-xs">我的</span>
+            </a>
+          </div>
+        </nav>
 
-        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
-        <script src="/static/landing.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="/static/landing.js"></script>
         <script>
           // Redirect to signup/login pages
           document.getElementById('registerBtn')?.addEventListener('click', () => {
@@ -394,7 +441,7 @@ app.get('/signup', (c) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>註冊 - MemeLaunch Tycoon</title>
-        <script src="https://cdn.tailwindcss.com"></script>
+        <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
     </head>
@@ -561,7 +608,7 @@ app.get('/signup', (c) => {
             </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="/static/auth.js"></script>
     </body>
     </html>
@@ -577,7 +624,7 @@ app.get('/login', (c) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>登入 - MemeLaunch Tycoon</title>
-        <script src="https://cdn.tailwindcss.com"></script>
+        <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
     </head>
@@ -703,7 +750,7 @@ app.get('/login', (c) => {
             </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="/static/auth.js"></script>
     </body>
     </html>
@@ -719,7 +766,7 @@ app.get('/forgot-password', (c) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>忘記密碼 - MemeLaunch Tycoon</title>
-        <script src="https://cdn.tailwindcss.com"></script>
+        <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
     </head>
@@ -787,7 +834,7 @@ app.get('/forgot-password', (c) => {
             </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="/static/auth.js"></script>
     </body>
     </html>
@@ -805,7 +852,7 @@ app.get('/reset-password', (c) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>重置密碼 - MemeLaunch Tycoon</title>
-        <script src="https://cdn.tailwindcss.com"></script>
+        <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
     </head>
@@ -895,7 +942,7 @@ app.get('/reset-password', (c) => {
             </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="/static/auth.js"></script>
     </body>
     </html>
@@ -913,7 +960,7 @@ app.get('/coin/:id', (c) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>幣種詳情 - MemeLaunch Tycoon</title>
-        <script src="https://cdn.tailwindcss.com"></script>
+        <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
     </head>
@@ -1426,7 +1473,7 @@ app.get('/coin/:id', (c) => {
             </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
         <script>
           const COIN_ID = '${coinId}';
@@ -1452,7 +1499,7 @@ app.get('/market', (c) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>市場 - MemeLaunch Tycoon</title>
-        <script src="https://cdn.tailwindcss.com"></script>
+        <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
     </head>
@@ -1639,7 +1686,7 @@ app.get('/market', (c) => {
             </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="/static/websocket-service.js"></script>
         <script src="/static/realtime-service.js"></script>
         <script src="/static/market.js"></script>
@@ -1657,7 +1704,7 @@ app.get('/create', (c) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>創建模因幣 - MemeLaunch Tycoon</title>
-        <script src="https://cdn.tailwindcss.com"></script>
+        <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
     </head>
@@ -2324,7 +2371,7 @@ app.get('/create', (c) => {
             </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="/static/mlt-calculator.js"></script>
         <script src="/static/create-coin.js?v=2.0.0-final"></script>
     </body>
@@ -2341,7 +2388,7 @@ app.get('/dashboard', (c) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>儀表板 - MemeLaunch Tycoon</title>
-        <script src="https://cdn.tailwindcss.com"></script>
+        <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/professional-theme.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
@@ -2514,7 +2561,7 @@ app.get('/dashboard', (c) => {
             </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="/static/dashboard-simple.js"></script>
     </body>
     </html>
@@ -2530,7 +2577,7 @@ app.get('/portfolio', (c) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>投資組合 - MemeLaunch Tycoon</title>
-        <script src="https://cdn.tailwindcss.com"></script>
+        <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
     </head>
@@ -2669,7 +2716,7 @@ app.get('/portfolio', (c) => {
             </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="/static/portfolio.js"></script>
     </body>
     </html>
@@ -2685,7 +2732,7 @@ app.get('/achievements', (c) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>成就系統 - MemeLaunch Tycoon</title>
-        <script src="https://cdn.tailwindcss.com"></script>
+        <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
     </head>
@@ -2853,7 +2900,7 @@ app.get('/achievements', (c) => {
             </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="/static/achievements-page.js"></script>
     </body>
     </html>
@@ -2869,7 +2916,7 @@ app.get('/leaderboard', (c) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>排行榜 - MemeLaunch Tycoon</title>
-        <script src="https://cdn.tailwindcss.com"></script>
+        <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
     </head>
@@ -3008,7 +3055,7 @@ app.get('/leaderboard', (c) => {
             </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="/static/leaderboard-page.js"></script>
     </body>
     </html>
@@ -3024,7 +3071,7 @@ app.get('/social', (c) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>社交動態 - MemeLaunch Tycoon</title>
-        <script src="https://cdn.tailwindcss.com"></script>
+        <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
     </head>
@@ -3177,7 +3224,7 @@ app.get('/social', (c) => {
             </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="/static/auth.js"></script>
         <script src="/static/social-page-simple.js"></script>
     </body>
@@ -3194,7 +3241,7 @@ app.get('/profile/:userId', (c) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>用戶資料 - MemeLaunch</title>
-        <script src="https://cdn.tailwindcss.com"></script>
+        <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
         <style>
@@ -3274,7 +3321,7 @@ app.get('/profile/:userId', (c) => {
             </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="/static/profile-page.js"></script>
     </body>
     </html>
