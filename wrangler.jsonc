@@ -6,10 +6,6 @@
   "compatibility_flags": [
     "nodejs_compat"
   ],
-  "vars": {
-    "JWT_SECRET": "your-super-secret-jwt-key-change-in-production",
-    "STARTING_BALANCE": "10000"
-  },
   "d1_databases": [
     {
       "binding": "DB",
