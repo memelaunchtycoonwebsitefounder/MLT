@@ -65,18 +65,19 @@ MemeLaunch Tycoon 是一個完整的 Web3 模擬遊戲,讓玩家在無風險環�
 - 動畫進度條
 - 價格閃爍效果
 
-## 🌐 測試 URLs
+## 🌐 線上 URLs
 
 ### 🔗 **公開訪問地址**
 ```
-主站: https://3000-ialq9sk0j7h42em32rv8h-5634da27.sandbox.novita.ai
+生產環境: https://memelaunchtycoon.com
+預覽環境: https://056a6e80.memelaunch-tycoon.pages.dev
 ```
 
 ### 📍 **主要頁面**
 | 頁面 | URL | 描述 |
 |------|-----|------|
-| 🏠 首頁 | `/` | Landing Page |
-| 📝 註冊 | `/register` | 註冊新帳號 |
+| 🏠 首頁 | `/` | 新版 Landing Page (10 個區塊 + i18n) |
+| 📝 註冊 | `/signup` | 註冊新帳號 |
 | 🔐 登入 | `/login` | 用戶登入 |
 | 📊 儀表板 | `/dashboard` | 用戶儀表板 |
 | 🎨 創建幣種 | `/create` | 創幣表單 (含 MLT 計算器) |
@@ -90,22 +91,22 @@ MemeLaunch Tycoon 是一個完整的 Web3 模擬遊戲,讓玩家在無風險環�
 ### 🔌 **API 端點測試**
 ```bash
 # Health Check
-curl https://3000-ialq9sk0j7h42em32rv8h-5634da27.sandbox.novita.ai/api/health
+curl https://memelaunchtycoon.com/api/health
 
 # 獲取幣種列表 (前 10 個,按進度排序)
-curl "https://3000-ialq9sk0j7h42em32rv8h-5634da27.sandbox.novita.ai/api/coins?limit=10&sortBy=bonding_curve_progress&order=DESC"
+curl "https://memelaunchtycoon.com/api/coins?limit=10&sortBy=bonding_curve_progress&order=DESC"
 
 # 獲取熱門幣種
-curl "https://3000-ialq9sk0j7h42em32rv8h-5634da27.sandbox.novita.ai/api/coins/trending/list?limit=5"
+curl "https://memelaunchtycoon.com/api/coins/trending/list?limit=5"
 
 # 獲取單個幣種詳情
-curl https://3000-ialq9sk0j7h42em32rv8h-5634da27.sandbox.novita.ai/api/coins/2
+curl https://memelaunchtycoon.com/api/coins/2
 
 # 管理員 - 系統狀態
-curl https://3000-ialq9sk0j7h42em32rv8h-5634da27.sandbox.novita.ai/api/admin/scheduler/status
+curl https://memelaunchtycoon.com/api/admin/scheduler/status
 
 # 管理員 - 統計數據
-curl https://3000-ialq9sk0j7h42em32rv8h-5634da27.sandbox.novita.ai/api/admin/stats
+curl https://memelaunchtycoon.com/api/admin/stats
 ```
 
 ### 🧪 **測試帳號**
@@ -207,20 +208,63 @@ curl https://3000-ialq9sk0j7h42em32rv8h-5634da27.sandbox.novita.ai/api/admin/sta
 - [x] 全局事件存儲
 - [x] 時間線 AI/真實徽章
 
+### ✅ Phase 4 - 新首頁與國際化 (已完成, ~3 小時)
+
+#### 4.1 新首頁設計 ✅ (2 小時)
+- [x] 10 個核心區塊實現:
+  1. ✅ 導航欄 (Navigation) - 語言切換器 + 按鈕
+  2. ✅ Hero 區塊 - 動態漸變標題 + 實時統計
+  3. ✅ 實時市場預覽 - 熱門幣種輪播
+  4. ✅ 使用說明 (How It Works) - 4 步驟卡片
+  5. ✅ 功能展示 (Features Grid) - 6 個功能卡片
+  6. ✅ 實時統計 (Live Stats) - CountUp 動畫
+  7. ✅ 用戶評價 (Testimonials) - 3 個用戶卡片
+  8. ✅ 定價方案 (Pricing) - Free + VIP
+  9. ✅ FAQ 問答 - 4 個可展開問答
+  10. ✅ 最終 CTA + Footer - 橙色光暈效果
+- [x] 設計系統:
+  - 顏色: Orange #FF6B35, Yellow #F7931E, Cyan #00D9FF, Purple #9D4EDD
+  - 字體: Inter (主要) + JetBrains Mono (等寬)
+  - 動畫: 漸變文字、浮動、玻璃效果、光暈
+- [x] 響應式設計 (移動優先)
+- [x] pump.fun 風格參考
+
+#### 4.2 國際化系統 (i18n) ✅ (1 小時)
+- [x] 雙語支援 (英文 + 繁體中文)
+- [x] 輕量級 i18n 實現 (~5KB)
+- [x] 語言切換器組件
+- [x] 自動語言檢測 (瀏覽器 + Cookie)
+- [x] 翻譯檔案:
+  - `/locales/en.json` - 英文翻譯
+  - `/locales/zh.json` - 中文翻譯
+- [x] 實時語言切換 (無需重載頁面)
+
+#### 4.3 路由問題修復 ✅
+- [x] 解決 Cloudflare Pages 308 重定向循環
+- [x] 將 HTML 嵌入 Worker (index.tsx)
+- [x] 更新 _routes.json 排除規則
+- [x] 部署到生產環境
+
 ## 📊 系統統計
 
 ### 🎯 開發進度
 ```
-總開發時間: ~10 小時
+總開發時間: ~13 小時
 ├─ Phase 2 (後端): 7 小時
 ├─ Phase 3 (前端): 2.5 小時
+├─ Phase 4 (新首頁 + i18n): 3 小時
 └─ 文檔: 0.5 小時
 
 代碼統計:
-├─ 總行數: ~6,500 行
-├─ Git Commits: 159 次
-├─ 新文件: 20+ 個
+├─ 總行數: ~7,500 行
+├─ Git Commits: 170+ 次
+├─ 新文件: 25+ 個
 └─ API 端點: 40+ 個
+
+Bundle 大小:
+├─ Worker: 408.23 KB
+├─ i18n 系統: ~5 KB
+└─ Landing Page: 29 KB (HTML)
 ```
 
 ### 🤖 AI 系統狀態
@@ -516,9 +560,16 @@ webapp/
 │       ├── leaderboard.ts     # 排行榜
 │       └── admin.ts           # 管理 API
 ├── public/
+│   ├── index.html             # Landing Page (由 Worker 提供)
+│   ├── locales/
+│   │   ├── en.json            # 英文翻譯
+│   │   └── zh.json            # 中文翻譯
 │   └── static/
 │       ├── styles.css             # 全局樣式
-│       ├── landing.js             # 首頁 JS
+│       ├── i18n.js                # i18n 系統
+│       ├── language-switcher.js   # 語言切換器
+│       ├── landing-new.js         # 新首頁 JS
+│       ├── landing.js             # 舊首頁 JS
 │       ├── auth.js                # 登入/註冊 JS
 │       ├── dashboard.js           # 儀表板 JS
 │       ├── create-coin.js         # 創幣表單 JS
@@ -766,11 +817,11 @@ MIT License - 自由使用、修改和分發
 
 ---
 
-**最後更新**: 2026-02-14  
-**版本**: v2.0.0 (Phase 2 & 3 Complete)  
+**最後更新**: 2026-02-19  
+**版本**: v3.0.0 (Phase 2, 3 & 4 Complete - 新首頁 + i18n)  
 **狀態**: ✅ 生產就緒
 
-🚀 **立即體驗**: [MemeLaunch Tycoon](https://3000-ialq9sk0j7h42em32rv8h-5634da27.sandbox.novita.ai)
+🚀 **立即體驗**: [MemeLaunch Tycoon](https://memelaunchtycoon.com)
 
 ---
 
@@ -778,5 +829,6 @@ MIT License - 自由使用、修改和分發
 - MVP v1.0 (Phase 1): 2026-02-08
 - v2.0 (Phase 2): 2026-02-13 (後端增強)
 - v2.0 (Phase 3): 2026-02-14 (前端增強)
+- v3.0 (Phase 4): 2026-02-19 (新首頁 + 國際化)
 
-**下一步**: 部署到 Cloudflare Pages 🚀
+**部署狀態**: ✅ 已部署到 Cloudflare Pages
