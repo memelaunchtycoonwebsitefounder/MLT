@@ -173,11 +173,518 @@ app.get('/', (c) => {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=/index.html">
-    <title>MemeLaunch Tycoon</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MemeLaunch Tycoon - Create, trade, and compete with meme coins in a risk-free simulation game">
+    <title>MemeLaunch Tycoon - Launch Your Meme Coin Empire</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/styles.css" rel="stylesheet">
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+      
+      :root {
+        --color-orange: #FF6B35;
+        --color-yellow: #F7931E;
+        --color-cyan: #00D9FF;
+        --color-purple: #9D4EDD;
+      }
+      
+      body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #0A0B0D 0%, #16213E 50%, #0F3460 100%);
+      }
+      
+      .font-mono {
+        font-family: 'JetBrains Mono', monospace;
+      }
+      
+      .gradient-bg {
+        background: linear-gradient(135deg, #1A1A2E 0%, #16213E 50%, #0F3460 100%);
+      }
+      
+      .glass-effect {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .glow-orange {
+        box-shadow: 0 0 30px rgba(255, 107, 53, 0.6);
+      }
+      
+      .glow-cyan {
+        box-shadow: 0 0 30px rgba(0, 217, 255, 0.6);
+      }
+      
+      .animated-gradient-text {
+        background: linear-gradient(90deg, var(--color-orange), var(--color-yellow), var(--color-cyan), var(--color-purple));
+        background-size: 300% 100%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradientShift 3s ease infinite;
+      }
+      
+      @keyframes gradientShift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+      }
+      
+      .carousel-container {
+        display: flex;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        gap: 1rem;
+      }
+      
+      .carousel-container::-webkit-scrollbar {
+        display: none;
+      }
+      
+      @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+      }
+      
+      .float-animation {
+        animation: float 3s ease-in-out infinite;
+      }
+      
+      .step-card {
+        position: relative;
+      }
+      
+      .step-card::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: -2rem;
+        width: 2rem;
+        height: 2px;
+        background: linear-gradient(90deg, var(--color-orange), transparent);
+      }
+      
+      .step-card:last-child::before {
+        display: none;
+      }
+    </style>
 </head>
-<body>
-    <p>Loading...</p>
+<body class="gradient-bg text-white min-h-screen">
+    <!-- Navigation -->
+    <nav class="glass-effect sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-rocket text-3xl text-orange-500 float-animation"></i>
+                    <h1 class="text-2xl font-bold">MemeLaunch Tycoon</h1>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#features" class="hover:text-orange-500 transition" data-i18n="nav.features">Features</a>
+                    <a href="#how-it-works" class="hover:text-orange-500 transition" data-i18n="nav.howItWorks">How It Works</a>
+                    <a href="/market" class="hover:text-orange-500 transition" data-i18n="nav.market">Market</a>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="language-switcher-container"></div>
+                    
+                    <button id="loginBtn" class="px-6 py-2 rounded-lg glass-effect hover:bg-white/10 transition" data-i18n="nav.login">
+                        Login
+                    </button>
+                    <button id="registerBtn" class="px-6 py-2 rounded-lg bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 transition glow-orange" data-i18n="nav.signUp">
+                        Start Playing
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="container mx-auto px-4 py-16 md:py-24">
+        <div class="max-w-6xl mx-auto text-center">
+            <div class="mb-8">
+                <h2 class="text-5xl md:text-7xl font-black mb-4">
+                    <span data-i18n="hero.title">Launch Your Own</span><br/>
+                    <span class="animated-gradient-text" data-i18n="hero.titleHighlight">Meme Coin Empire</span>
+                </h2>
+                <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto" data-i18n="hero.subtitle">
+                    Risk-free simulation trading game. Create meme coins, trade, and compete on the leaderboard!
+                </p>
+            </div>
+            
+            <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4 mb-12">
+                <button class="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-lg font-bold text-lg transition glow-orange" id="heroSignupBtn">
+                    <i class="fas fa-rocket mr-2"></i>
+                    <span data-i18n="hero.ctaPrimary">Get 10,000 Free Coins</span>
+                </button>
+                <button class="w-full md:w-auto px-8 py-4 glass-effect hover:bg-white/10 rounded-lg font-bold text-lg transition">
+                    <i class="fas fa-play-circle mr-2"></i>
+                    <span data-i18n="hero.ctaSecondary">Watch Demo</span>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="glass-effect px-6 py-4 rounded-xl hover:scale-105 transition">
+                    <i class="fas fa-coins text-yellow-500 text-3xl mb-2"></i>
+                    <p class="text-sm text-gray-400" data-i18n="hero.stats.startingBalance">Starting Balance</p>
+                    <p class="text-2xl font-bold font-mono" id="hero-starting-balance">10,000</p>
+                </div>
+                <div class="glass-effect px-6 py-4 rounded-xl hover:scale-105 transition">
+                    <i class="fas fa-users text-blue-500 text-3xl mb-2"></i>
+                    <p class="text-sm text-gray-400" data-i18n="hero.stats.activePlayers">Active Players</p>
+                    <p class="text-2xl font-bold font-mono" id="hero-active-players" data-count="1234">--</p>
+                </div>
+                <div class="glass-effect px-6 py-4 rounded-xl hover:scale-105 transition">
+                    <i class="fas fa-chart-line text-green-500 text-3xl mb-2"></i>
+                    <p class="text-sm text-gray-400" data-i18n="hero.stats.coinsCreated">Coins Created</p>
+                    <p class="text-2xl font-bold font-mono" id="hero-coins-created" data-count="5678">--</p>
+                </div>
+                <div class="glass-effect px-6 py-4 rounded-xl hover:scale-105 transition">
+                    <i class="fas fa-fire text-orange-500 text-3xl mb-2"></i>
+                    <p class="text-sm text-gray-400" data-i18n="hero.stats.totalVolume">24h Volume</p>
+                    <p class="text-2xl font-bold font-mono" id="hero-total-volume" data-count="125000">--</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Market Preview -->
+    <section class="container mx-auto px-4 py-16">
+        <div class="mb-8 text-center">
+            <h3 class="text-4xl font-bold mb-2" data-i18n="liveMarket.title">🔥 Trending Now</h3>
+            <p class="text-gray-400">Live meme coins racing to the moon</p>
+        </div>
+        
+        <div class="carousel-container pb-4" id="trending-coins-carousel">
+            <!-- Trending coins will be loaded dynamically -->
+            <div class="glass-effect rounded-xl p-4 min-w-[280px] animate-pulse">
+                <div class="h-24 bg-gray-800 rounded"></div>
+            </div>
+            <div class="glass-effect rounded-xl p-4 min-w-[280px] animate-pulse">
+                <div class="h-24 bg-gray-800 rounded"></div>
+            </div>
+            <div class="glass-effect rounded-xl p-4 min-w-[280px] animate-pulse">
+                <div class="h-24 bg-gray-800 rounded"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="container mx-auto px-4 py-16">
+        <div class="max-w-5xl mx-auto">
+            <h3 class="text-4xl font-bold text-center mb-12" data-i18n="howItWorks.title">How It Works</h3>
+            
+            <div class="grid md:grid-cols-4 gap-6">
+                <div class="step-card glass-effect p-6 rounded-xl text-center hover:scale-105 transition">
+                    <div class="w-16 h-16 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">1</div>
+                    <h4 class="text-xl font-bold mb-2" data-i18n="howItWorks.step1.title">Sign Up & Get 10,000 Coins</h4>
+                    <p class="text-gray-400 text-sm" data-i18n="howItWorks.step1.desc">100% free, no credit card required</p>
+                </div>
+                
+                <div class="step-card glass-effect p-6 rounded-xl text-center hover:scale-105 transition">
+                    <div class="w-16 h-16 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">2</div>
+                    <h4 class="text-xl font-bold mb-2" data-i18n="howItWorks.step2.title">Create Your First Meme Coin</h4>
+                    <p class="text-gray-400 text-sm" data-i18n="howItWorks.step2.desc">Upload image, set name & supply, launch!</p>
+                </div>
+                
+                <div class="step-card glass-effect p-6 rounded-xl text-center hover:scale-105 transition">
+                    <div class="w-16 h-16 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">3</div>
+                    <h4 class="text-xl font-bold mb-2" data-i18n="howItWorks.step3.title">Trade & Earn Virtual Profits</h4>
+                    <p class="text-gray-400 text-sm" data-i18n="howItWorks.step3.desc">Buy low, sell high, track your portfolio</p>
+                </div>
+                
+                <div class="step-card glass-effect p-6 rounded-xl text-center hover:scale-105 transition">
+                    <div class="w-16 h-16 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">4</div>
+                    <h4 class="text-xl font-bold mb-2" data-i18n="howItWorks.step4.title">Climb the Leaderboard</h4>
+                    <p class="text-gray-400 text-sm" data-i18n="howItWorks.step4.desc">Compete with players worldwide</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section id="features" class="container mx-auto px-4 py-16">
+        <div class="max-w-6xl mx-auto">
+            <h3 class="text-4xl font-bold text-center mb-12" data-i18n="features.title">Why Choose MemeLaunch Tycoon?</h3>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="glass-effect p-8 rounded-xl hover:scale-105 transition">
+                    <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-shield-alt text-3xl text-green-500"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-3" data-i18n="features.riskFree.title">100% Risk-Free</h4>
+                    <p class="text-gray-400" data-i18n="features.riskFree.desc">No real money, pure simulation fun</p>
+                </div>
+                
+                <div class="glass-effect p-8 rounded-xl hover:scale-105 transition">
+                    <div class="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-chart-line text-3xl text-blue-500"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-3" data-i18n="features.realMarket.title">Real Market Mechanics</h4>
+                    <p class="text-gray-400" data-i18n="features.realMarket.desc">Bonding curves, price discovery, liquidity</p>
+                </div>
+                
+                <div class="glass-effect p-8 rounded-xl hover:scale-105 transition">
+                    <div class="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-trophy text-3xl text-yellow-500"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-3" data-i18n="features.leaderboard.title">Competitive Leaderboards</h4>
+                    <p class="text-gray-400" data-i18n="features.leaderboard.desc">Earn badges, climb ranks, get VIP status</p>
+                </div>
+                
+                <div class="glass-effect p-8 rounded-xl hover:scale-105 transition">
+                    <div class="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-crown text-3xl text-purple-500"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-3" data-i18n="features.vipPerks.title">VIP Perks</h4>
+                    <p class="text-gray-400" data-i18n="features.vipPerks.desc">Exclusive features for top traders</p>
+                </div>
+                
+                <div class="glass-effect p-8 rounded-xl hover:scale-105 transition">
+                    <div class="w-16 h-16 bg-cyan-500/20 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-robot text-3xl text-cyan-500"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-3" data-i18n="features.aiTraders.title">AI Trading Bots</h4>
+                    <p class="text-gray-400" data-i18n="features.aiTraders.desc">Realistic market simulation with AI</p>
+                </div>
+                
+                <div class="glass-effect p-8 rounded-xl hover:scale-105 transition">
+                    <div class="w-16 h-16 bg-orange-500/20 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-chart-candlestick text-3xl text-orange-500"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-3" data-i18n="features.charts.title">Professional Charts</h4>
+                    <p class="text-gray-400" data-i18n="features.charts.desc">TradingView-style K-line charts</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Statistics -->
+    <section class="container mx-auto px-4 py-16 bg-gradient-to-r from-orange-500/10 to-purple-500/10">
+        <div class="max-w-6xl mx-auto">
+            <h3 class="text-4xl font-bold text-center mb-12" data-i18n="stats.title">Join Thousands of Players</h3>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="text-5xl md:text-6xl font-black font-mono mb-2 text-orange-500" id="stat-total-users" data-count="2500">--</div>
+                    <p class="text-gray-400" data-i18n="stats.users">Total Users</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-5xl md:text-6xl font-black font-mono mb-2 text-cyan-500" id="stat-total-coins" data-count="8900">--</div>
+                    <p class="text-gray-400" data-i18n="stats.coins">Coins Created</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-5xl md:text-6xl font-black font-mono mb-2 text-purple-500" id="stat-total-volume" data-count="1250000">--</div>
+                    <p class="text-gray-400" data-i18n="stats.volume">Total Volume</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-5xl md:text-6xl font-black font-mono mb-2 text-green-500" id="stat-total-trades" data-count="45000">--</div>
+                    <p class="text-gray-400" data-i18n="stats.trades">Trades Today</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="container mx-auto px-4 py-16">
+        <div class="max-w-6xl mx-auto">
+            <h3 class="text-4xl font-bold text-center mb-12" data-i18n="testimonials.title">What Players Say</h3>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="glass-effect p-6 rounded-xl">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full flex items-center justify-center font-bold">CW</div>
+                        <div>
+                            <p class="font-bold" data-i18n="testimonials.user1.name">CryptoWhale99</p>
+                            <p class="text-sm text-gray-400" data-i18n="testimonials.user1.role">Top Trader</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300" data-i18n="testimonials.user1.text">"Best meme coin simulator! Made 100x on my first trade."</p>
+                </div>
+                
+                <div class="glass-effect p-6 rounded-xl">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center font-bold">MS</div>
+                        <div>
+                            <p class="font-bold" data-i18n="testimonials.user2.name">MoonShot</p>
+                            <p class="text-sm text-gray-400" data-i18n="testimonials.user2.role">Content Creator</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300" data-i18n="testimonials.user2.text">"Love the real-time charts and competitive leaderboard!"</p>
+                </div>
+                
+                <div class="glass-effect p-6 rounded-xl">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center font-bold">DH</div>
+                        <div>
+                            <p class="font-bold" data-i18n="testimonials.user3.name">DiamondHands</p>
+                            <p class="text-sm text-gray-400" data-i18n="testimonials.user3.role">VIP Member</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300" data-i18n="testimonials.user3.text">"Addictive gameplay, amazing community!"</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="container mx-auto px-4 py-16">
+        <div class="max-w-4xl mx-auto">
+            <h3 class="text-4xl font-bold text-center mb-12" data-i18n="pricing.title">Choose Your Plan</h3>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="glass-effect p-8 rounded-xl border-2 border-green-500/50">
+                    <div class="text-center mb-6">
+                        <h4 class="text-2xl font-bold mb-2" data-i18n="pricing.free.name">Free</h4>
+                        <div class="text-5xl font-black mb-2">$<span data-i18n="pricing.free.price">0</span></div>
+                        <p class="text-gray-400">Forever</p>
+                    </div>
+                    <ul class="space-y-3 mb-6">
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span data-i18n="pricing.free.features.0">10,000 starting coins</span></li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span data-i18n="pricing.free.features.1">Unlimited coin creation</span></li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span data-i18n="pricing.free.features.2">Basic charts</span></li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span data-i18n="pricing.free.features.3">Community access</span></li>
+                    </ul>
+                    <button class="w-full px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 rounded-lg font-bold transition" data-i18n="pricing.free.cta">
+                        Start Free
+                    </button>
+                </div>
+                
+                <div class="glass-effect p-8 rounded-xl border-2 border-purple-500/50 relative">
+                    <div class="absolute top-0 right-0 bg-gradient-to-r from-orange-500 to-pink-500 px-4 py-1 rounded-bl-lg rounded-tr-lg text-sm font-bold">
+                        Coming Soon
+                    </div>
+                    <div class="text-center mb-6 opacity-60">
+                        <h4 class="text-2xl font-bold mb-2" data-i18n="pricing.vip.name">VIP</h4>
+                        <div class="text-5xl font-black mb-2" data-i18n="pricing.vip.price">Coming Soon</div>
+                        <p class="text-gray-400">Premium Features</p>
+                    </div>
+                    <ul class="space-y-3 mb-6 opacity-60">
+                        <li class="flex items-center"><i class="fas fa-check text-purple-500 mr-2"></i><span data-i18n="pricing.vip.features.0">Everything in Free</span></li>
+                        <li class="flex items-center"><i class="fas fa-check text-purple-500 mr-2"></i><span data-i18n="pricing.vip.features.1">Advanced analytics</span></li>
+                        <li class="flex items-center"><i class="fas fa-check text-purple-500 mr-2"></i><span data-i18n="pricing.vip.features.2">Priority support</span></li>
+                        <li class="flex items-center"><i class="fas fa-check text-purple-500 mr-2"></i><span data-i18n="pricing.vip.features.3">Exclusive badges</span></li>
+                        <li class="flex items-center"><i class="fas fa-check text-purple-500 mr-2"></i><span data-i18n="pricing.vip.features.4">Early access to new features</span></li>
+                    </ul>
+                    <button class="w-full px-6 py-3 glass-effect rounded-lg font-bold cursor-not-allowed opacity-60" disabled data-i18n="pricing.vip.cta">
+                        Coming Soon
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="container mx-auto px-4 py-16">
+        <div class="max-w-3xl mx-auto">
+            <h3 class="text-4xl font-bold text-center mb-12" data-i18n="faq.title">Frequently Asked Questions</h3>
+            
+            <div class="space-y-4">
+                <details class="glass-effect p-6 rounded-xl group">
+                    <summary class="font-bold text-lg cursor-pointer flex justify-between items-center">
+                        <span data-i18n="faq.q1.question">Is this real crypto trading?</span>
+                        <i class="fas fa-chevron-down group-open:rotate-180 transition"></i>
+                    </summary>
+                    <p class="mt-4 text-gray-400" data-i18n="faq.q1.answer">No, MemeLaunch Tycoon is 100% simulation. No real money involved.</p>
+                </details>
+                
+                <details class="glass-effect p-6 rounded-xl group">
+                    <summary class="font-bold text-lg cursor-pointer flex justify-between items-center">
+                        <span data-i18n="faq.q2.question">How do I earn coins?</span>
+                        <i class="fas fa-chevron-down group-open:rotate-180 transition"></i>
+                    </summary>
+                    <p class="mt-4 text-gray-400" data-i18n="faq.q2.answer">Trade meme coins, create popular coins, and complete achievements.</p>
+                </details>
+                
+                <details class="glass-effect p-6 rounded-xl group">
+                    <summary class="font-bold text-lg cursor-pointer flex justify-between items-center">
+                        <span data-i18n="faq.q3.question">Can I withdraw my coins?</span>
+                        <i class="fas fa-chevron-down group-open:rotate-180 transition"></i>
+                    </summary>
+                    <p class="mt-4 text-gray-400" data-i18n="faq.q3.answer">No, all coins are virtual and for game purposes only.</p>
+                </details>
+                
+                <details class="glass-effect p-6 rounded-xl group">
+                    <summary class="font-bold text-lg cursor-pointer flex justify-between items-center">
+                        <span data-i18n="faq.q4.question">Is it free?</span>
+                        <i class="fas fa-chevron-down group-open:rotate-180 transition"></i>
+                    </summary>
+                    <p class="mt-4 text-gray-400" data-i18n="faq.q4.answer">Yes! 100% free to play. No credit card required.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="container mx-auto px-4 py-16">
+        <div class="max-w-4xl mx-auto glass-effect rounded-2xl p-12 text-center glow-orange">
+            <h3 class="text-4xl md:text-5xl font-bold mb-4" data-i18n="cta.title">Ready to Launch Your Empire?</h3>
+            <p class="text-xl text-gray-300 mb-8" data-i18n="cta.subtitle">Join thousands of players and start your meme coin journey today!</p>
+            
+            <button class="px-12 py-4 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-lg font-bold text-xl transition glow-orange" id="finalCtaBtn">
+                <i class="fas fa-rocket mr-2"></i>
+                <span data-i18n="cta.button">Get Started Free</span>
+            </button>
+            
+            <p class="text-sm text-gray-400 mt-6" data-i18n="cta.disclaimer">
+                No credit card • 100% free • Instant access
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="container mx-auto px-4 py-8 border-t border-gray-800">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-rocket text-2xl text-orange-500"></i>
+                    <span class="font-bold">MemeLaunch Tycoon</span>
+                </div>
+                
+                <div class="flex flex-wrap justify-center space-x-6">
+                    <a href="/dashboard" class="hover:text-orange-500 transition" data-i18n="footer.about">About</a>
+                    <a href="#" class="hover:text-orange-500 transition" data-i18n="footer.privacy">Privacy Policy</a>
+                    <a href="#" class="hover:text-orange-500 transition" data-i18n="footer.terms">Terms of Service</a>
+                    <a href="#" class="hover:text-orange-500 transition" data-i18n="footer.contact">Contact</a>
+                </div>
+            </div>
+            
+            <div class="text-center text-gray-500 text-sm mt-6" data-i18n="footer.copyright">
+                © 2026 MemeLaunch Tycoon. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/static/i18n.js"></script>
+    <script src="/static/language-switcher.js"></script>
+    <script src="/static/landing-new.js"></script>
+    <script>
+      // Navigation button handlers
+      document.getElementById('loginBtn')?.addEventListener('click', () => {
+        window.location.href = '/login';
+      });
+      document.getElementById('registerBtn')?.addEventListener('click', () => {
+        window.location.href = '/signup';
+      });
+      document.getElementById('heroSignupBtn')?.addEventListener('click', () => {
+        window.location.href = '/signup';
+      });
+      document.getElementById('finalCtaBtn')?.addEventListener('click', () => {
+        window.location.href = '/signup';
+      });
+    </script>
 </body>
 </html>`);
 });
