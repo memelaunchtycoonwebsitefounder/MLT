@@ -15,12 +15,12 @@ class I18nManager {
    * Initialize i18n system
    */
   async init() {
-    // Detect user's preferred language
+    // Get saved locale from localStorage
     const savedLocale = localStorage.getItem('mlt_locale');
-    const browserLocale = this.detectBrowserLocale();
     
-    // Priority: saved > browser > default
-    this.currentLocale = savedLocale || browserLocale || this.defaultLocale;
+    // Priority: saved locale > default (English)
+    // Note: Browser language detection is disabled - English is default for first-time visitors
+    this.currentLocale = savedLocale || this.defaultLocale;
     
     // Load translation files
     await this.loadTranslations(this.currentLocale);
