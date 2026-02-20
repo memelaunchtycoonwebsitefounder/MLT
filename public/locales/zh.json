@@ -153,5 +153,100 @@
     "terms": "服務條款",
     "contact": "聯繫",
     "copyright": "© 2026 MemeLaunch Tycoon. 版權所有。"
+  },
+  "auth": {
+    "login": {
+      "title": "歡迎回來！",
+      "subtitle": "登入以繼續您的模因幣帝國",
+      "emailLabel": "電子郵箱",
+      "emailPlaceholder": "your@email.com",
+      "passwordLabel": "密碼",
+      "passwordPlaceholder": "輸入您的密碼",
+      "rememberMe": "記住我",
+      "forgotPassword": "忘記密碼？",
+      "submitButton": "登入",
+      "submitButtonLoading": "登入中...",
+      "orDivider": "或使用以下方式繼續",
+      "googleButton": "使用 Google 繼續",
+      "twitterButton": "使用 Twitter 繼續",
+      "metamaskButton": "連接 MetaMask",
+      "noAccount": "還沒有帳號？",
+      "signUpLink": "免費註冊",
+      "socialProof": {
+        "traders": "活躍交易員",
+        "volume": "24小時交易量"
+      }
+    },
+    "register": {
+      "title": "創建您的帳號",
+      "subtitle": "加入數千名交易員在模因幣宇宙中",
+      "usernameLabel": "用戶名",
+      "usernamePlaceholder": "選擇一個獨特的用戶名",
+      "emailLabel": "電子郵箱",
+      "emailPlaceholder": "your@email.com",
+      "passwordLabel": "密碼",
+      "passwordPlaceholder": "創建一個強密碼",
+      "confirmPasswordLabel": "確認密碼",
+      "confirmPasswordPlaceholder": "再次輸入您的密碼",
+      "termsCheckbox": "我同意服務條款和隱私政策",
+      "submitButton": "創建帳號",
+      "submitButtonLoading": "創建中...",
+      "orDivider": "或使用以下方式註冊",
+      "googleButton": "使用 Google 註冊",
+      "twitterButton": "使用 Twitter 註冊",
+      "metamaskButton": "連接 MetaMask",
+      "hasAccount": "已有帳號？",
+      "loginLink": "立即登入",
+      "steps": {
+        "step1": {
+          "title": "創建帳號",
+          "desc": "快速簡單設置"
+        },
+        "step2": {
+          "title": "獲得 10,000 MLT",
+          "desc": "免費起始資金"
+        },
+        "step3": {
+          "title": "發射模因幣",
+          "desc": "創建您的第一枚幣"
+        }
+      },
+      "communityStats": {
+        "users": "用戶",
+        "coinsLaunched": "已發射幣種"
+      },
+      "passwordStrength": {
+        "weak": "弱",
+        "medium": "中等",
+        "strong": "強",
+        "veryStrong": "非常強"
+      }
+    },
+    "validation": {
+      "emailRequired": "電子郵箱為必填項",
+      "emailInvalid": "請輸入有效的電子郵箱地址",
+      "passwordRequired": "密碼為必填項",
+      "passwordMinLength": "密碼至少需要 8 個字符",
+      "passwordPattern": "密碼必須包含大寫字母、小寫字母、數字和特殊字符",
+      "confirmPasswordRequired": "請確認您的密碼",
+      "confirmPasswordMismatch": "密碼不匹配",
+      "usernameRequired": "用戶名為必填項",
+      "usernameMinLength": "用戶名至少需要 3 個字符",
+      "usernamePattern": "用戶名只能包含字母、數字和下劃線",
+      "termsRequired": "您必須同意條款和條件"
+    },
+    "errors": {
+      "loginFailed": "電子郵箱或密碼無效",
+      "registerFailed": "註冊失敗。請重試。",
+      "emailExists": "電子郵箱已存在",
+      "usernameExists": "用戶名已被占用",
+      "networkError": "網絡錯誤。請檢查您的連接。",
+      "serverError": "服務器錯誤。請稍後重試。"
+    },
+    "success": {
+      "loginSuccess": "歡迎回來！",
+      "registerSuccess": "帳號創建成功！正在跳轉..."
+    },
+    "disclaimer": "🔒 100% 模擬遊戲 • 無實際金錢交易 • 您的數據安全受保護"
   }
 }
