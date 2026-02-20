@@ -751,11 +751,15 @@ app.get('/signup', (c) => {
                     <div class="hidden lg:block animate-slide-in-left">
                         <!-- Title Section -->
                         <div class="mb-8">
-                            <h1 class="text-4xl lg:text-5xl font-bold mb-4 gradient-text" data-i18n="auth.register.title">
-                                Create Your Account
+                            <h1 class="text-4xl lg:text-5xl font-bold mb-4">
+                                <span class="text-white">Create Your </span>
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent via-purple to-primary">Account</span>
                             </h1>
-                            <p class="text-xl text-gray-300" data-i18n="auth.register.subtitle">
-                                Join thousands of traders in the meme coin universe
+                            <p class="text-xl text-gray-300">
+                                <span>Join </span>
+                                <span class="text-accent font-bold">thousands of traders</span>
+                                <span> in the </span>
+                                <span class="text-primary font-semibold">meme coin universe</span>
                             </p>
                         </div>
 
@@ -835,11 +839,15 @@ app.get('/signup', (c) => {
                         <!-- Form Card -->
                         <div class="glass-effect rounded-2xl p-6 sm:p-8 shadow-2xl max-w-md mx-auto lg:mx-0">
                             <div class="mb-6 text-center lg:text-left">
-                                <h2 class="text-2xl font-bold mb-2" data-i18n="auth.register.title">
-                                    Create Your Account
+                                <h2 class="text-2xl font-bold mb-2">
+                                    <span class="text-white">Create Your </span>
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent via-purple to-primary">Account</span>
                                 </h2>
-                                <p class="text-sm text-gray-400" data-i18n="auth.register.subtitle">
-                                    Join thousands of traders in the meme coin universe
+                                <p class="text-sm text-gray-400">
+                                    <span>Join </span>
+                                    <span class="text-accent font-semibold">thousands of traders</span>
+                                    <span> in the </span>
+                                    <span class="text-primary font-semibold">meme coin universe</span>
                                 </p>
                             </div>
                             
@@ -1093,11 +1101,13 @@ app.get('/login', (c) => {
                             </div>
 
                             <!-- Welcome Message -->
-                            <h1 class="text-4xl lg:text-5xl font-bold mb-4 gradient-text" data-i18n="auth.login.title">
-                                Welcome Back!
+                            <h1 class="text-4xl lg:text-5xl font-bold mb-4">
+                                <span class="text-white" data-i18n="auth.login.title">Welcome </span>
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">Back!</span>
                             </h1>
-                            <p class="text-xl text-gray-300 mb-8" data-i18n="auth.login.subtitle">
-                                Sign in to continue your meme coin empire
+                            <p class="text-xl text-gray-300 mb-8">
+                                <span data-i18n="auth.login.subtitle">Sign in to continue your </span>
+                                <span class="text-primary font-semibold">meme coin empire</span>
                             </p>
 
                             <!-- Social Proof Stats -->
@@ -1145,11 +1155,13 @@ app.get('/login', (c) => {
                         <!-- Form Card -->
                         <div class="glass-effect rounded-2xl p-6 sm:p-8 lg:p-10 shadow-2xl">
                             <div class="mb-8 text-center lg:text-left">
-                                <h2 class="text-2xl sm:text-3xl font-bold mb-2" data-i18n="auth.login.title">
-                                    Welcome Back!
+                                <h2 class="text-2xl sm:text-3xl font-bold mb-2">
+                                    <span class="text-white" data-i18n="auth.login.title">Welcome </span>
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">Back!</span>
                                 </h2>
-                                <p class="text-gray-400" data-i18n="auth.login.subtitle">
-                                    Sign in to continue your meme coin empire
+                                <p class="text-gray-400">
+                                    <span data-i18n="auth.login.subtitle">Sign in to continue your </span>
+                                    <span class="text-accent font-semibold">meme coin empire</span>
                                 </p>
                             </div>
                             

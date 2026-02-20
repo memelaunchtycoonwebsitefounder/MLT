@@ -39,7 +39,7 @@ auth.post('/register', async (c) => {
 
     if (!validatePassword(password)) {
       console.log('[REGISTER] Invalid password format');
-      return errorResponse('密碼必須至少 6 個字符');
+      return errorResponse('密碼必須至少 8 個字符,並包含大寫字母、小寫字母、數字和特殊字符');
     }
 
     // Check if user already exists
@@ -306,7 +306,7 @@ auth.post('/reset-password', async (c) => {
     }
 
     if (!validatePassword(newPassword)) {
-      return errorResponse('密碼必須至少 6 個字符');
+      return errorResponse('密碼必須至少 8 個字符,並包含大寫字母、小寫字母、數字和特殊字符');
     }
 
     // Find valid token
@@ -359,6 +359,308 @@ auth.post('/logout', async (c) => {
   } catch (error: any) {
     console.error('Logout error:', error);
     return errorResponse('登出時發生錯誤', 500);
+  }
+});
+
+// Email Verification - Send verification email
+auth.post('/send-verification', async (c) => {
+  try {
+    const { email } = await c.req.json();
+
+    if (!email) {
+      return errorResponse('請提供電子郵箱');
+    }
+
+    if (!validateEmail(email)) {
+      return errorResponse('無效的電子郵件格式');
+    }
+
+    // Find user
+    const user = await c.env.DB.prepare(
+      'SELECT id, email, username, email_verified FROM users WHERE email = ?'
+    )
+      .bind(email)
+      .first() as any;
+
+    if (!user) {
+      return errorResponse('用戶不存在', 404);
+    }
+
+    if (user.email_verified) {
+      return successResponse({
+        message: '您的電子郵箱已經驗證過了'
+      });
+    }
+
+    // Generate verification token
+    const verificationToken = Array.from({ length: 32 }, () => 
+      Math.random().toString(36).charAt(2)
+    ).join('');
+
+    // Token expires in 24 hours
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+    // Save token to database
+    await c.env.DB.prepare(
+      `INSERT INTO email_verification_tokens (user_id, token, expires_at) 
+       VALUES (?, ?, ?)`
+    )
+      .bind(user.id, verificationToken, expiresAt)
+      .run();
+
+    // In production, send email here
+    const host = c.req.header('host') || 'localhost:3000';
+    const verificationLink = `https://${host}/verify-email?token=${verificationToken}`;
+    console.log('Email verification link:', verificationLink);
+
+    return successResponse({
+      message: '驗證連結已發送到您的郵箱',
+      // For development only - remove in production
+      verificationLink: verificationLink
+    });
+  } catch (error: any) {
+    console.error('Send verification error:', error);
+    return errorResponse('發送驗證郵件時發生錯誤', 500);
+  }
+});
+
+// Email Verification - Verify token
+auth.post('/verify-email', async (c) => {
+  try {
+    const { token } = await c.req.json();
+
+    if (!token) {
+      return errorResponse('缺少驗證令牌');
+    }
+
+    // Find valid token
+    const verificationToken = await c.env.DB.prepare(
+      `SELECT * FROM email_verification_tokens 
+       WHERE token = ? AND used = 0 AND expires_at > datetime('now')`
+    )
+      .bind(token)
+      .first() as any;
+
+    if (!verificationToken) {
+      return errorResponse('無效或已過期的驗證令牌', 400);
+    }
+
+    // Update user email_verified status
+    await c.env.DB.prepare(
+      'UPDATE users SET email_verified = 1 WHERE id = ?'
+    )
+      .bind(verificationToken.user_id)
+      .run();
+
+    // Mark token as used
+    await c.env.DB.prepare(
+      'UPDATE email_verification_tokens SET used = 1 WHERE id = ?'
+    )
+      .bind(verificationToken.id)
+      .run();
+
+    return successResponse({
+      message: '電子郵箱驗證成功！'
+    });
+  } catch (error: any) {
+    console.error('Verify email error:', error);
+    return errorResponse('驗證郵箱時發生錯誤', 500);
+  }
+});
+
+// OAuth - Google Login/Register
+auth.get('/oauth/google', async (c) => {
+  try {
+    // Google OAuth redirect
+    const redirectUri = `${c.req.url.split('/oauth')[0]}/oauth/google/callback`;
+    const clientId = c.env.GOOGLE_CLIENT_ID || '';
+    
+    if (!clientId) {
+      return errorResponse('Google OAuth 未配置', 500);
+    }
+
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+      `client_id=${clientId}&` +
+      `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+      `response_type=code&` +
+      `scope=email profile&` +
+      `access_type=offline`;
+
+    return c.redirect(googleAuthUrl);
+  } catch (error: any) {
+    console.error('Google OAuth initiation error:', error);
+    return errorResponse('Google 登入失敗', 500);
+  }
+});
+
+// OAuth - Google Callback
+auth.get('/oauth/google/callback', async (c) => {
+  try {
+    const code = c.req.query('code');
+    
+    if (!code) {
+      return errorResponse('缺少授權碼', 400);
+    }
+
+    // Exchange code for access token
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        code,
+        client_id: c.env.GOOGLE_CLIENT_ID,
+        client_secret: c.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: `${c.req.url.split('/oauth')[0]}/oauth/google/callback`,
+        grant_type: 'authorization_code'
+      })
+    });
+
+    const tokenData = await tokenResponse.json();
+    
+    if (!tokenData.access_token) {
+      return errorResponse('獲取 Google 訪問令牌失敗', 400);
+    }
+
+    // Get user info from Google
+    const userResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: { Authorization: `Bearer ${tokenData.access_token}` }
+    });
+
+    const googleUser = await userResponse.json();
+
+    // Check if user exists
+    let user = await c.env.DB.prepare(
+      'SELECT * FROM users WHERE email = ?'
+    )
+      .bind(googleUser.email)
+      .first() as any;
+
+    if (!user) {
+      // Create new user
+      const username = googleUser.email.split('@')[0] + Math.floor(Math.random() * 1000);
+      const startingBalance = parseFloat(c.env.STARTING_BALANCE || '10000');
+      const startingMLT = parseFloat(c.env.STARTING_MLT || '10000');
+
+      await c.env.DB.prepare(
+        `INSERT INTO users (email, username, password_hash, virtual_balance, mlt_balance, email_verified, oauth_provider, oauth_id) 
+         VALUES (?, ?, ?, ?, ?, 1, 'google', ?)`
+      )
+        .bind(googleUser.email, username, '', startingBalance, startingMLT, googleUser.id)
+        .run();
+
+      user = await c.env.DB.prepare(
+        'SELECT * FROM users WHERE email = ?'
+      )
+        .bind(googleUser.email)
+        .first() as any;
+    }
+
+    // Generate JWT token
+    const tokenPayload: JWTPayload = {
+      userId: user.id,
+      email: user.email,
+      username: user.username,
+    };
+    
+    const token = await generateToken(tokenPayload, c.env.JWT_SECRET);
+
+    // Redirect to frontend with token
+    return c.redirect(`/dashboard?token=${token}`);
+  } catch (error: any) {
+    console.error('Google OAuth callback error:', error);
+    return errorResponse('Google 登入處理失敗', 500);
+  }
+});
+
+// OAuth - Twitter Login/Register
+auth.get('/oauth/twitter', async (c) => {
+  try {
+    const redirectUri = `${c.req.url.split('/oauth')[0]}/oauth/twitter/callback`;
+    const clientId = c.env.TWITTER_CLIENT_ID || '';
+    
+    if (!clientId) {
+      return errorResponse('Twitter OAuth 未配置', 500);
+    }
+
+    // Twitter OAuth 2.0
+    const twitterAuthUrl = `https://twitter.com/i/oauth2/authorize?` +
+      `response_type=code&` +
+      `client_id=${clientId}&` +
+      `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+      `scope=tweet.read users.read&` +
+      `state=${Math.random().toString(36).substring(7)}&` +
+      `code_challenge=challenge&` +
+      `code_challenge_method=plain`;
+
+    return c.redirect(twitterAuthUrl);
+  } catch (error: any) {
+    console.error('Twitter OAuth initiation error:', error);
+    return errorResponse('Twitter 登入失敗', 500);
+  }
+});
+
+// MetaMask - Web3 Wallet Authentication
+auth.post('/web3/metamask', async (c) => {
+  try {
+    const { address, signature, message } = await c.req.json();
+
+    if (!address || !signature || !message) {
+      return errorResponse('缺少必要參數');
+    }
+
+    // In production, verify the signature here
+    // For now, we'll trust the client-side verification
+
+    // Check if user exists
+    let user = await c.env.DB.prepare(
+      'SELECT * FROM users WHERE wallet_address = ?'
+    )
+      .bind(address)
+      .first() as any;
+
+    if (!user) {
+      // Create new user with wallet
+      const username = `user_${address.substring(2, 8)}`;
+      const startingBalance = parseFloat(c.env.STARTING_BALANCE || '10000');
+      const startingMLT = parseFloat(c.env.STARTING_MLT || '10000');
+
+      await c.env.DB.prepare(
+        `INSERT INTO users (email, username, password_hash, virtual_balance, mlt_balance, wallet_address, email_verified) 
+         VALUES (?, ?, ?, ?, ?, ?, 1)`
+      )
+        .bind(`${address}@wallet.local`, username, '', startingBalance, startingMLT, address)
+        .run();
+
+      user = await c.env.DB.prepare(
+        'SELECT * FROM users WHERE wallet_address = ?'
+      )
+        .bind(address)
+        .first() as any;
+    }
+
+    // Generate JWT token
+    const tokenPayload: JWTPayload = {
+      userId: user.id,
+      email: user.email,
+      username: user.username,
+    };
+    
+    const token = await generateToken(tokenPayload, c.env.JWT_SECRET);
+
+    return successResponse({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        wallet_address: user.wallet_address,
+        virtual_balance: user.virtual_balance,
+        mlt_balance: user.mlt_balance || 10000,
+      },
+    });
+  } catch (error: any) {
+    console.error('MetaMask auth error:', error);
+    return errorResponse('MetaMask 認證失敗', 500);
   }
 });
 

@@ -294,11 +294,10 @@ class AuthPageManager {
 
   async socialLogin(provider) {
     try {
-      // Placeholder for OAuth implementation
-      this.showInfo(`${provider} login will be available soon!`);
-      
-      // In production, redirect to OAuth endpoint:
-      // window.location.href = `/api/auth/${provider}`;
+      if (provider === 'google' || provider === 'twitter') {
+        // Redirect to OAuth endpoint
+        window.location.href = `/api/auth/oauth/${provider}`;
+      }
     } catch (error) {
       console.error('Social login error:', error);
       this.showError('Social login failed. Please try again.');
@@ -313,18 +312,81 @@ class AuthPageManager {
     }
     
     try {
+      // Show loading
+      const metamaskBtn = document.querySelector('[data-social="metamask"]');
+      const originalHTML = metamaskBtn ? metamaskBtn.innerHTML : '';
+      if (metamaskBtn) {
+        metamaskBtn.innerHTML = '<span class="spinner"></span>';
+        metamaskBtn.disabled = true;
+      }
+
+      // Request account access
       const accounts = await window.ethereum.request({ 
         method: 'eth_requestAccounts' 
       });
       
       const address = accounts[0];
-      this.showInfo(`Connected: ${address.substring(0, 6)}...${address.substring(38)}`);
       
-      // Send address to backend for authentication
-      // await this.authenticateWithWallet(address);
+      // Create message for signing
+      const message = `Sign this message to authenticate with MemeLaunch Tycoon.\n\nAddress: ${address}\nTimestamp: ${Date.now()}`;
+      
+      // Request signature
+      const signature = await window.ethereum.request({
+        method: 'personal_sign',
+        params: [message, address]
+      });
+
+      // Send to backend for verification
+      const response = await fetch('/api/auth/web3/metamask', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          address,
+          signature,
+          message
+        }),
+      });
+
+      const result = await response.json();
+
+      // Restore button
+      if (metamaskBtn) {
+        metamaskBtn.innerHTML = originalHTML;
+        metamaskBtn.disabled = false;
+      }
+
+      if (response.ok && result.success) {
+        this.showSuccess('Connected successfully!');
+        
+        // Store token
+        if (result.data.token) {
+          localStorage.setItem('auth_token', result.data.token);
+        }
+
+        // Redirect after success
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 1500);
+      } else {
+        this.showError(result.message || 'MetaMask authentication failed.');
+      }
     } catch (error) {
       console.error('MetaMask connection error:', error);
-      this.showError('Failed to connect MetaMask. Please try again.');
+      
+      // Restore button
+      const metamaskBtn = document.querySelector('[data-social="metamask"]');
+      if (metamaskBtn) {
+        metamaskBtn.innerHTML = '<i class="fab fa-ethereum text-xl"></i>';
+        metamaskBtn.disabled = false;
+      }
+      
+      if (error.code === 4001) {
+        this.showError('You rejected the connection request.');
+      } else {
+        this.showError('Failed to connect MetaMask. Please try again.');
+      }
     }
   }
 
