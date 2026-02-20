@@ -752,14 +752,14 @@ app.get('/signup', (c) => {
                         <!-- Title Section -->
                         <div class="mb-8">
                             <h1 class="text-4xl lg:text-5xl font-bold mb-4">
-                                <span class="text-white">Create Your </span>
-                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent via-purple to-primary">Account</span>
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">Create Your </span>
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent via-purple to-primary animate-pulse">Account</span>
                             </h1>
                             <p class="text-xl text-gray-300">
                                 <span>Join </span>
-                                <span class="text-accent font-bold">thousands of traders</span>
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-purple font-bold">thousands of traders</span>
                                 <span> in the </span>
-                                <span class="text-primary font-semibold">meme coin universe</span>
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary font-bold">meme coin universe</span>
                             </p>
                         </div>
 
@@ -840,12 +840,12 @@ app.get('/signup', (c) => {
                         <div class="glass-effect rounded-2xl p-6 sm:p-8 shadow-2xl max-w-md mx-auto lg:mx-0">
                             <div class="mb-6 text-center lg:text-left">
                                 <h2 class="text-2xl font-bold mb-2">
-                                    <span class="text-white">Create Your </span>
-                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent via-purple to-primary">Account</span>
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">Create Your </span>
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent via-purple to-primary animate-pulse">Account</span>
                                 </h2>
                                 <p class="text-sm text-gray-400">
                                     <span>Join </span>
-                                    <span class="text-accent font-semibold">thousands of traders</span>
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-purple font-bold">thousands of traders</span>
                                     <span> in the </span>
                                     <span class="text-primary font-semibold">meme coin universe</span>
                                 </p>
@@ -1102,12 +1102,12 @@ app.get('/login', (c) => {
 
                             <!-- Welcome Message -->
                             <h1 class="text-4xl lg:text-5xl font-bold mb-4">
-                                <span class="text-white" data-i18n="auth.login.title">Welcome </span>
-                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">Back!</span>
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400" data-i18n="auth.login.title">Welcome </span>
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent animate-pulse">Back!</span>
                             </h1>
                             <p class="text-xl text-gray-300 mb-8">
                                 <span data-i18n="auth.login.subtitle">Sign in to continue your </span>
-                                <span class="text-primary font-semibold">meme coin empire</span>
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent font-bold">meme coin empire</span>
                             </p>
 
                             <!-- Social Proof Stats -->
@@ -1156,12 +1156,12 @@ app.get('/login', (c) => {
                         <div class="glass-effect rounded-2xl p-6 sm:p-8 lg:p-10 shadow-2xl">
                             <div class="mb-8 text-center lg:text-left">
                                 <h2 class="text-2xl sm:text-3xl font-bold mb-2">
-                                    <span class="text-white" data-i18n="auth.login.title">Welcome </span>
-                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">Back!</span>
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400" data-i18n="auth.login.title">Welcome </span>
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent animate-pulse">Back!</span>
                                 </h2>
                                 <p class="text-gray-400">
                                     <span data-i18n="auth.login.subtitle">Sign in to continue your </span>
-                                    <span class="text-accent font-semibold">meme coin empire</span>
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent font-bold">meme coin empire</span>
                                 </p>
                             </div>
                             
