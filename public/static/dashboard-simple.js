@@ -38,7 +38,10 @@ async function init() {
       
       // Update UI
       updateUserUI(user);
-      loadDashboardData(user);
+      await loadDashboardData(user);
+      
+      // Hide page loader after everything is loaded
+      fetchUtils.hidePageLoader();
     } else {
       throw new Error('Invalid response');
     }

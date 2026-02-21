@@ -16,7 +16,7 @@ export default defineConfig({
           routes.exclude = routes.exclude || []
           
           // Add static files to exclusions
-          const staticFiles = ['/index.html', '/sw.js', '/manifest.json', '/locales/*']
+          const staticFiles = ['/index.html', '/sw.js', '/manifest.json', '/locales/*', '/favicon.ico', '/favicon.svg']
           staticFiles.forEach(file => {
             if (!routes.exclude.includes(file)) {
               routes.exclude.push(file)
@@ -33,6 +33,16 @@ export default defineConfig({
         if (fs.existsSync(publicIndexPath)) {
           fs.copyFileSync(publicIndexPath, distIndexPath)
           console.log('✅ Copied index.html to dist/')
+        }
+        
+        // Copy favicon files from public/static to dist root
+        const faviconSvgPath = path.resolve(__dirname, 'public/static/favicon.svg')
+        const distFaviconSvgPath = path.resolve(__dirname, 'dist/favicon.svg')
+        const distFaviconIcoPath = path.resolve(__dirname, 'dist/favicon.ico')
+        if (fs.existsSync(faviconSvgPath)) {
+          fs.copyFileSync(faviconSvgPath, distFaviconSvgPath)
+          fs.copyFileSync(faviconSvgPath, distFaviconIcoPath)
+          console.log('✅ Copied favicon files to dist/')
         }
       }
     }

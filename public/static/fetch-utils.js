@@ -208,6 +208,17 @@ const fetchUtils = {
       },
     };
   },
+  
+  /**
+   * Hide page loader
+   */
+  hidePageLoader() {
+    const loader = document.getElementById('page-loader');
+    if (loader) {
+      loader.classList.add('hidden');
+      setTimeout(() => loader.remove(), 300);
+    }
+  },
 };
 
 // Export for use in other files

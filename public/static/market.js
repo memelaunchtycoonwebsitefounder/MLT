@@ -400,6 +400,9 @@ const init = async () => {
     updateUserBalance(userData.virtual_balance);
     setupEventListeners();
     await loadCoins(1);
+    
+    // Hide page loader after everything is loaded
+    fetchUtils.hidePageLoader();
   }
 };
 

@@ -1929,8 +1929,12 @@ app.get('/market', (c) => {
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
+        <style>
+          #page-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0A0B0D 0%,#1A1B1F 50%,#0A0B0D 100%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .3s}.loader-spinner{width:50px;height:50px;border:4px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#page-loader.hidden{opacity:0;pointer-events:none}
+        </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
+        <div id="page-loader"><div class="loader-spinner"></div></div>
         <!-- Navigation -->
         <nav class="glass-effect sticky top-0 z-50">
             <div class="container mx-auto px-4 py-4">
@@ -2829,9 +2833,47 @@ app.get('/dashboard', (c) => {
         <style>
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
           body { font-family: 'Inter', sans-serif; }
+          
+          /* Loading overlay to prevent flash of content */
+          #page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0A0B0D 0%, #1A1B1F 50%, #0A0B0D 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+          }
+          
+          #page-loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+          }
+          
+          .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 107, 53, 0.2);
+            border-top-color: #FF6B35;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+          }
+          
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
         </style>
     </head>
     <body class="min-h-screen" style="background: linear-gradient(135deg, #0A0B0D 0%, #1A1B1F 50%, #0A0B0D 100%);">
+        <!-- Loading overlay -->
+        <div id="page-loader">
+            <div class="loader-spinner"></div>
+        </div>
+        
         <!-- Navigation -->
         <nav class="glass-card sticky top-0 z-50 border-b border-white/10">
             <div class="container mx-auto px-4 py-4">
