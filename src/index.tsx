@@ -703,7 +703,7 @@ app.get('/signup', (c) => {
     <title>註冊 - MemeLaunch Tycoon</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
     <style>
         body { 
             background: #000000;
@@ -986,7 +986,7 @@ app.get('/login', (c) => {
     <title>登入 - MemeLaunch Tycoon</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
     <style>
         body { 
             background: #000000;
