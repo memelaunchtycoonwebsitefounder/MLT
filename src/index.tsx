@@ -1156,7 +1156,7 @@ app.get('/login', (c) => {
                         localStorage.setItem('auth_token', result.data.token);
                         localStorage.setItem('user', JSON.stringify(result.data.user));
                     }
-                    alert('登入成功！');
+                    // Redirect without alert popup
                     window.location.href = '/dashboard';
                 } else {
                     alert(result.error || result.message || '登入失敗，請檢查您的憑證');
@@ -1903,8 +1903,14 @@ app.get('/coin/:id', (c) => {
         <script src="/static/trading-panel.js"></script>
         <script src="/static/comments-simple.js"></script>
         <script src="/static/websocket-service.js"></script>
+        <!-- Core utilities -->
+        <script src="/static/fetch-utils.js"></script>
+        
+        <!-- Real-time updates -->
         <script src="/static/realtime-service.js"></script>
         <script src="/static/realtime.js"></script>
+        
+        <!-- Coin detail functionality -->
         <script src="/static/coin-detail.js"></script>
     </body>
     </html>
@@ -2110,6 +2116,7 @@ app.get('/market', (c) => {
         
         
         
+        <script src="/static/fetch-utils.js"></script>
         <script src="/static/websocket-service.js"></script>
         <script src="/static/realtime-service.js"></script>
         <script src="/static/market.js"></script>
@@ -2795,8 +2802,10 @@ app.get('/create', (c) => {
         </div>
 
         
+        <!-- Core utilities -->
+        <script src="/static/fetch-utils.js"></script>
         
-        
+        <!-- Page scripts -->
         <script src="/static/mlt-calculator.js"></script>
         <script src="/static/create-coin.js?v=2.0.0-final"></script>
     </body>
@@ -3145,8 +3154,10 @@ app.get('/portfolio', (c) => {
         </div>
 
         
+        <!-- Core utilities -->
+        <script src="/static/fetch-utils.js"></script>
         
-        
+        <!-- Portfolio functionality -->
         <script src="/static/portfolio.js"></script>
     </body>
     </html>
@@ -3331,8 +3342,10 @@ app.get('/achievements', (c) => {
         </div>
 
         
+        <!-- Core utilities -->
+        <script src="/static/fetch-utils.js"></script>
         
-        
+        <!-- Achievements functionality -->
         <script src="/static/achievements-page.js"></script>
     </body>
     </html>
@@ -3488,8 +3501,10 @@ app.get('/leaderboard', (c) => {
         </div>
 
         
+        <!-- Core utilities -->
+        <script src="/static/fetch-utils.js"></script>
         
-        
+        <!-- Leaderboard functionality -->
         <script src="/static/leaderboard-page.js"></script>
     </body>
     </html>
@@ -3659,8 +3674,10 @@ app.get('/social', (c) => {
         </div>
 
         
+        <!-- Core utilities -->
+        <script src="/static/fetch-utils.js"></script>
         
-        
+        <!-- Social page functionality -->
         <script src="/static/auth.js"></script>
         <script src="/static/social-page-simple.js"></script>
     </body>
@@ -3758,8 +3775,10 @@ app.get('/profile/:userId', (c) => {
         </div>
 
         
+        <!-- Core utilities -->
+        <script src="/static/fetch-utils.js"></script>
         
-        
+        <!-- Profile functionality -->
         <script src="/static/profile-page.js"></script>
     </body>
     </html>
