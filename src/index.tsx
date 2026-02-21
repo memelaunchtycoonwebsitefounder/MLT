@@ -744,12 +744,12 @@ app.get('/signup', (c) => {
             </button>
         </div>
 
-        <div class="min-h-screen flex items-center justify-center relative z-10 p-4">
-            <div class="w-full max-w-md mx-auto">
-                <div class="w-full">
+        <div class="min-h-screen flex items-center justify-center relative z-10 py-8">
+            <div class="container mx-auto px-4">
+                <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center max-w-6xl mx-auto">
                     
-                    <!-- Hide left side -->
-                    <div class="hidden">
+                    <!-- Left Side - Steps & Community Stats (Hidden on Mobile) -->
+                    <div class="hidden lg:block animate-slide-in-left">
                         <!-- Title Section -->
                         <div class="mb-8">
                             <h1 class="text-4xl lg:text-5xl font-bold mb-4">
@@ -826,26 +826,29 @@ app.get('/signup', (c) => {
                         </div>
                     </div>
 
-                    <!-- Registration Form - Centered Single Card -->
-                    <div class="w-full">
-                        <!-- Logo -->
-                        <div class="text-center mb-8">
+                    <!-- Right Side - Registration Form -->
+                    <div class="animate-slide-in-right">
+                        <!-- Mobile Logo (Shown on Mobile Only) -->
+                        <div class="lg:hidden text-center mb-8">
                             <a href="/" class="inline-block">
-                                <h1 class="text-4xl font-bold gradient-text mb-2">
+                                <h1 class="text-3xl font-bold gradient-text">
                                     <i class="fas fa-rocket"></i> MemeLaunch
                                 </h1>
                             </a>
-                            <p class="text-gray-400">Create your account</p>
                         </div>
 
                         <!-- Form Card -->
-                        <div class="glass-effect rounded-2xl p-8 shadow-2xl">
-                            <div class="mb-6 text-center">
-                                <h2 class="text-2xl font-bold mb-2 text-white">
-                                    Create Your Account
+                        <div class="glass-effect rounded-2xl p-6 sm:p-8 shadow-2xl max-w-md mx-auto lg:mx-0">
+                            <div class="mb-6 text-center lg:text-left">
+                                <h2 class="text-2xl font-bold mb-2">
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">Create Your </span>
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent via-purple to-primary animate-pulse">Account</span>
                                 </h2>
                                 <p class="text-sm text-gray-400">
-                                    Join thousands of traders in the meme coin universe
+                                    <span>Join </span>
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-purple font-bold">thousands of traders</span>
+                                    <span> in the </span>
+                                    <span class="text-primary font-semibold">meme coin universe</span>
                                 </p>
                             </div>
                             
@@ -1009,9 +1012,9 @@ app.get('/signup', (c) => {
                             </p>
                         </div>
 
-                        <!-- Footer -->
-                        <p class="mt-6 text-center text-xs text-gray-500">
-                            🔒 Powered by Cloudflare D1 • 100% Secure • No Real Money
+                        <!-- Disclaimer -->
+                        <p class="mt-6 text-center text-xs text-gray-500" data-i18n="auth.disclaimer">
+                            🔒 100% Simulation Game • No Real Money • Your Data is Protected
                         </p>
                     </div>
                 </div>
@@ -1084,12 +1087,12 @@ app.get('/login', (c) => {
             </button>
         </div>
 
-        <div class="min-h-screen flex items-center justify-center relative z-10 p-4">
-            <div class="w-full max-w-md mx-auto">
-                <div class="w-full">
+        <div class="min-h-screen flex items-center justify-center relative z-10">
+            <div class="container mx-auto px-4 py-12">
+                <div class="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
                     
-                    <!-- Hide left side, show only form -->
-                    <div class="hidden">
+                    <!-- Left Side - Illustration & Benefits (Hidden on Mobile) -->
+                    <div class="hidden lg:block animate-slide-in-left">
                         <div class="auth-illustration">
                             <!-- Rocket Illustration -->
                             <div class="rocket-illustration mb-8 text-center">
@@ -1101,11 +1104,11 @@ app.get('/login', (c) => {
 
                             <!-- Welcome Message -->
                             <h1 class="text-4xl lg:text-5xl font-bold mb-4">
-                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">Welcome </span>
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400" data-i18n="auth.login.title">Welcome </span>
                                 <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent animate-pulse">Back!</span>
                             </h1>
                             <p class="text-xl text-gray-300 mb-8">
-                                <span>Sign in to continue your </span>
+                                <span data-i18n="auth.login.subtitle">Sign in to continue your </span>
                                 <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent font-bold">meme coin empire</span>
                             </p>
 
@@ -1140,26 +1143,27 @@ app.get('/login', (c) => {
                         </div>
                     </div>
 
-                    <!-- Login Form - Centered Single Card -->
-                    <div class="w-full">
-                        <!-- Logo -->
-                        <div class="text-center mb-8">
+                    <!-- Right Side - Login Form -->
+                    <div class="animate-slide-in-right">
+                        <!-- Mobile Logo (Shown on Mobile Only) -->
+                        <div class="lg:hidden text-center mb-8">
                             <a href="/" class="inline-block">
-                                <h1 class="text-4xl font-bold gradient-text mb-2">
+                                <h1 class="text-3xl font-bold gradient-text">
                                     <i class="fas fa-rocket"></i> MemeLaunch
                                 </h1>
                             </a>
-                            <p class="text-gray-400">Sign in to your account</p>
                         </div>
 
                         <!-- Form Card -->
-                        <div class="glass-effect rounded-2xl p-8 shadow-2xl">
-                            <div class="mb-6 text-center">
-                                <h2 class="text-2xl font-bold mb-2 text-white">
-                                    Welcome Back!
+                        <div class="glass-effect rounded-2xl p-6 sm:p-8 lg:p-10 shadow-2xl">
+                            <div class="mb-8 text-center lg:text-left">
+                                <h2 class="text-2xl sm:text-3xl font-bold mb-2">
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400" data-i18n="auth.login.title">Welcome </span>
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent animate-pulse">Back!</span>
                                 </h2>
-                                <p class="text-gray-400 text-sm">
-                                    Sign in to continue your meme coin journey
+                                <p class="text-gray-400">
+                                    <span data-i18n="auth.login.subtitle">Sign in to continue your </span>
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent font-bold">meme coin empire</span>
                                 </p>
                             </div>
                             
@@ -1279,9 +1283,9 @@ app.get('/login', (c) => {
                             </p>
                         </div>
 
-                        <!-- Footer -->
-                        <p class="mt-6 text-center text-xs text-gray-500">
-                            🔒 Powered by Cloudflare D1 • 100% Secure • No Real Money
+                        <!-- Disclaimer -->
+                        <p class="mt-6 text-center text-xs text-gray-500" data-i18n="auth.disclaimer">
+                            🔒 100% Simulation Game • No Real Money • Your Data is Protected
                         </p>
                     </div>
                 </div>
