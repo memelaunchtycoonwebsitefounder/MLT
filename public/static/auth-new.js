@@ -19,8 +19,8 @@ class AuthPageManager {
     this.setupAnimations();
     
     // Initialize i18n if available
-    if (window.i18n) {
-      window.i18n.onChange(() => this.updateTexts());
+    if (window.i18n && typeof window.i18n.onLocaleChange === 'function') {
+      window.i18n.onLocaleChange(() => this.updateTexts());
     }
   }
 

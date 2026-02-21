@@ -1,0 +1,3 @@
+This is a placeholder for favicon.ico
+The 500 error for favicon.ico is not critical and won't affect functionality.
+To add a real favicon, create an .ico file and place it in /public/

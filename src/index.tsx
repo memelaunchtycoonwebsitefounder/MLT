@@ -743,9 +743,9 @@ app.get('/signup', (c) => {
             </button>
         </div>
 
-        <div class="min-h-screen flex items-center justify-center relative z-10 py-8">
-            <div class="container mx-auto px-4">
-                <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center max-w-6xl mx-auto">
+        <div class="min-h-screen flex items-center justify-center relative z-10 py-8 px-4">
+            <div class="w-full max-w-7xl mx-auto">
+                <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
                     
                     <!-- Left Side - Steps & Community Stats (Hidden on Mobile) -->
                     <div class="hidden lg:block animate-slide-in-left">
@@ -1085,9 +1085,9 @@ app.get('/login', (c) => {
             </button>
         </div>
 
-        <div class="min-h-screen flex items-center justify-center relative z-10">
-            <div class="container mx-auto px-4 py-12">
-                <div class="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+        <div class="min-h-screen flex items-center justify-center relative z-10 px-4">
+            <div class="w-full max-w-7xl mx-auto py-12">
+                <div class="grid lg:grid-cols-2 gap-12 items-center"">
                     
                     <!-- Left Side - Illustration & Benefits (Hidden on Mobile) -->
                     <div class="hidden lg:block animate-slide-in-left">
