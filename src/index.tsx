@@ -2986,9 +2986,10 @@ app.get('/dashboard', (c) => {
             </div>
         </div>
 
+        <!-- Core utilities -->
+        <script src="/static/fetch-utils.js"></script>
         
-        
-        
+        <!-- Dashboard functionality -->
         <script src="/static/dashboard-simple.js"></script>
     </body>
     </html>
