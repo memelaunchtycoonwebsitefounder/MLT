@@ -365,6 +365,9 @@ const init = async () => {
     document.getElementById('logout-btn').addEventListener('click', handleLogout);
     
     console.log('✅ Leaderboard page initialized');
+    
+    // Hide page loader
+    fetchUtils.hidePageLoader();
   }
 };
 

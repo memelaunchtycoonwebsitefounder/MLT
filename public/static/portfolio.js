@@ -27,6 +27,9 @@ async function init() {
   
   // Setup event handlers
   setupEventHandlers();
+  
+  // Hide page loader
+  fetchUtils.hidePageLoader();
 }
 
 function setupEventHandlers() {

@@ -469,6 +469,9 @@ const init = async () => {
   }, 30000);
   
   console.log('✅ Social page initialized');
+  
+  // Hide page loader
+  fetchUtils.hidePageLoader();
 };
 
 // Add animation styles

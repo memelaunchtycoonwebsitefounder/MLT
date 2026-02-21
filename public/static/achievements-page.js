@@ -552,6 +552,9 @@ const init = async () => {
     connectToAchievementStream();
     
     console.log('✅ Achievements page initialized');
+    
+    // Hide page loader
+    fetchUtils.hidePageLoader();
   }
 };
 

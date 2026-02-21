@@ -3059,8 +3059,12 @@ app.get('/portfolio', (c) => {
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
+        <style>
+          #page-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0A0B0D 0%,#1A1B1F 50%,#0A0B0D 100%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .3s}.loader-spinner{width:50px;height:50px;border:4px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#page-loader.hidden{opacity:0;pointer-events:none}
+        </style>
     </head>
     <body class="bg-gradient-to-br from-gray-900 via-purple-900 to-black min-h-screen text-white">
+        <div id="page-loader"><div class="loader-spinner"></div></div>
         <!-- Navigation -->
         <nav class="bg-black/30 backdrop-blur-md border-b border-white/10">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -3218,8 +3222,12 @@ app.get('/achievements', (c) => {
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
+        <style>
+          #page-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0A0B0D 0%,#1A1B1F 50%,#0A0B0D 100%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .3s}.loader-spinner{width:50px;height:50px;border:4px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#page-loader.hidden{opacity:0;pointer-events:none}
+        </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
+        <div id="page-loader"><div class="loader-spinner"></div></div>
         <!-- Navigation -->
         <nav class="glass-effect sticky top-0 z-50">
             <div class="container mx-auto px-4 py-4">
@@ -3406,8 +3414,12 @@ app.get('/leaderboard', (c) => {
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
+        <style>
+          #page-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0A0B0D 0%,#1A1B1F 50%,#0A0B0D 100%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .3s}.loader-spinner{width:50px;height:50px;border:4px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#page-loader.hidden{opacity:0;pointer-events:none}
+        </style>
     </head>
     <body class="bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 min-h-screen">
+        <div id="page-loader"><div class="loader-spinner"></div></div>
         <!-- Navigation -->
         <nav class="glass-effect border-b border-gray-700/50 sticky top-0 z-40">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -3565,8 +3577,12 @@ app.get('/social', (c) => {
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
+        <style>
+          #page-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0A0B0D 0%,#1A1B1F 50%,#0A0B0D 100%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .3s}.loader-spinner{width:50px;height:50px;border:4px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#page-loader.hidden{opacity:0;pointer-events:none}
+        </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
+        <div id="page-loader"><div class="loader-spinner"></div></div>
         <!-- Navigation -->
         <nav class="glass-effect sticky top-0 z-50">
             <div class="container mx-auto px-4 py-4">
@@ -3742,9 +3758,11 @@ app.get('/profile/:userId', (c) => {
         <style>
           .tab-btn { opacity: 0.6; }
           .tab-btn.active { opacity: 1; border-bottom: 2px solid #f97316; }
+          #page-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0A0B0D 0%,#1A1B1F 50%,#0A0B0D 100%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .3s}.loader-spinner{width:50px;height:50px;border:4px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#page-loader.hidden{opacity:0;pointer-events:none}
         </style>
     </head>
     <body class="bg-gray-900 text-white min-h-screen">
+        <div id="page-loader"><div class="loader-spinner"></div></div>
         <!-- Navigation -->
         <nav class="glass-effect sticky top-0 z-40 border-b border-white/10">
             <div class="container mx-auto px-4">

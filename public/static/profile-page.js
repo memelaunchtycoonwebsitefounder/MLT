@@ -233,6 +233,9 @@ class UserProfile {
     // Load default tab
     this.switchTab('trades');
     this.setupLogout();
+    
+    // Hide page loader
+    fetchUtils.hidePageLoader();
   }
 
   async switchTab(tab) {

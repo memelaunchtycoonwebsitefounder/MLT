@@ -971,6 +971,9 @@ const init = async () => {
     }, 10000); // Refresh every 10 seconds
     
     console.log('✅ Coin detail page fully initialized');
+    
+    // Hide page loader
+    fetchUtils.hidePageLoader();
   }
 };
 

@@ -1007,6 +1007,9 @@ const init = async () => {
     if (logoutBtn) {
       logoutBtn.addEventListener('click', handleLogout);
     }
+    
+    // Hide page loader
+    fetchUtils.hidePageLoader();
   }
 };
 
