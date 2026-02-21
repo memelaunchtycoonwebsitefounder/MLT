@@ -32,21 +32,8 @@ export const validateEmail = (email: string): boolean => {
 };
 
 export const validatePassword = (password: string): boolean => {
-  // At least 8 characters, must contain:
-  // - At least one uppercase letter
-  // - At least one lowercase letter
-  // - At least one number
-  // - At least one special character
-  if (password.length < 8) {
-    return false;
-  }
-  
-  const hasUpperCase = /[A-Z]/.test(password);
-  const hasLowerCase = /[a-z]/.test(password);
-  const hasNumber = /\d/.test(password);
-  const hasSpecialChar = /[@$!%*?&]/.test(password);
-  
-  return hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar;
+  // Only require at least 8 characters
+  return password.length >= 8;
 };
 
 export const validateUsername = (username: string): boolean => {

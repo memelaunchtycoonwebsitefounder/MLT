@@ -39,7 +39,7 @@ auth.post('/register', async (c) => {
 
     if (!validatePassword(password)) {
       console.log('[REGISTER] Invalid password format');
-      return errorResponse('密碼必須至少 8 個字符,並包含大寫字母、小寫字母、數字和特殊字符');
+      return errorResponse('密碼必須至少 8 個字符');
     }
 
     // Check if user already exists

@@ -953,6 +953,11 @@ app.get('/signup', (c) => {
                 const result = await response.json();
                 
                 if (response.ok && result.success) {
+                    // Save token to localStorage
+                    if (result.data && result.data.token) {
+                        localStorage.setItem('auth_token', result.data.token);
+                        localStorage.setItem('user', JSON.stringify(result.data.user));
+                    }
                     alert('註冊成功！歡迎加入 MemeLaunch Tycoon！');
                     window.location.href = '/dashboard';
                 } else {
@@ -1146,6 +1151,11 @@ app.get('/login', (c) => {
                 const result = await response.json();
                 
                 if (response.ok && result.success) {
+                    // Save token to localStorage
+                    if (result.data && result.data.token) {
+                        localStorage.setItem('auth_token', result.data.token);
+                        localStorage.setItem('user', JSON.stringify(result.data.user));
+                    }
                     alert('登入成功！');
                     window.location.href = '/dashboard';
                 } else {
