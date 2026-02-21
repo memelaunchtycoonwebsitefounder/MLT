@@ -695,470 +695,615 @@ app.get('/', (c) => {
 });
 // Signup/Register page - Modern Design
 app.get('/signup', (c) => {
-  return c.html(`<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>註冊 - MemeLaunch Tycoon</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <style>
-        body { 
-            background: #000000;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
-        }
-        .form-card {
-            background: #1a1a1a;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        }
-        .input-field {
-            background: #2a2a2a;
-            border: 1px solid #3a3a3a;
-            border-radius: 8px;
-            color: #ffffff;
-            transition: all 0.2s;
-        }
-        .input-field:focus {
-            outline: none;
-            border-color: #FF6B35;
-            box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.1);
-        }
-        .input-field::placeholder {
-            color: #6b7280;
-        }
-        .gradient-button {
-            background: linear-gradient(90deg, #FF6B35 0%, #E91E63 100%);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            padding: 14px;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        .gradient-button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
-        }
-        .social-button {
-            background: #2a2a2a;
-            border: 1px solid #3a3a3a;
-            border-radius: 8px;
-            color: white;
-            padding: 12px;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-        .social-button:hover {
-            background: #3a3a3a;
-        }
-        .link-text {
-            color: #FF7A59;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-        .link-text:hover {
-            color: #FF8A69;
-        }
-        .password-strength {
-            font-size: 0.75rem;
-            color: #9ca3af;
-            margin-top: 0.25rem;
-        }
-        .error-message {
-            color: #ef4444;
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-            text-align: center;
-        }
-    </style>
-</head>
-<body class="min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-md">
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-white mb-2">
-                <i class="fas fa-rocket"></i> MemeLaunch
-            </h1>
-            <p class="text-gray-400 text-sm">開始你的迷因啟蒙旅程</p>
-        </div>
-
-        <div class="form-card p-8">
-            <h2 class="text-2xl font-bold text-white mb-6 text-center">創建帳號</h2>
-            
-            <form id="register-form" class="space-y-4">
-                <div>
-                    <label class="block text-sm text-gray-300 mb-2">
-                        <i class="fas fa-envelope mr-2"></i>電子郵箱
-                    </label>
-                    <input type="email" name="email" required class="input-field w-full px-4 py-3" placeholder="your@email.com"/>
-                </div>
-
-                <div>
-                    <label class="block text-sm text-gray-300 mb-2">
-                        <i class="fas fa-user mr-2"></i>用戶名稱
-                    </label>
-                    <input type="text" name="username" required minlength="3" maxlength="20" pattern="[a-zA-Z0-9_]+" class="input-field w-full px-4 py-3" placeholder="選擇一個獨特的用戶名"/>
-                </div>
-
-                <div>
-                    <label class="block text-sm text-gray-300 mb-2">
-                        <i class="fas fa-lock mr-2"></i>密碼
-                    </label>
-                    <div class="relative">
-                        <input type="password" name="password" id="password" required minlength="8" class="input-field w-full px-4 py-3 pr-12" placeholder="至少 8 個字符"/>
-                        <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition" onclick="togglePassword('password')">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                    <p class="password-strength" id="password-strength">密碼強度：繼續輸入密碼</p>
-                </div>
-
-                <div>
-                    <label class="block text-sm text-gray-300 mb-2">
-                        <i class="fas fa-lock mr-2"></i>確認密碼
-                    </label>
-                    <div class="relative">
-                        <input type="password" name="confirmPassword" id="confirmPassword" required class="input-field w-full px-4 py-3 pr-12" placeholder="再次輸入密碼"/>
-                        <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition" onclick="togglePassword('confirmPassword')">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="flex items-start gap-2 text-sm">
-                    <input type="checkbox" name="terms" id="terms" required class="mt-1 rounded"/>
-                    <label for="terms" class="text-gray-300">
-                        我同意 <a href="/terms" class="link-text">服務條款</a> 和 <a href="/privacy" class="link-text">隱私政策</a>
-                    </label>
-                </div>
-
-                <div id="error-message" class="error-message hidden"></div>
-
-                <button type="submit" class="gradient-button w-full">
-                    <i class="fas fa-user-plus mr-2"></i>創建帳號
-                </button>
-            </form>
-
-            <div class="my-6 text-center text-sm text-gray-400">
-                或使用社交帳號註冊
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <button class="social-button" onclick="socialLogin('google')">
-                    <i class="fab fa-google mr-2"></i>Google
-                </button>
-                <button class="social-button" onclick="socialLogin('twitter')">
-                    <i class="fab fa-twitter mr-2"></i>Twitter
-                </button>
-            </div>
-
-            <p class="mt-6 text-center text-sm text-gray-400">
-                已有帳號？
-                <a href="/login" class="link-text">立即登入</a>
-            </p>
-        </div>
-
-        <p class="mt-6 text-center text-xs text-gray-600">
-            <i class="fas fa-lock mr-1"></i>100% 端對端加密 · 無需將金鑰交易 · 您的帳戶從安全保護
-        </p>
-    </div>
-
-    <script>
-        function togglePassword(fieldId) {
-            const input = document.getElementById(fieldId);
-            const button = input.parentElement.querySelector('button');
-            const icon = button.querySelector('i');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                input.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
-
-        function socialLogin(provider) {
-            window.location.href = '/api/auth/oauth/' + provider;
-        }
-
-        document.getElementById('password').addEventListener('input', (e) => {
-            const password = e.target.value;
-            const strengthEl = document.getElementById('password-strength');
-            
-            if (password.length === 0) {
-                strengthEl.textContent = '密碼強度：繼續輸入密碼';
-                strengthEl.style.color = '#9ca3af';
-                return;
-            }
-            
-            let strength = 0;
-            if (password.length >= 8) strength++;
-            if (password.length >= 12) strength++;
-            if (/[a-z]/.test(password)) strength++;
-            if (/[A-Z]/.test(password)) strength++;
-            if (/\\d/.test(password)) strength++;
-            if (/[@$!%*?&]/.test(password)) strength++;
-            
-            if (strength <= 2) {
-                strengthEl.textContent = '密碼強度：弱';
-                strengthEl.style.color = '#ef4444';
-            } else if (strength <= 4) {
-                strengthEl.textContent = '密碼強度：中等';
-                strengthEl.style.color = '#f59e0b';
-            } else if (strength <= 5) {
-                strengthEl.textContent = '密碼強度：強';
-                strengthEl.style.color = '#10b981';
-            } else {
-                strengthEl.textContent = '密碼強度：非常強';
-                strengthEl.style.color = '#06b6d4';
-            }
-        });
-
-        document.getElementById('register-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData.entries());
-            const errorEl = document.getElementById('error-message');
-            
-            if (data.password !== data.confirmPassword) {
-                errorEl.textContent = '密碼不一致，請重新輸入';
-                errorEl.classList.remove('hidden');
-                return;
-            }
-            
-            if (!data.terms) {
-                errorEl.textContent = '請同意服務條款和隱私政策';
-                errorEl.classList.remove('hidden');
-                return;
-            }
-            
-            errorEl.classList.add('hidden');
-            
-            try {
-                const response = await fetch('/api/auth/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        email: data.email,
-                        username: data.username,
-                        password: data.password
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (response.ok && result.success) {
-                    alert('註冊成功！歡迎加入 MemeLaunch Tycoon！');
-                    window.location.href = '/dashboard';
-                } else {
-                    errorEl.textContent = result.error || result.message || '註冊失敗，請稍後再試';
-                    errorEl.classList.remove('hidden');
+  const version = '20260220'; // Cache busting version
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Create your MemeLaunch Tycoon account - Start trading meme coins today!">
+        <title data-i18n="auth.register.title">Sign Up - MemeLaunch Tycoon</title>
+        
+        <!-- Styles -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css?v=${version}" rel="stylesheet">
+        <link href="/static/auth-new.css?v=${version}" rel="stylesheet">
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        
+        <!-- Custom Tailwind Config -->
+        <script>
+          tailwind.config = {
+            theme: {
+              extend: {
+                colors: {
+                  primary: {
+                    DEFAULT: '#FF6B35',
+                    light: '#FF8555',
+                    dark: '#E55A2A'
+                  },
+                  secondary: '#F7931E',
+                  accent: '#00D9FF',
+                  purple: '#9D4EDD'
                 }
-            } catch (error) {
-                console.error('Registration error:', error);
-                errorEl.textContent = '網路錯誤，請稍後再試';
-                errorEl.classList.remove('hidden');
+              }
             }
-        });
-    </script>
-</body>
-</html>
+          }
+        </script>
+    </head>
+    <body class="gradient-bg text-white min-h-screen overflow-x-hidden">
+        <!-- Particle Background Container -->
+        <div id="particles-container" class="fixed inset-0 z-0 pointer-events-none"></div>
+        
+        <!-- Language Switcher -->
+        <div class="fixed top-4 right-4 z-50">
+            <button id="language-toggle" class="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg hover:bg-white/20 transition text-sm font-medium">
+                <i class="fas fa-language mr-2"></i>
+                <span id="current-lang">EN</span>
+            </button>
+        </div>
+
+        <div class="min-h-screen flex items-center justify-center relative z-10 py-8">
+            <div class="container mx-auto px-4">
+                <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center max-w-6xl mx-auto">
+                    
+                    <!-- Left Side - Steps & Community Stats (Hidden on Mobile) -->
+                    <div class="hidden lg:block animate-slide-in-left">
+                        <!-- Title Section -->
+                        <div class="mb-8">
+                            <h1 class="text-4xl lg:text-5xl font-bold mb-4">
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">Create Your </span>
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent via-purple to-primary animate-pulse">Account</span>
+                            </h1>
+                            <p class="text-xl text-gray-300">
+                                <span>Join </span>
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-purple font-bold">thousands of traders</span>
+                                <span> in the </span>
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary font-bold">meme coin universe</span>
+                            </p>
+                        </div>
+
+                        <!-- Steps Section -->
+                        <div class="space-y-4 mb-8">
+                            <div class="step-card" data-animate>
+                                <div class="step-card-icon">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <h3 class="text-lg font-bold mb-1" data-i18n="auth.register.steps.step1.title">
+                                    Create Account
+                                </h3>
+                                <p class="text-sm text-gray-400" data-i18n="auth.register.steps.step1.desc">
+                                    Quick & easy setup
+                                </p>
+                            </div>
+
+                            <div class="step-card delay-100" data-animate>
+                                <div class="step-card-icon">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+                                <h3 class="text-lg font-bold mb-1" data-i18n="auth.register.steps.step2.title">
+                                    Get 10,000 MLT
+                                </h3>
+                                <p class="text-sm text-gray-400" data-i18n="auth.register.steps.step2.desc">
+                                    Free starting balance
+                                </p>
+                            </div>
+
+                            <div class="step-card delay-200" data-animate>
+                                <div class="step-card-icon">
+                                    <i class="fas fa-rocket"></i>
+                                </div>
+                                <h3 class="text-lg font-bold mb-1" data-i18n="auth.register.steps.step3.title">
+                                    Launch Meme
+                                </h3>
+                                <p class="text-sm text-gray-400" data-i18n="auth.register.steps.step3.desc">
+                                    Create your first coin
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Community Stats -->
+                        <div class="space-y-3">
+                            <div class="community-stat">
+                                <div class="community-stat-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-2xl font-bold">50K+</p>
+                                    <p class="text-sm text-gray-400" data-i18n="auth.register.communityStats.users">Users</p>
+                                </div>
+                            </div>
+                            <div class="community-stat">
+                                <div class="community-stat-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-2xl font-bold">12K+</p>
+                                    <p class="text-sm text-gray-400" data-i18n="auth.register.communityStats.coinsLaunched">Coins Launched</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Side - Registration Form -->
+                    <div class="animate-slide-in-right">
+                        <!-- Mobile Logo (Shown on Mobile Only) -->
+                        <div class="lg:hidden text-center mb-8">
+                            <a href="/" class="inline-block">
+                                <h1 class="text-3xl font-bold gradient-text">
+                                    <i class="fas fa-rocket"></i> MemeLaunch
+                                </h1>
+                            </a>
+                        </div>
+
+                        <!-- Form Card -->
+                        <div class="glass-effect rounded-2xl p-6 sm:p-8 shadow-2xl max-w-md mx-auto lg:mx-0">
+                            <div class="mb-6 text-center lg:text-left">
+                                <h2 class="text-2xl font-bold mb-2">
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">Create Your </span>
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent via-purple to-primary animate-pulse">Account</span>
+                                </h2>
+                                <p class="text-sm text-gray-400">
+                                    <span>Join </span>
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-purple font-bold">thousands of traders</span>
+                                    <span> in the </span>
+                                    <span class="text-primary font-semibold">meme coin universe</span>
+                                </p>
+                            </div>
+                            
+                            <form id="register-form" data-validate data-endpoint="/api/auth/register" class="space-y-4">
+                                <!-- Username Input -->
+                                <div data-animate class="delay-100">
+                                    <label for="username" class="block text-sm font-medium mb-2" data-i18n="auth.register.usernameLabel">
+                                        <i class="fas fa-user mr-2"></i>Username
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="username"
+                                        name="username"
+                                        required
+                                        minlength="3"
+                                        maxlength="20"
+                                        pattern="^[a-zA-Z0-9_]+$"
+                                        class="auth-input w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition text-white placeholder-gray-500"
+                                        placeholder="cryptotrader123"
+                                        data-i18n-placeholder="auth.register.usernamePlaceholder"
+                                    />
+                                </div>
+
+                                <!-- Email Input -->
+                                <div data-animate class="delay-200">
+                                    <label for="email" class="block text-sm font-medium mb-2" data-i18n="auth.register.emailLabel">
+                                        <i class="fas fa-envelope mr-2"></i>Email Address
+                                    </label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        required
+                                        class="auth-input w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition text-white placeholder-gray-500"
+                                        placeholder="your@email.com"
+                                        data-i18n-placeholder="auth.register.emailPlaceholder"
+                                    />
+                                </div>
+
+                                <!-- Password Input -->
+                                <div data-animate class="delay-300">
+                                    <label for="password" class="block text-sm font-medium mb-2" data-i18n="auth.register.passwordLabel">
+                                        <i class="fas fa-lock mr-2"></i>Password
+                                    </label>
+                                    <div class="relative">
+                                        <input
+                                            type="password"
+                                            id="password"
+                                            name="password"
+                                            required
+                                            minlength="8"
+                                            class="auth-input w-full px-4 py-3 pr-12 bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition text-white placeholder-gray-500"
+                                            placeholder="Create a strong password"
+                                            data-i18n-placeholder="auth.register.passwordPlaceholder"
+                                        />
+                                        <button
+                                            type="button"
+                                            class="toggle-password absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
+                                            aria-label="Toggle password visibility"
+                                        >
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <!-- Password Strength Indicator -->
+                                    <div id="password-strength" class="mt-2 hidden">
+                                        <div class="password-strength-indicator">
+                                            <div class="password-strength-bar weak"></div>
+                                        </div>
+                                        <p class="text-xs text-gray-400 mt-1">
+                                            <span class="strength-label">Weak</span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Confirm Password Input -->
+                                <div data-animate class="delay-400">
+                                    <label for="confirmPassword" class="block text-sm font-medium mb-2" data-i18n="auth.register.confirmPasswordLabel">
+                                        <i class="fas fa-lock mr-2"></i>Confirm Password
+                                    </label>
+                                    <input
+                                        type="password"
+                                        id="confirmPassword"
+                                        name="confirmPassword"
+                                        required
+                                        class="auth-input w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition text-white placeholder-gray-500"
+                                        placeholder="Re-enter your password"
+                                        data-i18n-placeholder="auth.register.confirmPasswordPlaceholder"
+                                    />
+                                </div>
+
+                                <!-- Terms Agreement Checkbox -->
+                                <div data-animate class="delay-500 flex items-start gap-3">
+                                    <input
+                                        type="checkbox"
+                                        id="terms"
+                                        name="terms"
+                                        required
+                                        class="custom-checkbox mt-0.5 flex-shrink-0"
+                                    />
+                                    <label for="terms" class="text-sm text-gray-300 cursor-pointer">
+                                        <span data-i18n="auth.register.termsCheckbox">I agree to the Terms of Service and Privacy Policy</span>
+                                    </label>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <button
+                                    data-animate
+                                    class="delay-600 w-full bg-gradient-to-r from-primary via-secondary to-primary bg-size-200 bg-pos-0 hover:bg-pos-100 text-white font-bold py-4 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-primary/50 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+                                    type="submit"
+                                    data-loading="Creating account..."
+                                >
+                                    <i class="fas fa-user-plus mr-2"></i>
+                                    <span data-i18n="auth.register.submitButton">Create Account</span>
+                                </button>
+                            </form>
+
+                            <!-- Divider -->
+                            <div class="relative my-6">
+                                <div class="absolute inset-0 flex items-center">
+                                    <div class="w-full border-t border-white/10"></div>
+                                </div>
+                                <div class="relative flex justify-center text-sm">
+                                    <span class="px-4 bg-transparent text-gray-400" data-i18n="auth.register.orDivider">Or sign up with</span>
+                                </div>
+                            </div>
+
+                            <!-- Social Signup Buttons -->
+                            <div class="grid grid-cols-3 gap-3">
+                                <button 
+                                    data-social="google"
+                                    class="social-button relative flex items-center justify-center px-4 py-3 border border-white/20 rounded-lg hover:bg-white/10 hover:border-white/30 transition"
+                                    title="Sign up with Google"
+                                    data-i18n-title="auth.register.googleButton"
+                                >
+                                    <i class="fab fa-google text-xl"></i>
+                                </button>
+                                <button 
+                                    data-social="twitter"
+                                    class="social-button relative flex items-center justify-center px-4 py-3 border border-white/20 rounded-lg hover:bg-white/10 hover:border-white/30 transition"
+                                    title="Sign up with Twitter"
+                                    data-i18n-title="auth.register.twitterButton"
+                                >
+                                    <i class="fab fa-twitter text-xl"></i>
+                                </button>
+                                <button 
+                                    data-social="metamask"
+                                    class="social-button relative flex items-center justify-center px-4 py-3 border border-white/20 rounded-lg hover:bg-white/10 hover:border-white/30 transition"
+                                    title="Connect MetaMask"
+                                    data-i18n-title="auth.register.metamaskButton"
+                                >
+                                    <i class="fab fa-ethereum text-xl"></i>
+                                </button>
+                            </div>
+
+                            <!-- Login Link -->
+                            <p class="mt-6 text-center text-sm text-gray-400">
+                                <span data-i18n="auth.register.hasAccount">Already have an account?</span>
+                                <a href="/login" class="text-primary hover:text-primary-light font-medium transition ml-1" data-i18n="auth.register.loginLink">
+                                    Sign in
+                                </a>
+                            </p>
+                        </div>
+
+                        <!-- Disclaimer -->
+                        <p class="mt-6 text-center text-xs text-gray-500" data-i18n="auth.disclaimer">
+                            🔒 100% Simulation Game • No Real Money • Your Data is Protected
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scripts -->
+        <script src="/static/i18n.js?v=${version}"></script>
+        <script src="/static/language-switcher.js?v=${version}"></script>
+        <script src="/static/auth-new.js?v=${version}"></script>
+        
+        <style>
+          .bg-size-200 { background-size: 200% auto; }
+          .bg-pos-0 { background-position: 0% center; }
+          .bg-pos-100 { background-position: 100% center; }
+        </style>
+    </body>
+    </html>
   `);
 });
 
 // Login page - Modern Design
 app.get('/login', (c) => {
-  return c.html(`<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>登入 - MemeLaunch Tycoon</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <style>
-        body { 
-            background: #000000;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
-        }
-        .form-card {
-            background: #1a1a1a;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        }
-        .input-field {
-            background: #2a2a2a;
-            border: 1px solid #3a3a3a;
-            border-radius: 8px;
-            color: #ffffff;
-            transition: all 0.2s;
-        }
-        .input-field:focus {
-            outline: none;
-            border-color: #FF6B35;
-            box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.1);
-        }
-        .input-field::placeholder {
-            color: #6b7280;
-        }
-        .gradient-button {
-            background: linear-gradient(90deg, #FF6B35 0%, #E91E63 100%);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            padding: 14px;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        .gradient-button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
-        }
-        .social-button {
-            background: #2a2a2a;
-            border: 1px solid #3a3a3a;
-            border-radius: 8px;
-            color: white;
-            padding: 12px;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-        .social-button:hover {
-            background: #3a3a3a;
-        }
-        .link-text {
-            color: #FF7A59;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-        .link-text:hover {
-            color: #FF8A69;
-        }
-    </style>
-</head>
-<body class="min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-md">
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-white mb-2">
-                <i class="fas fa-rocket"></i> MemeLaunch
-            </h1>
-            <p class="text-gray-400 text-sm">歡迎回來！</p>
+  const version = '20260220'; // Cache busting version
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Login to MemeLaunch Tycoon - Start your meme coin trading journey">
+        <title data-i18n="auth.login.title">Login - MemeLaunch Tycoon</title>
+        
+        <!-- Styles -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css?v=${version}" rel="stylesheet">
+        <link href="/static/auth-new.css?v=${version}" rel="stylesheet">
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        
+        <!-- Custom Tailwind Config -->
+        <script>
+          tailwind.config = {
+            theme: {
+              extend: {
+                colors: {
+                  primary: {
+                    DEFAULT: '#FF6B35',
+                    light: '#FF8555',
+                    dark: '#E55A2A'
+                  },
+                  secondary: '#F7931E',
+                  accent: '#00D9FF',
+                  purple: '#9D4EDD'
+                }
+              }
+            }
+          }
+        </script>
+    </head>
+    <body class="gradient-bg text-white min-h-screen overflow-x-hidden">
+        <!-- Particle Background Container -->
+        <div id="particles-container" class="fixed inset-0 z-0 pointer-events-none"></div>
+        
+        <!-- Language Switcher -->
+        <div class="fixed top-4 right-4 z-50">
+            <button id="language-toggle" class="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg hover:bg-white/20 transition text-sm font-medium">
+                <i class="fas fa-language mr-2"></i>
+                <span id="current-lang">EN</span>
+            </button>
         </div>
 
-        <div class="form-card p-8">
-            <h2 class="text-2xl font-bold text-white mb-6 text-center">登入帳號</h2>
-            
-            <form id="login-form" class="space-y-4">
-                <div>
-                    <label class="block text-sm text-gray-300 mb-2">
-                        <i class="fas fa-envelope mr-2"></i>電子郵箱
-                    </label>
-                    <input type="email" name="email" required class="input-field w-full px-4 py-3" placeholder="your@email.com"/>
-                </div>
+        <div class="min-h-screen flex items-center justify-center relative z-10">
+            <div class="container mx-auto px-4 py-12">
+                <div class="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+                    
+                    <!-- Left Side - Illustration & Benefits (Hidden on Mobile) -->
+                    <div class="hidden lg:block animate-slide-in-left">
+                        <div class="auth-illustration">
+                            <!-- Rocket Illustration -->
+                            <div class="rocket-illustration mb-8 text-center">
+                                <div class="inline-block relative">
+                                    <i class="fas fa-rocket text-9xl text-primary animate-float"></i>
+                                    <div class="absolute -top-4 -right-4 w-16 h-16 bg-accent/20 rounded-full blur-xl animate-pulse"></div>
+                                </div>
+                            </div>
 
-                <div>
-                    <label class="block text-sm text-gray-300 mb-2">
-                        <i class="fas fa-lock mr-2"></i>密碼
-                    </label>
-                    <div class="relative">
-                        <input type="password" name="password" required class="input-field w-full px-4 py-3 pr-12" placeholder="輸入您的密碼"/>
-                        <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition" onclick="togglePassword(this)">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                            <!-- Welcome Message -->
+                            <h1 class="text-4xl lg:text-5xl font-bold mb-4">
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400" data-i18n="auth.login.title">Welcome </span>
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent animate-pulse">Back!</span>
+                            </h1>
+                            <p class="text-xl text-gray-300 mb-8">
+                                <span data-i18n="auth.login.subtitle">Sign in to continue your </span>
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent font-bold">meme coin empire</span>
+                            </p>
+
+                            <!-- Social Proof Stats -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="stats-badge rounded-xl p-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                                            <i class="fas fa-users text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-2xl font-bold">50,234</p>
+                                            <p class="text-sm text-gray-400" data-i18n="auth.login.socialProof.traders">Active Traders</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="stats-badge rounded-xl p-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-accent to-purple flex items-center justify-center">
+                                            <i class="fas fa-chart-line text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-2xl font-bold">$2.5M</p>
+                                            <p class="text-sm text-gray-400" data-i18n="auth.login.socialProof.volume">24h Trading Volume</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- K-line Background Effect -->
+                            <div class="kline-background mt-8"></div>
+                        </div>
+                    </div>
+
+                    <!-- Right Side - Login Form -->
+                    <div class="animate-slide-in-right">
+                        <!-- Mobile Logo (Shown on Mobile Only) -->
+                        <div class="lg:hidden text-center mb-8">
+                            <a href="/" class="inline-block">
+                                <h1 class="text-3xl font-bold gradient-text">
+                                    <i class="fas fa-rocket"></i> MemeLaunch
+                                </h1>
+                            </a>
+                        </div>
+
+                        <!-- Form Card -->
+                        <div class="glass-effect rounded-2xl p-6 sm:p-8 lg:p-10 shadow-2xl">
+                            <div class="mb-8 text-center lg:text-left">
+                                <h2 class="text-2xl sm:text-3xl font-bold mb-2">
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400" data-i18n="auth.login.title">Welcome </span>
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent animate-pulse">Back!</span>
+                                </h2>
+                                <p class="text-gray-400">
+                                    <span data-i18n="auth.login.subtitle">Sign in to continue your </span>
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent font-bold">meme coin empire</span>
+                                </p>
+                            </div>
+                            
+                            <form id="login-form" data-validate data-endpoint="/api/auth/login" class="space-y-5">
+                                <!-- Email Input -->
+                                <div data-animate class="delay-100">
+                                    <label for="email" class="block text-sm font-medium mb-2" data-i18n="auth.login.emailLabel">
+                                        <i class="fas fa-envelope mr-2"></i>Email Address
+                                    </label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        required
+                                        class="auth-input w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition text-white placeholder-gray-500"
+                                        placeholder="your@email.com"
+                                        data-i18n-placeholder="auth.login.emailPlaceholder"
+                                    />
+                                </div>
+
+                                <!-- Password Input -->
+                                <div data-animate class="delay-200">
+                                    <label for="password" class="block text-sm font-medium mb-2" data-i18n="auth.login.passwordLabel">
+                                        <i class="fas fa-lock mr-2"></i>Password
+                                    </label>
+                                    <div class="relative">
+                                        <input
+                                            type="password"
+                                            id="password"
+                                            name="password"
+                                            required
+                                            class="auth-input w-full px-4 py-3 pr-12 bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition text-white placeholder-gray-500"
+                                            placeholder="Enter your password"
+                                            data-i18n-placeholder="auth.login.passwordPlaceholder"
+                                        />
+                                        <button
+                                            type="button"
+                                            class="toggle-password absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
+                                            aria-label="Toggle password visibility"
+                                        >
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Remember Me & Forgot Password -->
+                                <div data-animate class="delay-300 flex items-center justify-between text-sm">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            name="rememberMe"
+                                            class="custom-checkbox"
+                                        />
+                                        <span class="text-gray-300" data-i18n="auth.login.rememberMe">Remember me</span>
+                                    </label>
+                                    <a href="/forgot-password" class="text-primary hover:text-primary-light transition" data-i18n="auth.login.forgotPassword">
+                                        Forgot password?
+                                    </a>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <button
+                                    data-animate
+                                    class="delay-400 w-full bg-gradient-to-r from-primary via-secondary to-primary bg-size-200 bg-pos-0 hover:bg-pos-100 text-white font-bold py-4 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-primary/50 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+                                    type="submit"
+                                    data-loading="Signing in..."
+                                >
+                                    <i class="fas fa-sign-in-alt mr-2"></i>
+                                    <span data-i18n="auth.login.submitButton">Sign In</span>
+                                </button>
+                            </form>
+
+                            <!-- Divider -->
+                            <div class="relative my-6">
+                                <div class="absolute inset-0 flex items-center">
+                                    <div class="w-full border-t border-white/10"></div>
+                                </div>
+                                <div class="relative flex justify-center text-sm">
+                                    <span class="px-4 bg-transparent text-gray-400" data-i18n="auth.login.orDivider">Or continue with</span>
+                                </div>
+                            </div>
+
+                            <!-- Social Login Buttons -->
+                            <div class="grid grid-cols-3 gap-3">
+                                <button 
+                                    data-social="google"
+                                    class="social-button relative flex items-center justify-center px-4 py-3 border border-white/20 rounded-lg hover:bg-white/10 hover:border-white/30 transition"
+                                    title="Continue with Google"
+                                    data-i18n-title="auth.login.googleButton"
+                                >
+                                    <i class="fab fa-google text-xl"></i>
+                                </button>
+                                <button 
+                                    data-social="twitter"
+                                    class="social-button relative flex items-center justify-center px-4 py-3 border border-white/20 rounded-lg hover:bg-white/10 hover:border-white/30 transition"
+                                    title="Continue with Twitter"
+                                    data-i18n-title="auth.login.twitterButton"
+                                >
+                                    <i class="fab fa-twitter text-xl"></i>
+                                </button>
+                                <button 
+                                    data-social="metamask"
+                                    class="social-button relative flex items-center justify-center px-4 py-3 border border-white/20 rounded-lg hover:bg-white/10 hover:border-white/30 transition"
+                                    title="Connect MetaMask"
+                                    data-i18n-title="auth.login.metamaskButton"
+                                >
+                                    <i class="fab fa-ethereum text-xl"></i>
+                                </button>
+                            </div>
+
+                            <!-- Signup Link -->
+                            <p class="mt-6 text-center text-sm text-gray-400">
+                                <span data-i18n="auth.login.noAccount">Don't have an account?</span>
+                                <a href="/signup" class="text-primary hover:text-primary-light font-medium transition ml-1" data-i18n="auth.login.signUpLink">
+                                    Sign up for free
+                                </a>
+                            </p>
+                        </div>
+
+                        <!-- Disclaimer -->
+                        <p class="mt-6 text-center text-xs text-gray-500" data-i18n="auth.disclaimer">
+                            🔒 100% Simulation Game • No Real Money • Your Data is Protected
+                        </p>
                     </div>
                 </div>
-
-                <div class="flex items-center justify-between text-sm">
-                    <label class="flex items-center gap-2 cursor-pointer text-gray-300">
-                        <input type="checkbox" name="rememberMe" class="rounded">
-                        記住我
-                    </label>
-                    <a href="/forgot-password" class="link-text">忘記密碼？</a>
-                </div>
-
-                <button type="submit" class="gradient-button w-full">
-                    <i class="fas fa-sign-in-alt mr-2"></i>登入
-                </button>
-            </form>
-
-            <div class="my-6 text-center text-sm text-gray-400">
-                或使用社交帳號登入
             </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <button class="social-button" onclick="socialLogin('google')">
-                    <i class="fab fa-google mr-2"></i>Google
-                </button>
-                <button class="social-button" onclick="socialLogin('twitter')">
-                    <i class="fab fa-twitter mr-2"></i>Twitter
-                </button>
-            </div>
-
-            <p class="mt-6 text-center text-sm text-gray-400">
-                還沒有帳號？
-                <a href="/signup" class="link-text">立即註冊</a>
-            </p>
         </div>
 
-        <p class="mt-6 text-center text-xs text-gray-600">
-            <i class="fas fa-lock mr-1"></i>100% 模擬遊戲 · 無需真實金錢 · 您的資料受保護
-        </p>
-    </div>
-
-    <script>
-        function togglePassword(button) {
-            const input = button.parentElement.querySelector('input');
-            const icon = button.querySelector('i');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                input.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
-
-        function socialLogin(provider) {
-            window.location.href = '/api/auth/oauth/' + provider;
-        }
-
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData.entries());
-            
-            try {
-                const response = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                
-                const result = await response.json();
-                
-                if (response.ok && result.success) {
-                    alert('登入成功！');
-                    window.location.href = '/dashboard';
-                } else {
-                    alert(result.error || result.message || '登入失敗，請檢查您的憑證');
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                alert('網路錯誤，請稍後再試');
-            }
-        });
-    </script>
-</body>
-</html>
+        <!-- Scripts -->
+        <script src="/static/i18n.js?v=${version}"></script>
+        <script src="/static/language-switcher.js?v=${version}"></script>
+        <script src="/static/auth-new.js?v=${version}"></script>
+        
+        <style>
+          .bg-size-200 { background-size: 200% auto; }
+          .bg-pos-0 { background-position: 0% center; }
+          .bg-pos-100 { background-position: 100% center; }
+        </style>
+    </body>
+    </html>
   `);
 });
 
