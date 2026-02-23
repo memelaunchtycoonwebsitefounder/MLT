@@ -215,6 +215,9 @@ const fetchUtils = {
   hidePageLoader() {
     const loader = document.getElementById('page-loader');
     if (loader) {
+      // Add loaded class to body to show content
+      document.body.classList.add('loaded');
+      // Hide loader with fade effect
       loader.classList.add('hidden');
       setTimeout(() => loader.remove(), 300);
     }

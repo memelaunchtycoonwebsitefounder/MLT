@@ -2142,6 +2142,43 @@ app.get('/create', (c) => {
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
+        <style>
+            /* Critical CSS - Load immediately to prevent flash */
+            #page-loader {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                opacity: 1;
+                transition: opacity 0.3s ease-out;
+            }
+            #page-loader.hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+            .loader-spinner {
+                width: 50px;
+                height: 50px;
+                border: 4px solid rgba(255, 107, 53, 0.2);
+                border-top-color: #FF6B35;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+        </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <!-- Loading overlay -->
