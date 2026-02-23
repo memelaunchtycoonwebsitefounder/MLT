@@ -2144,6 +2144,11 @@ app.get('/create', (c) => {
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
     </head>
     <body class="gradient-bg text-white min-h-screen">
+        <!-- Loading overlay -->
+        <div id="page-loader">
+            <div class="loader-spinner"></div>
+        </div>
+        
         <!-- Navigation -->
         <nav class="glass-effect sticky top-0 z-50">
             <div class="container mx-auto px-4 py-4">
@@ -2812,7 +2817,7 @@ app.get('/create', (c) => {
         
         <!-- Page scripts -->
         <script src="/static/mlt-calculator.js?v=20260221151619"></script>
-        <script src="/static/create-coin.js.0.0-final"></script>
+        <script src="/static/create-coin.js?v=20260221151619"></script>
     </body>
     </html>
   `);
