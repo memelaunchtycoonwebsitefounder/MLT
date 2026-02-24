@@ -883,9 +883,9 @@ app.get('/signup', (c) => {
 
                 <div>
                     <label class="block text-sm text-gray-300 mb-2">
-                        <i class="fas fa-user mr-2"></i>用戶名稱
+                        <i class="fas fa-user mr-2"></i><span data-i18n="auth.register.usernameLabel">Username</span>
                     </label>
-                    <input type="text" name="username" required minlength="3" maxlength="20" pattern="[a-zA-Z0-9_]+" class="input-field w-full px-4 py-3" placeholder="選擇一個獨特的用戶名"/>
+                    <input type="text" name="username" required minlength="3" maxlength="20" pattern="[a-zA-Z0-9_]+" class="input-field w-full px-4 py-3" data-i18n-placeholder="auth.register.usernamePlaceholder" placeholder="Choose a unique username"/>
                 </div>
 
                 <div>
@@ -893,7 +893,7 @@ app.get('/signup', (c) => {
                         <i class="fas fa-lock mr-2"></i><span data-i18n="auth.login.passwordLabel">Password</span>
                     </label>
                     <div class="relative">
-                        <input type="password" name="password" id="password" required minlength="8" class="input-field w-full px-4 py-3 pr-12" placeholder="至少 8 個字符"/>
+                        <input type="password" name="password" id="password" required minlength="8" class="input-field w-full px-4 py-3 pr-12" data-i18n-placeholder="auth.register.passwordPlaceholder" placeholder="At least 8 characters"/>
                         <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition" onclick="togglePassword('password')">
                             <i class="fas fa-eye"></i>
                         </button>
@@ -903,7 +903,7 @@ app.get('/signup', (c) => {
 
                 <div>
                     <label class="block text-sm text-gray-300 mb-2">
-                        <i class="fas fa-lock mr-2"></i>確認密碼
+                        <i class="fas fa-lock mr-2"></i><span data-i18n="auth.register.confirmPasswordLabel">Confirm Password</span>
                     </label>
                     <div class="relative">
                         <input type="password" name="confirmPassword" id="confirmPassword" required class="input-field w-full px-4 py-3 pr-12" placeholder="再次輸入密碼"/>
