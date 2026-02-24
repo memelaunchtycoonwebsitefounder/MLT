@@ -317,7 +317,11 @@ app.get('/', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+            </style>
 </head>
 <body class="gradient-bg text-white min-h-screen">
     <!-- Loading overlay -->
@@ -856,7 +860,11 @@ app.get('/signup', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+            </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md">
@@ -1161,7 +1169,11 @@ app.get('/login', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+            </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md">
@@ -1331,7 +1343,11 @@ app.get('/forgot-password', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+            </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <div class="min-h-screen flex items-center justify-center px-4 py-12">
@@ -1452,7 +1468,11 @@ app.get('/reset-password', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+            </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <div class="min-h-screen flex items-center justify-center px-4 py-12">
@@ -1595,9 +1615,18 @@ app.get('/coin/:id', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+            </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
+        <!-- Page Loader -->
+        <div id="page-loader">
+            <div class="loader-spinner"></div>
+        </div>
+
         <!-- Navigation -->
         <nav class="glass-effect sticky top-0 z-50">
             <div class="container mx-auto px-4 py-4">
@@ -2125,6 +2154,15 @@ app.get('/coin/:id', (c) => {
         <script src="/static/realtime.js?v=20260221151619"></script>
         
         <!-- Coin detail functionality -->
+        <script src="/static/fetch-utils.js?v=20260221151619"></script>
+        <script>
+            document.addEventListener(\'DOMContentLoaded\', function() {
+                // Hide page loader after assets loaded
+                if (typeof fetchUtils !== \'undefined\' && fetchUtils.hidePageLoader) {
+                    fetchUtils.hidePageLoader();
+                }
+            });
+        </script>
         <script src="/static/coin-detail.js?v=20260221151619"></script>
     </body>
     </html>
@@ -2178,7 +2216,11 @@ app.get('/market', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+            </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <div id="page-loader"><div class="loader-spinner"></div></div>
@@ -2420,7 +2462,11 @@ app.get('/create', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+            </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <!-- Loading overlay -->
@@ -3184,7 +3230,11 @@ app.get('/dashboard', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+            </style>
     </head>
     <body class="min-h-screen" style="background: linear-gradient(135deg, #0A0B0D 0%, #1A1B1F 50%, #0A0B0D 100%);">
         <!-- Loading overlay -->
@@ -3412,7 +3462,11 @@ app.get('/portfolio', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+            </style>
     </head>
     <body class="bg-gradient-to-br from-gray-900 via-purple-900 to-black min-h-screen text-white">
         <div id="page-loader"><div class="loader-spinner"></div></div>
@@ -3608,7 +3662,11 @@ app.get('/achievements', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+            </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <div id="page-loader"><div class="loader-spinner"></div></div>
@@ -3833,7 +3891,11 @@ app.get('/leaderboard', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+            </style>
     </head>
     <body class="bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 min-h-screen">
         <div id="page-loader"><div class="loader-spinner"></div></div>
@@ -4029,7 +4091,11 @@ app.get('/social', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+            </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <div id="page-loader"><div class="loader-spinner"></div></div>
@@ -4242,7 +4308,11 @@ app.get('/profile/:userId', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+            </style>
     </head>
     <body class="bg-gray-900 text-white min-h-screen">
         <div id="page-loader"><div class="loader-spinner"></div></div>
