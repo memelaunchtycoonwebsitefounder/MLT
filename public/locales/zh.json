@@ -216,11 +216,17 @@
         "coinsLaunched": "已發射幣種"
       },
       "passwordStrength": {
+        "placeholder": "密碼強度：繼續輸入密碼",
         "weak": "弱",
         "medium": "中等",
         "strong": "強",
         "veryStrong": "非常強"
-      }
+      },
+      "pageTitle": "註冊 - MemeLaunch Tycoon",
+      "termsPrefix": "我同意",
+      "termsLink": "服務條款",
+      "termsAnd": "和",
+      "privacyLink": "隱私政策"
     },
     "validation": {
       "emailRequired": "電子郵箱為必填項",

@@ -749,7 +749,7 @@ app.get('/signup', (c) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>註冊 - MemeLaunch Tycoon</title>
+    <title data-i18n="auth.register.pageTitle">Sign Up - MemeLaunch Tycoon</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
@@ -860,6 +860,9 @@ app.get('/signup', (c) => {
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md">
+        <!-- Language Switcher -->
+        <div class="language-switcher-container mb-6 flex justify-end"></div>
+
                 <!-- Language Switcher -->
         <div class="language-switcher-container mb-6 flex justify-end"></div>
 
@@ -867,11 +870,11 @@ app.get('/signup', (c) => {
             <h1 class="text-3xl font-bold text-white mb-2">
                 <i class="fas fa-rocket"></i> MemeLaunch
             </h1>
-            <p class="text-gray-400 text-sm">開始你的迷因啟蒙旅程</p>
+            <p class="text-gray-400 text-sm" data-i18n="auth.register.subtitle">Start your meme coin journey</p>
         </div>
 
         <div class="form-card p-8">
-            <h2 class="text-2xl font-bold text-white mb-6 text-center">創建帳號</h2>
+            <h2 class="text-2xl font-bold text-white mb-6 text-center" data-i18n="auth.register.title">Create Account</h2>
             
             <form id="register-form" class="space-y-4">
                 <div>
@@ -898,7 +901,7 @@ app.get('/signup', (c) => {
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
-                    <p class="password-strength" id="password-strength">密碼強度：繼續輸入密碼</p>
+                    <p class="password-strength" id="password-strength" data-i18n="auth.register.passwordStrength.placeholder">Password strength: Keep typing</p>
                 </div>
 
                 <div>
@@ -906,7 +909,7 @@ app.get('/signup', (c) => {
                         <i class="fas fa-lock mr-2"></i><span data-i18n="auth.register.confirmPasswordLabel">Confirm Password</span>
                     </label>
                     <div class="relative">
-                        <input type="password" name="confirmPassword" id="confirmPassword" required class="input-field w-full px-4 py-3 pr-12" placeholder="再次輸入密碼"/>
+                        <input type="password" name="confirmPassword" id="confirmPassword" required class="input-field w-full px-4 py-3 pr-12" data-i18n-placeholder="auth.register.confirmPasswordPlaceholder" placeholder="Re-enter your password"/>
                         <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition" onclick="togglePassword('confirmPassword')">
                             <i class="fas fa-eye"></i>
                         </button>
@@ -916,7 +919,7 @@ app.get('/signup', (c) => {
                 <div class="flex items-start gap-2 text-sm">
                     <input type="checkbox" name="terms" id="terms" required class="mt-1 rounded"/>
                     <label for="terms" class="text-gray-300">
-                        我同意 <a href="/terms" class="link-text">服務條款</a> 和 <a href="/privacy" class="link-text">隱私政策</a>
+                        <span data-i18n="auth.register.termsPrefix">I agree to the</span> <a href="/terms" class="link-text" data-i18n="auth.register.termsLink">Terms of Service</a> <span data-i18n="auth.register.termsAnd">and</span> <a href="/privacy" class="link-text" data-i18n="auth.register.privacyLink">Privacy Policy</a>
                     </label>
                 </div>
 
@@ -933,10 +936,10 @@ app.get('/signup', (c) => {
 
             <div class="grid grid-cols-2 gap-3">
                 <button class="social-button" onclick="socialLogin('google')">
-                    <i class="fab fa-google mr-2"></i>Google
+                    <i class="fab fa-google mr-2"></i><span data-i18n="auth.register.googleButton">Google</span>
                 </button>
                 <button class="social-button" onclick="socialLogin('twitter')">
-                    <i class="fab fa-twitter mr-2"></i>Twitter
+                    <i class="fab fa-twitter mr-2"></i><span data-i18n="auth.register.twitterButton">Twitter</span>
                 </button>
             </div>
 
@@ -1168,6 +1171,9 @@ app.get('/login', (c) => {
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md">
+        <!-- Language Switcher -->
+        <div class="language-switcher-container mb-6 flex justify-end"></div>
+
         <div class="text-center mb-8">
             <h1 class="text-3xl font-bold text-white mb-2">
                 <i class="fas fa-rocket"></i> MemeLaunch

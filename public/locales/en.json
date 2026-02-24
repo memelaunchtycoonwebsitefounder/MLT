@@ -216,11 +216,17 @@
         "coinsLaunched": "Coins Launched"
       },
       "passwordStrength": {
+        "placeholder": "Password strength: Keep typing",
         "weak": "Weak",
         "medium": "Medium",
         "strong": "Strong",
         "veryStrong": "Very Strong"
-      }
+      },
+      "pageTitle": "Sign Up - MemeLaunch Tycoon",
+      "termsPrefix": "I agree to the",
+      "termsLink": "Terms of Service",
+      "termsAnd": "and",
+      "privacyLink": "Privacy Policy"
     },
     "validation": {
       "emailRequired": "Email is required",
