@@ -324,6 +324,11 @@ app.get('/', (c) => {
         </style>
 </head>
 <body class="gradient-bg text-white min-h-screen">
+    <!-- Loading overlay -->
+    <div id="page-loader">
+        <div class="loader-spinner"></div>
+    </div>
+    
     <!-- Navigation -->
     <nav class="glass-effect sticky top-0 z-50">
         <div class="container mx-auto px-4 py-4">
@@ -710,10 +715,20 @@ app.get('/', (c) => {
     </footer>
 
     <!-- Scripts -->
+    <script src="/static/fetch-utils.js?v=20260221151619"></script>
     <script src="/static/i18n.js?v=20260221151619"></script>
     <script src="/static/language-switcher.js?v=20260221151619"></script>
     <script src="/static/landing-new.js?v=20260221151619"></script>
     <script>
+      // Hide page loader when page is ready
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+          if (window.fetchUtils) {
+            window.fetchUtils.hidePageLoader();
+          }
+        }, 100);
+      });
+      
       // Navigation button handlers
       document.getElementById('loginBtn')?.addEventListener('click', () => {
         window.location.href = '/login';
