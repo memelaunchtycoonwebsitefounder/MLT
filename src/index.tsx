@@ -285,6 +285,43 @@ app.get('/', (c) => {
         display: none;
       }
     </style>
+        <style>
+            /* Critical CSS - Load immediately to prevent flash */
+            #page-loader {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                opacity: 1;
+                transition: opacity 0.3s ease-out;
+            }
+            #page-loader.hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+            .loader-spinner {
+                width: 50px;
+                height: 50px;
+                border: 4px solid rgba(255, 107, 53, 0.2);
+                border-top-color: #FF6B35;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+        </style>
 </head>
 <body class="gradient-bg text-white min-h-screen">
     <!-- Navigation -->
@@ -776,6 +813,43 @@ app.get('/signup', (c) => {
             text-align: center;
         }
     </style>
+        <style>
+            /* Critical CSS - Load immediately to prevent flash */
+            #page-loader {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                opacity: 1;
+                transition: opacity 0.3s ease-out;
+            }
+            #page-loader.hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+            .loader-spinner {
+                width: 50px;
+                height: 50px;
+                border: 4px solid rgba(255, 107, 53, 0.2);
+                border-top-color: #FF6B35;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+        </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md">
@@ -1048,6 +1122,43 @@ app.get('/login', (c) => {
             color: #FF8A69;
         }
     </style>
+        <style>
+            /* Critical CSS - Load immediately to prevent flash */
+            #page-loader {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                opacity: 1;
+                transition: opacity 0.3s ease-out;
+            }
+            #page-loader.hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+            .loader-spinner {
+                width: 50px;
+                height: 50px;
+                border: 4px solid rgba(255, 107, 53, 0.2);
+                border-top-color: #FF6B35;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+        </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md">
@@ -1185,6 +1296,43 @@ app.get('/forgot-password', (c) => {
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
+        <style>
+            /* Critical CSS - Load immediately to prevent flash */
+            #page-loader {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                opacity: 1;
+                transition: opacity 0.3s ease-out;
+            }
+            #page-loader.hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+            .loader-spinner {
+                width: 50px;
+                height: 50px;
+                border: 4px solid rgba(255, 107, 53, 0.2);
+                border-top-color: #FF6B35;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+        </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <div class="min-h-screen flex items-center justify-center px-4 py-12">
@@ -1273,6 +1421,43 @@ app.get('/reset-password', (c) => {
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
+        <style>
+            /* Critical CSS - Load immediately to prevent flash */
+            #page-loader {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                opacity: 1;
+                transition: opacity 0.3s ease-out;
+            }
+            #page-loader.hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+            .loader-spinner {
+                width: 50px;
+                height: 50px;
+                border: 4px solid rgba(255, 107, 53, 0.2);
+                border-top-color: #FF6B35;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+        </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <div class="min-h-screen flex items-center justify-center px-4 py-12">
@@ -1383,6 +1568,43 @@ app.get('/coin/:id', (c) => {
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
+        <style>
+            /* Critical CSS - Load immediately to prevent flash */
+            #page-loader {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                opacity: 1;
+                transition: opacity 0.3s ease-out;
+            }
+            #page-loader.hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+            .loader-spinner {
+                width: 50px;
+                height: 50px;
+                border: 4px solid rgba(255, 107, 53, 0.2);
+                border-top-color: #FF6B35;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+        </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <!-- Navigation -->
@@ -1932,6 +2154,43 @@ app.get('/market', (c) => {
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
         <style>
           #page-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0A0B0D 0%,#1A1B1F 50%,#0A0B0D 100%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .3s}.loader-spinner{width:50px;height:50px;border:4px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#page-loader.hidden{opacity:0;pointer-events:none}
+        </style>
+        <style>
+            /* Critical CSS - Load immediately to prevent flash */
+            #page-loader {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                opacity: 1;
+                transition: opacity 0.3s ease-out;
+            }
+            #page-loader.hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+            .loader-spinner {
+                width: 50px;
+                height: 50px;
+                border: 4px solid rgba(255, 107, 53, 0.2);
+                border-top-color: #FF6B35;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
         </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
@@ -2910,6 +3169,43 @@ app.get('/dashboard', (c) => {
             to { transform: rotate(360deg); }
           }
         </style>
+        <style>
+            /* Critical CSS - Load immediately to prevent flash */
+            #page-loader {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                opacity: 1;
+                transition: opacity 0.3s ease-out;
+            }
+            #page-loader.hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+            .loader-spinner {
+                width: 50px;
+                height: 50px;
+                border: 4px solid rgba(255, 107, 53, 0.2);
+                border-top-color: #FF6B35;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+        </style>
     </head>
     <body class="min-h-screen" style="background: linear-gradient(135deg, #0A0B0D 0%, #1A1B1F 50%, #0A0B0D 100%);">
         <!-- Loading overlay -->
@@ -3105,6 +3401,43 @@ app.get('/portfolio', (c) => {
         <style>
           #page-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0A0B0D 0%,#1A1B1F 50%,#0A0B0D 100%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .3s}.loader-spinner{width:50px;height:50px;border:4px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#page-loader.hidden{opacity:0;pointer-events:none}
         </style>
+        <style>
+            /* Critical CSS - Load immediately to prevent flash */
+            #page-loader {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                opacity: 1;
+                transition: opacity 0.3s ease-out;
+            }
+            #page-loader.hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+            .loader-spinner {
+                width: 50px;
+                height: 50px;
+                border: 4px solid rgba(255, 107, 53, 0.2);
+                border-top-color: #FF6B35;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+        </style>
     </head>
     <body class="bg-gradient-to-br from-gray-900 via-purple-900 to-black min-h-screen text-white">
         <div id="page-loader"><div class="loader-spinner"></div></div>
@@ -3267,6 +3600,43 @@ app.get('/achievements', (c) => {
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
         <style>
           #page-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0A0B0D 0%,#1A1B1F 50%,#0A0B0D 100%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .3s}.loader-spinner{width:50px;height:50px;border:4px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#page-loader.hidden{opacity:0;pointer-events:none}
+        </style>
+        <style>
+            /* Critical CSS - Load immediately to prevent flash */
+            #page-loader {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                opacity: 1;
+                transition: opacity 0.3s ease-out;
+            }
+            #page-loader.hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+            .loader-spinner {
+                width: 50px;
+                height: 50px;
+                border: 4px solid rgba(255, 107, 53, 0.2);
+                border-top-color: #FF6B35;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
         </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
@@ -3460,6 +3830,43 @@ app.get('/leaderboard', (c) => {
         <style>
           #page-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0A0B0D 0%,#1A1B1F 50%,#0A0B0D 100%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .3s}.loader-spinner{width:50px;height:50px;border:4px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#page-loader.hidden{opacity:0;pointer-events:none}
         </style>
+        <style>
+            /* Critical CSS - Load immediately to prevent flash */
+            #page-loader {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                opacity: 1;
+                transition: opacity 0.3s ease-out;
+            }
+            #page-loader.hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+            .loader-spinner {
+                width: 50px;
+                height: 50px;
+                border: 4px solid rgba(255, 107, 53, 0.2);
+                border-top-color: #FF6B35;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
+        </style>
     </head>
     <body class="bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 min-h-screen">
         <div id="page-loader"><div class="loader-spinner"></div></div>
@@ -3622,6 +4029,43 @@ app.get('/social', (c) => {
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
         <style>
           #page-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0A0B0D 0%,#1A1B1F 50%,#0A0B0D 100%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .3s}.loader-spinner{width:50px;height:50px;border:4px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#page-loader.hidden{opacity:0;pointer-events:none}
+        </style>
+        <style>
+            /* Critical CSS - Load immediately to prevent flash */
+            #page-loader {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                opacity: 1;
+                transition: opacity 0.3s ease-out;
+            }
+            #page-loader.hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+            .loader-spinner {
+                width: 50px;
+                height: 50px;
+                border: 4px solid rgba(255, 107, 53, 0.2);
+                border-top-color: #FF6B35;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
         </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
@@ -3802,6 +4246,43 @@ app.get('/profile/:userId', (c) => {
           .tab-btn { opacity: 0.6; }
           .tab-btn.active { opacity: 1; border-bottom: 2px solid #f97316; }
           #page-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0A0B0D 0%,#1A1B1F 50%,#0A0B0D 100%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .3s}.loader-spinner{width:50px;height:50px;border:4px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#page-loader.hidden{opacity:0;pointer-events:none}
+        </style>
+        <style>
+            /* Critical CSS - Load immediately to prevent flash */
+            #page-loader {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                opacity: 1;
+                transition: opacity 0.3s ease-out;
+            }
+            #page-loader.hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+            .loader-spinner {
+                width: 50px;
+                height: 50px;
+                border: 4px solid rgba(255, 107, 53, 0.2);
+                border-top-color: #FF6B35;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            /* Hide body content until loader is ready */
+            body:not(.loaded) > *:not(#page-loader) {
+                visibility: hidden;
+            }
         </style>
     </head>
     <body class="bg-gray-900 text-white min-h-screen">
