@@ -1059,6 +1059,8 @@ app.get('/signup', (c) => {
             }
         });
     </script>
+    <script src="/static/i18n.js?v=20260221151619"></script>
+    <script src="/static/language-switcher.js?v=20260221151619"></script>
 </body>
 </html>
   `);
@@ -1291,6 +1293,8 @@ app.get('/login', (c) => {
             }
         });
     </script>
+    <script src="/static/i18n.js?v=20260221151619"></script>
+    <script src="/static/language-switcher.js?v=20260221151619"></script>
 </body>
 </html>
   `);
