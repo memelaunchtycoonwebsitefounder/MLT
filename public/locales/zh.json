@@ -171,11 +171,13 @@
       "twitterButton": "使用 Twitter 繼續",
       "metamaskButton": "連接 MetaMask",
       "noAccount": "還沒有帳號？",
-      "signUpLink": "免費註冊",
+      "signUpLink": "立即註冊",
       "socialProof": {
         "traders": "活躍交易員",
         "volume": "24小時交易量"
-      }
+      },
+      "orSignInWith": "或使用社交帳號登入",
+      "securityNote": "100% 模擬遊戲 · 無需真實金錢 · 您的資料受保護"
     },
     "register": {
       "title": "創建您的帳號",
@@ -226,7 +228,11 @@
       "termsPrefix": "我同意",
       "termsLink": "服務條款",
       "termsAnd": "和",
-      "privacyLink": "隱私政策"
+      "privacyLink": "隱私政策",
+      "orSignUpWith": "或使用社交帳號註冊",
+      "alreadyHaveAccount": "已有帳號？",
+      "signInLink": "立即登入",
+      "securityNote": "100% 端對端加密 · 無需將金鑰交易 · 您的帳戶從安全保護"
     },
     "validation": {
       "emailRequired": "電子郵箱為必填項",

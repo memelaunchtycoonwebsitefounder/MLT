@@ -171,11 +171,13 @@
       "twitterButton": "Continue with Twitter",
       "metamaskButton": "Connect MetaMask",
       "noAccount": "Don't have an account?",
-      "signUpLink": "Sign up for free",
+      "signUpLink": "Sign up",
       "socialProof": {
         "traders": "Active Traders",
         "volume": "24h Trading Volume"
-      }
+      },
+      "orSignInWith": "Or sign in with",
+      "securityNote": "100% simulation game · No real money required · Your data is protected"
     },
     "register": {
       "title": "Create Your Account",
@@ -226,7 +228,11 @@
       "termsPrefix": "I agree to the",
       "termsLink": "Terms of Service",
       "termsAnd": "and",
-      "privacyLink": "Privacy Policy"
+      "privacyLink": "Privacy Policy",
+      "orSignUpWith": "Or sign up with",
+      "alreadyHaveAccount": "Already have an account?",
+      "signInLink": "Sign in",
+      "securityNote": "100% end-to-end encrypted · No key exchange required · Your account is protected"
     },
     "validation": {
       "emailRequired": "Email is required",

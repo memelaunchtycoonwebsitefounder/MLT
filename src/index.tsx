@@ -284,6 +284,19 @@ app.get('/', (c) => {
       .step-card:last-child::before {
         display: none;
       }
+    
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
     </style>
         <style>
             /* Critical CSS - Load immediately to prevent flash */
@@ -317,7 +330,20 @@ app.get('/', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
 </head>
 <body class="gradient-bg text-white min-h-screen">
     <!-- Loading overlay -->
@@ -823,6 +849,19 @@ app.get('/signup', (c) => {
             margin-top: 0.5rem;
             text-align: center;
         }
+    
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
     </style>
         <style>
             /* Critical CSS - Load immediately to prevent flash */
@@ -856,12 +895,23 @@ app.get('/signup', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md">
-        <!-- Language Switcher -->
-        <div class="language-switcher-container mb-6 flex justify-end"></div>
 
                 <!-- Language Switcher -->
         <div class="language-switcher-container mb-6 flex justify-end"></div>
@@ -926,12 +976,12 @@ app.get('/signup', (c) => {
                 <div id="error-message" class="error-message hidden"></div>
 
                 <button type="submit" class="gradient-button w-full">
-                    <i class="fas fa-user-plus mr-2"></i>創建帳號
+                    <i class="fas fa-user-plus mr-2"></i><span data-i18n="auth.register.submitButton">Create Account</span>
                 </button>
             </form>
 
             <div class="my-6 text-center text-sm text-gray-400">
-                或使用社交帳號註冊
+                <span data-i18n="auth.register.orSignUpWith">Or sign up with</span>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
@@ -944,13 +994,13 @@ app.get('/signup', (c) => {
             </div>
 
             <p class="mt-6 text-center text-sm text-gray-400">
-                已有帳號？
-                <a href="/login" class="link-text">立即登入</a>
+                <span data-i18n="auth.register.alreadyHaveAccount">Already have an account?</span>
+                <a href="/login" class="link-text"><span data-i18n="auth.register.loginLink">Sign in</span></a>
             </p>
         </div>
 
         <p class="mt-6 text-center text-xs text-gray-600">
-            <i class="fas fa-lock mr-1"></i>100% 端對端加密 · 無需將金鑰交易 · 您的帳戶從安全保護
+            <i class="fas fa-lock mr-1"></i><span data-i18n="auth.register.securityNote">100% end-to-end encrypted · No key exchange required · Your account is protected</span>
         </p>
     </div>
 
@@ -1073,7 +1123,7 @@ app.get('/login', (c) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>登入 - MemeLaunch Tycoon</title>
+    <title><span data-i18n="auth.login.submitButton">Sign In</span> - MemeLaunch Tycoon</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
@@ -1136,6 +1186,19 @@ app.get('/login', (c) => {
         .link-text:hover {
             color: #FF8A69;
         }
+    
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
     </style>
         <style>
             /* Critical CSS - Load immediately to prevent flash */
@@ -1169,7 +1232,20 @@ app.get('/login', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md">
@@ -1211,16 +1287,16 @@ app.get('/login', (c) => {
                         <input type="checkbox" name="rememberMe" class="rounded">
                         <span data-i18n="auth.login.rememberMe">Remember me</span>
                     </label>
-                    <a href="/forgot-password" class="link-text">忘記密碼？</a>
+                    <a href="/forgot-password" class="link-text"><span data-i18n="auth.login.forgotPassword">Forgot password?</span></a>
                 </div>
 
                 <button type="submit" class="gradient-button w-full">
-                    <i class="fas fa-sign-in-alt mr-2"></i>登入
+                    <i class="fas fa-sign-in-alt mr-2"></i><span data-i18n="auth.login.submitButton">Sign In</span>
                 </button>
             </form>
 
             <div class="my-6 text-center text-sm text-gray-400">
-                或使用社交帳號登入
+                或使用社交帳號<span data-i18n="auth.login.submitButton">Sign In</span>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
@@ -1233,13 +1309,13 @@ app.get('/login', (c) => {
             </div>
 
             <p class="mt-6 text-center text-sm text-gray-400">
-                還沒有帳號？
-                <a href="/signup" class="link-text">立即註冊</a>
+                <span data-i18n="auth.login.noAccount">Don't have an account?</span>
+                <a href="/signup" class="link-text"><span data-i18n="auth.login.signUpLink">Sign up</span></a>
             </p>
         </div>
 
         <p class="mt-6 text-center text-xs text-gray-600">
-            <i class="fas fa-lock mr-1"></i>100% 模擬遊戲 · 無需真實金錢 · 您的資料受保護
+            <i class="fas fa-lock mr-1"></i><span data-i18n="auth.login.securityNote">100% simulation game · No real money required · Your data is protected</span>
         </p>
     </div>
 
@@ -1285,7 +1361,7 @@ app.get('/login', (c) => {
                     // Redirect without alert popup
                     window.location.href = '/dashboard';
                 } else {
-                    alert(result.error || result.message || '登入失敗，請檢查您的憑證');
+                    alert(result.error || result.message || '<span data-i18n="auth.login.submitButton">Sign In</span>失敗，請檢查您的憑證');
                 }
             } catch (error) {
                 console.error('Login error:', error);
@@ -1344,7 +1420,20 @@ app.get('/forgot-password', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <div class="min-h-screen flex items-center justify-center px-4 py-12">
@@ -1365,7 +1454,7 @@ app.get('/forgot-password', (c) => {
                         <div class="inline-flex items-center justify-center w-16 h-16 bg-orange-500/20 rounded-full mb-4">
                             <i class="fas fa-key text-3xl text-orange-500"></i>
                         </div>
-                        <h2 class="text-2xl font-bold">忘記密碼？</h2>
+                        <h2 class="text-2xl font-bold"><span data-i18n="auth.login.forgotPassword">Forgot password?</span></h2>
                         <p class="text-gray-400 mt-2 text-sm">別擔心！輸入您的郵箱，我們會發送重置連結給您</p>
                     </div>
                     
@@ -1403,7 +1492,7 @@ app.get('/forgot-password', (c) => {
                     <!-- Back to Login -->
                     <div class="mt-6 text-center">
                         <a href="/login" class="text-sm text-gray-400 hover:text-orange-500 transition">
-                            <i class="fas fa-arrow-left mr-2"></i>返回登入
+                            <i class="fas fa-arrow-left mr-2"></i>返回<span data-i18n="auth.login.submitButton">Sign In</span>
                         </a>
                     </div>
                 </div>
@@ -1465,7 +1554,20 @@ app.get('/reset-password', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <div class="min-h-screen flex items-center justify-center px-4 py-12">
@@ -1608,7 +1710,20 @@ app.get('/coin/:id', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <!-- Page Loader -->
@@ -2172,7 +2287,20 @@ app.get('/market', (c) => {
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
         <style>
           #page-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0A0B0D 0%,#1A1B1F 50%,#0A0B0D 100%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .3s}.loader-spinner{width:50px;height:50px;border:4px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#page-loader.hidden{opacity:0;pointer-events:none}
-        </style>
+        
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
         <style>
             /* Critical CSS - Load immediately to prevent flash */
             #page-loader {
@@ -2205,7 +2333,20 @@ app.get('/market', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <div id="page-loader"><div class="loader-spinner"></div></div>
@@ -2447,7 +2588,20 @@ app.get('/create', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <!-- Loading overlay -->
@@ -3178,7 +3332,20 @@ app.get('/dashboard', (c) => {
           @keyframes spin {
             to { transform: rotate(360deg); }
           }
-        </style>
+        
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
         <style>
             /* Critical CSS - Load immediately to prevent flash */
             #page-loader {
@@ -3211,7 +3378,20 @@ app.get('/dashboard', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
     </head>
     <body class="min-h-screen" style="background: linear-gradient(135deg, #0A0B0D 0%, #1A1B1F 50%, #0A0B0D 100%);">
         <!-- Loading overlay -->
@@ -3406,7 +3586,20 @@ app.get('/portfolio', (c) => {
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
         <style>
           #page-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0A0B0D 0%,#1A1B1F 50%,#0A0B0D 100%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .3s}.loader-spinner{width:50px;height:50px;border:4px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#page-loader.hidden{opacity:0;pointer-events:none}
-        </style>
+        
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
         <style>
             /* Critical CSS - Load immediately to prevent flash */
             #page-loader {
@@ -3439,7 +3632,20 @@ app.get('/portfolio', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
     </head>
     <body class="bg-gradient-to-br from-gray-900 via-purple-900 to-black min-h-screen text-white">
         <div id="page-loader"><div class="loader-spinner"></div></div>
@@ -3602,7 +3808,20 @@ app.get('/achievements', (c) => {
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
         <style>
           #page-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0A0B0D 0%,#1A1B1F 50%,#0A0B0D 100%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .3s}.loader-spinner{width:50px;height:50px;border:4px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#page-loader.hidden{opacity:0;pointer-events:none}
-        </style>
+        
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
         <style>
             /* Critical CSS - Load immediately to prevent flash */
             #page-loader {
@@ -3635,7 +3854,20 @@ app.get('/achievements', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <div id="page-loader"><div class="loader-spinner"></div></div>
@@ -3827,7 +4059,20 @@ app.get('/leaderboard', (c) => {
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
         <style>
           #page-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0A0B0D 0%,#1A1B1F 50%,#0A0B0D 100%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .3s}.loader-spinner{width:50px;height:50px;border:4px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#page-loader.hidden{opacity:0;pointer-events:none}
-        </style>
+        
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
         <style>
             /* Critical CSS - Load immediately to prevent flash */
             #page-loader {
@@ -3860,7 +4105,20 @@ app.get('/leaderboard', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
     </head>
     <body class="bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 min-h-screen">
         <div id="page-loader"><div class="loader-spinner"></div></div>
@@ -4023,7 +4281,20 @@ app.get('/social', (c) => {
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
         <style>
           #page-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0A0B0D 0%,#1A1B1F 50%,#0A0B0D 100%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .3s}.loader-spinner{width:50px;height:50px;border:4px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#page-loader.hidden{opacity:0;pointer-events:none}
-        </style>
+        
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
         <style>
             /* Critical CSS - Load immediately to prevent flash */
             #page-loader {
@@ -4056,7 +4327,20 @@ app.get('/social', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
     </head>
     <body class="gradient-bg text-white min-h-screen">
         <div id="page-loader"><div class="loader-spinner"></div></div>
@@ -4236,7 +4520,20 @@ app.get('/profile/:userId', (c) => {
           .tab-btn { opacity: 0.6; }
           .tab-btn.active { opacity: 1; border-bottom: 2px solid #f97316; }
           #page-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0A0B0D 0%,#1A1B1F 50%,#0A0B0D 100%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .3s}.loader-spinner{width:50px;height:50px;border:4px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#page-loader.hidden{opacity:0;pointer-events:none}
-        </style>
+        
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
         <style>
             /* Critical CSS - Load immediately to prevent flash */
             #page-loader {
@@ -4269,7 +4566,20 @@ app.get('/profile/:userId', (c) => {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            /* Hide body content until loader is ready */</style>
+            /* Hide body content until loader is ready */
+        /* Language Switcher White Text */
+        .language-switcher-container,
+        .language-switcher-container * {
+            color: white !important;
+        }
+        .language-switcher-container .dropdown {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+        }
+        .language-switcher-container .dropdown-item:hover {
+            background: #3a3a3a;
+        }
+    </style>
     </head>
     <body class="bg-gray-900 text-white min-h-screen">
         <div id="page-loader"><div class="loader-spinner"></div></div>
