@@ -745,7 +745,7 @@ app.get('/', (c) => {
 // Signup/Register page - Modern Design
 app.get('/signup', (c) => {
   return c.html(`<!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -860,7 +860,10 @@ app.get('/signup', (c) => {
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md">
-        <div class="text-center mb-8">
+                <!-- Language Switcher -->
+        <div class="language-switcher-container mb-6 flex justify-end"></div>
+
+<div class="text-center mb-8">
             <h1 class="text-3xl font-bold text-white mb-2">
                 <i class="fas fa-rocket"></i> MemeLaunch
             </h1>
@@ -873,9 +876,9 @@ app.get('/signup', (c) => {
             <form id="register-form" class="space-y-4">
                 <div>
                     <label class="block text-sm text-gray-300 mb-2">
-                        <i class="fas fa-envelope mr-2"></i>電子郵箱
+                        <i class="fas fa-envelope mr-2"></i><span data-i18n="auth.login.emailLabel">Email Address</span>
                     </label>
-                    <input type="email" name="email" required class="input-field w-full px-4 py-3" placeholder="your@email.com"/>
+                    <input type="email" name="email" required class="input-field w-full px-4 py-3" data-i18n-placeholder="auth.login.emailPlaceholder" placeholder="your@email.com"/>
                 </div>
 
                 <div>
@@ -887,7 +890,7 @@ app.get('/signup', (c) => {
 
                 <div>
                     <label class="block text-sm text-gray-300 mb-2">
-                        <i class="fas fa-lock mr-2"></i>密碼
+                        <i class="fas fa-lock mr-2"></i><span data-i18n="auth.login.passwordLabel">Password</span>
                     </label>
                     <div class="relative">
                         <input type="password" name="password" id="password" required minlength="8" class="input-field w-full px-4 py-3 pr-12" placeholder="至少 8 個字符"/>
@@ -1061,7 +1064,7 @@ app.get('/signup', (c) => {
 // Login page - Modern Design
 app.get('/login', (c) => {
   return c.html(`<!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1169,26 +1172,26 @@ app.get('/login', (c) => {
             <h1 class="text-3xl font-bold text-white mb-2">
                 <i class="fas fa-rocket"></i> MemeLaunch
             </h1>
-            <p class="text-gray-400 text-sm">歡迎回來！</p>
+            <p class="text-gray-400 text-sm" data-i18n="auth.login.subtitle">Welcome back!</p>
         </div>
 
         <div class="form-card p-8">
-            <h2 class="text-2xl font-bold text-white mb-6 text-center">登入帳號</h2>
+            <h2 class="text-2xl font-bold text-white mb-6 text-center" data-i18n="auth.login.title">Sign In</h2>
             
             <form id="login-form" class="space-y-4">
                 <div>
                     <label class="block text-sm text-gray-300 mb-2">
-                        <i class="fas fa-envelope mr-2"></i>電子郵箱
+                        <i class="fas fa-envelope mr-2"></i><span data-i18n="auth.login.emailLabel">Email Address</span>
                     </label>
-                    <input type="email" name="email" required class="input-field w-full px-4 py-3" placeholder="your@email.com"/>
+                    <input type="email" name="email" required class="input-field w-full px-4 py-3" data-i18n-placeholder="auth.login.emailPlaceholder" placeholder="your@email.com"/>
                 </div>
 
                 <div>
                     <label class="block text-sm text-gray-300 mb-2">
-                        <i class="fas fa-lock mr-2"></i>密碼
+                        <i class="fas fa-lock mr-2"></i><span data-i18n="auth.login.passwordLabel">Password</span>
                     </label>
                     <div class="relative">
-                        <input type="password" name="password" required class="input-field w-full px-4 py-3 pr-12" placeholder="輸入您的密碼"/>
+                        <input type="password" name="password" required class="input-field w-full px-4 py-3 pr-12" data-i18n-placeholder="auth.login.passwordPlaceholder" placeholder="Enter your password"/>
                         <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition" onclick="togglePassword(this)">
                             <i class="fas fa-eye"></i>
                         </button>
@@ -1198,7 +1201,7 @@ app.get('/login', (c) => {
                 <div class="flex items-center justify-between text-sm">
                     <label class="flex items-center gap-2 cursor-pointer text-gray-300">
                         <input type="checkbox" name="rememberMe" class="rounded">
-                        記住我
+                        <span data-i18n="auth.login.rememberMe">Remember me</span>
                     </label>
                     <a href="/forgot-password" class="link-text">忘記密碼？</a>
                 </div>
