@@ -3423,28 +3423,32 @@ app.get('/dashboard', (c) => {
                             <span class="text-white ml-1" data-i18n="dashboard.stats.coins">Coins</span>
                         </div>
                         
+                        
+                        <!-- Language Switcher -->
+                        <div class="language-switcher-container"></div>
+                        
                         <!-- User Dropdown Menu -->
                         <div class="relative">
                             <button id="user-menu-btn" class="glass-card px-3 py-2 rounded-lg hover:bg-white/10 transition cursor-pointer flex items-center space-x-2 whitespace-nowrap">
                                 <i class="fas fa-user text-coinbase-blue"></i>
-                                <span id="username-display" class="text-white text-sm">載入中...</span>
+                                <span id="username-display" class="text-white text-sm"><span data-i18n="dashboard.loading">Loading...</span></span>
                                 <i class="fas fa-chevron-down text-gray-400 text-xs ml-1"></i>
                             </button>
                             
                             <!-- Dropdown Menu -->
                             <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 glass-card rounded-lg shadow-xl border border-white/10 overflow-hidden z-50">
                                 <a id="view-profile-link" href="#" class="block px-4 py-3 text-white hover:bg-white/10 transition">
-                                    <i class="fas fa-user mr-2 text-coinbase-blue"></i>我的資料
+                                    <i class="fas fa-user mr-2 text-coinbase-blue"></i><span data-i18n="dashboard.userMenu.myProfile">My Profile</span>
                                 </a>
                                 <a href="/portfolio" class="block px-4 py-3 text-white hover:bg-white/10 transition">
-                                    <i class="fas fa-wallet mr-2 text-green-400"></i>我的組合
+                                    <i class="fas fa-wallet mr-2 text-green-400"></i><span data-i18n="dashboard.userMenu.myPortfolio">My Portfolio</span>
                                 </a>
                                 <a href="/achievements" class="block px-4 py-3 text-white hover:bg-white/10 transition">
-                                    <i class="fas fa-trophy mr-2 text-yellow-400"></i>成就
+                                    <i class="fas fa-trophy mr-2 text-yellow-400"></i><span data-i18n="dashboard.userMenu.achievements">Achievements</span>
                                 </a>
                                 <div class="border-t border-white/10"></div>
                                 <button id="logout-btn" class="w-full text-left px-4 py-3 text-red-400 hover:bg-white/10 transition">
-                                    <i class="fas fa-sign-out-alt mr-2"></i>登出
+                                    <i class="fas fa-sign-out-alt mr-2"></i><span data-i18n="dashboard.userMenu.logout">Logout</span>
                                 </button>
                             </div>
                         </div>
@@ -3457,7 +3461,7 @@ app.get('/dashboard', (c) => {
         <div class="container mx-auto px-4 py-8">
             <!-- Welcome Section -->
             <div class="mb-8">
-                <h1 class="text-4xl font-bold text-white mb-2">歡迎回來！</h1>
+                <h1 class="text-4xl font-bold text-white mb-2" data-i18n="dashboard.welcome.title">Welcome Back!<//h1>
                 <p class="text-gray-400" data-i18n="dashboard.welcome.subtitle">Check your investment performance and market trends</p>
             </div>
 
@@ -3469,7 +3473,7 @@ app.get('/dashboard', (c) => {
                         <span class="text-xs text-gray-400" data-i18n="dashboard.stats.totalBalance">Total Balance</span>
                     </div>
                     <p class="text-3xl font-bold text-white" id="total-balance">--</p>
-                    <p class="text-sm text-gray-400 mt-1">金幣</p>
+                    <p class="text-sm text-gray-400 mt-1" data-i18n="dashboard.currency">Coins</p>
                 </div>
                 
                 <div class="glass-card p-6 rounded-xl hover-lift">
@@ -3478,7 +3482,7 @@ app.get('/dashboard', (c) => {
                         <span class="text-xs text-gray-400" data-i18n="dashboard.stats.portfolioValue">Portfolio Value</span>
                     </div>
                     <p class="text-3xl font-bold text-white" id="portfolio-value">--</p>
-                    <p class="text-sm text-gray-400 mt-1">金幣</p>
+                    <p class="text-sm text-gray-400 mt-1" data-i18n="dashboard.currency">Coins</p>
                 </div>
                 
                 <div class="glass-card p-6 rounded-xl hover-lift">
@@ -3531,10 +3535,10 @@ app.get('/dashboard', (c) => {
                 <div class="glass-card p-8 rounded-xl">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-2xl font-bold text-white" data-i18n="dashboard.recentTrades">Recent Trades</h3>
-                        <a href="/portfolio" class="text-sm coinbase-blue hover:text-blue-400 transition">查看全部 →</a>
+                        <a href="/portfolio" class="text-sm coinbase-blue hover:text-blue-400 transition" data-i18n="dashboard.viewAll">View All →</a>
                     </div>
                     <div id="recent-transactions" class="space-y-3">
-                        <p class="text-gray-400 text-center py-8">載入中...</p>
+                        <p class="text-gray-400 text-center py-8"><span data-i18n="dashboard.loading">Loading...</span></p>
                     </div>
                 </div>
 
@@ -3542,10 +3546,10 @@ app.get('/dashboard', (c) => {
                 <div class="glass-card p-8 rounded-xl">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-2xl font-bold text-white" data-i18n="dashboard.myHoldings">My Holdings</h3>
-                        <a href="/portfolio" class="text-sm coinbase-blue hover:text-blue-400 transition">查看全部 →</a>
+                        <a href="/portfolio" class="text-sm coinbase-blue hover:text-blue-400 transition" data-i18n="dashboard.viewAll">View All →</a>
                     </div>
                     <div id="user-holdings" class="space-y-3">
-                        <p class="text-gray-400 text-center py-8">載入中...</p>
+                        <p class="text-gray-400 text-center py-8"><span data-i18n="dashboard.loading">Loading...</span></p>
                     </div>
                 </div>
             </div>
@@ -3553,11 +3557,11 @@ app.get('/dashboard', (c) => {
             <!-- Trending Coins -->
             <div class="glass-card p-8 rounded-xl mt-6">
                 <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-2xl font-bold text-white">熱門幣種</h3>
-                    <a href="/market" class="text-sm coinbase-blue hover:text-blue-400 transition">查看市場 →</a>
+                    <h3 class="text-2xl font-bold text-white" data-i18n="dashboard.trendingCoins">Trending Coins</h3>
+                    <a href="/market" class="text-sm coinbase-blue hover:text-blue-400 transition" data-i18n="dashboard.viewMarket">View Market →</a>
                 </div>
                 <div id="trending-coins" class="space-y-3">
-                    <p class="text-gray-400 text-center py-8">載入中...</p>
+                    <p class="text-gray-400 text-center py-8"><span data-i18n="dashboard.loading">Loading...</span></p>
                 </div>
             </div>
         </div>

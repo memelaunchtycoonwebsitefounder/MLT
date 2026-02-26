@@ -304,6 +304,22 @@
     "myHoldings": "我的持倉",
     "viewDetails": "查看資料",
     "profile": "個人檔案與成就",
-    "myData": "我的資料"
+    "myData": "我的資料",
+    "userMenu": {
+      "myProfile": "我的資料",
+      "myPortfolio": "我的組合",
+      "achievements": "成就",
+      "logout": "登出"
+    },
+    "trade": {
+      "buy": "買入",
+      "sell": "賣出",
+      "create": "創建"
+    },
+    "currency": "金幣",
+    "marketCap": "市值",
+    "noHoldings": "暫無持倉",
+    "noTransactions": "暫無交易記錄",
+    "noTrendingCoins": "暫無熱門幣種"
   }
 }

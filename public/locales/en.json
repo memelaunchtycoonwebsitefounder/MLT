@@ -304,6 +304,22 @@
     "myHoldings": "My Holdings",
     "viewDetails": "View Details",
     "profile": "Profile & Achievements",
-    "myData": "My Data"
+    "myData": "My Data",
+    "userMenu": {
+      "myProfile": "My Profile",
+      "myPortfolio": "My Portfolio",
+      "achievements": "Achievements",
+      "logout": "Logout"
+    },
+    "trade": {
+      "buy": "Buy",
+      "sell": "Sell",
+      "create": "Create"
+    },
+    "currency": "Coins",
+    "marketCap": "Market Cap",
+    "noHoldings": "No Holdings",
+    "noTransactions": "No Transactions",
+    "noTrendingCoins": "No Trending Coins"
   }
 }

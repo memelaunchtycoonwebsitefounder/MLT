@@ -119,7 +119,7 @@ async function loadDashboardData(user) {
       const userHoldingsEl = document.getElementById('user-holdings');
       if (userHoldingsEl) {
         if (holdings.length === 0) {
-          userHoldingsEl.innerHTML = '<p class="text-gray-400 text-center py-4">暫無持倉</p>';
+          userHoldingsEl.innerHTML = `<p class="text-gray-400 text-center py-4" data-i18n="dashboard.noHoldings">No Holdings</p>`;
         } else {
           userHoldingsEl.innerHTML = holdings.slice(0, 5).map(holding => `
             <a href="/coin/${holding.coin_id}" class="block p-3 bg-white/5 rounded-lg hover:bg-white/10 transition">
@@ -132,7 +132,7 @@ async function loadDashboardData(user) {
                   </div>
                 </div>
                 <div class="text-right">
-                  <p class="font-semibold text-white">${(holding.current_value || 0).toFixed(2)} 金幣</p>
+                  <p class="font-semibold text-white">${(holding.current_value || 0).toFixed(2)} ${window.i18n ? window.i18n.t('dashboard.currency') : 'Coins'}</p>
                   <p class="text-sm ${(holding.profit_loss || 0) >= 0 ? 'text-green-400' : 'text-red-400'}">
                     ${(holding.profit_loss || 0) >= 0 ? '+' : ''}${(holding.profit_loss || 0).toFixed(2)}
                   </p>
@@ -181,14 +181,14 @@ async function loadRecentTransactions() {
     const transactions = response.data.data || [];
     
     if (!Array.isArray(transactions) || transactions.length === 0) {
-      container.innerHTML = '<p class="text-gray-400 text-center py-4">暫無交易記錄</p>';
+      container.innerHTML = `<p class="text-gray-400 text-center py-4" data-i18n="dashboard.noTransactions">No Transactions</p>`;
       return;
     }
     
     container.innerHTML = transactions.map(tx => {
       const typeIcon = tx.type === 'buy' ? 'fa-arrow-down' : tx.type === 'sell' ? 'fa-arrow-up' : 'fa-plus-circle';
       const typeClass = tx.type === 'buy' ? 'text-red-400' : tx.type === 'sell' ? 'text-green-400' : 'text-blue-400';
-      const typeText = tx.type === 'buy' ? '買入' : tx.type === 'sell' ? '賣出' : '創建';
+      const typeText = tx.type === 'buy' ? window.i18n ? window.i18n.t('dashboard.trade.buy') : 'Buy' : tx.type === 'sell' ? window.i18n ? window.i18n.t('dashboard.trade.sell') : 'Sell' : window.i18n ? window.i18n.t('dashboard.trade.create') : 'Create';
       
       return `
         <div class="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition">
@@ -196,12 +196,12 @@ async function loadRecentTransactions() {
             <i class="fas ${typeIcon} ${typeClass}"></i>
             <div>
               <p class="font-semibold">${typeText} ${tx.coin_name || 'Unknown'}</p>
-              <p class="text-sm text-gray-400">${new Date(tx.timestamp).toLocaleString('zh-TW')}</p>
+              <p class="text-sm text-gray-400">${new Date(tx.timestamp).toLocaleString(window.i18n ? window.i18n.currentLocale : 'en-US')}</p>
             </div>
           </div>
           <div class="text-right">
             <p class="font-semibold">${tx.amount || 0} ${tx.coin_symbol || ''}</p>
-            <p class="text-sm ${typeClass}">${tx.type === 'buy' ? '-' : '+'}${(tx.total_cost || 0).toFixed(2)} 金幣</p>
+            <p class="text-sm ${typeClass}">${tx.type === 'buy' ? '-' : '+'}${(tx.total_cost || 0).toFixed(2)} ${window.i18n ? window.i18n.t('dashboard.currency') : 'Coins'}</p>
           </div>
         </div>
       `;
@@ -212,7 +212,7 @@ async function loadRecentTransactions() {
     console.error('Dashboard: Failed to load transactions:', error);
     const container = document.getElementById('recent-transactions');
     if (container) {
-      container.innerHTML = '<p class="text-gray-400 text-center py-4">暫無交易記錄</p>';
+      container.innerHTML = `<p class="text-gray-400 text-center py-4" data-i18n="dashboard.noTransactions">No Transactions</p>`;
     }
   }
 }
@@ -230,7 +230,7 @@ async function loadTrendingCoins() {
     const coins = response.data.data || [];
     
     if (coins.length === 0) {
-      container.innerHTML = '<p class="text-gray-400 text-center py-4">暫無熱門幣種</p>';
+      container.innerHTML = `<p class="text-gray-400 text-center py-4" data-i18n="dashboard.noTrendingCoins">No Trending Coins</p>`;
       return;
     }
     
@@ -247,8 +247,8 @@ async function loadTrendingCoins() {
             </div>
           </div>
           <div class="text-right">
-            <p class="font-semibold">${(coin.current_price || 0).toFixed(4)} 金幣</p>
-            <p class="text-sm text-gray-400">市值: ${(coin.market_cap || 0).toLocaleString()}</p>
+            <p class="font-semibold">${(coin.current_price || 0).toFixed(4)} ${window.i18n ? window.i18n.t('dashboard.currency') : 'Coins'}</p>
+            <p class="text-sm text-gray-400">${window.i18n ? window.i18n.t('dashboard.marketCap') : 'Market Cap'}: ${(coin.market_cap || 0).toLocaleString()}</p>
           </div>
         </div>
       </a>
