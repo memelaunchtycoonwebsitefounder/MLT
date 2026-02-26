@@ -1296,7 +1296,7 @@ app.get('/login', (c) => {
             </form>
 
             <div class="my-6 text-center text-sm text-gray-400">
-                或使用社交帳號<span data-i18n="auth.login.submitButton">Sign In</span>
+                <span data-i18n="auth.login.orSignInWith">Or sign in with</span>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
