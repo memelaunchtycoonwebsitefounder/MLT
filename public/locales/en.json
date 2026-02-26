@@ -260,5 +260,50 @@
       "registerSuccess": "Account created successfully! Redirecting..."
     },
     "disclaimer": "🔒 100% Simulation Game • No Real Money • Your Data is Protected"
+  },
+  "dashboard": {
+    "pageTitle": "Dashboard - MemeLaunch Tycoon",
+    "nav": {
+      "dashboard": "Dashboard",
+      "market": "Market",
+      "portfolio": "My Portfolio",
+      "achievements": "Achievements",
+      "leaderboard": "Leaderboard",
+      "social": "Social",
+      "logout": "Logout"
+    },
+    "welcome": {
+      "title": "Welcome Back",
+      "subtitle": "Check your investment performance and market trends"
+    },
+    "stats": {
+      "totalBalance": "Total Balance",
+      "coins": "Coins",
+      "totalProfitLoss": "Total P&L",
+      "portfolioValue": "Portfolio Value",
+      "holdings": "Holdings",
+      "coinsCount": "Coins"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "createCoin": "Create Meme Coin",
+      "createDesc": "Launch your first coin",
+      "browseMarket": "Browse Market",
+      "discoverCoins": "Discover trending coins",
+      "manageAssets": "Manage your assets",
+      "create": "Create Coin"
+    },
+    "portfolio": {
+      "title": "My Portfolio"
+    },
+    "loading": "Loading",
+    "viewAll": "View All",
+    "recentTrades": "Recent Trades",
+    "viewMarket": "View Market",
+    "trendingCoins": "Trending Coins",
+    "myHoldings": "My Holdings",
+    "viewDetails": "View Details",
+    "profile": "Profile & Achievements",
+    "myData": "My Data"
   }
 }

@@ -3287,11 +3287,11 @@ app.get('/create', (c) => {
 app.get('/dashboard', (c) => {
   return c.html(`
     <!DOCTYPE html>
-    <html lang="zh-TW">
+    <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>儀表板 - MemeLaunch Tycoon</title>
+        <title data-i18n="dashboard.pageTitle">Dashboard - MemeLaunch Tycoon</title>
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/professional-theme.css?v=20260221151619" rel="stylesheet">
@@ -3408,19 +3408,19 @@ app.get('/dashboard', (c) => {
                             <i class="fas fa-rocket text-2xl coinbase-blue"></i>
                             <span class="text-xl font-bold text-white">MemeLaunch</span>
                         </a>
-                        <a href="/dashboard" class="text-white hover:text-coinbase-blue transition font-semibold">儀表板</a>
-                        <a href="/market" class="text-gray-300 hover:text-coinbase-blue transition">市場</a>
-                        <a href="/create" class="text-gray-300 hover:text-coinbase-blue transition">創建幣</a>
-                        <a href="/portfolio" class="text-gray-300 hover:text-coinbase-blue transition">我的組合</a>
-                        <a href="/achievements" class="text-gray-300 hover:text-coinbase-blue transition">成就</a>
-                        <a href="/leaderboard" class="text-gray-300 hover:text-coinbase-blue transition">排行榜</a>
-                        <a href="/social" class="text-gray-300 hover:text-coinbase-blue transition">社交</a>
+                        <a href="/dashboard" class="text-white hover:text-coinbase-blue transition font-semibold" data-i18n="dashboard.nav.dashboard">Dashboard</a>
+                        <a href="/market" class="text-gray-300 hover:text-coinbase-blue transition" data-i18n="dashboard.nav.market">Market</a>
+                        <a href="/create" class="text-gray-300 hover:text-coinbase-blue transition" data-i18n="dashboard.quickActions.create">Create Coin</a>
+                        <a href="/portfolio" class="text-gray-300 hover:text-coinbase-blue transition" data-i18n="dashboard.nav.portfolio">My Portfolio</a>
+                        <a href="/achievements" class="text-gray-300 hover:text-coinbase-blue transition" data-i18n="dashboard.nav.achievements">Achievements</a>
+                        <a href="/leaderboard" class="text-gray-300 hover:text-coinbase-blue transition" data-i18n="dashboard.nav.leaderboard">Leaderboard</a>
+                        <a href="/social" class="text-gray-300 hover:text-coinbase-blue transition" data-i18n="dashboard.nav.social">Social</a>
                     </div>
                     <div class="flex items-center space-x-4">
                         <div class="glass-card px-4 py-2 rounded-lg flex items-center">
                             <i class="fas fa-coins text-yellow-400 mr-2"></i>
                             <span id="balance-display" class="text-white font-semibold">--</span>
-                            <span class="text-white ml-1">金幣</span>
+                            <span class="text-white ml-1" data-i18n="dashboard.stats.coins">Coins</span>
                         </div>
                         
                         <!-- User Dropdown Menu -->
@@ -3458,7 +3458,7 @@ app.get('/dashboard', (c) => {
             <!-- Welcome Section -->
             <div class="mb-8">
                 <h1 class="text-4xl font-bold text-white mb-2">歡迎回來！</h1>
-                <p class="text-gray-400">查看您的投資表現和市場動態</p>
+                <p class="text-gray-400" data-i18n="dashboard.welcome.subtitle">Check your investment performance and market trends</p>
             </div>
 
             <!-- Stats Grid -->
@@ -3466,7 +3466,7 @@ app.get('/dashboard', (c) => {
                 <div class="glass-card p-6 rounded-xl hover-lift">
                     <div class="flex items-center justify-between mb-3">
                         <i class="fas fa-wallet text-3xl text-yellow-400"></i>
-                        <span class="text-xs text-gray-400">總餘額</span>
+                        <span class="text-xs text-gray-400" data-i18n="dashboard.stats.totalBalance">Total Balance</span>
                     </div>
                     <p class="text-3xl font-bold text-white" id="total-balance">--</p>
                     <p class="text-sm text-gray-400 mt-1">金幣</p>
@@ -3475,7 +3475,7 @@ app.get('/dashboard', (c) => {
                 <div class="glass-card p-6 rounded-xl hover-lift">
                     <div class="flex items-center justify-between mb-3">
                         <i class="fas fa-chart-line text-3xl text-green-400"></i>
-                        <span class="text-xs text-gray-400">投資組合價值</span>
+                        <span class="text-xs text-gray-400" data-i18n="dashboard.stats.portfolioValue">Portfolio Value</span>
                     </div>
                     <p class="text-3xl font-bold text-white" id="portfolio-value">--</p>
                     <p class="text-sm text-gray-400 mt-1">金幣</p>
@@ -3484,7 +3484,7 @@ app.get('/dashboard', (c) => {
                 <div class="glass-card p-6 rounded-xl hover-lift">
                     <div class="flex items-center justify-between mb-3">
                         <i class="fas fa-percentage text-3xl text-blue-400"></i>
-                        <span class="text-xs text-gray-400">總盈虧</span>
+                        <span class="text-xs text-gray-400" data-i18n="dashboard.stats.totalProfitLoss">Total P&L</span>
                     </div>
                     <p class="text-2xl font-bold" id="total-pnl">--</p>
                 </div>
@@ -3492,36 +3492,36 @@ app.get('/dashboard', (c) => {
                 <div class="glass-card p-6 rounded-xl hover-lift">
                     <div class="flex items-center justify-between mb-3">
                         <i class="fas fa-briefcase text-3xl text-purple-400"></i>
-                        <span class="text-xs text-gray-400">持倉數量</span>
+                        <span class="text-xs text-gray-400" data-i18n="dashboard.stats.holdings">Holdings</span>
                     </div>
                     <p class="text-3xl font-bold text-white" id="holdings-count">--</p>
-                    <p class="text-sm text-gray-400 mt-1">種幣</p>
+                    <p class="text-sm text-gray-400 mt-1" data-i18n="dashboard.stats.coinsCount">Coins</p>
                 </div>
             </div>
 
             <!-- Quick Actions -->
             <div class="glass-card p-8 rounded-xl mb-8">
-                <h3 class="text-2xl font-bold text-white mb-6">快速操作</h3>
+                <h3 class="text-2xl font-bold text-white mb-6" data-i18n="dashboard.quickActions.title">Quick Actions</h3>
                 <div class="grid md:grid-cols-4 gap-4">
                     <button onclick="window.location.href='/create'" class="btn-primary p-6 rounded-xl text-center group">
                         <i class="fas fa-plus-circle text-4xl mb-3 group-hover:scale-110 transition-transform"></i>
-                        <p class="font-bold text-lg">創建模因幣</p>
-                        <p class="text-sm opacity-80 mt-1">發行您的第一個幣種</p>
+                        <p class="font-bold text-lg" data-i18n="dashboard.quickActions.createCoin">Create Meme Coin</p>
+                        <p class="text-sm opacity-80 mt-1" data-i18n="dashboard.quickActions.createDesc">Launch your first coin</p>
                     </button>
                     <button onclick="window.location.href='/market'" class="glass-card p-6 rounded-xl text-center group hover:bg-white/10">
                         <i class="fas fa-store text-4xl mb-3 text-coinbase-blue group-hover:scale-110 transition-transform"></i>
-                        <p class="font-bold text-lg text-white">瀏覽市場</p>
-                        <p class="text-sm text-gray-400 mt-1">發現熱門幣種</p>
+                        <p class="font-bold text-lg text-white" data-i18n="dashboard.quickActions.browseMarket">Browse Market</p>
+                        <p class="text-sm text-gray-400 mt-1" data-i18n="dashboard.quickActions.discoverCoins">Discover trending coins</p>
                     </button>
                     <button onclick="window.location.href='/portfolio'" class="glass-card p-6 rounded-xl text-center group hover:bg-white/10">
                         <i class="fas fa-briefcase text-4xl mb-3 text-green-400 group-hover:scale-110 transition-transform"></i>
-                        <p class="font-bold text-lg text-white">我的投資組合</p>
-                        <p class="text-sm text-gray-400 mt-1">管理您的資產</p>
+                        <p class="font-bold text-lg text-white" data-i18n="dashboard.portfolio.title">My Portfolio</p>
+                        <p class="text-sm text-gray-400 mt-1" data-i18n="dashboard.quickActions.manageAssets">Manage your assets</p>
                     </button>
                     <button id="quick-profile-btn" class="glass-card p-6 rounded-xl text-center group hover:bg-white/10">
                         <i class="fas fa-user-circle text-4xl mb-3 text-purple-400 group-hover:scale-110 transition-transform"></i>
-                        <p class="font-bold text-lg text-white">查看資料</p>
-                        <p class="text-sm text-gray-400 mt-1">個人檔案與成就</p>
+                        <p class="font-bold text-lg text-white" data-i18n="dashboard.viewDetails">View Details</p>
+                        <p class="text-sm text-gray-400 mt-1" data-i18n="dashboard.profile">Profile & Achievements</p>
                     </button>
                 </div>
             </div>
@@ -3530,7 +3530,7 @@ app.get('/dashboard', (c) => {
                 <!-- Recent Transactions -->
                 <div class="glass-card p-8 rounded-xl">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-2xl font-bold text-white">最近交易</h3>
+                        <h3 class="text-2xl font-bold text-white" data-i18n="dashboard.recentTrades">Recent Trades</h3>
                         <a href="/portfolio" class="text-sm coinbase-blue hover:text-blue-400 transition">查看全部 →</a>
                     </div>
                     <div id="recent-transactions" class="space-y-3">
@@ -3541,7 +3541,7 @@ app.get('/dashboard', (c) => {
                 <!-- Your Holdings -->
                 <div class="glass-card p-8 rounded-xl">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-2xl font-bold text-white">我的持倉</h3>
+                        <h3 class="text-2xl font-bold text-white" data-i18n="dashboard.myHoldings">My Holdings</h3>
                         <a href="/portfolio" class="text-sm coinbase-blue hover:text-blue-400 transition">查看全部 →</a>
                     </div>
                     <div id="user-holdings" class="space-y-3">
@@ -3567,7 +3567,10 @@ app.get('/dashboard', (c) => {
         
         <!-- Dashboard functionality -->
         <script src="/static/dashboard-simple.js?v=20260221151619"></script>
-    </body>
+    
+    <script src="/static/i18n.js?v=20260221151619"></script>
+    <script src="/static/language-switcher.js?v=20260221151619"></script>
+</body>
     </html>
   `)
 })

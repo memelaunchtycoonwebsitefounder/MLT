@@ -260,5 +260,50 @@
       "registerSuccess": "帳號創建成功！正在跳轉..."
     },
     "disclaimer": "🔒 100% 模擬遊戲 • 無實際金錢交易 • 您的數據安全受保護"
+  },
+  "dashboard": {
+    "pageTitle": "儀表板 - MemeLaunch Tycoon",
+    "nav": {
+      "dashboard": "儀表板",
+      "market": "市場",
+      "portfolio": "我的組合",
+      "achievements": "成就",
+      "leaderboard": "排行榜",
+      "social": "社交",
+      "logout": "登出"
+    },
+    "welcome": {
+      "title": "歡迎回來",
+      "subtitle": "查看您的投資表現和市場動態"
+    },
+    "stats": {
+      "totalBalance": "總餘額",
+      "coins": "金幣",
+      "totalProfitLoss": "總盈虧",
+      "portfolioValue": "投資組合價值",
+      "holdings": "持倉數量",
+      "coinsCount": "種幣"
+    },
+    "quickActions": {
+      "title": "快速操作",
+      "createCoin": "創建模因幣",
+      "createDesc": "發行您的第一個幣種",
+      "browseMarket": "瀏覽市場",
+      "discoverCoins": "發現熱門幣種",
+      "manageAssets": "管理您的資產",
+      "create": "創建幣"
+    },
+    "portfolio": {
+      "title": "我的投資組合"
+    },
+    "loading": "載入中",
+    "viewAll": "查看全部",
+    "recentTrades": "最近交易",
+    "viewMarket": "查看市場",
+    "trendingCoins": "熱門幣種",
+    "myHoldings": "我的持倉",
+    "viewDetails": "查看資料",
+    "profile": "個人檔案與成就",
+    "myData": "我的資料"
   }
 }
