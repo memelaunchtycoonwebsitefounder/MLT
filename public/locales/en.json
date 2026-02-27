@@ -382,7 +382,7 @@
     "netWorth": "Net Worth",
     "profit": "Profit",
     "tradeVolume": "Trade Volume",
-    "coins": "Coins",
+    "coins": "coin(s)",
     "trades": "Trades",
     "backToDashboard": "Back to Dashboard",
     "createCoin": "Create Coin",
@@ -482,6 +482,17 @@
       "rare": "Rare",
       "epic": "Epic",
       "legendary": "Legendary"
+    },
+    "loadError": "Failed to load achievements",
+    "noMatching": "No matching achievements",
+    "progress": "Progress",
+    "unlocked": "Unlocked!",
+    "unlockNotification": "Achievement Unlocked!",
+    "categories": {
+      "trading": "Trading Achievements",
+      "creation": "Creation Achievements",
+      "social": "Social Achievements",
+      "milestone": "Milestones"
     }
   }
 }

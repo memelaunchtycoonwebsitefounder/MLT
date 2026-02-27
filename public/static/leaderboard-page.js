@@ -18,7 +18,7 @@ const categories = {
     formatter: (value) => `${(value || 0).toLocaleString()} 筆`,
   },
   level: {
-    name: '等級',
+    name: i18n.t('leaderboard.level'),
     icon: '⭐',
     formatter: (value) => `Lv.${value || 0}`,
   },
@@ -34,7 +34,7 @@ const categories = {
   coins_created: {
     name: '創建幣種',
     icon: '🚀',
-    formatter: (value) => `${value || 0} ${i18n.t('leaderboard.items')}`,
+    formatter: (value) => `${value || 0} ${i18n.t('leaderboard.coins')}`,
   },
 };
 
@@ -175,7 +175,7 @@ const renderTopThree = () => {
           
           <!-- Level -->
           <div class="text-sm text-gray-400">
-            等級 ${player.level || 1}
+            ${i18n.t('leaderboard.level')} ${player.level || 1}
           </div>
         </div>
 
@@ -252,7 +252,7 @@ const renderRankingsTable = () => {
           </div>
         </td>
         <td class="px-6 py-4">
-          <span class="text-gray-400">${player.coins_created || 0} ${i18n.t('leaderboard.items')}</span>
+          <span class="text-gray-400">${player.coins_created || 0} ${i18n.t('leaderboard.coins')}</span>
         </td>
       </tr>
     `;

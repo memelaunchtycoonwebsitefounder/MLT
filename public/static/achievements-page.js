@@ -57,7 +57,7 @@ const loadAchievements = async () => {
     }
   } catch (error) {
     console.error('Failed to load achievements:', error);
-    showNotification('載入成就失敗: ' + (error.response?.data?.message || error.message), 'error');
+    showNotification(i18n.t('achievements.loadError') + ': ' + (error.response?.data?.message || error.message), 'error');
   }
 };
 
@@ -68,10 +68,10 @@ const renderAchievements = () => {
 
   // Group by category
   const categories = {
-    trading: { name: '交易成就', icon: 'fa-chart-line', color: 'text-green-500', achievements: [] },
-    creation: { name: '創作成就', icon: 'fa-rocket', color: 'text-blue-500', achievements: [] },
-    social: { name: '社交成就', icon: 'fa-users', color: 'text-pink-500', achievements: [] },
-    milestone: { name: '里程碑', icon: 'fa-trophy', color: 'text-yellow-500', achievements: [] }
+    trading: { name: i18n.t('achievements.categories.trading'), icon: 'fa-chart-line', color: 'text-green-500', achievements: [] },
+    creation: { name: i18n.t('achievements.categories.creation'), icon: 'fa-rocket', color: 'text-blue-500', achievements: [] },
+    social: { name: i18n.t('achievements.categories.social'), icon: 'fa-users', color: 'text-pink-500', achievements: [] },
+    milestone: { name: i18n.t('achievements.categories.milestone'), icon: 'fa-trophy', color: 'text-yellow-500', achievements: [] }
   };
 
   // Filter achievements
@@ -118,7 +118,7 @@ const renderAchievements = () => {
     container.innerHTML = `
       <div class="text-center py-20">
         <i class="fas fa-search text-6xl text-gray-500 mb-4"></i>
-        <p class="text-xl text-gray-400">沒有符合條件的成就</p>
+        <p class="text-xl text-gray-400">${i18n.t('achievements.noMatching')}</p>
       </div>
     `;
   }
@@ -150,7 +150,7 @@ const createAchievementCard = (achievement) => {
     ${!isUnlocked ? `
       <div class="mb-4">
         <div class="flex justify-between text-xs text-gray-400 mb-2">
-          <span>進度</span>
+          <span>${i18n.t('achievements.progress')}</span>
           <span>${progress} / ${requirement}</span>
         </div>
         <div class="w-full h-3 bg-white/10 rounded-full overflow-hidden">
@@ -161,7 +161,7 @@ const createAchievementCard = (achievement) => {
     ` : `
       <div class="mb-4 p-3 bg-yellow-500/20 border border-yellow-500/50 rounded-lg">
         <p class="text-yellow-300 text-sm font-bold text-center">
-          <i class="fas fa-star mr-2"></i>已解鎖！
+          <i class="fas fa-star mr-2"></i>${i18n.t('achievements.unlocked')}
         </p>
       </div>
     `}
@@ -201,10 +201,10 @@ const getRarityColor = (rarity) => {
 // Get rarity text
 const getRarityText = (rarity) => {
   const text = {
-    common: '普通',
-    rare: '稀有',
-    epic: '史詩',
-    legendary: '傳奇'
+    common: i18n.t('achievements.rarity.common'),
+    rare: i18n.t('achievements.rarity.rare'),
+    epic: i18n.t('achievements.rarity.epic'),
+    legendary: i18n.t('achievements.rarity.legendary')
   };
   return text[rarity || 'common'];
 };
@@ -466,7 +466,7 @@ const showAchievementUnlockNotification = (achievement) => {
     <div class="text-center">
       <div class="text-6xl mb-4">${achievement.icon || '🏆'}</div>
       <h3 class="text-2xl font-bold mb-2" style="color: ${rarityColor}">
-        🎉 成就解鎖！
+        🎉 ${i18n.t('achievements.unlockNotification')}
       </h3>
       <p class="text-xl font-bold mb-2">${achievement.name}</p>
       <p class="text-sm text-gray-300 mb-4">${achievement.description}</p>

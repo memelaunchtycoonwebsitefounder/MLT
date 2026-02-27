@@ -382,7 +382,7 @@
     "netWorth": "淨資產",
     "profit": "利潤",
     "tradeVolume": "交易量",
-    "coins": "幣種",
+    "coins": "個",
     "trades": "交易",
     "backToDashboard": "返回儀表板",
     "createCoin": "創建幣種",
@@ -482,6 +482,17 @@
       "rare": "稀有",
       "epic": "史詩",
       "legendary": "傳說"
+    },
+    "loadError": "載入成就失敗",
+    "noMatching": "沒有符合條件的成就",
+    "progress": "進度",
+    "unlocked": "已解鎖！",
+    "unlockNotification": "成就解鎖！",
+    "categories": {
+      "trading": "交易成就",
+      "creation": "創作成就",
+      "social": "社交成就",
+      "milestone": "里程碑"
     }
   }
 }
