@@ -358,5 +358,38 @@
     "currency": "Coins",
     "refresh": "Refresh",
     "loading": "Loading..."
+  },
+  "leaderboard": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "market": "Market",
+      "portfolio": "Portfolio",
+      "achievements": "Achievements",
+      "leaderboard": "Leaderboard",
+      "logout": "Logout"
+    },
+    "subtitle": "View top players",
+    "description": "Compete for the champion throne",
+    "autoUpdate": "seconds auto-update",
+    "every": "Every",
+    "topThree": "Top 3 Podium",
+    "yourStats": "Your Stats",
+    "rank": "Rank",
+    "currentValue": "Current Value",
+    "level": "Level",
+    "fullRanking": "Full Leaderboard",
+    "username": "Username",
+    "netWorth": "Net Worth",
+    "profit": "Profit",
+    "tradeVolume": "Trade Volume",
+    "coins": "Coins",
+    "trades": "Trades",
+    "backToDashboard": "Back to Dashboard",
+    "createCoin": "Create Coin",
+    "loading": "Loading...",
+    "loadingLeaderboard": "Loading leaderboard...",
+    "players": "players",
+    "top": "Top",
+    "value": "Value"
   }
 }

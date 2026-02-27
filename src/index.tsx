@@ -3674,10 +3674,14 @@ app.get('/portfolio', (c) => {
                     <div class="flex items-center space-x-4">
                         <div class="glass-effect px-4 py-2 rounded-lg">
                             <i class="fas fa-coins text-yellow-400 mr-2"></i>
-                            <span id="user-balance">--</span> 金幣
+                            <span id="user-balance">--</span> <span data-i18n="portfolio.currency">Coins</span>
                         </div>
+                        
+                        <!-- Language Switcher -->
+                        <div class="language-switcher-container"></div>
+                        
                         <button id="logout-btn" class="px-4 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition">
-                            登出
+                            <span data-i18n="portfolio.nav.logout">Logout</span>
                         </button>
                     </div>
                 </div>
@@ -3689,11 +3693,11 @@ app.get('/portfolio', (c) => {
             <!-- Page Header -->
             <div class="mb-8 flex items-center justify-between">
                 <div>
-                    <h1 class="text-4xl font-bold mb-2">我的投資組合</h1>
+                    <h1 class="text-4xl font-bold mb-2" data-i18n="portfolio.pageTitle">My Portfolio</h1>
                     <p class="text-gray-400" data-i18n="portfolio.subtitle">Track your holdings and investment performance</p>
                 </div>
                 <button id="refresh-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
-                    <i class="fas fa-sync-alt mr-2"></i>刷新
+                    <i class="fas fa-sync-alt mr-2"></i><span data-i18n="portfolio.refresh">Refresh</span>
                 </button>
             </div>
 
@@ -3717,7 +3721,7 @@ app.get('/portfolio', (c) => {
                         <i class="fas fa-chart-pie text-blue-400"></i>
                     </div>
                     <p class="text-3xl font-bold" id="total-value">--</p>
-                    <p class="text-sm text-gray-400 mt-1">金幣</p>
+                    <p class="text-sm text-gray-400 mt-1" data-i18n="portfolio.currency">Coins</p>
                 </div>
 
                 <div class="glass-effect rounded-xl p-6">
@@ -3726,7 +3730,7 @@ app.get('/portfolio', (c) => {
                         <i class="fas fa-coins text-yellow-400"></i>
                     </div>
                     <p class="text-3xl font-bold" id="total-networth">--</p>
-                    <p class="text-sm text-gray-400 mt-1">金幣</p>
+                    <p class="text-sm text-gray-400 mt-1" data-i18n="portfolio.currency">Coins</p>
                 </div>
 
                 <div class="glass-effect rounded-xl p-6">
@@ -4059,7 +4063,7 @@ app.get('/achievements', (c) => {
 app.get('/leaderboard', (c) => {
   return c.html(`
     <!DOCTYPE html>
-    <html lang="zh-TW">
+    <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -4141,15 +4145,19 @@ app.get('/leaderboard', (c) => {
                         <span class="text-xl font-bold text-white">MemeLaunch Tycoon</span>
                     </a>
                     <div class="flex items-center space-x-6">
-                        <a href="/dashboard" class="text-gray-300 hover:text-orange-500 transition"><i class="fas fa-home mr-2"></i>儀表板</a>
-                        <a href="/market" class="text-gray-300 hover:text-orange-500 transition"><i class="fas fa-store mr-2"></i>市場</a>
-                        <a href="/portfolio" class="text-gray-300 hover:text-orange-500 transition"><i class="fas fa-briefcase mr-2"></i>投資組合</a>
-                        <a href="/achievements" class="text-gray-300 hover:text-orange-500 transition"><i class="fas fa-trophy mr-2"></i>成就</a>
-                        <a href="/leaderboard" class="text-orange-500 font-bold transition"><i class="fas fa-ranking-star mr-2"></i>排行榜</a>
+                        <a href="/dashboard" class="text-gray-300 hover:text-orange-500 transition"><i class="fas fa-home mr-2"></i data-i18n="leaderboard.nav.dashboard">Dashboard</a>
+                        <a href="/market" class="text-gray-300 hover:text-orange-500 transition"><i class="fas fa-store mr-2"></i data-i18n="leaderboard.nav.market">Market</a>
+                        <a href="/portfolio" class="text-gray-300 hover:text-orange-500 transition"><i class="fas fa-briefcase mr-2"></i data-i18n="leaderboard.nav.portfolio">Portfolio</a>
+                        <a href="/achievements" class="text-gray-300 hover:text-orange-500 transition"><i class="fas fa-trophy mr-2"></i data-i18n="leaderboard.nav.achievements">Achievements</a>
+                        <a href="/leaderboard" class="text-orange-500 font-bold transition"><i class="fas fa-ranking-star mr-2"></i data-i18n="leaderboard.nav.leaderboard">Leaderboard</a>
                         <div class="text-gray-300">
                             <i class="fas fa-coins text-yellow-500 mr-2"></i>
                             <span id="user-balance">$0</span>
                         </div>
+                        
+                        <!-- Language Switcher -->
+                        <div class="language-switcher-container"></div>
+                        
                         <button id="logout-btn" class="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg transition">
                             <i class="fas fa-sign-out-alt mr-2"></i>登出
                         </button>
@@ -4163,7 +4171,7 @@ app.get('/leaderboard', (c) => {
             <div class="mb-8">
                 <a href="/dashboard" class="inline-flex items-center gap-2 px-4 py-2 glass-effect rounded-lg hover:bg-white/10 transition mb-4">
                     <i class="fas fa-arrow-left"></i>
-                    <span>返回儀表板</span>
+                    <span data-i18n="leaderboard.backToDashboard">Back to Dashboard</span>
                 </a>
                 
                 <h1 class="text-4xl font-bold text-white mb-2">
@@ -4198,7 +4206,7 @@ app.get('/leaderboard', (c) => {
                     🏆 前三名獎台 🏆
                 </h2>
                 <div id="top-three-container" class="min-h-[300px] flex items-center justify-center">
-                    <div class="text-gray-400">載入中...</div>
+                    <div class="text-gray-400" data-i18n="leaderboard.loading">Loading...<//div>
                 </div>
             </div>
 
@@ -4216,18 +4224,18 @@ app.get('/leaderboard', (c) => {
                     <table class="w-full">
                         <thead class="bg-gray-800/50">
                             <tr>
-                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-300">排名</th>
-                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-300">用戶名</th>
-                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-300">數值</th>
-                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-300">等級</th>
-                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-300">創建幣種</th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-300" data-i18n="leaderboard.rank">Rank</th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-300" data-i18n="leaderboard.username">Username</th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-300" data-i18n="leaderboard.value">Value</th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-300" data-i18n="leaderboard.level">Level</th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-300" data-i18n="leaderboard.createCoin">Create Coin</th>
                             </tr>
                         </thead>
                         <tbody id="rankings-tbody">
                             <tr>
                                 <td colspan="5" class="text-center py-12 text-gray-400">
                                     <i class="fas fa-spinner fa-spin text-3xl mb-2"></i>
-                                    <p>載入排行榜中...</p>
+                                    <p data-i18n="leaderboard.loadingLeaderboard">Loading leaderboard...<//p>
                                 </td>
                             </tr>
                         </tbody>
@@ -4250,7 +4258,7 @@ app.get('/leaderboard', (c) => {
                     <div class="glass-effect rounded-xl p-6 text-center">
                         <div class="text-4xl mb-2">💰</div>
                         <div class="text-2xl font-bold text-white" id="user-stat-value">$0</div>
-                        <div class="text-sm text-gray-400 mt-1">當前數值</div>
+                        <div class="text-sm text-gray-400 mt-1" data-i18n="leaderboard.currentValue">Current Value</div>
                     </div>
                     <div class="glass-effect rounded-xl p-6 text-center">
                         <div class="text-4xl mb-2">📊</div>
@@ -4272,7 +4280,10 @@ app.get('/leaderboard', (c) => {
         
         <!-- Leaderboard functionality -->
         <script src="/static/leaderboard-page.js?v=20260221151619"></script>
-    </body>
+    
+    <script src="/static/i18n.js?v=20260221151619"></script>
+    <script src="/static/language-switcher.js?v=20260221151619"></script>
+</body>
     </html>
   `);
 })
