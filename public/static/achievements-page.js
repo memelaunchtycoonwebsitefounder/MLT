@@ -44,7 +44,8 @@ const checkAuth = async () => {
 const loadAchievements = async () => {
   try {
     const token = localStorage.getItem('auth_token');
-    const response = await fetchUtils.get('/api/gamification/achievements', {
+    const locale = i18n.getLocale();
+    const response = await fetchUtils.get(`/api/gamification/achievements?locale=${locale}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 

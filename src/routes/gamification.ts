@@ -16,16 +16,29 @@ gamification.get('/achievements', async (c) => {
     const user = c.get('user') as JWTPayload;
     if (!user) return errorResponse('未授權', 401);
     
+    // Get locale from query param or default to 'en'
+    const locale = c.req.query('locale') || 'en';
+    
     const achievements = await c.env.DB.prepare(
       `SELECT 
-        a.*,
+        a.id,
+        a.key,
+        COALESCE(t.name, a.name) as name,
+        COALESCE(t.description, a.description) as description,
+        a.category,
+        a.icon,
+        a.points,
+        a.requirement_type,
+        a.requirement_value,
+        a.created_at,
         COALESCE(ua.progress, 0) as user_progress,
         COALESCE(ua.completed, 0) as completed,
         ua.completed_at
        FROM achievement_definitions a
+       LEFT JOIN achievement_translations t ON a.id = t.achievement_id AND t.locale = ?
        LEFT JOIN user_achievements ua ON a.id = ua.achievement_id AND ua.user_id = ?
        ORDER BY a.category, a.points`
-    ).bind(user.userId).all();
+    ).bind(locale, user.userId).all();
     
     return successResponse({ achievements: achievements.results });
   } catch (error: any) {
