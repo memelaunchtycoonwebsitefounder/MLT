@@ -494,5 +494,24 @@
       "social": "社交成就",
       "milestone": "里程碑"
     }
+  },
+  "profile": {
+    "pageTitle": "用戶資料 - MemeLaunch",
+    "coins": "金幣",
+    "loading": "載入中...",
+    "nav": {
+      "dashboard": "儀表板",
+      "market": "市場",
+      "portfolio": "投資組合",
+      "achievements": "成就",
+      "leaderboard": "排行榜",
+      "social": "社交"
+    },
+    "userMenu": {
+      "dashboard": "儀表板",
+      "portfolio": "我的組合",
+      "achievements": "成就",
+      "logout": "登出"
+    }
   }
 }

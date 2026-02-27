@@ -4541,11 +4541,11 @@ app.get('/social', (c) => {
 app.get('/profile/:userId', (c) => {
   return c.html(`
     <!DOCTYPE html>
-    <html lang="zh-TW">
+    <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>用戶資料 - MemeLaunch</title>
+        <title data-i18n="profile.pageTitle">User Profile - MemeLaunch</title>
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
@@ -4625,19 +4625,19 @@ app.get('/profile/:userId', (c) => {
                         <span class="text-xl font-bold">MemeLaunch</span>
                     </a>
                     <div class="hidden md:flex items-center space-x-6">
-                        <a href="/dashboard" class="hover:text-orange-500 transition">儀表板</a>
-                        <a href="/market" class="hover:text-orange-500 transition">市場</a>
-                        <a href="/portfolio" class="hover:text-orange-500 transition">投資組合</a>
-                        <a href="/achievements" class="hover:text-orange-500 transition">成就</a>
-                        <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
-                        <a href="/social" class="hover:text-orange-500 transition">社交</a>
+                        <a href="/dashboard" class="hover:text-orange-500 transition" data-i18n="profile.nav.dashboard">Dashboard</a>
+                        <a href="/market" class="hover:text-orange-500 transition" data-i18n="profile.nav.market">Market</a>
+                        <a href="/portfolio" class="hover:text-orange-500 transition" data-i18n="profile.nav.portfolio">Portfolio</a>
+                        <a href="/achievements" class="hover:text-orange-500 transition" data-i18n="profile.nav.achievements">Achievements</a>
+                        <a href="/leaderboard" class="hover:text-orange-500 transition" data-i18n="profile.nav.leaderboard">Leaderboard</a>
+                        <a href="/social" class="hover:text-orange-500 transition" data-i18n="profile.nav.social">Social</a>
                     </div>
                     <div class="flex items-center space-x-4">
                         <!-- Virtual Balance -->
                         <div class="glass-effect px-4 py-2 rounded-lg flex items-center">
                             <i class="fas fa-coins text-yellow-500 mr-2"></i>
                             <span id="user-balance">--</span>
-                            <span class="ml-1">金幣</span>
+                            <span class="ml-1" data-i18n="profile.coins">Coins</span>
                         </div>
                         <!-- MLT Balance -->
                         <div class="glass-effect px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20">
@@ -4647,27 +4647,30 @@ app.get('/profile/:userId', (c) => {
                         </div>
                         
                         <!-- User Dropdown Menu -->
+                        <!-- Language Switcher -->
+                        <div class="language-switcher-container"></div>
+                        
                         <div class="relative">
                             <button id="user-menu-btn" class="glass-effect px-3 py-2 rounded-lg hover:bg-white/10 transition cursor-pointer flex items-center space-x-2 whitespace-nowrap">
                                 <i class="fas fa-user text-orange-500"></i>
-                                <span id="username-display" class="text-white text-sm">載入中...</span>
+                                <span id="username-display" class="text-white text-sm" data-i18n="profile.loading">Loading...</span>
                                 <i class="fas fa-chevron-down text-gray-400 text-xs ml-1"></i>
                             </button>
                             
                             <!-- Dropdown Menu -->
                             <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 glass-effect rounded-lg shadow-xl border border-white/10 overflow-hidden z-50">
                                 <a href="/dashboard" class="block px-4 py-3 text-white hover:bg-white/10 transition">
-                                    <i class="fas fa-tachometer-alt mr-2 text-orange-500"></i>儀表板
+                                    <i class="fas fa-tachometer-alt mr-2 text-orange-500"></i><span data-i18n="profile.userMenu.dashboard">Dashboard</span>
                                 </a>
                                 <a href="/portfolio" class="block px-4 py-3 text-white hover:bg-white/10 transition">
-                                    <i class="fas fa-wallet mr-2 text-green-400"></i>我的組合
+                                    <i class="fas fa-wallet mr-2 text-green-400"></i><span data-i18n="profile.userMenu.portfolio">My Portfolio</span>
                                 </a>
                                 <a href="/achievements" class="block px-4 py-3 text-white hover:bg-white/10 transition">
-                                    <i class="fas fa-trophy mr-2 text-yellow-400"></i>成就
+                                    <i class="fas fa-trophy mr-2 text-yellow-400"></i><span data-i18n="profile.userMenu.achievements">Achievements</span>
                                 </a>
                                 <div class="border-t border-white/10"></div>
                                 <button id="logout-btn-dropdown" class="w-full text-left px-4 py-3 text-red-400 hover:bg-white/10 transition">
-                                    <i class="fas fa-sign-out-alt mr-2"></i>登出
+                                    <i class="fas fa-sign-out-alt mr-2"></i><span data-i18n="profile.userMenu.logout">Logout</span>
                                 </button>
                             </div>
                         </div>
@@ -4682,7 +4685,7 @@ app.get('/profile/:userId', (c) => {
                 <!-- Loading -->
                 <div class="text-center py-20">
                     <i class="fas fa-spinner fa-spin text-6xl text-orange-500 mb-4"></i>
-                    <p class="text-xl text-gray-400">載入中...</p>
+                    <p class="text-xl text-gray-400" data-i18n="profile.loading">Loading...</p>
                 </div>
             </div>
         </div>
@@ -4693,7 +4696,10 @@ app.get('/profile/:userId', (c) => {
         
         <!-- Profile functionality -->
         <script src="/static/profile-page.js?v=20260221151619"></script>
-    </body>
+    
+    <script src="/static/i18n.js?v=20260221151619"></script>
+    <script src="/static/language-switcher.js?v=20260221151619"></script>
+</body>
     </html>
   `);
 })

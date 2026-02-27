@@ -494,5 +494,24 @@
       "social": "Social Achievements",
       "milestone": "Milestones"
     }
+  },
+  "profile": {
+    "pageTitle": "User Profile - MemeLaunch",
+    "coins": "Coins",
+    "loading": "Loading...",
+    "nav": {
+      "dashboard": "Dashboard",
+      "market": "Market",
+      "portfolio": "Portfolio",
+      "achievements": "Achievements",
+      "leaderboard": "Leaderboard",
+      "social": "Social"
+    },
+    "userMenu": {
+      "dashboard": "Dashboard",
+      "portfolio": "My Portfolio",
+      "achievements": "Achievements",
+      "logout": "Logout"
+    }
   }
 }
