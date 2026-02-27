@@ -395,5 +395,38 @@
     "topThreePodium": "前三名獎台",
     "fullLeaderboard": "完整排行榜",
     "tradesCoins": "交易/幣種"
+  },
+  "social": {
+    "pageTitle": "社交動態 - MemeLaunch Tycoon",
+    "heading": "社交動態",
+    "subtitle": "查看所有幣種的最新討論與活動",
+    "backToDashboard": "返回儀表板",
+    "coins": "金幣",
+    "loading": "載入中...",
+    "loadMore": "載入更多",
+    "autoUpdating": "自動更新中...",
+    "trendingCoins": "熱門幣種",
+    "activeUsers": "活躍用戶",
+    "nav": {
+      "dashboard": "儀表板",
+      "market": "市場",
+      "portfolio": "投資組合",
+      "achievements": "成就",
+      "leaderboard": "排行榜",
+      "social": "社交",
+      "logout": "登出"
+    },
+    "filters": {
+      "all": "全部動態",
+      "following": "我的關注",
+      "popular": "熱門討論",
+      "recent": "最新評論"
+    },
+    "stats": {
+      "heading": "社交統計",
+      "totalComments": "總評論數",
+      "todayNew": "今日新增",
+      "activeUsers": "活躍用戶"
+    }
   }
 }

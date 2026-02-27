@@ -395,5 +395,38 @@
     "topThreePodium": "Top Three Podium",
     "fullLeaderboard": "Full Leaderboard",
     "tradesCoins": "Trades/Coins"
+  },
+  "social": {
+    "pageTitle": "Social - MemeLaunch Tycoon",
+    "heading": "Social Feed",
+    "subtitle": "View latest discussions and activities for all coins",
+    "backToDashboard": "Back to Dashboard",
+    "coins": "Coins",
+    "loading": "Loading...",
+    "loadMore": "Load More",
+    "autoUpdating": "Auto-updating...",
+    "trendingCoins": "Trending Coins",
+    "activeUsers": "Active Users",
+    "nav": {
+      "dashboard": "Dashboard",
+      "market": "Market",
+      "portfolio": "Portfolio",
+      "achievements": "Achievements",
+      "leaderboard": "Leaderboard",
+      "social": "Social",
+      "logout": "Logout"
+    },
+    "filters": {
+      "all": "All Activities",
+      "following": "My Following",
+      "popular": "Hot Discussions",
+      "recent": "Latest Comments"
+    },
+    "stats": {
+      "heading": "Social Stats",
+      "totalComments": "Total Comments",
+      "todayNew": "Today's New",
+      "activeUsers": "Active Users"
+    }
   }
 }

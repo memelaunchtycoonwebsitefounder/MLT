@@ -1380,7 +1380,7 @@ app.get('/login', (c) => {
 app.get('/forgot-password', (c) => {
   return c.html(`
     <!DOCTYPE html>
-    <html lang="zh-TW">
+    <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1740,18 +1740,18 @@ app.get('/coin/:id', (c) => {
                         <span class="text-xl font-bold">MemeLaunch</span>
                     </a>
                     <div class="hidden md:flex items-center space-x-6">
-                        <a href="/dashboard" class="hover:text-orange-500 transition">儀表板</a>
-                        <a href="/market" class="hover:text-orange-500 transition">市場</a>
-                        <a href="/portfolio" class="hover:text-orange-500 transition">投資組合</a>
-                        <a href="/achievements" class="hover:text-orange-500 transition">成就</a>
-                        <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
+                        <a href="/dashboard" class="hover:text-orange-500 transition" data-i18n="social.nav.dashboard">Dashboard</a>
+                        <a href="/market" class="hover:text-orange-500 transition" data-i18n="social.nav.market">Market</a>
+                        <a href="/portfolio" class="hover:text-orange-500 transition" data-i18n="social.nav.portfolio">Portfolio</a>
+                        <a href="/achievements" class="hover:text-orange-500 transition" data-i18n="social.nav.achievements">Achievements</a>
+                        <a href="/leaderboard" class="hover:text-orange-500 transition" data-i18n="social.nav.leaderboard">Leaderboard</a>
                         <a href="/social" class="hover:text-orange-500 transition">社交</a>
                     </div>
                     <div class="flex items-center space-x-4">
                         <!-- Virtual Balance (Gold Coins) -->
                         <div class="glass-effect px-4 py-2 rounded-lg">
                             <i class="fas fa-coins text-yellow-500 mr-2"></i>
-                            <span id="user-balance">--</span> 金幣
+                            <span id="user-balance">--</span> <span data-i18n="social.coins">Coins</span>
                         </div>
                         <!-- MLT Balance -->
                         <div class="glass-effect px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20">
@@ -4296,7 +4296,7 @@ app.get('/social', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>社交動態 - MemeLaunch Tycoon</title>
+        <title data-i18n="social.pageTitle">Social - MemeLaunch Tycoon</title>
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
@@ -4380,7 +4380,7 @@ app.get('/social', (c) => {
                         <a href="/achievements" class="hover:text-orange-500 transition">成就</a>
                         <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
                         <a href="/social" class="hover:text-orange-500 transition">社交</a>
-                        <a href="/social" class="text-orange-500 border-b-2 border-orange-500">社交</a>
+                        <a href="/social" class="text-orange-500 border-b-2 border-orange-500" data-i18n="social.nav.social">Social</a>
                     </div>
                     <div class="flex items-center space-x-4">
                         <!-- Virtual Balance (Gold Coins) -->
@@ -4394,8 +4394,11 @@ app.get('/social', (c) => {
                             <span id="user-mlt-balance" class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">--</span>
                             <span class="text-xs text-gray-400 ml-1">MLT</span>
                         </div>
+                        <!-- Language Switcher -->
+                        <div class="language-switcher-container"></div>
+                        
                         <button id="logout-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
-                            登出
+                            <span data-i18n="social.nav.logout">Logout</span>
                         </button>
                     </div>
                 </div>
@@ -4409,13 +4412,13 @@ app.get('/social', (c) => {
                 <div>
                     <h1 class="text-4xl font-bold mb-2">
                         <i class="fas fa-comments mr-3"></i>
-                        社交動態
+                        <span data-i18n="social.heading">Social Feed</span>
                     </h1>
-                    <p class="text-gray-400">查看所有幣種的最新討論與活動</p>
+                    <p class="text-gray-400" data-i18n="social.subtitle">View latest discussions and activities for all coins</p>
                 </div>
                 <a href="/dashboard" class="inline-flex items-center px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
                     <i class="fas fa-arrow-left mr-2"></i>
-                    返回儀表板
+                    <span data-i18n="social.backToDashboard">Back to Dashboard</span>
                 </a>
             </div>
 
@@ -4424,21 +4427,21 @@ app.get('/social', (c) => {
                 <div class="flex flex-wrap gap-4 items-center justify-between">
                     <div class="flex flex-wrap gap-2">
                         <button class="filter-btn active px-4 py-2 rounded-lg font-bold transition" data-filter="all">
-                            <i class="fas fa-globe mr-2"></i>全部動態
+                            <i class="fas fa-globe mr-2"></i><span data-i18n="social.filters.all">All Activities</span>
                         </button>
                         <button class="filter-btn px-4 py-2 rounded-lg font-bold transition" data-filter="following">
-                            <i class="fas fa-user-friends mr-2"></i>我的關注
+                            <i class="fas fa-user-friends mr-2"></i><span data-i18n="social.filters.following">My Following</span>
                         </button>
                         <button class="filter-btn px-4 py-2 rounded-lg font-bold transition" data-filter="popular">
-                            <i class="fas fa-fire mr-2"></i>熱門討論
+                            <i class="fas fa-fire mr-2"></i><span data-i18n="social.filters.popular">Hot Discussions</span>
                         </button>
                         <button class="filter-btn px-4 py-2 rounded-lg font-bold transition" data-filter="recent">
-                            <i class="fas fa-clock mr-2"></i>最新評論
+                            <i class="fas fa-clock mr-2"></i><span data-i18n="social.filters.recent">Latest Comments</span>
                         </button>
                     </div>
                     <div class="flex items-center space-x-2">
                         <i class="fas fa-sync-alt text-gray-400"></i>
-                        <span class="text-sm text-gray-400">自動更新中...</span>
+                        <span class="text-sm text-gray-400" data-i18n="social.autoUpdating">Auto-updating...</span>
                     </div>
                 </div>
             </div>
@@ -4451,7 +4454,7 @@ app.get('/social', (c) => {
                         <!-- Loading State -->
                         <div id="loading-state" class="glass-effect rounded-2xl p-12 text-center">
                             <i class="fas fa-spinner fa-spin text-6xl text-orange-500 mb-4"></i>
-                            <p class="text-xl text-gray-400">載入中...</p>
+                            <p class="text-xl text-gray-400" data-i18n="social.loading">Loading...</p>
                         </div>
                         
                         <!-- Feed items will be loaded here -->
@@ -4460,7 +4463,7 @@ app.get('/social', (c) => {
                     <!-- Load More Button -->
                     <button id="load-more-btn" class="hidden w-full py-4 rounded-lg glass-effect hover:bg-white/10 transition">
                         <i class="fas fa-arrow-down mr-2"></i>
-                        載入更多
+                        <span data-i18n="social.loadMore">Load More</span>
                     </button>
                 </div>
 
@@ -4470,7 +4473,7 @@ app.get('/social', (c) => {
                     <div class="glass-effect rounded-2xl p-6">
                         <h2 class="text-2xl font-bold mb-4">
                             <i class="fas fa-chart-line mr-2 text-orange-500"></i>
-                            熱門幣種
+                            <span data-i18n="social.trendingCoins">Trending Coins</span>
                         </h2>
                         <div id="trending-coins" class="space-y-3">
                             <!-- Trending coins will be loaded here -->
@@ -4481,7 +4484,7 @@ app.get('/social', (c) => {
                     <div class="glass-effect rounded-2xl p-6">
                         <h2 class="text-2xl font-bold mb-4">
                             <i class="fas fa-users mr-2 text-orange-500"></i>
-                            活躍用戶
+                            <span data-i18n="social.activeUsers">Active Users</span>
                         </h2>
                         <div id="active-users" class="space-y-3">
                             <!-- Active users will be loaded here -->
@@ -4492,19 +4495,19 @@ app.get('/social', (c) => {
                     <div class="glass-effect rounded-2xl p-6">
                         <h2 class="text-2xl font-bold mb-4">
                             <i class="fas fa-chart-bar mr-2 text-orange-500"></i>
-                            社交統計
+                            <span data-i18n="social.stats.heading">Social Stats</span>
                         </h2>
                         <div class="space-y-3">
                             <div class="flex items-center justify-between">
-                                <span class="text-gray-400">總評論數</span>
+                                <span class="text-gray-400" data-i18n="social.stats.totalComments">Total Comments</span>
                                 <span id="stat-total-comments" class="text-2xl font-bold">--</span>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-gray-400">今日新增</span>
+                                <span class="text-gray-400" data-i18n="social.stats.todayNew">Today's New</span>
                                 <span id="stat-today-comments" class="text-2xl font-bold text-green-500">--</span>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-gray-400">活躍用戶</span>
+                                <span class="text-gray-400" data-i18n="social.stats.activeUsers">Active Users</span>
                                 <span id="stat-active-users" class="text-2xl font-bold text-blue-500">--</span>
                             </div>
                         </div>
@@ -4520,7 +4523,10 @@ app.get('/social', (c) => {
         <!-- Social page functionality -->
         <script src="/static/auth.js?v=20260221151619"></script>
         <script src="/static/social-page-simple.js?v=20260221151619"></script>
-    </body>
+    
+    <script src="/static/i18n.js?v=20260221151619"></script>
+    <script src="/static/language-switcher.js?v=20260221151619"></script>
+</body>
     </html>
   `);
 })
