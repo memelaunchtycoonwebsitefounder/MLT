@@ -56,11 +56,12 @@ const formatRelativeTime = (timestamp) => {
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
 
-  if (seconds < 60) return '剛剛';
-  if (minutes < 60) return `${minutes} 分鐘前`;
-  if (hours < 24) return `${hours} 小時前`;
-  if (days < 7) return `${days} 天前`;
-  return new Date(timestamp).toLocaleDateString('zh-TW');
+  if (seconds < 60) return i18n.t('social.time.justNow');
+  if (minutes < 60) return `${minutes} ${i18n.t('social.time.minutesAgo')}`;
+  if (hours < 24) return `${hours} ${i18n.t('social.time.hoursAgo')}`;
+  if (days < 7) return `${days} ${i18n.t('social.time.daysAgo')}`;
+  const locale = i18n.currentLanguage === 'zh' ? 'zh-TW' : 'en-US';
+  return new Date(timestamp).toLocaleDateString(locale);
 };
 
 // Get level icon
@@ -100,7 +101,7 @@ const loadFeed = async () => {
         container.innerHTML = `
           <div class="glass-effect rounded-2xl p-12 text-center">
             <i class="fas fa-inbox text-6xl text-gray-600 mb-4"></i>
-            <p class="text-gray-400">還沒有動態</p>
+            <p class="text-gray-400" data-i18n="social.noActivities">No activities yet</p>
           </div>
         `;
         return;
@@ -394,7 +395,7 @@ const setupFilters = () => {
       container.innerHTML = `
         <div id="loading-state" class="glass-effect rounded-2xl p-12 text-center">
           <i class="fas fa-spinner fa-spin text-6xl text-orange-500 mb-4"></i>
-          <p class="text-xl text-gray-400">載入中...</p>
+          <p class="text-xl text-gray-400" data-i18n="social.loading">Loading...</p>
         </div>
       `;
       

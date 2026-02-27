@@ -34,7 +34,7 @@ const categories = {
   coins_created: {
     name: '創建幣種',
     icon: '🚀',
-    formatter: (value) => `${value || 0} 個`,
+    formatter: (value) => `${value || 0} ${i18n.t('leaderboard.items')}`,
   },
 };
 
@@ -252,7 +252,7 @@ const renderRankingsTable = () => {
           </div>
         </td>
         <td class="px-6 py-4">
-          <span class="text-gray-400">${player.coins_created || 0} 個</span>
+          <span class="text-gray-400">${player.coins_created || 0} ${i18n.t('leaderboard.items')}</span>
         </td>
       </tr>
     `;

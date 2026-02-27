@@ -394,7 +394,8 @@
     "pageTitle": "Leaderboard",
     "topThreePodium": "Top Three Podium",
     "fullLeaderboard": "Full Leaderboard",
-    "tradesCoins": "Trades/Coins"
+    "tradesCoins": "Trades/Coins",
+    "items": "items"
   },
   "social": {
     "pageTitle": "Social - MemeLaunch Tycoon",
@@ -427,6 +428,13 @@
       "totalComments": "Total Comments",
       "todayNew": "Today's New",
       "activeUsers": "Active Users"
-    }
+    },
+    "time": {
+      "justNow": "just now",
+      "minutesAgo": "minutes ago",
+      "hoursAgo": "hours ago",
+      "daysAgo": "days ago"
+    },
+    "noActivities": "No activities yet"
   }
 }

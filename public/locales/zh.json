@@ -394,7 +394,8 @@
     "pageTitle": "排行榜",
     "topThreePodium": "前三名獎台",
     "fullLeaderboard": "完整排行榜",
-    "tradesCoins": "交易/幣種"
+    "tradesCoins": "交易/幣種",
+    "items": "個"
   },
   "social": {
     "pageTitle": "社交動態 - MemeLaunch Tycoon",
@@ -427,6 +428,13 @@
       "totalComments": "總評論數",
       "todayNew": "今日新增",
       "activeUsers": "活躍用戶"
-    }
+    },
+    "time": {
+      "justNow": "剛剛",
+      "minutesAgo": "分鐘前",
+      "hoursAgo": "小時前",
+      "daysAgo": "天前"
+    },
+    "noActivities": "還沒有動態"
   }
 }
