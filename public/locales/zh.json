@@ -383,7 +383,7 @@
     "profit": "利潤",
     "tradeVolume": "交易量",
     "coins": "個",
-    "trades": "交易",
+    "trades": "交易量",
     "backToDashboard": "返回儀表板",
     "createCoin": "創建幣種",
     "loading": "載入中...",
@@ -395,7 +395,8 @@
     "topThreePodium": "前三名獎台",
     "fullLeaderboard": "完整排行榜",
     "tradesCoins": "交易/幣種",
-    "items": "個"
+    "items": "個",
+    "coinsCreated": "創建幣種"
   },
   "social": {
     "pageTitle": "社交動態 - MemeLaunch Tycoon",

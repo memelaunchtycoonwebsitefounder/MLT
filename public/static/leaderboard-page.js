@@ -8,14 +8,14 @@ let autoRefreshInterval = null;
 // Category configurations
 const categories = {
   net_worth: {
-    name: '淨資產',
+    name: i18n.t('leaderboard.netWorth'),
     icon: '💰',
     formatter: (value) => `$${(value || 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
   },
   trades: {
-    name: '交易量',
+    name: i18n.t('leaderboard.trades'),
     icon: '📊',
-    formatter: (value) => `${(value || 0).toLocaleString()} 筆`,
+    formatter: (value) => `${(value || 0).toLocaleString()} ${i18n.t('leaderboard.trades')}`,
   },
   level: {
     name: i18n.t('leaderboard.level'),
@@ -23,7 +23,7 @@ const categories = {
     formatter: (value) => `Lv.${value || 0}`,
   },
   profit: {
-    name: '利潤',
+    name: i18n.t('leaderboard.profit'),
     icon: '💸',
     formatter: (value) => {
       const profit = value || 0;
@@ -32,7 +32,7 @@ const categories = {
     },
   },
   coins_created: {
-    name: '創建幣種',
+    name: i18n.t('leaderboard.coinsCreated'),
     icon: '🚀',
     formatter: (value) => `${value || 0} ${i18n.t('leaderboard.coins')}`,
   },
