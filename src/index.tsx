@@ -3812,11 +3812,11 @@ app.get('/portfolio', (c) => {
 app.get('/achievements', (c) => {
   return c.html(`
     <!DOCTYPE html>
-    <html lang="zh-TW">
+    <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>成就系統 - MemeLaunch Tycoon</title>
+        <title data-i18n="achievements.pageTitle">Achievements - MemeLaunch Tycoon</title>
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
@@ -3894,18 +3894,18 @@ app.get('/achievements', (c) => {
                         <span class="text-xl font-bold">MemeLaunch</span>
                     </a>
                     <div class="hidden md:flex items-center space-x-6">
-                        <a href="/dashboard" class="hover:text-orange-500 transition">儀表板</a>
-                        <a href="/market" class="hover:text-orange-500 transition">市場</a>
-                        <a href="/portfolio" class="hover:text-orange-500 transition">投資組合</a>
-                        <a href="/achievements" class="text-orange-500 border-b-2 border-orange-500">成就</a>
-                        <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
-                        <a href="/social" class="hover:text-orange-500 transition">社交</a>
+                        <a href="/dashboard" class="hover:text-orange-500 transition" data-i18n="achievements.nav.dashboard">Dashboard</a>
+                        <a href="/market" class="hover:text-orange-500 transition" data-i18n="achievements.nav.market">Market</a>
+                        <a href="/portfolio" class="hover:text-orange-500 transition" data-i18n="achievements.nav.portfolio">Portfolio</a>
+                        <a href="/achievements" class="text-orange-500 border-b-2 border-orange-500" data-i18n="achievements.nav.achievements">Achievements</a>
+                        <a href="/leaderboard" class="hover:text-orange-500 transition" data-i18n="achievements.nav.leaderboard">Leaderboard</a>
+                        <a href="/social" class="hover:text-orange-500 transition" data-i18n="achievements.nav.social">Social</a>
                     </div>
                     <div class="flex items-center space-x-4">
                         <!-- Virtual Balance (Gold Coins) -->
                         <div class="glass-effect px-4 py-2 rounded-lg">
                             <i class="fas fa-coins text-yellow-500 mr-2"></i>
-                            <span id="user-balance">--</span> 金幣
+                            <span id="user-balance">--</span> <span data-i18n="achievements.coins">Coins</span>
                         </div>
                         <!-- MLT Balance -->
                         <div class="glass-effect px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20">
@@ -3913,8 +3913,11 @@ app.get('/achievements', (c) => {
                             <span id="user-mlt-balance" class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">--</span>
                             <span class="text-xs text-gray-400 ml-1">MLT</span>
                         </div>
+                        <!-- Language Switcher -->
+                        <div class="language-switcher-container"></div>
+                        
                         <button id="logout-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
-                            登出
+                            <span data-i18n="achievements.nav.logout">Logout</span>
                         </button>
                     </div>
                 </div>
@@ -3927,7 +3930,7 @@ app.get('/achievements', (c) => {
             <div class="mb-6">
                 <a href="/dashboard" class="inline-flex items-center px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
                     <i class="fas fa-arrow-left mr-2"></i>
-                    返回儀表板
+                    <span data-i18n="achievements.backToDashboard">Back to Dashboard</span>
                 </a>
             </div>
             
@@ -3935,9 +3938,9 @@ app.get('/achievements', (c) => {
             <div class="mb-8">
                 <h1 class="text-5xl font-bold mb-4">
                     <i class="fas fa-trophy text-yellow-500 mr-4"></i>
-                    成就系統
+                    <span data-i18n="achievements.heading">Achievements</span>
                 </h1>
-                <p class="text-xl text-gray-300">解鎖成就，獲得經驗值，提升等級！</p>
+                <p class="text-xl text-gray-300"><span data-i18n="achievements.subtitle">Unlock achievements, gain experience, level up!</span></p>
             </div>
 
             <!-- Level Progress Card -->
@@ -3945,7 +3948,7 @@ app.get('/achievements', (c) => {
                 <div class="flex items-center justify-between mb-6">
                     <div>
                         <h2 class="text-3xl font-bold">
-                            <span class="text-orange-500">等級 </span>
+                            <span class="text-orange-500" data-i18n="achievements.level">Level </span>
                             <span id="user-level">1</span>
                         </h2>
                         <p class="text-gray-400 mt-2">
@@ -3958,7 +3961,7 @@ app.get('/achievements', (c) => {
                     <div id="xp-progress-bar" class="h-full bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 transition-all duration-500" style="width: 0%"></div>
                 </div>
                 <p class="text-sm text-gray-400 mt-3">
-                    還需 <span id="xp-remaining">400</span> XP 升到下一級
+                    <span data-i18n="achievements.xpNeeded">Still need</span> <span id="xp-remaining">400</span> XP <span data-i18n="achievements.toNextLevel">to next level</span>
                 </p>
             </div>
 
@@ -3967,54 +3970,54 @@ app.get('/achievements', (c) => {
                 <div class="glass-effect rounded-xl p-6 text-center">
                     <div class="text-4xl mb-2">🏆</div>
                     <div class="text-3xl font-bold" id="total-achievements">0</div>
-                    <div class="text-sm text-gray-400">總成就</div>
+                    <div class="text-sm text-gray-400" data-i18n="achievements.stats.total">Total Achievements</div>
                 </div>
                 <div class="glass-effect rounded-xl p-6 text-center">
                     <div class="text-4xl mb-2">✅</div>
                     <div class="text-3xl font-bold text-green-500" id="unlocked-achievements">0</div>
-                    <div class="text-sm text-gray-400">已解鎖</div>
+                    <div class="text-sm text-gray-400" data-i18n="achievements.stats.unlocked">Unlocked</div>
                 </div>
                 <div class="glass-effect rounded-xl p-6 text-center">
                     <div class="text-4xl mb-2">⭐</div>
                     <div class="text-3xl font-bold text-orange-500" id="total-points">0</div>
-                    <div class="text-sm text-gray-400">總積分</div>
+                    <div class="text-sm text-gray-400" data-i18n="achievements.stats.points">Total Points</div>
                 </div>
                 <div class="glass-effect rounded-xl p-6 text-center">
                     <div class="text-4xl mb-2">📈</div>
                     <div class="text-3xl font-bold text-blue-500" id="completion-rate">0%</div>
-                    <div class="text-sm text-gray-400">完成度</div>
+                    <div class="text-sm text-gray-400" data-i18n="achievements.stats.completion">Completion</div>
                 </div>
             </div>
 
             <!-- Filter Buttons -->
             <div class="flex flex-wrap gap-3 mb-8">
                 <button data-filter="all" class="filter-btn active px-6 py-3 rounded-lg bg-orange-500 text-white font-bold transition hover:bg-orange-600">
-                    全部
+                    <span data-i18n="achievements.filters.all">All</span>
                 </button>
                 <button data-filter="unlocked" class="filter-btn px-6 py-3 rounded-lg glass-effect hover:bg-white/10 transition font-bold">
-                    已解鎖
+                    <span data-i18n="achievements.filters.unlocked">Unlocked</span>
                 </button>
                 <button data-filter="locked" class="filter-btn px-6 py-3 rounded-lg glass-effect hover:bg-white/10 transition font-bold">
-                    未解鎖
+                    <span data-i18n="achievements.filters.locked">Locked</span>
                 </button>
                 <button data-filter="trading" class="filter-btn px-6 py-3 rounded-lg glass-effect hover:bg-white/10 transition font-bold">
-                    <i class="fas fa-chart-line mr-2"></i>交易
+                    <i class="fas fa-chart-line mr-2"></i><span data-i18n="achievements.filters.trading">Trading</span>
                 </button>
                 <button data-filter="creation" class="filter-btn px-6 py-3 rounded-lg glass-effect hover:bg-white/10 transition font-bold">
-                    <i class="fas fa-rocket mr-2"></i>創作
+                    <i class="fas fa-rocket mr-2"></i><span data-i18n="achievements.filters.creation">Creation</span>
                 </button>
                 <button data-filter="social" class="filter-btn px-6 py-3 rounded-lg glass-effect hover:bg-white/10 transition font-bold">
-                    <i class="fas fa-users mr-2"></i>社交
+                    <i class="fas fa-users mr-2"></i><span data-i18n="achievements.filters.social">Social</span>
                 </button>
                 <button data-filter="milestone" class="filter-btn px-6 py-3 rounded-lg glass-effect hover:bg-white/10 transition font-bold">
-                    <i class="fas fa-flag mr-2"></i>里程碑
+                    <i class="fas fa-flag mr-2"></i><span data-i18n="achievements.filters.milestone">Milestone</span>
                 </button>
             </div>
 
             <!-- Loading State -->
             <div id="loading-state" class="text-center py-20">
                 <i class="fas fa-spinner fa-spin text-6xl text-orange-500 mb-4"></i>
-                <p class="text-xl text-gray-400">載入成就中...</p>
+                <p class="text-xl text-gray-400" data-i18n="achievements.loading">Loading achievements...</p>
             </div>
 
             <!-- Achievements Grid -->
@@ -4030,19 +4033,19 @@ app.get('/achievements', (c) => {
             <div class="glass-effect rounded-2xl p-8 max-w-md w-full animate-bounce-in">
                 <div class="text-center">
                     <div class="text-8xl mb-6" id="modal-icon">🏆</div>
-                    <h2 class="text-3xl font-bold mb-4" id="modal-name">成就名稱</h2>
-                    <p class="text-gray-300 mb-6" id="modal-description">成就描述</p>
+                    <h2 class="text-3xl font-bold mb-4" id="modal-name" data-i18n="achievements.modal.name">Achievement Name</h2>
+                    <p class="text-gray-300 mb-6" id="modal-description" data-i18n="achievements.modal.description">Achievement Description</p>
                     <div class="flex items-center justify-center space-x-4 mb-6">
-                        <span class="px-4 py-2 rounded-full" id="modal-rarity">普通</span>
+                        <span class="px-4 py-2 rounded-full" id="modal-rarity" data-i18n="achievements.rarity.common">Common</span>
                         <span class="text-xl font-bold text-orange-500" id="modal-points">
                             <i class="fas fa-star mr-2"></i>+100 XP
                         </span>
                     </div>
                     <div id="modal-completed-time" class="text-sm text-gray-400 mb-4 hidden">
-                        解鎖時間: <span id="completed-at"></span>
+                        <span data-i18n="achievements.modal.unlockTime">Unlock Time:</span> <span id="completed-at"></span>
                     </div>
                     <button onclick="closeModal()" class="px-8 py-3 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-lg font-bold transition">
-                        太棒了！
+                        <span data-i18n="achievements.modal.congratulations">Awesome!</span>
                     </button>
                 </div>
             </div>
@@ -4054,7 +4057,10 @@ app.get('/achievements', (c) => {
         
         <!-- Achievements functionality -->
         <script src="/static/achievements-page.js?v=20260221151619"></script>
-    </body>
+    
+    <script src="/static/i18n.js?v=20260221151619"></script>
+    <script src="/static/language-switcher.js?v=20260221151619"></script>
+</body>
     </html>
   `);
 })

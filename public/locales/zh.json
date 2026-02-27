@@ -436,5 +436,52 @@
       "daysAgo": "天前"
     },
     "noActivities": "還沒有動態"
+  },
+  "achievements": {
+    "pageTitle": "成就系統 - MemeLaunch Tycoon",
+    "heading": "成就系統",
+    "subtitle": "解鎖成就，獲得經驗值，提升等級！",
+    "backToDashboard": "返回儀表板",
+    "coins": "金幣",
+    "level": "等級 ",
+    "xpNeeded": "還需",
+    "toNextLevel": "升到下一級",
+    "loading": "載入成就中...",
+    "nav": {
+      "dashboard": "儀表板",
+      "market": "市場",
+      "portfolio": "投資組合",
+      "achievements": "成就",
+      "leaderboard": "排行榜",
+      "social": "社交",
+      "logout": "登出"
+    },
+    "stats": {
+      "total": "總成就",
+      "unlocked": "已解鎖",
+      "points": "總積分",
+      "completion": "完成度"
+    },
+    "filters": {
+      "all": "全部",
+      "unlocked": "已解鎖",
+      "locked": "未解鎖",
+      "trading": "交易",
+      "creation": "創作",
+      "social": "社交",
+      "milestone": "里程碑"
+    },
+    "modal": {
+      "name": "成就名稱",
+      "description": "成就描述",
+      "unlockTime": "解鎖時間:",
+      "congratulations": "太棒了！"
+    },
+    "rarity": {
+      "common": "普通",
+      "rare": "稀有",
+      "epic": "史詩",
+      "legendary": "傳說"
+    }
   }
 }

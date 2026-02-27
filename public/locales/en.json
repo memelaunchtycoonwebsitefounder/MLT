@@ -436,5 +436,52 @@
       "daysAgo": "days ago"
     },
     "noActivities": "No activities yet"
+  },
+  "achievements": {
+    "pageTitle": "Achievements - MemeLaunch Tycoon",
+    "heading": "Achievements",
+    "subtitle": "Unlock achievements, gain experience, level up!",
+    "backToDashboard": "Back to Dashboard",
+    "coins": "Coins",
+    "level": "Level ",
+    "xpNeeded": "Still need",
+    "toNextLevel": "to next level",
+    "loading": "Loading achievements...",
+    "nav": {
+      "dashboard": "Dashboard",
+      "market": "Market",
+      "portfolio": "Portfolio",
+      "achievements": "Achievements",
+      "leaderboard": "Leaderboard",
+      "social": "Social",
+      "logout": "Logout"
+    },
+    "stats": {
+      "total": "Total Achievements",
+      "unlocked": "Unlocked",
+      "points": "Total Points",
+      "completion": "Completion"
+    },
+    "filters": {
+      "all": "All",
+      "unlocked": "Unlocked",
+      "locked": "Locked",
+      "trading": "Trading",
+      "creation": "Creation",
+      "social": "Social",
+      "milestone": "Milestone"
+    },
+    "modal": {
+      "name": "Achievement Name",
+      "description": "Achievement Description",
+      "unlockTime": "Unlock Time:",
+      "congratulations": "Awesome!"
+    },
+    "rarity": {
+      "common": "Common",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary"
+    }
   }
 }
