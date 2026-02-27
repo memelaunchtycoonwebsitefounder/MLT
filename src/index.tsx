@@ -4054,12 +4054,11 @@ app.get('/achievements', (c) => {
         
         <!-- Core utilities -->
         <script src="/static/fetch-utils.js?v=20260221151619"></script>
+        <script src="/static/i18n.js?v=20260221151619"></script>
+        <script src="/static/language-switcher.js?v=20260221151619"></script>
         
         <!-- Achievements functionality -->
         <script src="/static/achievements-page.js?v=20260221151619"></script>
-    
-    <script src="/static/i18n.js?v=20260221151619"></script>
-    <script src="/static/language-switcher.js?v=20260221151619"></script>
 </body>
     </html>
   `);
@@ -4283,12 +4282,11 @@ app.get('/leaderboard', (c) => {
         
         <!-- Core utilities -->
         <script src="/static/fetch-utils.js?v=20260221151619"></script>
+        <script src="/static/i18n.js?v=20260221151619"></script>
+        <script src="/static/language-switcher.js?v=20260221151619"></script>
         
         <!-- Leaderboard functionality -->
         <script src="/static/leaderboard-page.js?v=20260221151619"></script>
-    
-    <script src="/static/i18n.js?v=20260221151619"></script>
-    <script src="/static/language-switcher.js?v=20260221151619"></script>
 </body>
     </html>
   `);
@@ -4525,13 +4523,12 @@ app.get('/social', (c) => {
         
         <!-- Core utilities -->
         <script src="/static/fetch-utils.js?v=20260221151619"></script>
+        <script src="/static/i18n.js?v=20260221151619"></script>
+        <script src="/static/language-switcher.js?v=20260221151619"></script>
         
         <!-- Social page functionality -->
         <script src="/static/auth.js?v=20260221151619"></script>
         <script src="/static/social-page-simple.js?v=20260221151619"></script>
-    
-    <script src="/static/i18n.js?v=20260221151619"></script>
-    <script src="/static/language-switcher.js?v=20260221151619"></script>
 </body>
     </html>
   `);
