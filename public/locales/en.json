@@ -368,7 +368,7 @@
       "leaderboard": "Leaderboard",
       "logout": "Logout"
     },
-    "subtitle": "View top players",
+    "subtitle": "View top players and compete for the throne!",
     "description": "Compete for the champion throne",
     "autoUpdate": "seconds auto-update",
     "every": "Every",
@@ -390,6 +390,10 @@
     "loadingLeaderboard": "Loading leaderboard...",
     "players": "players",
     "top": "Top",
-    "value": "Value"
+    "value": "Value",
+    "pageTitle": "Leaderboard",
+    "topThreePodium": "Top Three Podium",
+    "fullLeaderboard": "Full Leaderboard",
+    "tradesCoins": "Trades/Coins"
   }
 }

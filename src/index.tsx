@@ -4067,7 +4067,7 @@ app.get('/leaderboard', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>排行榜 - MemeLaunch Tycoon</title>
+        <title data-i18n="leaderboard.pageTitle">Leaderboard - MemeLaunch Tycoon</title>
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
@@ -4159,7 +4159,7 @@ app.get('/leaderboard', (c) => {
                         <div class="language-switcher-container"></div>
                         
                         <button id="logout-btn" class="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg transition">
-                            <i class="fas fa-sign-out-alt mr-2"></i>登出
+                            <i class="fas fa-sign-out-alt mr-2"></i><span data-i18n="leaderboard.nav.logout">Logout</span>
                         </button>
                     </div>
                 </div>
@@ -4176,34 +4176,34 @@ app.get('/leaderboard', (c) => {
                 
                 <h1 class="text-4xl font-bold text-white mb-2">
                     <i class="fas fa-ranking-star text-orange-500 mr-3"></i>
-                    排行榜
+                    <span data-i18n="leaderboard.pageTitle">Leaderboard</span>
                 </h1>
-                <p class="text-gray-400">查看頂尖玩家，爭奪冠軍寶座！</p>
+                <p class="text-gray-400" data-i18n="leaderboard.subtitle">View top players and compete for the throne!</p>
             </div>
 
             <!-- Category Tabs -->
             <div class="flex flex-wrap gap-3 mb-8">
                 <button data-category="net_worth" class="category-btn active px-6 py-3 rounded-lg bg-orange-500 text-white font-bold transition hover:bg-orange-600">
-                    <i class="fas fa-wallet mr-2"></i>💰 淨資產
+                    <i class="fas fa-wallet mr-2"></i>💰 <span data-i18n="leaderboard.netWorth">Net Worth</span>
                 </button>
                 <button data-category="trades" class="category-btn px-6 py-3 rounded-lg glass-effect hover:bg-white/10 transition font-bold text-white">
-                    <i class="fas fa-chart-line mr-2"></i>📊 交易量
+                    <i class="fas fa-chart-line mr-2"></i>📊 <span data-i18n="leaderboard.tradeVolume">Trade Volume</span>
                 </button>
                 <button data-category="level" class="category-btn px-6 py-3 rounded-lg glass-effect hover:bg-white/10 transition font-bold text-white">
-                    <i class="fas fa-star mr-2"></i>⭐ 等級
+                    <i class="fas fa-star mr-2"></i>⭐ <span data-i18n="leaderboard.level">Level</span>
                 </button>
                 <button data-category="profit" class="category-btn px-6 py-3 rounded-lg glass-effect hover:bg-white/10 transition font-bold text-white">
-                    <i class="fas fa-money-bill-trend-up mr-2"></i>💸 利潤
+                    <i class="fas fa-money-bill-trend-up mr-2"></i>💸 <span data-i18n="leaderboard.profit">Profit</span>
                 </button>
                 <button data-category="coins_created" class="category-btn px-6 py-3 rounded-lg glass-effect hover:bg-white/10 transition font-bold text-white">
-                    <i class="fas fa-rocket mr-2"></i>🚀 創建幣種
+                    <i class="fas fa-rocket mr-2"></i>🚀 <span data-i18n="leaderboard.createCoin">Create Coin</span>
                 </button>
             </div>
 
             <!-- Top Three Podium -->
             <div class="mb-12">
                 <h2 class="text-2xl font-bold text-white mb-6 text-center">
-                    🏆 前三名獎台 🏆
+                    🏆 <span data-i18n="leaderboard.topThreePodium">Top Three Podium</span> 🏆
                 </h2>
                 <div id="top-three-container" class="min-h-[300px] flex items-center justify-center">
                     <div class="text-gray-400" data-i18n="leaderboard.loading">Loading...<//div>
@@ -4215,9 +4215,9 @@ app.get('/leaderboard', (c) => {
                 <div class="p-6 border-b border-gray-700/50">
                     <h2 class="text-2xl font-bold text-white">
                         <i class="fas fa-list-ol mr-2 text-orange-500"></i>
-                        完整排行榜
+                        <span data-i18n="leaderboard.fullLeaderboard">Full Leaderboard</span>
                     </h2>
-                    <p class="text-gray-400 text-sm mt-1">前100名玩家 · 每30秒自動更新</p>
+                    <p class="text-gray-400 text-sm mt-1"><span data-i18n="leaderboard.top100">Top 100 players</span> · <span data-i18n="leaderboard.autoRefresh">Auto-refresh every 30 seconds</span></p>
                 </div>
                 
                 <div class="overflow-x-auto">
@@ -4247,13 +4247,13 @@ app.get('/leaderboard', (c) => {
             <div class="glass-effect rounded-2xl p-6">
                 <h2 class="text-2xl font-bold text-white mb-6">
                     <i class="fas fa-user mr-2 text-orange-500"></i>
-                    你的統計
+                    <span data-i18n="leaderboard.yourStats">Your Stats</span>
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div class="glass-effect rounded-xl p-6 text-center">
                         <div class="text-4xl mb-2">🏅</div>
                         <div class="text-3xl font-bold text-orange-500" id="user-rank">#-</div>
-                        <div class="text-sm text-gray-400 mt-1">排名</div>
+                        <div class="text-sm text-gray-400 mt-1" data-i18n="leaderboard.rank">Rank</div>
                     </div>
                     <div class="glass-effect rounded-xl p-6 text-center">
                         <div class="text-4xl mb-2">💰</div>
@@ -4263,12 +4263,12 @@ app.get('/leaderboard', (c) => {
                     <div class="glass-effect rounded-xl p-6 text-center">
                         <div class="text-4xl mb-2">📊</div>
                         <div class="text-2xl font-bold text-white" id="user-stat-trades">0</div>
-                        <div class="text-sm text-gray-400 mt-1">交易/幣種</div>
+                        <div class="text-sm text-gray-400 mt-1" data-i18n="leaderboard.tradesCoins">Trades/Coins</div>
                     </div>
                     <div class="glass-effect rounded-xl p-6 text-center">
                         <div class="text-4xl mb-2">⭐</div>
                         <div class="text-2xl font-bold text-white" id="user-stat-level">Lv.1</div>
-                        <div class="text-sm text-gray-400 mt-1">等級</div>
+                        <div class="text-sm text-gray-400 mt-1" data-i18n="leaderboard.level">Level</div>
                     </div>
                 </div>
             </div>

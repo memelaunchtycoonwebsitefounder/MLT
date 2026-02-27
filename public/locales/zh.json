@@ -368,7 +368,7 @@
       "leaderboard": "排行榜",
       "logout": "登出"
     },
-    "subtitle": "查看頂尖玩家",
+    "subtitle": "查看頂尖玩家，爭奪冠軍寶座！",
     "description": "爭奪冠軍寶座",
     "autoUpdate": "秒自動更新",
     "every": "每",
@@ -390,6 +390,10 @@
     "loadingLeaderboard": "載入排行榜中...",
     "players": "名玩家",
     "top": "前",
-    "value": "數值"
+    "value": "數值",
+    "pageTitle": "排行榜",
+    "topThreePodium": "前三名獎台",
+    "fullLeaderboard": "完整排行榜",
+    "tradesCoins": "交易/幣種"
   }
 }
