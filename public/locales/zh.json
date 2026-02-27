@@ -436,7 +436,8 @@
       "hoursAgo": "小時前",
       "daysAgo": "天前"
     },
-    "noActivities": "還沒有動態"
+    "noActivities": "還沒有動態",
+    "hypeScore": "炒作值"
   },
   "achievements": {
     "pageTitle": "成就系統 - MemeLaunch Tycoon",

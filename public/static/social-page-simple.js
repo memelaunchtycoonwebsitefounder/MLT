@@ -339,7 +339,7 @@ const loadTrendingCoins = async () => {
           <img src="${coin.image_url}" alt="${coin.name}" class="w-10 h-10 rounded-full" onerror="this.src='/static/default-coin.svg'">
           <div class="flex-1 min-w-0">
             <p class="font-bold truncate">${escapeHtml(coin.name)}</p>
-            <p class="text-sm text-gray-400">炒作值 ${Math.floor(coin.hype_score || 0)}</p>
+            <p class="text-sm text-gray-400">${i18n.t('social.hypeScore')} ${Math.floor(coin.hype_score || 0)}</p>
           </div>
         </a>
       `).join('');

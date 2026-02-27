@@ -436,7 +436,8 @@
       "hoursAgo": "hours ago",
       "daysAgo": "days ago"
     },
-    "noActivities": "No activities yet"
+    "noActivities": "No activities yet",
+    "hypeScore": "Hype"
   },
   "achievements": {
     "pageTitle": "Achievements - MemeLaunch Tycoon",
