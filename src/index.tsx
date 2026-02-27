@@ -366,7 +366,7 @@ app.get('/', (c) => {
                     <a href="/market" class="hover:text-orange-500 transition" data-i18n="nav.market">Market</a>
                 </div>
                 
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2">
                     <div class="language-switcher-container"></div>
                     
                     <button id="loginBtn" class="px-6 py-2 rounded-lg glass-effect hover:bg-white/10 transition" data-i18n="nav.login">
@@ -3403,18 +3403,18 @@ app.get('/dashboard', (c) => {
         <nav class="glass-card sticky top-0 z-50 border-b border-white/10">
             <div class="container mx-auto px-4 py-4">
                 <div class="flex justify-between items-center">
-                    <div class="flex items-center space-x-6">
+                    <div class="flex items-center space-x-3">
                         <a href="/" class="flex items-center space-x-2">
                             <i class="fas fa-rocket text-2xl coinbase-blue"></i>
                             <span class="text-xl font-bold text-white">MemeLaunch</span>
                         </a>
-                        <a href="/dashboard" class="text-white hover:text-coinbase-blue transition font-semibold" data-i18n="dashboard.nav.dashboard">Dashboard</a>
-                        <a href="/market" class="text-gray-300 hover:text-coinbase-blue transition" data-i18n="dashboard.nav.market">Market</a>
-                        <a href="/create" class="text-gray-300 hover:text-coinbase-blue transition" data-i18n="dashboard.quickActions.create">Create Coin</a>
-                        <a href="/portfolio" class="text-gray-300 hover:text-coinbase-blue transition" data-i18n="dashboard.nav.portfolio">My Portfolio</a>
-                        <a href="/achievements" class="text-gray-300 hover:text-coinbase-blue transition" data-i18n="dashboard.nav.achievements">Achievements</a>
-                        <a href="/leaderboard" class="text-gray-300 hover:text-coinbase-blue transition" data-i18n="dashboard.nav.leaderboard">Leaderboard</a>
-                        <a href="/social" class="text-gray-300 hover:text-coinbase-blue transition" data-i18n="dashboard.nav.social">Social</a>
+                        <a href="/dashboard" class="text-white hover:text-coinbase-blue transition font-semibold text-sm" data-i18n="dashboard.nav.dashboard">Dashboard</a>
+                        <a href="/market" class="text-gray-300 hover:text-coinbase-blue transition text-sm" data-i18n="dashboard.nav.market">Market</a>
+                        <a href="/create" class="text-gray-300 hover:text-coinbase-blue transition text-sm" data-i18n="dashboard.quickActions.create">Create</a>
+                        <a href="/portfolio" class="text-gray-300 hover:text-coinbase-blue transition text-sm" data-i18n="dashboard.nav.portfolio">Portfolio</a>
+                        <a href="/achievements" class="text-gray-300 hover:text-coinbase-blue transition text-sm" data-i18n="dashboard.nav.achievements">Achievements</a>
+                        <a href="/leaderboard" class="text-gray-300 hover:text-coinbase-blue transition text-sm" data-i18n="dashboard.nav.leaderboard">Leaderboard</a>
+                        <a href="/social" class="text-gray-300 hover:text-coinbase-blue transition text-sm" data-i18n="dashboard.nav.social">Social</a>
                     </div>
                     <div class="flex items-center space-x-4">
                         <div class="glass-card px-4 py-2 rounded-lg flex items-center">
@@ -3583,7 +3583,7 @@ app.get('/dashboard', (c) => {
 app.get('/portfolio', (c) => {
   return c.html(`
     <!DOCTYPE html>
-    <html lang="zh-TW">
+    <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -3665,10 +3665,10 @@ app.get('/portfolio', (c) => {
                             MemeLaunch 🚀
                         </a>
                         <div class="hidden md:flex space-x-4">
-                            <a href="/dashboard" class="text-gray-300 hover:text-white transition">儀表板</a>
-                            <a href="/market" class="text-gray-300 hover:text-white transition">市場</a>
-                            <a href="/portfolio" class="text-white border-b-2 border-orange-500">我的組合</a>
-                            <a href="/leaderboard" class="text-gray-300 hover:text-white transition">排行榜</a>
+                            <a href="/dashboard" class="text-gray-300 hover:text-white transition" data-i18n="portfolio.nav.dashboard">Dashboard</a>
+                            <a href="/market" class="text-gray-300 hover:text-white transition" data-i18n="portfolio.nav.market">Market</a>
+                            <a href="/portfolio" class="text-white border-b-2 border-orange-500" data-i18n="portfolio.nav.portfolio">Portfolio</a>
+                            <a href="/leaderboard" class="text-gray-300 hover:text-white transition" data-i18n="portfolio.nav.leaderboard">Leaderboard</a>
                         </div>
                     </div>
                     <div class="flex items-center space-x-4">
@@ -3690,7 +3690,7 @@ app.get('/portfolio', (c) => {
             <div class="mb-8 flex items-center justify-between">
                 <div>
                     <h1 class="text-4xl font-bold mb-2">我的投資組合</h1>
-                    <p class="text-gray-400">追蹤您的持倉和投資表現</p>
+                    <p class="text-gray-400" data-i18n="portfolio.subtitle">Track your holdings and investment performance</p>
                 </div>
                 <button id="refresh-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
                     <i class="fas fa-sync-alt mr-2"></i>刷新
@@ -3704,16 +3704,16 @@ app.get('/portfolio', (c) => {
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div class="glass-effect rounded-xl p-6">
                     <div class="flex items-center justify-between mb-2">
-                        <p class="text-gray-400">現金餘額</p>
+                        <p class="text-gray-400" data-i18n="portfolio.stats.cashBalance">Cash Balance</p>
                         <i class="fas fa-wallet text-green-400"></i>
                     </div>
                     <p class="text-3xl font-bold" id="cash-balance">--</p>
-                    <p class="text-sm text-gray-400 mt-1">金幣</p>
+                    <p class="text-sm text-gray-400 mt-1" data-i18n="portfolio.currency">Coins</p>
                 </div>
 
                 <div class="glass-effect rounded-xl p-6">
                     <div class="flex items-center justify-between mb-2">
-                        <p class="text-gray-400">持倉總值</p>
+                        <p class="text-gray-400" data-i18n="portfolio.stats.holdingsValue">Holdings Value</p>
                         <i class="fas fa-chart-pie text-blue-400"></i>
                     </div>
                     <p class="text-3xl font-bold" id="total-value">--</p>
@@ -3722,7 +3722,7 @@ app.get('/portfolio', (c) => {
 
                 <div class="glass-effect rounded-xl p-6">
                     <div class="flex items-center justify-between mb-2">
-                        <p class="text-gray-400">總資產</p>
+                        <p class="text-gray-400" data-i18n="portfolio.stats.totalAssets">Total Assets</p>
                         <i class="fas fa-coins text-yellow-400"></i>
                     </div>
                     <p class="text-3xl font-bold" id="total-networth">--</p>
@@ -3731,7 +3731,7 @@ app.get('/portfolio', (c) => {
 
                 <div class="glass-effect rounded-xl p-6">
                     <div class="flex items-center justify-between mb-2">
-                        <p class="text-gray-400">總盈虧</p>
+                        <p class="text-gray-400" data-i18n="portfolio.stats.totalPnL">Total P&L</p>
                         <i class="fas fa-chart-line text-orange-400"></i>
                     </div>
                     <p id="total-pl" class="text-3xl font-bold">--</p>
@@ -3741,26 +3741,26 @@ app.get('/portfolio', (c) => {
 
             <!-- Holdings Table -->
             <div class="glass-effect rounded-xl p-6">
-                <h2 class="text-2xl font-bold mb-6">持倉明細</h2>
+                <h2 class="text-2xl font-bold mb-6" data-i18n="portfolio.holdings.title">Holdings Details</h2>
                 
                 <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead>
                             <tr class="border-b border-white/10">
                                 <th class="px-6 py-3 text-left text-gray-400">#</th>
-                                <th class="px-6 py-3 text-left text-gray-400">幣種</th>
-                                <th class="px-6 py-3 text-left text-gray-400">持有量</th>
-                                <th class="px-6 py-3 text-left text-gray-400">平均買入價</th>
-                                <th class="px-6 py-3 text-left text-gray-400">當前價格</th>
-                                <th class="px-6 py-3 text-left text-gray-400">總價值</th>
-                                <th class="px-6 py-3 text-left text-gray-400">盈虧</th>
+                                <th class="px-6 py-3 text-left text-gray-400" data-i18n="portfolio.holdings.coin">Coin</th>
+                                <th class="px-6 py-3 text-left text-gray-400" data-i18n="portfolio.holdings.amount">Amount</th>
+                                <th class="px-6 py-3 text-left text-gray-400" data-i18n="portfolio.holdings.avgBuyPrice">Avg Buy Price</th>
+                                <th class="px-6 py-3 text-left text-gray-400" data-i18n="portfolio.holdings.currentPrice">Current Price</th>
+                                <th class="px-6 py-3 text-left text-gray-400" data-i18n="portfolio.holdings.totalValue">Total Value</th>
+                                <th class="px-6 py-3 text-left text-gray-400" data-i18n="portfolio.holdings.profitLoss">P&L</th>
                             </tr>
                         </thead>
                         <tbody id="holdings-tbody">
                             <tr>
                                 <td colspan="7" class="text-center py-8 text-gray-400">
                                     <i class="fas fa-spinner fa-spin text-4xl mb-2"></i>
-                                    <p>載入中...</p>
+                                    <p data-i18n="portfolio.loading">Loading...<//p>
                                 </td>
                             </tr>
                         </tbody>
@@ -3772,20 +3772,20 @@ app.get('/portfolio', (c) => {
             <div class="mt-8 grid md:grid-cols-3 gap-6">
                 <a href="/market" class="glass-effect rounded-xl p-6 hover:bg-white/10 transition text-center">
                     <i class="fas fa-shopping-cart text-4xl text-blue-400 mb-3"></i>
-                    <h3 class="text-xl font-semibold mb-2">前往市場</h3>
-                    <p class="text-gray-400 text-sm">探索並購買更多模因幣</p>
+                    <h3 class="text-xl font-semibold mb-2" data-i18n="portfolio.actions.goToMarket">Go to Market</h3>
+                    <p class="text-gray-400 text-sm" data-i18n="portfolio.actions.exploreBuy">Explore and buy more meme coins</p>
                 </a>
 
                 <a href="/create" class="glass-effect rounded-xl p-6 hover:bg-white/10 transition text-center">
                     <i class="fas fa-rocket text-4xl text-orange-400 mb-3"></i>
-                    <h3 class="text-xl font-semibold mb-2">創建幣種</h3>
-                    <p class="text-gray-400 text-sm">發射您自己的模因幣</p>
+                    <h3 class="text-xl font-semibold mb-2" data-i18n="portfolio.actions.createCoin">Create Coin</h3>
+                    <p class="text-gray-400 text-sm" data-i18n="portfolio.actions.launchCoin">Launch your own meme coin</p>
                 </a>
 
                 <a href="/dashboard" class="glass-effect rounded-xl p-6 hover:bg-white/10 transition text-center">
                     <i class="fas fa-chart-bar text-4xl text-green-400 mb-3"></i>
-                    <h3 class="text-xl font-semibold mb-2">查看儀表板</h3>
-                    <p class="text-gray-400 text-sm">查看統計數據和分析</p>
+                    <h3 class="text-xl font-semibold mb-2" data-i18n="portfolio.actions.viewDashboard">View Dashboard</h3>
+                    <p class="text-gray-400 text-sm" data-i18n="portfolio.actions.viewStats">View stats and analytics</p>
                 </a>
             </div>
         </div>
@@ -3796,7 +3796,10 @@ app.get('/portfolio', (c) => {
         
         <!-- Portfolio functionality -->
         <script src="/static/portfolio.js?v=20260221151619"></script>
-    </body>
+    
+    <script src="/static/i18n.js?v=20260221151619"></script>
+    <script src="/static/language-switcher.js?v=20260221151619"></script>
+</body>
     </html>
   `)
 })

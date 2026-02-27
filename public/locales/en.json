@@ -266,7 +266,7 @@
     "nav": {
       "dashboard": "Dashboard",
       "market": "Market",
-      "portfolio": "My Portfolio",
+      "portfolio": "Portfolio",
       "achievements": "Achievements",
       "leaderboard": "Leaderboard",
       "social": "Social",
@@ -291,7 +291,7 @@
       "browseMarket": "Browse Market",
       "discoverCoins": "Discover trending coins",
       "manageAssets": "Manage your assets",
-      "create": "Create Coin"
+      "create": "Create"
     },
     "portfolio": {
       "title": "My Portfolio"
@@ -321,5 +321,42 @@
     "noHoldings": "No Holdings",
     "noTransactions": "No Transactions",
     "noTrendingCoins": "No Trending Coins"
+  },
+  "portfolio": {
+    "pageTitle": "My Portfolio - MemeLaunch Tycoon",
+    "subtitle": "Track your holdings and investment performance",
+    "nav": {
+      "dashboard": "Dashboard",
+      "market": "Market",
+      "portfolio": "Portfolio",
+      "leaderboard": "Leaderboard",
+      "logout": "Logout"
+    },
+    "stats": {
+      "totalAssets": "Total Assets",
+      "cashBalance": "Cash Balance",
+      "holdingsValue": "Holdings Value",
+      "totalPnL": "Total P&L"
+    },
+    "actions": {
+      "createCoin": "Create Coin",
+      "launchCoin": "Launch your own meme coin",
+      "goToMarket": "Go to Market",
+      "exploreBuy": "Explore and buy more meme coins",
+      "viewDashboard": "View Dashboard",
+      "viewStats": "View stats and analytics"
+    },
+    "holdings": {
+      "title": "Holdings Details",
+      "coin": "Coin",
+      "amount": "Amount",
+      "avgBuyPrice": "Avg Buy Price",
+      "currentPrice": "Current Price",
+      "totalValue": "Total Value",
+      "profitLoss": "P&L"
+    },
+    "currency": "Coins",
+    "refresh": "Refresh",
+    "loading": "Loading..."
   }
 }

@@ -266,7 +266,7 @@
     "nav": {
       "dashboard": "儀表板",
       "market": "市場",
-      "portfolio": "我的組合",
+      "portfolio": "投資組合",
       "achievements": "成就",
       "leaderboard": "排行榜",
       "social": "社交",
@@ -291,7 +291,7 @@
       "browseMarket": "瀏覽市場",
       "discoverCoins": "發現熱門幣種",
       "manageAssets": "管理您的資產",
-      "create": "創建幣"
+      "create": "創建"
     },
     "portfolio": {
       "title": "我的投資組合"
@@ -321,5 +321,42 @@
     "noHoldings": "暫無持倉",
     "noTransactions": "暫無交易記錄",
     "noTrendingCoins": "暫無熱門幣種"
+  },
+  "portfolio": {
+    "pageTitle": "我的投資組合 - MemeLaunch Tycoon",
+    "subtitle": "追蹤您的持倉和投資表現",
+    "nav": {
+      "dashboard": "儀表板",
+      "market": "市場",
+      "portfolio": "投資組合",
+      "leaderboard": "排行榜",
+      "logout": "登出"
+    },
+    "stats": {
+      "totalAssets": "總資產",
+      "cashBalance": "現金餘額",
+      "holdingsValue": "持倉總值",
+      "totalPnL": "總盈虧"
+    },
+    "actions": {
+      "createCoin": "創建幣種",
+      "launchCoin": "發射您自己的模因幣",
+      "goToMarket": "前往市場",
+      "exploreBuy": "探索並購買更多模因幣",
+      "viewDashboard": "查看儀表板",
+      "viewStats": "查看統計數據和分析"
+    },
+    "holdings": {
+      "title": "持倉明細",
+      "coin": "幣種",
+      "amount": "持有量",
+      "avgBuyPrice": "平均買入價",
+      "currentPrice": "當前價格",
+      "totalValue": "總價值",
+      "profitLoss": "盈虧"
+    },
+    "currency": "金幣",
+    "refresh": "刷新",
+    "loading": "載入中..."
   }
 }
