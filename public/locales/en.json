@@ -540,5 +540,52 @@
     "websiteLabel": "Website",
     "verified": "Verified",
     "premium": "Premium Member"
+  },
+  "market": {
+    "backToDashboard": "Back to Dashboard",
+    "title": "Coin Market",
+    "explore": "Explore",
+    "subtitle": "Trade thousands of",
+    "coins": "Coins",
+    "searchPlaceholder": "Search coin name or symbol...",
+    "sortBy": "Sort By",
+    "filterBy": "Filter By",
+    "applyFilters": "Apply Filters",
+    "createCoin": "Create Coin",
+    "sort": {
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "popular": "Most Popular",
+      "volume": "Most Volume",
+      "realVolume": "Most Real Volume",
+      "priceHigh": "Highest Price",
+      "priceLow": "Lowest Price",
+      "mcapHigh": "Highest Market Cap",
+      "mcapLow": "Lowest Market Cap",
+      "progressHigh": "Highest Progress",
+      "progressLow": "Lowest Progress"
+    },
+    "filter": {
+      "all": "All",
+      "survival": "Survival",
+      "graduated": "Graduated",
+      "destiny": "Destiny"
+    },
+    "risk": {
+      "high": "High Risk",
+      "medium": "Medium Risk"
+    },
+    "stats": {
+      "totalCoins": "Total Coins",
+      "volume": "24h Volume",
+      "holders": "Active Users",
+      "trending": "Trending Coins"
+    },
+    "noCoins": "No coins found matching your criteria",
+    "tryAdjust": "Try adjusting your search or filters",
+    "loading": "Loading...",
+    "prevPage": "Previous",
+    "nextPage": "Next",
+    "page": "Page"
   }
 }

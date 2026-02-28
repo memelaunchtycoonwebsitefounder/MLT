@@ -540,5 +540,52 @@
     "websiteLabel": "網站",
     "verified": "已認證",
     "premium": "高級會員"
+  },
+  "market": {
+    "backToDashboard": "返回儀表板",
+    "title": "幣市場",
+    "explore": "探索",
+    "subtitle": "交易數千種",
+    "coins": "幣",
+    "searchPlaceholder": "搜索幣種名稱或符號...",
+    "sortBy": "排序",
+    "filterBy": "合適",
+    "applyFilters": "應用篩選",
+    "createCoin": "創建模因幣",
+    "sort": {
+      "newest": "最新創建",
+      "oldest": "最早創建",
+      "popular": "最熱門",
+      "volume": "交易最多",
+      "realVolume": "真實交易最多",
+      "priceHigh": "價格最高",
+      "priceLow": "價格最低",
+      "mcapHigh": "市值最高",
+      "mcapLow": "市值最低",
+      "progressHigh": "進度最高",
+      "progressLow": "進度最低"
+    },
+    "filter": {
+      "all": "全部",
+      "survival": "生存",
+      "graduated": "畢業",
+      "destiny": "命運"
+    },
+    "risk": {
+      "high": "高風險",
+      "medium": "中風險"
+    },
+    "stats": {
+      "totalCoins": "總幣種數",
+      "volume": "24小時交易量",
+      "holders": "活躍人數",
+      "trending": "熱門幣種"
+    },
+    "noCoins": "找不到符合條件的幣種",
+    "tryAdjust": "試試調整搜索或篩選條件",
+    "loading": "載入中...",
+    "prevPage": "上一頁",
+    "nextPage": "下一頁",
+    "page": "第"
   }
 }
