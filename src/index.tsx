@@ -2548,11 +2548,11 @@ app.get('/market', (c) => {
 app.get('/create', (c) => {
   return c.html(`
     <!DOCTYPE html>
-    <html lang="zh-TW">
+    <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>創建模因幣 - MemeLaunch Tycoon</title>
+        <title data-i18n="create.title">Create Meme Coin</title> - MemeLaunch Tycoon
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
@@ -2618,12 +2618,12 @@ app.get('/create', (c) => {
                         <span class="text-xl font-bold">MemeLaunch</span>
                     </a>
                     <div class="flex items-center space-x-6">
-                        <a href="/dashboard" class="hover:text-orange-500 transition">儀表板</a>
-                        <a href="/market" class="hover:text-orange-500 transition">市場</a>
-                        <a href="/portfolio" class="hover:text-orange-500 transition">投資組合</a>
-                        <a href="/achievements" class="hover:text-orange-500 transition">成就</a>
-                        <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
-                        <a href="/social" class="hover:text-orange-500 transition">社交</a>
+                        <a href="/dashboard" class="hover:text-orange-500 transition" data-i18n="nav.dashboard">Dashboard</a>
+                        <a href="/market" class="hover:text-orange-500 transition" data-i18n="nav.market">Market</a>
+                        <a href="/portfolio" class="hover:text-orange-500 transition" data-i18n="nav.portfolio">Portfolio</a>
+                        <a href="/achievements" class="hover:text-orange-500 transition" data-i18n="nav.achievements">Achievements</a>
+                        <a href="/leaderboard" class="hover:text-orange-500 transition" data-i18n="nav.leaderboard">Leaderboard</a>
+                        <a href="/social" class="hover:text-orange-500 transition" data-i18n="nav.social">Social</a>
                         
                         <!-- MLT Balance -->
                         <div class="glass-effect px-4 py-2 rounded-lg border border-orange-500/30">
@@ -2635,7 +2635,7 @@ app.get('/create', (c) => {
                         <!-- Virtual Balance -->
                         <div class="glass-effect px-4 py-2 rounded-lg">
                             <i class="fas fa-coins text-yellow-500 mr-2"></i>
-                            <span id="user-balance">--</span> 金幣
+                            <span id="user-balance">--</span> <span data-i18n="common.coins">Coins</span>
                         </div>
                         <button id="logout-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
                             登出
@@ -2652,17 +2652,17 @@ app.get('/create', (c) => {
                 <div class="flex items-center justify-center space-x-4">
                     <div id="step-indicator-1" class="step-indicator active">
                         <div class="step-number">1</div>
-                        <div class="step-label">選擇圖片</div>
+                        <div class="step-label"><span data-i18n="create.steps.step1">Choose Image</span></div>
                     </div>
                     <div class="step-line"></div>
                     <div id="step-indicator-2" class="step-indicator">
                         <div class="step-number">2</div>
-                        <div class="step-label">設置詳情</div>
+                        <div class="step-label"><span data-i18n="create.steps.step2">Set Details</span></div>
                     </div>
                     <div class="step-line"></div>
                     <div id="step-indicator-3" class="step-indicator">
                         <div class="step-number">3</div>
-                        <div class="step-label">預覽發射</div>
+                        <div class="step-label"><span data-i18n="create.steps.step3">Preview & Launch</span></div>
                     </div>
                 </div>
             </div>
@@ -2671,26 +2671,26 @@ app.get('/create', (c) => {
             <div id="step-1" class="step-content">
                 <div class="max-w-3xl mx-auto glass-effect rounded-2xl p-8">
                     <h2 class="text-3xl font-bold mb-6 text-center">
-                        <i class="fas fa-image mr-2"></i>選擇您的 Meme 圖片
+                        <i class="fas fa-image mr-2"></i><span data-i18n="create.step1.title">Choose Your Meme Image</span>
                     </h2>
-                    <p class="text-gray-400 text-center mb-8">上傳自定義圖片或選擇模板</p>
+                    <p class="text-gray-400 text-center mb-8"><span data-i18n="create.step1.subtitle">Upload custom image or choose template</span></p>
 
                     <!-- Upload Area -->
                     <div class="mb-8">
                         <div id="upload-area" class="border-2 border-dashed border-gray-600 rounded-xl p-12 text-center hover:border-orange-500 transition cursor-pointer">
                             <div id="upload-prompt">
                                 <i class="fas fa-cloud-upload-alt text-6xl text-gray-500 mb-4"></i>
-                                <p class="text-xl mb-2">拖放圖片到這裡</p>
-                                <p class="text-gray-400 mb-4">或</p>
+                                <p class="text-xl mb-2"><span data-i18n="create.step1.dragDrop">Drag and drop image here</span></p>
+                                <p class="text-gray-400 mb-4"><span data-i18n="create.step1.or">Or</span></p>
                                 <button class="px-6 py-3 bg-orange-500 hover:bg-orange-600 rounded-lg transition font-bold">
-                                    <i class="fas fa-folder-open mr-2"></i>選擇文件
+                                    <i class="fas fa-folder-open mr-2"></i><span data-i18n="create.step1.chooseFile">Choose File</span>
                                 </button>
-                                <p class="text-sm text-gray-500 mt-4">支持 JPG, PNG, GIF (最大 5MB)</p>
+                                <p class="text-sm text-gray-500 mt-4"><span data-i18n="create.step1.support">Supports JPG, PNG, GIF (max 5MB)</span></p>
                             </div>
                             <div id="upload-preview" class="hidden">
                                 <img id="preview-image" class="max-w-full max-h-96 mx-auto rounded-lg" loading="lazy" decoding="async" />
                                 <button id="change-image" class="mt-4 px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg transition">
-                                    <i class="fas fa-sync-alt mr-2"></i>更換圖片
+                                    <i class="fas fa-sync-alt mr-2"></i><span data-i18n="create.step1.changeImage">Change Image</span>
                                 </button>
                             </div>
                         </div>
@@ -2700,7 +2700,7 @@ app.get('/create', (c) => {
                     <!-- Templates -->
                     <div>
                         <h3 class="text-xl font-bold mb-4">
-                            <i class="fas fa-images mr-2"></i>或選擇模板
+                            <i class="fas fa-images mr-2"></i><span data-i18n="create.step1.orTemplate">Or choose template</span>
                         </h3>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="template-grid">
                             <!-- Templates will be loaded dynamically -->
@@ -2710,7 +2710,7 @@ app.get('/create', (c) => {
                     <!-- Navigation -->
                     <div class="flex justify-end mt-8">
                         <button id="step-1-next" class="px-8 py-3 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-lg font-bold transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                            下一步 <i class="fas fa-arrow-right ml-2"></i>
+                            <span data-i18n="create.actions.nextStep">Next Step</span> <i class="fas fa-arrow-right ml-2"></i>
                         </button>
                     </div>
                 </div>
@@ -2729,22 +2729,22 @@ app.get('/create', (c) => {
                             <div class="flex items-center space-x-3">
                                 <img src="/static/mlt-token.png" alt="MLT" class="w-10 h-10" loading="lazy" decoding="async">
                                 <div>
-                                    <p class="text-sm text-gray-300">創幣成本</p>
+                                    <p class="text-sm text-gray-300"><span data-i18n="create.step3.creationCost">Creation Cost</span></p>
                                     <p class="text-2xl font-bold bg-gradient-to-r from-orange-400 to-purple-400 bg-clip-text text-transparent">
                                         1,800 MLT
                                     </p>
                                 </div>
                             </div>
                             <div class="text-right">
-                                <p class="text-sm text-gray-300">您的餘額</p>
+                                <p class="text-sm text-gray-300"><span data-i18n="create.step2.yourBalance">Your Balance</span></p>
                                 <p id="create-mlt-balance" class="text-xl font-bold text-white">-- MLT</p>
-                                <p id="create-remaining-balance" class="text-xs text-gray-400 mt-1">創幣後剩餘: -- MLT</p>
+                                <p id="create-remaining-balance" class="text-xs text-gray-400 mt-1"><span data-i18n="create.step3.afterCreation">Remaining After Creation</span>: -- MLT</p>
                             </div>
                         </div>
                         <div id="insufficient-mlt-warning" class="hidden mt-3 p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
                             <p class="text-sm text-red-300">
                                 <i class="fas fa-exclamation-triangle mr-2"></i>
-                                MLT 餘額不足！需要至少 1,800 MLT 才能創建幣種。
+                                MLT <span data-i18n="create.step3.insufficientBalance">Insufficient balance! At least </span> 1,800<span data-i18n="create.step3.mltRequired"> MLT required to create coin</span>。
                             </p>
                         </div>
                     </div>
@@ -2753,7 +2753,7 @@ app.get('/create', (c) => {
                         <!-- Coin Name -->
                         <div>
                             <label for="coin-name" class="block text-sm font-medium mb-2">
-                                <i class="fas fa-tag mr-2"></i>幣種名稱 <span class="text-red-400">*</span>
+                                <i class="fas fa-tag mr-2"></i><span data-i18n="create.step2.coinName">Coin Name</span> <span class="text-red-400">*</span>
                             </label>
                             <input
                                 type="text"
@@ -2763,16 +2763,16 @@ app.get('/create', (c) => {
                                 minlength="3"
                                 maxlength="50"
                                 class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
-                                placeholder="例如: Doge to the Moon"
+                                placeholder="e.g., Doge to the Moon" data-i18n-placeholder="create.step2.namePlaceholder"
                             />
-                            <p class="text-sm text-gray-400 mt-1">3-50 個字符</p>
+                            <p class="text-sm text-gray-400 mt-1"><span data-i18n="create.step2.nameLength">3-50 characters</span></p>
                             <p class="text-red-400 text-sm mt-1 hidden" id="coin-name-error"></p>
                         </div>
 
                         <!-- Coin Symbol -->
                         <div>
                             <label for="coin-symbol" class="block text-sm font-medium mb-2">
-                                <i class="fas fa-dollar-sign mr-2"></i>幣種符號 <span class="text-red-400">*</span>
+                                <i class="fas fa-dollar-sign mr-2"></i><span data-i18n="create.step2.coinSymbol">Coin Symbol</span> <span class="text-red-400">*</span>
                             </label>
                             <input
                                 type="text"
@@ -2782,10 +2782,10 @@ app.get('/create', (c) => {
                                 minlength="2"
                                 maxlength="10"
                                 class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white uppercase"
-                                placeholder="例如: MOON"
+                                placeholder="e.g., MOON" data-i18n-placeholder="create.step2.symbolPlaceholder"
                             />
                             <div class="flex items-center justify-between mt-1">
-                                <p class="text-sm text-gray-400">2-10 個字符，大寫字母</p>
+                                <p class="text-sm text-gray-400"><span data-i18n="create.step2.symbolLength">2-10 characters, uppercase letters</span></p>
                                 <div id="symbol-check" class="text-sm"></div>
                             </div>
                             <p class="text-red-400 text-sm mt-1 hidden" id="coin-symbol-error"></p>
@@ -2794,7 +2794,7 @@ app.get('/create', (c) => {
                         <!-- Description -->
                         <div>
                             <label for="coin-description" class="block text-sm font-medium mb-2">
-                                <i class="fas fa-align-left mr-2"></i>描述
+                                <i class="fas fa-align-left mr-2"></i><span data-i18n="create.step2.description">Description</span>
                             </label>
                             <textarea
                                 id="coin-description"
@@ -2802,10 +2802,10 @@ app.get('/create', (c) => {
                                 rows="4"
                                 maxlength="500"
                                 class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white resize-none"
-                                placeholder="為您的 meme 幣寫一個吸引人的描述..."
+                                placeholder="為您的 meme 幣寫一個吸引人的<span data-i18n="create.step2.description">Description</span>..."
                             ></textarea>
                             <div class="flex justify-between text-sm text-gray-400 mt-1">
-                                <span>可選</span>
+                                <span><span data-i18n="create.step2.optional">Optional</span></span>
                                 <span><span id="desc-count">0</span>/500</span>
                             </div>
                         </div>
@@ -2814,8 +2814,8 @@ app.get('/create', (c) => {
                         <div class="space-y-4">
                             <h3 class="text-lg font-semibold flex items-center">
                                 <i class="fas fa-share-alt mr-2 text-orange-500"></i>
-                                社交連結
-                                <span class="ml-2 text-sm text-gray-400 font-normal">(可選)</span>
+                                <span data-i18n="create.step2.socialLinks">Social Links</span>
+                                <span class="ml-2 text-sm text-gray-400 font-normal">(<span data-i18n="create.step2.optional">Optional</span>)</span>
                             </h3>
                             
                             <!-- Twitter -->
@@ -2864,7 +2864,7 @@ app.get('/create', (c) => {
                         <!-- Initial Supply -->
                         <div>
                             <label class="block text-sm font-medium mb-2">
-                                <i class="fas fa-layer-group mr-2"></i>初始供應量 <span class="text-red-400">*</span>
+                                <i class="fas fa-layer-group mr-2"></i><span data-i18n="create.step2.initial">Initial</span>供應量 <span class="text-red-400">*</span>
                             </label>
                             <div class="grid grid-cols-2 gap-4">
                                 <label class="supply-option">
@@ -2872,7 +2872,7 @@ app.get('/create', (c) => {
                                     <span class="option-label">
                                         <i class="fas fa-coins"></i>
                                         <span class="option-amount">1,000,000</span>
-                                        <span class="option-desc">適合小型社群</span>
+                                        <span class="option-desc"><span data-i18n="create.step2.smallCommunity">For small communities</span></span>
                                     </span>
                                 </label>
                                 <label class="supply-option">
@@ -2880,7 +2880,7 @@ app.get('/create', (c) => {
                                     <span class="option-label">
                                         <i class="fas fa-coins"></i>
                                         <span class="option-amount">10,000,000</span>
-                                        <span class="option-desc">標準供應量</span>
+                                        <span class="option-desc"><span data-i18n="create.step2.standardSupply">Standard supply</span></span>
                                     </span>
                                 </label>
                                 <label class="supply-option">
@@ -2888,7 +2888,7 @@ app.get('/create', (c) => {
                                     <span class="option-label">
                                         <i class="fas fa-coins"></i>
                                         <span class="option-amount">100,000,000</span>
-                                        <span class="option-desc">大型項目</span>
+                                        <span class="option-desc"><span data-i18n="create.step2.largeProjects">For large projects</span></span>
                                     </span>
                                 </label>
                                 <label class="supply-option">
@@ -2896,7 +2896,7 @@ app.get('/create', (c) => {
                                     <span class="option-label">
                                         <i class="fas fa-coins"></i>
                                         <span class="option-amount">1,000,000,000</span>
-                                        <span class="option-desc">超大供應</span>
+                                        <span class="option-desc"><span data-i18n="create.step2.megaSupply">Mega supply</span></span>
                                     </span>
                                 </label>
                             </div>
@@ -2905,8 +2905,8 @@ app.get('/create', (c) => {
                         <!-- MLT Investment Slider -->
                         <div class="mb-6">
                             <label class="block text-white mb-3">
-                                <i class="fas fa-coins mr-2 text-orange-500"></i>初始 MLT 投資
-                                <span class="text-gray-400 text-sm ml-2">(決定初始價格)</span>
+                                <i class="fas fa-coins mr-2 text-orange-500"></i><span data-i18n="create.step2.initial">Initial</span> MLT 投資
+                                <span class="text-gray-400 text-sm ml-2">(決定<span data-i18n="create.step2.initialPrice">Initial Price</span>)</span>
                             </label>
                             <div class="flex items-center space-x-4">
                                 <input 
@@ -2931,7 +2931,7 @@ app.get('/create', (c) => {
                             <div class="mt-3 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
                                 <p class="text-xs text-blue-300">
                                     <i class="fas fa-info-circle mr-1"></i>
-                                    投資越高,初始價格越高,但代幣越稀有。適合高質量項目。
+                                    投資越高,<span data-i18n="create.step2.initialPrice">Initial Price</span>越高,但代幣越稀有。<span data-i18n="create.step2.highQuality">For high-quality projects</span>。
                                 </p>
                             </div>
                         </div>
@@ -2939,7 +2939,7 @@ app.get('/create', (c) => {
                         <!-- Pre-Purchase Amount -->
                         <div class="mb-6">
                             <label class="block text-white mb-3">
-                                <i class="fas fa-shopping-cart mr-2 text-green-500"></i>預購數量
+                                <i class="fas fa-shopping-cart mr-2 text-green-500"></i><span data-i18n="create.step3.purchaseAmount">Purchase Amount</span>
                                 <span class="text-gray-400 text-sm ml-2">(強制購買,確保流動性)</span>
                             </label>
                             <div class="relative">
@@ -2970,7 +2970,7 @@ app.get('/create', (c) => {
                             <div id="prepurchase-warning" class="hidden mt-3 p-3 rounded-lg bg-red-500/20 border border-red-500/30">
                                 <p class="text-sm text-red-300">
                                     <i class="fas fa-exclamation-triangle mr-2"></i>
-                                    預購數量不足!至少需要 <span id="prepurchase-warning-min">45,618</span> 代幣 (100 MLT 成本)。
+                                    <span data-i18n="create.step3.purchaseAmount">Purchase Amount</span>不足!至少需要 <span id="prepurchase-warning-min">45,618</span> 代幣 (100 MLT 成本)。
                                 </p>
                             </div>
                         </div>
@@ -2979,11 +2979,11 @@ app.get('/create', (c) => {
                         <div class="p-6 rounded-xl bg-gradient-to-br from-orange-500/10 via-purple-500/10 to-pink-500/10 border border-orange-500/30 backdrop-blur-sm">
                             <div class="flex items-center justify-between mb-4">
                                 <h4 class="text-lg font-bold text-white">
-                                    <i class="fas fa-calculator mr-2 text-orange-500"></i>創幣成本摘要
+                                    <i class="fas fa-calculator mr-2 text-orange-500"></i><span data-i18n="create.step3.costSummary">Coin Creation Cost Summary</span>
                                 </h4>
                                 <div class="px-3 py-1 rounded-full bg-green-500/20 border border-green-500/30">
                                     <span class="text-xs text-green-400 font-bold">
-                                        <i class="fas fa-check-circle mr-1"></i>實時計算
+                                        <i class="fas fa-check-circle mr-1"></i><span data-i18n="create.step3.realTimeCalc">Real-time calculation</span>
                                     </span>
                                 </div>
                             </div>
@@ -2992,7 +2992,7 @@ app.get('/create', (c) => {
                                 <div class="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
                                     <div class="flex items-center space-x-2">
                                         <i class="fas fa-piggy-bank text-orange-400"></i>
-                                        <span class="text-gray-300">初始投資</span>
+                                        <span class="text-gray-300"><span data-i18n="create.step2.initialInvestment">Initial Investment</span></span>
                                     </div>
                                     <span id="cost-initial-investment" class="font-mono text-white font-bold">2,000 MLT</span>
                                 </div>
@@ -3000,7 +3000,7 @@ app.get('/create', (c) => {
                                 <div class="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
                                     <div class="flex items-center space-x-2">
                                         <i class="fas fa-shopping-bag text-green-400"></i>
-                                        <span class="text-gray-300">預購成本</span>
+                                        <span class="text-gray-300"><span data-i18n="create.step3.purchaseCost">Purchase Cost</span></span>
                                     </div>
                                     <span id="cost-pre-purchase" class="font-mono text-white font-bold">110.59 MLT</span>
                                 </div>
@@ -3008,7 +3008,7 @@ app.get('/create', (c) => {
                                 <div class="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
                                     <div class="flex items-center space-x-2">
                                         <i class="fas fa-tag text-blue-400"></i>
-                                        <span class="text-gray-300">初始價格</span>
+                                        <span class="text-gray-300"><span data-i18n="create.step2.initialPrice">Initial Price</span></span>
                                     </div>
                                     <span id="cost-initial-price" class="font-mono text-xs text-gray-400">0.002000 MLT/token</span>
                                 </div>
@@ -3016,7 +3016,7 @@ app.get('/create', (c) => {
                                 <div class="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
                                     <div class="flex items-center space-x-2">
                                         <i class="fas fa-chart-line text-purple-400"></i>
-                                        <span class="text-gray-300">當前價格</span>
+                                        <span class="text-gray-300"><span data-i18n="create.step3.currentPrice">Current Price</span></span>
                                         <span class="text-xs text-gray-500">(預購後)</span>
                                     </div>
                                     <span id="cost-current-price" class="font-mono text-xs text-purple-300">0.002222 MLT/token</span>
@@ -3025,7 +3025,7 @@ app.get('/create', (c) => {
                                 <div class="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
                                     <div class="flex items-center space-x-2">
                                         <i class="fas fa-percentage text-pink-400"></i>
-                                        <span class="text-gray-300">Bonding Curve 進度</span>
+                                        <span class="text-gray-300">Bonding Curve <span data-i18n="create.step3.progress">Progress</span></span>
                                     </div>
                                     <span id="cost-progress" class="font-mono text-pink-300 font-bold">5.00%</span>
                                 </div>
@@ -3034,7 +3034,7 @@ app.get('/create', (c) => {
                                 
                                 <div class="flex items-center justify-between p-4 rounded-lg bg-gradient-to-r from-orange-500/20 to-purple-500/20 border border-orange-500/40">
                                     <span class="text-white font-bold text-lg">
-                                        <i class="fas fa-coins mr-2"></i>總成本
+                                        <i class="fas fa-coins mr-2"></i><span data-i18n="create.step3.totalCost">Total Cost</span>
                                     </span>
                                     <span id="cost-total" class="text-2xl font-bold bg-gradient-to-r from-orange-400 to-purple-400 bg-clip-text text-transparent">2,110.59 MLT</span>
                                 </div>
@@ -3077,10 +3077,10 @@ app.get('/create', (c) => {
                     <!-- Navigation -->
                     <div class="flex justify-between mt-8">
                         <button id="step-2-back" class="px-8 py-3 glass-effect hover:bg-white/10 rounded-lg font-bold transition">
-                            <i class="fas fa-arrow-left mr-2"></i>上一步
+                            <i class="fas fa-arrow-left mr-2"></i><span data-i18n="create.actions.prevStep">Previous Step</span>
                         </button>
                         <button id="step-2-next" class="px-8 py-3 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-lg font-bold transition">
-                            下一步 <i class="fas fa-arrow-right ml-2"></i>
+                            <span data-i18n="create.actions.nextStep">Next Step</span> <i class="fas fa-arrow-right ml-2"></i>
                         </button>
                     </div>
                 </div>
@@ -3090,13 +3090,13 @@ app.get('/create', (c) => {
             <div id="step-3" class="step-content hidden">
                 <div class="max-w-4xl mx-auto">
                     <h2 class="text-3xl font-bold mb-8 text-center">
-                        <i class="fas fa-rocket mr-2"></i>預覽與發射
+                        <i class="fas fa-rocket mr-2"></i><span data-i18n="create.step3.title">Preview & Launch</span>
                     </h2>
 
                     <div class="grid md:grid-cols-2 gap-8">
                         <!-- Coin Preview Card -->
                         <div class="glass-effect rounded-2xl p-6">
-                            <h3 class="text-xl font-bold mb-4">幣種預覽</h3>
+                            <h3 class="text-xl font-bold mb-4"><span data-i18n="create.step3.coinPreview">Coin Preview</span></h3>
                             <div class="text-center mb-6">
                                 <img id="preview-coin-image" class="w-32 h-32 mx-auto rounded-full mb-4" loading="lazy" decoding="async" />
                                 <h4 id="preview-coin-name" class="text-2xl font-bold">--</h4>
@@ -3104,15 +3104,15 @@ app.get('/create', (c) => {
                             </div>
                             <div class="space-y-2 text-sm">
                                 <div class="flex justify-between">
-                                    <span class="text-gray-400">初始價格:</span>
+                                    <span class="text-gray-400"><span data-i18n="create.step2.initialPrice">Initial Price</span>:</span>
                                     <span class="font-bold">0.01 虛擬幣</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-400">總供應量:</span>
+                                    <span class="text-gray-400"><span data-i18n="create.step2.totalSupply">Total Supply</span>:</span>
                                     <span class="font-bold" id="preview-supply">--</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-400">創建者:</span>
+                                    <span class="text-gray-400"><span data-i18n="create.step3.creator">Creator</span>:</span>
                                     <span class="font-bold" id="preview-creator">--</span>
                                 </div>
                             </div>
@@ -3126,7 +3126,7 @@ app.get('/create', (c) => {
                             <!-- AI Quality Score -->
                             <div class="glass-effect rounded-2xl p-6">
                                 <h3 class="text-xl font-bold mb-4">
-                                    <i class="fas fa-brain mr-2 text-purple-500"></i>AI 質量評分
+                                    <i class="fas fa-brain mr-2 text-purple-500"></i>AI <span data-i18n="create.step3.qualityScore">Quality Score</span>
                                 </h3>
                                 <div class="flex items-center justify-center mb-4">
                                     <div class="text-6xl font-bold gradient-text" id="quality-score">--</div>
@@ -3134,7 +3134,7 @@ app.get('/create', (c) => {
                                 </div>
                                 <div class="space-y-2 text-sm">
                                     <div class="flex items-center justify-between">
-                                        <span class="text-gray-400">圖片質量</span>
+                                        <span class="text-gray-400"><span data-i18n="create.step3.imageQuality">Image Quality</span></span>
                                         <div class="flex items-center">
                                             <div class="w-24 h-2 bg-white/10 rounded-full overflow-hidden mr-2">
                                                 <div id="image-quality-bar" class="h-full bg-gradient-to-r from-orange-500 to-pink-500" style="width: 0%"></div>
@@ -3143,7 +3143,7 @@ app.get('/create', (c) => {
                                         </div>
                                     </div>
                                     <div class="flex items-center justify-between">
-                                        <span class="text-gray-400">名稱吸引力</span>
+                                        <span class="text-gray-400"><span data-i18n="create.step3.nameAppeal">Name Appeal</span></span>
                                         <div class="flex items-center">
                                             <div class="w-24 h-2 bg-white/10 rounded-full overflow-hidden mr-2">
                                                 <div id="name-quality-bar" class="h-full bg-gradient-to-r from-orange-500 to-pink-500" style="width: 0%"></div>
@@ -3152,7 +3152,7 @@ app.get('/create', (c) => {
                                         </div>
                                     </div>
                                     <div class="flex items-center justify-between">
-                                        <span class="text-gray-400">描述完整度</span>
+                                        <span class="text-gray-400"><span data-i18n="create.step2.description">Description</span><span data-i18n="create.step3.completeness">Completeness</span></span>
                                         <div class="flex items-center">
                                             <div class="w-24 h-2 bg-white/10 rounded-full overflow-hidden mr-2">
                                                 <div id="desc-quality-bar" class="h-full bg-gradient-to-r from-orange-500 to-pink-500" style="width: 0%"></div>
@@ -3162,21 +3162,21 @@ app.get('/create', (c) => {
                                     </div>
                                 </div>
                                 <p class="text-xs text-gray-400 mt-4 text-center">
-                                    高質量分數可能提升初始 Hype 值
+                                    高質量分數可能提升<span data-i18n="create.step2.initial">Initial</span> Hype 值
                                 </p>
                             </div>
 
                             <!-- Creation Cost -->
                             <div class="glass-effect rounded-2xl p-6">
                                 <h3 class="text-xl font-bold mb-4">
-                                    <i class="fas fa-coins mr-2 text-yellow-500"></i>創建成本
+                                    <i class="fas fa-coins mr-2 text-yellow-500"></i><span data-i18n="create.step3.creationCost">Creation Cost</span>
                                 </h3>
                                 <div class="flex items-center justify-between text-2xl mb-4">
-                                    <span>總計:</span>
+                                    <span><span data-i18n="create.step3.totalCost">Total</span>:</span>
                                     <span class="font-bold text-orange-500" id="cost-total-preview">~2,100 MLT</span>
                                 </div>
                                 <div class="flex items-center justify-between text-sm text-gray-400">
-                                    <span>當前餘額:</span>
+                                    <span><span data-i18n="create.step3.currentBalance">Current Balance</span>:</span>
                                     <span id="preview-balance">-- MLT</span>
                                 </div>
                                 <div class="flex items-center justify-between text-sm text-gray-400 mt-2">
@@ -3192,15 +3192,15 @@ app.get('/create', (c) => {
                                 </h3>
                                 <div class="space-y-2 text-sm">
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">初始市值:</span>
+                                        <span class="text-gray-400"><span data-i18n="create.step3.initialMarketCap">Initial Market Cap</span>:</span>
                                         <span class="font-bold" id="preview-market-cap">--</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">預估排名:</span>
-                                        <span class="font-bold" id="preview-ranking">新幣種</span>
+                                        <span class="text-gray-400"><span data-i18n="create.step3.estimatedRank">Estimated Ranking</span>:</span>
+                                        <span class="font-bold" id="preview-ranking"><span data-i18n="create.step3.newCoin">New Coin</span></span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">初始 Hype:</span>
+                                        <span class="text-gray-400"><span data-i18n="create.step2.initial">Initial</span> Hype:</span>
                                         <span class="font-bold" id="preview-hype">--</span>
                                     </div>
                                 </div>
@@ -3213,15 +3213,15 @@ app.get('/create', (c) => {
                         <div id="launch-error" class="mb-4 p-4 bg-red-500/20 border border-red-500 rounded-lg text-sm hidden"></div>
                         <div class="flex justify-center space-x-4">
                             <button id="step-3-back" class="px-8 py-4 glass-effect hover:bg-white/10 rounded-lg font-bold transition text-lg">
-                                <i class="fas fa-arrow-left mr-2"></i>上一步
+                                <i class="fas fa-arrow-left mr-2"></i><span data-i18n="create.actions.prevStep">Previous Step</span>
                             </button>
                             <button id="launch-btn" class="px-12 py-4 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-lg font-bold transition text-lg transform hover:scale-105">
                                 <i class="fas fa-rocket mr-2"></i>
-                                <span id="launch-text">發射我的 Meme 幣！</span>
+                                <span id="launch-text"><span data-i18n="create.actions.launchCoin">Launch My Coin</span> Meme 幣！</span>
                             </button>
                         </div>
                         <p class="text-sm text-gray-400 mt-4">
-                            發射後，您的幣將出現在市場上供其他玩家交易
+                            發射後，<span data-i18n="create.success.description">Your coin will appear on the market for other players to trade</span>
                         </p>
                     </div>
                 </div>
@@ -3232,8 +3232,8 @@ app.get('/create', (c) => {
                 <div class="glass-effect rounded-2xl p-8 max-w-lg w-full">
                     <div class="text-center">
                         <div class="text-6xl mb-4">🎉</div>
-                        <h2 class="text-3xl font-bold mb-4">發射成功！</h2>
-                        <p class="text-gray-300 mb-6">恭喜！您的 Meme 幣已成功發射到市場</p>
+                        <h2 class="text-3xl font-bold mb-4"><span data-i18n="create.success.title">Launch Success!</span></h2>
+                        <p class="text-gray-300 mb-6"><span data-i18n="create.success.message1">Congratulations! Your </span>Meme 幣已成功發射到市場</p>
                         
                         <div class="glass-effect rounded-lg p-6 mb-6">
                             <img id="success-coin-image" class="w-24 h-24 mx-auto rounded-full mb-4" loading="lazy" decoding="async" />
@@ -3241,7 +3241,7 @@ app.get('/create', (c) => {
                             <p id="success-coin-symbol" class="text-xl text-orange-500 mb-4">$--</p>
                             <div class="flex justify-around text-sm">
                                 <div>
-                                    <p class="text-gray-400">初始價格</p>
+                                    <p class="text-gray-400"><span data-i18n="create.step2.initialPrice">Initial Price</span></p>
                                     <p class="font-bold">0.01</p>
                                 </div>
                                 <div>
@@ -3257,13 +3257,13 @@ app.get('/create', (c) => {
 
                         <div class="flex flex-col space-y-3">
                             <button id="view-coin-btn" class="w-full px-6 py-3 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-lg font-bold transition">
-                                <i class="fas fa-eye mr-2"></i>查看我的幣
+                                <i class="fas fa-eye mr-2"></i><span data-i18n="create.success.viewCoin">View My Coin</span>
                             </button>
                             <button id="share-twitter-btn" class="w-full px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg font-bold transition">
                                 <i class="fab fa-twitter mr-2"></i>分享到 Twitter
                             </button>
                             <button id="create-another-btn" class="w-full px-6 py-3 glass-effect hover:bg-white/10 rounded-lg font-bold transition">
-                                <i class="fas fa-plus mr-2"></i>創建另一枚幣
+                                <i class="fas fa-plus mr-2"></i><span data-i18n="create.success.createAnother">Create Another Coin</span>
                             </button>
                         </div>
                     </div>
@@ -3274,6 +3274,10 @@ app.get('/create', (c) => {
         
         <!-- Core utilities -->
         <script src="/static/fetch-utils.js?v=20260221151619"></script>
+        
+        <!-- i18n system -->
+        <script src="/static/i18n.js?v=20260221151619"></script>
+        <script src="/static/language-switcher.js?v=20260221151619"></script>
         
         <!-- Page scripts -->
         <script src="/static/mlt-calculator.js?v=20260221151619"></script>
@@ -4296,7 +4300,7 @@ app.get('/leaderboard', (c) => {
 app.get('/social', (c) => {
   return c.html(`
     <!DOCTYPE html>
-    <html lang="zh-TW">
+    <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -4378,19 +4382,19 @@ app.get('/social', (c) => {
                         <span class="text-xl font-bold">MemeLaunch</span>
                     </a>
                     <div class="hidden md:flex items-center space-x-6">
-                        <a href="/dashboard" class="hover:text-orange-500 transition">儀表板</a>
-                        <a href="/market" class="hover:text-orange-500 transition">市場</a>
-                        <a href="/portfolio" class="hover:text-orange-500 transition">投資組合</a>
-                        <a href="/achievements" class="hover:text-orange-500 transition">成就</a>
-                        <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
-                        <a href="/social" class="hover:text-orange-500 transition">社交</a>
+                        <a href="/dashboard" class="hover:text-orange-500 transition" data-i18n="nav.dashboard">Dashboard</a>
+                        <a href="/market" class="hover:text-orange-500 transition" data-i18n="nav.market">Market</a>
+                        <a href="/portfolio" class="hover:text-orange-500 transition" data-i18n="nav.portfolio">Portfolio</a>
+                        <a href="/achievements" class="hover:text-orange-500 transition" data-i18n="nav.achievements">Achievements</a>
+                        <a href="/leaderboard" class="hover:text-orange-500 transition" data-i18n="nav.leaderboard">Leaderboard</a>
+                        <a href="/social" class="hover:text-orange-500 transition" data-i18n="nav.social">Social</a>
                         <a href="/social" class="text-orange-500 border-b-2 border-orange-500" data-i18n="social.nav.social">Social</a>
                     </div>
                     <div class="flex items-center space-x-4">
                         <!-- Virtual Balance (Gold Coins) -->
                         <div class="glass-effect px-4 py-2 rounded-lg">
                             <i class="fas fa-coins text-yellow-500 mr-2"></i>
-                            <span id="user-balance">--</span> 金幣
+                            <span id="user-balance">--</span> <span data-i18n="common.coins">Coins</span>
                         </div>
                         <!-- MLT Balance -->
                         <div class="glass-effect px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20">
