@@ -552,6 +552,14 @@ const init = async () => {
     // Connect to achievement notifications SSE
     connectToAchievementStream();
     
+    // Listen for language changes and reload achievements
+    if (window.i18n) {
+      window.i18n.onLocaleChange(async (newLocale) => {
+        console.log('Language changed to:', newLocale);
+        await loadAchievements();
+      });
+    }
+    
     console.log('✅ Achievements page initialized');
     
     // Hide page loader

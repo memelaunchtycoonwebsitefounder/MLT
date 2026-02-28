@@ -469,6 +469,14 @@ const init = async () => {
     loadSocialStats();
   }, 30000);
   
+  // Listen for language changes and reload content
+  if (window.i18n) {
+    window.i18n.onLocaleChange(async (newLocale) => {
+      console.log('Language changed to:', newLocale);
+      await loadTrendingCoins(); // Reload to update Hype label
+    });
+  }
+  
   console.log('✅ Social page initialized');
   
   // Hide page loader
