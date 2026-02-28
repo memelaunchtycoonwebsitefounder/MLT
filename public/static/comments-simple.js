@@ -465,7 +465,7 @@ class CommentsSystem {
       <textarea class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm resize-none" rows="3" maxlength="1000">${originalContent}</textarea>
       <div class="flex justify-end space-x-2 mt-2">
         <button class="cancel-edit-btn px-3 py-1 text-sm bg-gray-600 hover:bg-gray-700 rounded transition">Cancel</button>
-        <button class="save-edit-btn px-3 py-1 text-sm bg-orange-500 hover:bg-orange-600 rounded transition">保存</button>
+        <button class="save-edit-btn px-3 py-1 text-sm bg-orange-500 hover:bg-orange-600 rounded transition">Save</button>
       </div>
     `;
     
@@ -482,7 +482,7 @@ class CommentsSystem {
     saveBtn.addEventListener('click', async () => {
       const newContent = textarea.value.trim();
       if (!newContent) {
-        alert('評論內容不能為空');
+        alert('Comment cannot be empty');
         return;
       }
       
@@ -495,11 +495,11 @@ class CommentsSystem {
         
         if (response.data.success) {
           await this.loadComments();
-          this.showSuccess('評論已更新');
+          this.showSuccess('Comment updated');
         }
       } catch (error) {
         console.error('Edit comment error:', error);
-        alert('編輯失敗');
+        alert('Edit failed');
         contentElement.textContent = originalContent;
       }
     });
@@ -508,7 +508,7 @@ class CommentsSystem {
   }
   
   async deleteComment(commentId) {
-    if (!confirm('確定要刪除這條評論嗎？')) {
+    if (!confirm('Are you sure you want to delete this comment?')) {
       return;
     }
     
@@ -520,11 +520,11 @@ class CommentsSystem {
       
       if (response.data.success) {
         await this.loadComments();
-        this.showSuccess('評論已刪除');
+        this.showSuccess('Comment deleted');
       }
     } catch (error) {
       console.error('Delete comment error:', error);
-      alert('刪除失敗');
+      alert('Delete failed');
     }
   }
   
@@ -550,10 +550,10 @@ class CommentsSystem {
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
     
-    if (seconds < 60) return '剛剛';
-    if (minutes < 60) return `${minutes} 分鐘前`;
-    if (hours < 24) return `${hours} 小時前`;
-    if (days < 7) return `${days} 天前`;
+    if (seconds < 60) return 'Just now';
+    if (minutes < 60) return `${minutes} min ago`;
+    if (hours < 24) return `${hours} hours ago`;
+    if (days < 7) return `${days} days ago`;
     return new Date(timestamp).toLocaleDateString('zh-TW');
   }
   

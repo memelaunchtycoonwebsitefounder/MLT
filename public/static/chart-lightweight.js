@@ -205,7 +205,7 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
 
   } catch (error) {
     console.error('❌ Chart initialization error:', error);
-    showChartError(container, '無法載入圖表');
+    showChartError(container, 'Failed to load chart');
     return false;
   }
 }
