@@ -1014,3 +1014,12 @@ const init = async () => {
 };
 
 document.addEventListener('DOMContentLoaded', init);
+
+// 🌐 Language switcher support
+if (typeof i18n !== 'undefined') {
+  i18n.onLocaleChange(() => {
+    console.log('🌐 Language changed in Create Coin page, reloading translations...');
+    // Reload page to apply new language
+    window.location.reload();
+  });
+}

@@ -633,7 +633,7 @@
       "suitableQuality": "Suitable for high-quality projects",
       "initialPrice": "Initial Price",
       "higherInitial": "Higher initial price",
-      "tokens": "tokens",
+      "tokens": "Tokens",
       "rarerTokens": "but tokens are rarer",
       "initialInvestment": "Initial Investment",
       "moreLiquidity": "More investment",
@@ -670,7 +670,16 @@
       "nameLength": "3-50 characters",
       "symbolLength": "2-10 characters, uppercase letters",
       "supply": "Supply",
-      "investment": "Investment"
+      "investment": "Investment",
+      "minInvest": "Minimum: 1,800 MLT",
+      "recommendInvest": "Recommended: 2,000-5,000 MLT",
+      "maxInvest": "Maximum: 10,000 MLT",
+      "forcedPurchaseNote": "Forced purchase, ensures liquidity",
+      "minPrePurchase": "Minimum pre-purchase:",
+      "cost": "Cost",
+      "useMinimum": "Use Minimum",
+      "determines": "Determines",
+      "investmentExplanation": "Higher investment leads to higher Initial Price, but rarer tokens."
     },
     "step3": {
       "title": "Preview & Launch",
@@ -693,13 +702,24 @@
       "balanceAfter": "Balance After Creation: ",
       "afterCreation": "Remaining After Creation",
       "insufficientBalance": "Insufficient balance! At least ",
-      "mltRequired": " MLT required to create coin"
+      "mltRequired": " MLT required to create coin",
+      "afterPrePurchase": "After pre-purchase",
+      "balanceAfterCreation": "Balance After Creation",
+      "priceGrowthPotential": "Price Growth Potential:",
+      "virtualCoin": "Virtual Coins",
+      "balanceAfterLaunch": "Balance After Launch:",
+      "marketValuation": "Market Valuation",
+      "marketCapLabel": "Market Cap",
+      "rankingLabel": "Ranking",
+      "insufficient": "insufficient! At least",
+      "qualityBoost": "High quality score may boost Initial Hype value"
     },
     "actions": {
       "prevStep": "Previous Step",
       "nextStep": "Next Step",
       "launch": "Launch Coin",
-      "backToDashboard": "Back to Dashboard"
+      "backToDashboard": "Back to Dashboard",
+      "launchCoin": "Launch My Meme Coin!"
     },
     "success": {
       "title": "Launch Success!",
@@ -707,7 +727,10 @@
       "message2": " coin has been successfully launched to market!",
       "description": "Your coin will appear on the market for other players to trade",
       "viewCoin": "View My Coin",
-      "createAnother": "Create Another Coin"
+      "createAnother": "Create Another Coin",
+      "shareToTwitter": "Share to Twitter",
+      "afterLaunch": "After launch, your coin will appear on the market for other players to trade",
+      "successfullyLaunched": "coin has been successfully launched to market!"
     }
   },
   "common": {

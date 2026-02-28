@@ -1760,7 +1760,7 @@ app.get('/coin/:id', (c) => {
                             <span class="text-xs text-gray-400 ml-1">MLT</span>
                         </div>
                         <button id="logout-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
-                            登出
+                            <span data-i18n="nav.logout">Logout</span>
                         </button>
                     </div>
                 </div>
@@ -2379,7 +2379,7 @@ app.get('/market', (c) => {
                             <span class="text-xs text-gray-400 ml-1">MLT</span>
                         </div>
                         <button id="logout-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
-                            登出
+                            <span data-i18n="nav.logout">Logout</span>
                         </button>
                     </div>
                 </div>
@@ -2638,7 +2638,7 @@ app.get('/create', (c) => {
                             <span id="user-balance">--</span> <span data-i18n="common.coins">Coins</span>
                         </div>
                         <button id="logout-btn" class="px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
-                            登出
+                            <span data-i18n="nav.logout">Logout</span>
                         </button>
                     </div>
                 </div>
@@ -2720,7 +2720,7 @@ app.get('/create', (c) => {
             <div id="step-2" class="step-content hidden">
                 <div class="max-w-3xl mx-auto glass-effect rounded-2xl p-8">
                     <h2 class="text-3xl font-bold mb-6 text-center">
-                        <i class="fas fa-edit mr-2"></i>設置幣種詳情
+                        <i class="fas fa-edit mr-2"></i><span data-i18n="create.step2.title">Set Coin Details</span>
                     </h2>
 
                     <!-- MLT Cost Warning -->
@@ -2802,7 +2802,7 @@ app.get('/create', (c) => {
                                 rows="4"
                                 maxlength="500"
                                 class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white resize-none"
-                                placeholder="為您的 meme 幣寫一個吸引人的<span data-i18n="create.step2.description">Description</span>..."
+                                placeholder="Write an attractive description for your meme coin..." data-i18n-placeholder="create.step2.descriptionPlaceholder"
                             ></textarea>
                             <div class="flex justify-between text-sm text-gray-400 mt-1">
                                 <span><span data-i18n="create.step2.optional">Optional</span></span>
@@ -2864,7 +2864,7 @@ app.get('/create', (c) => {
                         <!-- Initial Supply -->
                         <div>
                             <label class="block text-sm font-medium mb-2">
-                                <i class="fas fa-layer-group mr-2"></i><span data-i18n="create.step2.initial">Initial</span>供應量 <span class="text-red-400">*</span>
+                                <i class="fas fa-layer-group mr-2"></i><span data-i18n="create.step2.initial">Initial</span><span data-i18n="create.step2.supply">Supply</span> <span class="text-red-400">*</span>
                             </label>
                             <div class="grid grid-cols-2 gap-4">
                                 <label class="supply-option">
@@ -2906,7 +2906,7 @@ app.get('/create', (c) => {
                         <div class="mb-6">
                             <label class="block text-white mb-3">
                                 <i class="fas fa-coins mr-2 text-orange-500"></i><span data-i18n="create.step2.initial">Initial</span> MLT 投資
-                                <span class="text-gray-400 text-sm ml-2">(決定<span data-i18n="create.step2.initialPrice">Initial Price</span>)</span>
+                                <span class="text-gray-400 text-sm ml-2">(<span data-i18n="create.step2.determines">Determines</span> <span data-i18n="create.step2.initialPrice">Initial Price</span>)</span>
                             </label>
                             <div class="flex items-center space-x-4">
                                 <input 
@@ -2924,14 +2924,14 @@ app.get('/create', (c) => {
                                 </div>
                             </div>
                             <div class="mt-2 flex justify-between text-xs text-gray-400">
-                                <span>最低: 1,800 MLT</span>
-                                <span>推薦: 2,000-5,000 MLT</span>
-                                <span>最高: 10,000 MLT</span>
+                                <span><span data-i18n="create.step2.minInvest">Minimum: 1,800 MLT</span></span>
+                                <span><span data-i18n="create.step2.recommendInvest">Recommended: 2,000-5,000 MLT</span></span>
+                                <span><span data-i18n="create.step2.maxInvest">Maximum: 10,000 MLT</span></span>
                             </div>
                             <div class="mt-3 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
                                 <p class="text-xs text-blue-300">
                                     <i class="fas fa-info-circle mr-1"></i>
-                                    投資越高,<span data-i18n="create.step2.initialPrice">Initial Price</span>越高,但代幣越稀有。<span data-i18n="create.step2.highQuality">For high-quality projects</span>。
+                                    <span data-i18n="create.step2.investmentExplanation">Higher investment leads to higher Initial Price, but rarer tokens.</span> <span data-i18n="create.step2.highQuality">For high-quality projects</span>。
                                 </p>
                             </div>
                         </div>
@@ -2940,7 +2940,7 @@ app.get('/create', (c) => {
                         <div class="mb-6">
                             <label class="block text-white mb-3">
                                 <i class="fas fa-shopping-cart mr-2 text-green-500"></i><span data-i18n="create.step3.purchaseAmount">Purchase Amount</span>
-                                <span class="text-gray-400 text-sm ml-2">(強制購買,確保流動性)</span>
+                                <span class="text-gray-400 text-sm ml-2">(<span data-i18n="create.step2.forcedPurchaseNote">Forced purchase, ensures liquidity</span>)</span>
                             </label>
                             <div class="relative">
                                 <input 
@@ -2952,25 +2952,25 @@ app.get('/create', (c) => {
                                     class="w-full px-4 py-3 pr-24 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white text-lg font-mono"
                                     placeholder="50000"
                                 />
-                                <span class="absolute right-4 top-3 text-gray-400 font-bold">代幣</span>
+                                <span class="absolute right-4 top-3 text-gray-400 font-bold"><span data-i18n="create.step2.tokens">Tokens</span></span>
                             </div>
                             <div class="mt-2 flex items-center justify-between text-sm">
                                 <p class="text-gray-400">
-                                    最小預購: <span id="min-pre-purchase" class="text-orange-400 font-bold">45,618</span> 代幣
-                                    <span class="text-gray-500">(成本 100 MLT)</span>
+                                    <span data-i18n="create.step2.minPrePurchase">Minimum pre-purchase:</span> <span id="min-pre-purchase" class="text-orange-400 font-bold">45,618</span> <span data-i18n="create.step2.tokens">Tokens</span>
+                                    <span class="text-gray-500">(<span data-i18n="create.step2.cost">Cost</span> 100 MLT)</span>
                                 </p>
                                 <button 
                                     type="button" 
                                     id="set-min-prepurchase-btn" 
                                     class="px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 rounded transition"
                                 >
-                                    使用最小值
+                                    <span data-i18n="create.step2.useMinimum">Use Minimum</span>
                                 </button>
                             </div>
                             <div id="prepurchase-warning" class="hidden mt-3 p-3 rounded-lg bg-red-500/20 border border-red-500/30">
                                 <p class="text-sm text-red-300">
                                     <i class="fas fa-exclamation-triangle mr-2"></i>
-                                    <span data-i18n="create.step3.purchaseAmount">Purchase Amount</span>不足!至少需要 <span id="prepurchase-warning-min">45,618</span> 代幣 (100 MLT 成本)。
+                                    <span data-i18n="create.step3.purchaseAmount">Purchase Amount</span> <span data-i18n="create.step3.insufficient">insufficient! At least</span> <span id="prepurchase-warning-min">45,618</span> 代幣 (100 MLT 成本)。
                                 </p>
                             </div>
                         </div>
@@ -3017,7 +3017,7 @@ app.get('/create', (c) => {
                                     <div class="flex items-center space-x-2">
                                         <i class="fas fa-chart-line text-purple-400"></i>
                                         <span class="text-gray-300"><span data-i18n="create.step3.currentPrice">Current Price</span></span>
-                                        <span class="text-xs text-gray-500">(預購後)</span>
+                                        <span class="text-xs text-gray-500">(<span data-i18n="create.step3.afterPrePurchase">After pre-purchase</span>)</span>
                                     </div>
                                     <span id="cost-current-price" class="font-mono text-xs text-purple-300">0.002222 MLT/token</span>
                                 </div>
@@ -3041,7 +3041,7 @@ app.get('/create', (c) => {
                                 
                                 <div class="flex items-center justify-between text-sm p-3 rounded-lg bg-gray-800/30">
                                     <span class="text-gray-400">
-                                        <i class="fas fa-wallet mr-1"></i>創幣後餘額
+                                        <i class="fas fa-wallet mr-1"></i><span data-i18n="create.step3.balanceAfterCreation">Balance After Creation</span>
                                     </span>
                                     <span id="cost-remaining" class="font-mono text-gray-300">7,889.41 MLT</span>
                                 </div>
@@ -3050,7 +3050,7 @@ app.get('/create', (c) => {
                             <div class="mt-4 p-3 rounded-lg bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-500/20">
                                 <p class="text-xs text-gray-300 mb-2">
                                     <i class="fas fa-rocket mr-1 text-green-400"></i>
-                                    <strong>價格增長潛力:</strong>
+                                    <strong><span data-i18n="create.step3.priceGrowthPotential">Price Growth Potential:</span></strong>
                                 </p>
                                 <div class="grid grid-cols-4 gap-2 text-xs text-center">
                                     <div>
@@ -3105,7 +3105,7 @@ app.get('/create', (c) => {
                             <div class="space-y-2 text-sm">
                                 <div class="flex justify-between">
                                     <span class="text-gray-400"><span data-i18n="create.step2.initialPrice">Initial Price</span>:</span>
-                                    <span class="font-bold">0.01 虛擬幣</span>
+                                    <span class="font-bold">0.01 <span data-i18n="create.step3.virtualCoin">Virtual Coins</span></span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-gray-400"><span data-i18n="create.step2.totalSupply">Total Supply</span>:</span>
@@ -3162,7 +3162,7 @@ app.get('/create', (c) => {
                                     </div>
                                 </div>
                                 <p class="text-xs text-gray-400 mt-4 text-center">
-                                    高質量分數可能提升<span data-i18n="create.step2.initial">Initial</span> Hype 值
+                                    <span data-i18n="create.step3.qualityBoost">High quality score may boost Initial Hype value</span>
                                 </p>
                             </div>
 
@@ -3180,7 +3180,7 @@ app.get('/create', (c) => {
                                     <span id="preview-balance">-- MLT</span>
                                 </div>
                                 <div class="flex items-center justify-between text-sm text-gray-400 mt-2">
-                                    <span>發射後餘額:</span>
+                                    <span><span data-i18n="create.step3.balanceAfterLaunch">Balance After Launch:</span></span>
                                     <span id="preview-after-balance">-- MLT</span>
                                 </div>
                             </div>
@@ -3188,7 +3188,7 @@ app.get('/create', (c) => {
                             <!-- Market Estimate -->
                             <div class="glass-effect rounded-2xl p-6">
                                 <h3 class="text-xl font-bold mb-4">
-                                    <i class="fas fa-chart-line mr-2 text-green-500"></i>市場估值
+                                    <i class="fas fa-chart-line mr-2 text-green-500"></i><span data-i18n="create.step3.marketValuation">Market Valuation</span>
                                 </h3>
                                 <div class="space-y-2 text-sm">
                                     <div class="flex justify-between">
@@ -3217,11 +3217,11 @@ app.get('/create', (c) => {
                             </button>
                             <button id="launch-btn" class="px-12 py-4 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-lg font-bold transition text-lg transform hover:scale-105">
                                 <i class="fas fa-rocket mr-2"></i>
-                                <span id="launch-text"><span data-i18n="create.actions.launchCoin">Launch My Coin</span> Meme 幣！</span>
+                                <span id="launch-text"><span data-i18n="create.actions.launchCoin">Launch My Meme Coin!</span></span>
                             </button>
                         </div>
                         <p class="text-sm text-gray-400 mt-4">
-                            發射後，<span data-i18n="create.success.description">Your coin will appear on the market for other players to trade</span>
+                            <span data-i18n="create.success.afterLaunch">After launch, your coin will appear on the market for other players to trade</span>
                         </p>
                     </div>
                 </div>
@@ -3233,7 +3233,7 @@ app.get('/create', (c) => {
                     <div class="text-center">
                         <div class="text-6xl mb-4">🎉</div>
                         <h2 class="text-3xl font-bold mb-4"><span data-i18n="create.success.title">Launch Success!</span></h2>
-                        <p class="text-gray-300 mb-6"><span data-i18n="create.success.message1">Congratulations! Your </span>Meme 幣已成功發射到市場</p>
+                        <p class="text-gray-300 mb-6"><span data-i18n="create.success.message1">Congratulations! Your </span>Meme <span data-i18n="create.success.successfullyLaunched">coin has been successfully launched to market!</span></p>
                         
                         <div class="glass-effect rounded-lg p-6 mb-6">
                             <img id="success-coin-image" class="w-24 h-24 mx-auto rounded-full mb-4" loading="lazy" decoding="async" />
@@ -3245,11 +3245,11 @@ app.get('/create', (c) => {
                                     <p class="font-bold">0.01</p>
                                 </div>
                                 <div>
-                                    <p class="text-gray-400">市值</p>
+                                    <p class="text-gray-400"><span data-i18n="create.step3.marketCapLabel">Market Cap</span></p>
                                     <p class="font-bold" id="success-market-cap">--</p>
                                 </div>
                                 <div>
-                                    <p class="text-gray-400">排名</p>
+                                    <p class="text-gray-400"><span data-i18n="create.step3.rankingLabel">Ranking</span></p>
                                     <p class="font-bold">#<span id="success-rank">--</span></p>
                                 </div>
                             </div>
@@ -3260,7 +3260,7 @@ app.get('/create', (c) => {
                                 <i class="fas fa-eye mr-2"></i><span data-i18n="create.success.viewCoin">View My Coin</span>
                             </button>
                             <button id="share-twitter-btn" class="w-full px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg font-bold transition">
-                                <i class="fab fa-twitter mr-2"></i>分享到 Twitter
+                                <i class="fab fa-twitter mr-2"></i><span data-i18n="create.success.shareToTwitter">Share to Twitter</span>
                             </button>
                             <button id="create-another-btn" class="w-full px-6 py-3 glass-effect hover:bg-white/10 rounded-lg font-bold transition">
                                 <i class="fas fa-plus mr-2"></i><span data-i18n="create.success.createAnother">Create Another Coin</span>
