@@ -25,8 +25,8 @@ class I18nManager {
     // Load translation files
     await this.loadTranslations(this.currentLocale);
     
-    // Apply translations to page
-    this.applyTranslations();
+    // Apply translations to page (don't notify listeners during initial load)
+    this.applyTranslations(false);
     
     // Update HTML lang attribute
     document.documentElement.lang = this.currentLocale;
@@ -116,8 +116,9 @@ class I18nManager {
 
   /**
    * Apply translations to all elements with data-i18n attribute
+   * @param {boolean} notifyListeners - Whether to notify change listeners (default: true)
    */
-  applyTranslations() {
+  applyTranslations(notifyListeners = true) {
     // Translate elements with data-i18n attribute
     document.querySelectorAll('[data-i18n]').forEach(element => {
       const key = element.getAttribute('data-i18n');
@@ -139,8 +140,10 @@ class I18nManager {
       element.setAttribute('placeholder', translation);
     });
     
-    // Notify listeners that translations have been applied
-    this.listeners.forEach(callback => callback(this.currentLocale));
+    // Only notify listeners if requested (don't notify during initial load)
+    if (notifyListeners) {
+      this.listeners.forEach(callback => callback(this.currentLocale));
+    }
   }
 
   /**

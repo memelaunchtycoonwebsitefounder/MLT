@@ -1008,18 +1008,22 @@ const init = async () => {
       logoutBtn.addEventListener('click', handleLogout);
     }
     
+    // 🌐 Language switcher support - register inside init to avoid early trigger
+    if (typeof i18n !== 'undefined') {
+      i18n.onLocaleChange(() => {
+        console.log('🌐 Language changed in Create Coin page, reloading...');
+        // Add a flag to prevent infinite loop
+        sessionStorage.setItem('create-page-language-change', 'true');
+        window.location.reload();
+      });
+    }
+    
     // Hide page loader
     fetchUtils.hidePageLoader();
+    
+    // Clear language change flag after load
+    sessionStorage.removeItem('create-page-language-change');
   }
 };
 
 document.addEventListener('DOMContentLoaded', init);
-
-// 🌐 Language switcher support
-if (typeof i18n !== 'undefined') {
-  i18n.onLocaleChange(() => {
-    console.log('🌐 Language changed in Create Coin page, reloading translations...');
-    // Reload page to apply new language
-    window.location.reload();
-  });
-}
