@@ -123,7 +123,7 @@ const loadCoinData = async (skipChart = false) => {
     }
   } catch (error) {
     console.error('Failed to load coin:', error);
-    showNotification('載入幣種資料失敗: ' + (error.response?.data?.message || error.message), 'error');
+    showNotification('Failed to load coin data: ' + (error.response?.data?.message || error.message), 'error');
     setTimeout(() => {
       window.location.href = '/market';
     }, 2000);
@@ -184,7 +184,7 @@ const renderCoinData = async () => {
   document.getElementById('stat-transactions').textContent = Number(coinData.transaction_count || 0).toLocaleString();
   
   // Description
-  document.getElementById('coin-description').textContent = coinData.description || '沒有描述';
+  document.getElementById('coin-description').textContent = coinData.description || 'No description';
   
   // Hype score
   const hypeScore = coinData.hype_score || 0;
@@ -199,7 +199,7 @@ const renderCoinData = async () => {
   
   document.getElementById('bonding-circulating').textContent = circulatingSupply.toLocaleString();
   document.getElementById('bonding-total').textContent = totalSupply.toLocaleString();
-  document.getElementById('bonding-remaining').textContent = `剩餘 ${remaining.toLocaleString()}`;
+  document.getElementById('bonding-remaining').textContent = `Remaining ${remaining.toLocaleString()}`;
   document.getElementById('bonding-progress-percent').textContent = `${progressPercent}%`;
   document.getElementById('bonding-progress-bar').style.width = `${progressPercent}%`;
   
@@ -263,7 +263,7 @@ const renderTransactions = (transactions) => {
     container.innerHTML = `
       <div class="text-center py-8 text-gray-400">
         <i class="fas fa-inbox text-4xl mb-2"></i>
-        <p>暫無交易記錄</p>
+        <p>No transaction records</p>
       </div>
     `;
     return;
@@ -276,13 +276,13 @@ const renderTransactions = (transactions) => {
           <i class="fas fa-arrow-${tx.type === 'buy' ? 'up' : 'down'} text-white text-sm"></i>
         </div>
         <div>
-          <p class="font-bold">${tx.type === 'buy' ? '買入' : '賣出'} ${Number(tx.amount).toLocaleString()} ${coinData.symbol}</p>
+          <p class="font-bold">${tx.type === 'buy' ? 'Buy' : 'Sell'} ${Number(tx.amount).toLocaleString()} ${coinData.symbol}</p>
           <p class="text-sm text-gray-400">${new Date(tx.created_at).toLocaleString('zh-TW')}</p>
         </div>
       </div>
       <div class="text-right">
         <p class="font-bold">$${Number(tx.price).toFixed(8)}</p>
-        <p class="text-sm text-gray-400">總計: $${Number(tx.total_cost || tx.amount * tx.price).toFixed(4)}</p>
+        <p class="text-sm text-gray-400">Total: $${Number(tx.total_cost || tx.amount * tx.price).toFixed(4)}</p>
       </div>
     </div>
   `).join('');
@@ -321,7 +321,7 @@ const initPriceChart = async (limit = 100) => {
     return success;
   } catch (error) {
     console.error('❌ Price chart error:', error);
-    showNotification('無法載入價格圖表', 'error');
+    showNotification('Failed to load price chart', 'error');
     return false;
   }
 };
@@ -525,17 +525,17 @@ const updateTradeCalculations = () => {
     if (amount <= 0) {
       buyButton.disabled = true;
       buyButton.classList.add('opacity-50', 'cursor-not-allowed');
-      warningEl.textContent = '請輸入購買數量';
+      warningEl.textContent = 'Please enter purchase amount';
       warningEl.classList.remove('hidden');
     } else if (total > userData.virtual_balance) {
       buyButton.disabled = true;
       buyButton.classList.add('opacity-50', 'cursor-not-allowed');
-      warningEl.textContent = `餘額不足！需要 ${total.toFixed(2)} 金幣，您只有 ${userData.virtual_balance.toFixed(2)} 金幣`;
+      warningEl.textContent = `Insufficient balance! Need ${total.toFixed(2)} coins, you only have ${userData.virtual_balance.toFixed(2)} coins`;
       warningEl.classList.remove('hidden');
     } else if (amount > (coinData.total_supply - coinData.circulating_supply)) {
       buyButton.disabled = true;
       buyButton.classList.add('opacity-50', 'cursor-not-allowed');
-      warningEl.textContent = '可用供應量不足';
+      warningEl.textContent = 'Insufficient available supply';
       warningEl.classList.remove('hidden');
     } else {
       buyButton.disabled = false;
@@ -561,12 +561,12 @@ const updateTradeCalculations = () => {
     if (amount <= 0) {
       sellButton.disabled = true;
       sellButton.classList.add('opacity-50', 'cursor-not-allowed');
-      warningEl.textContent = '請輸入出售數量';
+      warningEl.textContent = 'Please enter sell amount';
       warningEl.classList.remove('hidden');
     } else if (amount > userHoldings) {
       sellButton.disabled = true;
       sellButton.classList.add('opacity-50', 'cursor-not-allowed');
-      warningEl.textContent = `持有量不足！您只有 ${userHoldings} ${coinData.symbol}`;
+      warningEl.textContent = `Insufficient holdings! You only have ${userHoldings} ${coinData.symbol}`;
       warningEl.classList.remove('hidden');
     } else {
       sellButton.disabled = false;
@@ -581,7 +581,7 @@ const executeBuy = async () => {
   const amount = parseFloat(document.getElementById('buy-amount').value) || 0;
   
   if (amount <= 0) {
-    showNotification('請輸入有效數量', 'error');
+    showNotification('Please enter valid amount', 'error');
     return;
   }
   
@@ -589,7 +589,7 @@ const executeBuy = async () => {
   const originalHTML = button.innerHTML;
   
   button.disabled = true;
-  button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>處理中...';
+  button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
   
   try {
     const token = localStorage.getItem('auth_token');
@@ -602,7 +602,7 @@ const executeBuy = async () => {
     });
     
     if (response.data.success) {
-      showNotification(`✅ 成功買入 ${amount} ${coinData.symbol}！`, 'success');
+      showNotification(`✅ Successfully bought ${amount} ${coinData.symbol}!`, 'success');
       
       // Update user balance
       userData.virtual_balance = response.data.data.newBalance;
@@ -617,7 +617,7 @@ const executeBuy = async () => {
     }
   } catch (error) {
     console.error('Buy failed:', error);
-    showNotification(error.response?.data?.message || '買入失敗，請稍後再試', 'error');
+    showNotification(error.response?.data?.message || 'Purchase failed, please try again later', 'error');
   } finally {
     button.disabled = false;
     button.innerHTML = originalHTML;
@@ -629,12 +629,12 @@ const executeSell = async () => {
   const amount = parseFloat(document.getElementById('sell-amount').value) || 0;
   
   if (amount <= 0) {
-    showNotification('請輸入有效數量', 'error');
+    showNotification('Please enter valid amount', 'error');
     return;
   }
   
   if (amount > userHoldings) {
-    showNotification('持有量不足', 'error');
+    showNotification('Insufficient holdings', 'error');
     return;
   }
   
@@ -642,7 +642,7 @@ const executeSell = async () => {
   const originalHTML = button.innerHTML;
   
   button.disabled = true;
-  button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>處理中...';
+  button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
   
   try {
     const token = localStorage.getItem('auth_token');
@@ -655,7 +655,7 @@ const executeSell = async () => {
     });
     
     if (response.data.success) {
-      showNotification(`✅ 成功賣出 ${amount} ${coinData.symbol}！`, 'success');
+      showNotification(`✅ Successfully sold ${amount} ${coinData.symbol}!`, 'success');
       
       // Update user balance
       userData.virtual_balance = response.data.data.newBalance;
@@ -670,7 +670,7 @@ const executeSell = async () => {
     }
   } catch (error) {
     console.error('Sell failed:', error);
-    showNotification(error.response?.data?.message || '賣出失敗，請稍後再試', 'error');
+    showNotification(error.response?.data?.message || 'Sale failed, please try again later', 'error');
   } finally {
     button.disabled = false;
     button.innerHTML = originalHTML;
@@ -702,14 +702,14 @@ const showNotification = (message, type = 'info') => {
 // Share functions
 const setupShareButtons = () => {
   document.getElementById('share-twitter')?.addEventListener('click', () => {
-    const text = encodeURIComponent(`🚀 查看 ${coinData.name} ($${coinData.symbol}) 在 MemeLaunch Tycoon！`);
+    const text = encodeURIComponent(`🚀 Check out ${coinData.name} ($${coinData.symbol}) on MemeLaunch Tycoon!`);
     const url = encodeURIComponent(window.location.href);
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
   });
   
   document.getElementById('copy-link')?.addEventListener('click', () => {
     navigator.clipboard.writeText(window.location.href);
-    showNotification('✅ 連結已複製！', 'success');
+    showNotification('✅ Link copied!', 'success');
   });
 };
 
@@ -752,10 +752,10 @@ const init = async () => {
         try {
           await loadCoinData(false); // Reload with chart update
           console.log('[CHART] Manual refresh completed');
-          showNotification('圖表已刷新', 'success');
+          showNotification('Chart refreshed', 'success');
         } catch (error) {
           console.error('[CHART] Manual refresh failed:', error);
-          showNotification('刷新失敗', 'error');
+          showNotification('Refresh failed', 'error');
         } finally {
           refreshBtn.disabled = false;
           refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
@@ -1211,37 +1211,37 @@ function updateDestinyStatus(coin) {
   const destinyConfig = {
     'SURVIVAL': {
       icon: 'fa-shield-alt',
-      text: '生存模式 - 穩定發展中',
+      text: 'Survival Mode - Growing Steadily',
       color: 'text-green-400',
       bgColor: 'bg-green-500/20 border-green-500/30'
     },
     'EARLY_DEATH': {
       icon: 'fa-skull-crossbones',
-      text: '早期死亡 - 5 分鐘內面臨風險',
+      text: 'Early Death - Risk within 5 minutes',
       color: 'text-red-400',
       bgColor: 'bg-red-500/20 border-red-500/30'
     },
     'LATE_DEATH': {
       icon: 'fa-hourglass-half',
-      text: '後期死亡 - 10 分鐘內面臨風險',
+      text: 'Late Death - Risk within 10 minutes',
       color: 'text-orange-400',
       bgColor: 'bg-orange-500/20 border-orange-500/30'
     },
     'GRADUATION': {
       icon: 'fa-graduation-cap',
-      text: '已畢業 - 達到 100% 進度! 🎉',
+      text: 'Graduated - Reached 100% Progress! 🎉',
       color: 'text-purple-400',
       bgColor: 'bg-purple-500/20 border-purple-500/30'
     },
     'RUG_PULL': {
       icon: 'fa-exclamation-triangle',
-      text: 'Rug Pull 風險 - 小心詐騙!',
+      text: 'Rug Pull Risk - Beware of scam!',
       color: 'text-yellow-400',
       bgColor: 'bg-yellow-500/20 border-yellow-500/30'
     },
     'unknown': {
       icon: 'fa-question-circle',
-      text: '命運未知...',
+      text: 'Fate Unknown...',
       color: 'text-gray-400',
       bgColor: 'bg-gray-500/20 border-gray-500/30'
     }
@@ -1291,12 +1291,12 @@ function updateAIActivity(coin) {
     if (coin.is_ai_active) {
       aiStatusEl.innerHTML = `
         <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-        <span class="text-sm text-green-400 font-bold">運行中</span>
+        <span class="text-sm text-green-400 font-bold">Running</span>
       `;
     } else {
       aiStatusEl.innerHTML = `
         <div class="w-2 h-2 bg-gray-500 rounded-full"></div>
-        <span class="text-sm text-gray-400">已停止</span>
+        <span class="text-sm text-gray-400">Stopped</span>
       `;
     }
   }
@@ -1321,7 +1321,7 @@ async function loadEventTimeline(coinId) {
       event_type: 'COIN_CREATED',
       created_at: coinData.created_at,
       is_ai_trade: false,
-      description: `幣種創建 - 初始投資 ${coinData.initial_mlt_investment || 2000} MLT`
+      description: `Coin Created - Initial Investment ${coinData.initial_mlt_investment || 2000} MLT`
     });
     
     // Add events based on flags
@@ -1330,7 +1330,7 @@ async function loadEventTimeline(coinId) {
         event_type: 'SNIPER_ATTACK',
         created_at: coinData.created_at,
         is_ai_trade: true,
-        description: '狙擊手快速買入大量代幣'
+        description: 'Sniper quickly bought large amount of tokens'
       });
     }
     
@@ -1339,7 +1339,7 @@ async function loadEventTimeline(coinId) {
         event_type: 'WHALE_BUY',
         created_at: coinData.created_at,
         is_ai_trade: true,
-        description: '鯨魚買入,大幅推高價格'
+        description: 'Whale buy, significantly pushed up price'
       });
     }
     
@@ -1348,7 +1348,7 @@ async function loadEventTimeline(coinId) {
         event_type: 'RUG_PULL',
         created_at: coinData.created_at,
         is_ai_trade: false,
-        description: '⚠️ Rug Pull 事件發生'
+        description: '⚠️ Rug Pull event occurred'
       });
     }
     
@@ -1357,7 +1357,7 @@ async function loadEventTimeline(coinId) {
         event_type: 'PANIC_SELL',
         created_at: coinData.created_at,
         is_ai_trade: true,
-        description: '恐慌拋售,價格下跌'
+        description: 'Panic sell, price dropping'
       });
     }
     
@@ -1366,7 +1366,7 @@ async function loadEventTimeline(coinId) {
         event_type: 'FOMO_BUY',
         created_at: coinData.created_at,
         is_ai_trade: true,
-        description: 'FOMO 買入潮,價格飆升'
+        description: 'FOMO buying surge, price soaring'
       });
     }
     
@@ -1375,7 +1375,7 @@ async function loadEventTimeline(coinId) {
         event_type: 'VIRAL_MOMENT',
         created_at: coinData.created_at,
         is_ai_trade: false,
-        description: '🔥 病毒式傳播,熱度爆表'
+        description: '🔥 Viral spread, hype exploding'
       });
     }
     
@@ -1387,7 +1387,7 @@ async function loadEventTimeline(coinId) {
         event_type: 'COIN_DEATH',
         created_at: coinData.death_time,
         is_ai_trade: false,
-        description: '💀 幣種死亡'
+        description: '💀 Coin death'
       });
     }
     
@@ -1396,12 +1396,12 @@ async function loadEventTimeline(coinId) {
         event_type: 'COIN_GRADUATION',
         created_at: coinData.graduation_time,
         is_ai_trade: false,
-        description: '🎓 成功畢業到 DEX'
+        description: '🎓 Successfully graduated to DEX'
       });
     }
     
     if (events.length === 0) {
-      timeline.innerHTML = '<p class="text-gray-400 text-center py-4">暫無事件</p>';
+      timeline.innerHTML = '<p class="text-gray-400 text-center py-4">No events yet</p>';
       return;
     }
     
@@ -1417,15 +1417,15 @@ async function loadEventTimeline(coinId) {
  */
 function createEventElement(event) {
   const eventConfig = {
-    'COIN_CREATED': { icon: 'fa-rocket', color: 'text-blue-400', label: '幣種創建' },
-    'SNIPER_ATTACK': { icon: 'fa-crosshairs', color: 'text-red-400', label: '狙擊手攻擊' },
-    'WHALE_BUY': { icon: 'fa-fish', color: 'text-green-400', label: '鯨魚買入' },
+    'COIN_CREATED': { icon: 'fa-rocket', color: 'text-blue-400', label: 'Coin Created' },
+    'SNIPER_ATTACK': { icon: 'fa-crosshairs', color: 'text-red-400', label: 'Sniper Attack' },
+    'WHALE_BUY': { icon: 'fa-fish', color: 'text-green-400', label: 'Whale Buy' },
     'RUG_PULL': { icon: 'fa-exclamation-triangle', color: 'text-yellow-400', label: 'Rug Pull' },
-    'PANIC_SELL': { icon: 'fa-arrow-down', color: 'text-orange-400', label: '恐慌拋售' },
-    'FOMO_BUY': { icon: 'fa-arrow-up', color: 'text-green-400', label: 'FOMO 買入' },
-    'VIRAL_MOMENT': { icon: 'fa-fire', color: 'text-pink-400', label: '病毒式傳播' },
-    'COIN_DEATH': { icon: 'fa-skull', color: 'text-gray-400', label: '幣種死亡' },
-    'COIN_GRADUATION': { icon: 'fa-graduation-cap', color: 'text-purple-400', label: '幣種畢業' }
+    'PANIC_SELL': { icon: 'fa-arrow-down', color: 'text-orange-400', label: 'Panic Sell' },
+    'FOMO_BUY': { icon: 'fa-arrow-up', color: 'text-green-400', label: 'FOMO Buy' },
+    'VIRAL_MOMENT': { icon: 'fa-fire', color: 'text-pink-400', label: 'Viral Moment' },
+    'COIN_DEATH': { icon: 'fa-skull', color: 'text-gray-400', label: 'Coin Death' },
+    'COIN_GRADUATION': { icon: 'fa-graduation-cap', color: 'text-purple-400', label: 'Coin Graduation' }
   };
   
   const eventType = event.event_type || event.type;
@@ -1434,7 +1434,7 @@ function createEventElement(event) {
   
   // Add AI/Real indicator
   const tradeIndicator = event.is_ai_trade !== undefined 
-    ? `<span class="text-xs ${event.is_ai_trade ? 'text-purple-400' : 'text-green-400'}">${event.is_ai_trade ? '🤖 AI' : '👤 真實'}</span>`
+    ? `<span class="text-xs ${event.is_ai_trade ? 'text-purple-400' : 'text-green-400'}">${event.is_ai_trade ? '🤖 AI' : '👤 Real'}</span>`
     : '';
   
   const div = document.createElement('div');
@@ -1451,7 +1451,7 @@ function createEventElement(event) {
         </div>
         <span class="text-xs text-gray-500">${formatTime(eventTime)}</span>
       </div>
-      <p class="text-sm text-gray-400">${event.description || '無詳情'}</p>
+      <p class="text-sm text-gray-400">${event.description || 'No details'}</p>
     </div>
   `;
   
@@ -1462,17 +1462,25 @@ function createEventElement(event) {
  * Format timestamp for display
  */
 function formatTime(timestamp) {
-  if (!timestamp) return '剛剛';
+  if (!timestamp) return 'Just now';
   
   const date = new Date(timestamp);
   const now = new Date();
   const diffMs = now - date;
   const diffMins = Math.floor(diffMs / 60000);
   
-  if (diffMins < 1) return '剛剛';
-  if (diffMins < 60) return `${diffMins} 分鐘前`;
-  if (diffMins < 1440) return `${Math.floor(diffMins / 60)} 小時前`;
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins} minutes ago`;
+  if (diffMins < 1440) return `${Math.floor(diffMins / 60)} hours ago`;
   return date.toLocaleDateString('zh-TW');
 }
 
 console.log('✅ Enhanced bonding curve functions loaded');
+
+// 🌐 Language switcher support
+if (typeof i18n !== 'undefined') {
+  i18n.onLocaleChange(() => {
+    console.log('🌐 Language changed in Coin Detail page, reloading...');
+    window.location.reload();
+  });
+}

@@ -1674,7 +1674,7 @@ app.get('/coin/:id', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>幣種詳情 - MemeLaunch Tycoon</title>
+        <title data-i18n="coinDetail.title">Coin Detail</title> - MemeLaunch Tycoon
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
@@ -1745,7 +1745,7 @@ app.get('/coin/:id', (c) => {
                         <a href="/portfolio" class="hover:text-orange-500 transition" data-i18n="social.nav.portfolio">Portfolio</a>
                         <a href="/achievements" class="hover:text-orange-500 transition" data-i18n="social.nav.achievements">Achievements</a>
                         <a href="/leaderboard" class="hover:text-orange-500 transition" data-i18n="social.nav.leaderboard">Leaderboard</a>
-                        <a href="/social" class="hover:text-orange-500 transition">社交</a>
+                        <a href="/social" class="hover:text-orange-500 transition" data-i18n="nav.social">Social</a>
                     </div>
                     <div class="flex items-center space-x-4">
                         <!-- Virtual Balance (Gold Coins) -->
@@ -1772,14 +1772,14 @@ app.get('/coin/:id', (c) => {
             <!-- Back Button -->
             <div class="mb-6">
                 <a href="/market" class="inline-flex items-center text-gray-400 hover:text-white transition">
-                    <i class="fas fa-arrow-left mr-2"></i>返回市場
+                    <i class="fas fa-arrow-left mr-2"></i><span data-i18n="coinDetail.backToMarket">Back to Market</span>
                 </a>
             </div>
 
             <!-- Loading State -->
             <div id="loading-state" class="text-center py-20">
                 <i class="fas fa-spinner fa-spin text-6xl text-orange-500 mb-4"></i>
-                <p class="text-xl text-gray-400">載入中...</p>
+                <p class="text-xl text-gray-400"><span data-i18n="coinDetail.loading">Loading...</span></p>
             </div>
 
             <!-- Coin Content (Hidden initially) -->
@@ -1794,12 +1794,12 @@ app.get('/coin/:id', (c) => {
                                 <p id="coin-symbol" class="text-2xl text-orange-500">$--</p>
                                 <p class="text-sm text-gray-400 mt-2">
                                     <i class="fas fa-user mr-1"></i>
-                                    創建者: <span id="coin-creator">--</span>
+                                    <span data-i18n="coinDetail.creator">Creator:</span> <span id="coin-creator">--</span>
                                 </p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-sm text-gray-400 mb-1">當前價格</p>
+                            <p class="text-sm text-gray-400 mb-1"><span data-i18n="coinDetail.currentPrice">Current Price</span></p>
                             <p id="coin-price" class="text-5xl font-bold">--</p>
                             <p id="coin-price-change" class="text-lg mt-2">--</p>
                         </div>
@@ -1812,16 +1812,16 @@ app.get('/coin/:id', (c) => {
                         <!-- Price Chart -->
                         <div class="glass-effect rounded-2xl p-6">
                             <h2 class="text-2xl font-bold mb-6">
-                                <i class="fas fa-chart-line mr-2"></i>價格走勢
+                                <i class="fas fa-chart-line mr-2"></i><span data-i18n="coinDetail.priceChart">Price Chart</span>
                             </h2>
                             <div class="mb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                                 <div class="flex flex-wrap gap-2">
-                                    <button class="timeframe-btn active bg-orange-500 px-4 py-2 rounded-lg transition hover:bg-orange-600" data-timeframe="1m">1分鐘</button>
-                                    <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="10m">10分鐘</button>
-                                    <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="1h">1小時</button>
-                                    <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="24h">24小時</button>
+                                    <button class="timeframe-btn active bg-orange-500 px-4 py-2 rounded-lg transition hover:bg-orange-600" data-timeframe="1m" data-i18n="coinDetail.timeframes.1min">1 Min</button>
+                                    <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="10m" data-i18n="coinDetail.timeframes.10min">10 Min</button>
+                                    <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="1h" data-i18n="coinDetail.timeframes.1hour">1 Hour</button>
+                                    <button class="timeframe-btn px-4 py-2 rounded-lg transition bg-white/10 hover:bg-white/20" data-timeframe="24h" data-i18n="coinDetail.timeframes.24hour">24 Hours</button>
                                     <!-- Manual Refresh Button -->
-                                    <button id="refresh-chart-btn" class="px-4 py-2 rounded-lg transition bg-blue-500 hover:bg-blue-600 ml-2" title="手動刷新圖表">
+                                    <button id="refresh-chart-btn" class="px-4 py-2 rounded-lg transition bg-blue-500 hover:bg-blue-600 ml-2" data-i18n-title="coinDetail.refreshChart">
                                         <i class="fas fa-sync-alt"></i>
                                     </button>
                                 </div>
@@ -1860,19 +1860,19 @@ app.get('/coin/:id', (c) => {
                         <!-- Stats Grid -->
                         <div class="grid md:grid-cols-4 gap-4">
                             <div class="glass-effect rounded-xl p-4">
-                                <p class="text-sm text-gray-400 mb-1">市值</p>
+                                <p class="text-sm text-gray-400 mb-1"><span data-i18n="coinDetail.marketCap">Market Cap</span></p>
                                 <p id="stat-market-cap" class="text-2xl font-bold">--</p>
                             </div>
                             <div class="glass-effect rounded-xl p-4">
-                                <p class="text-sm text-gray-400 mb-1">供應量</p>
+                                <p class="text-sm text-gray-400 mb-1"><span data-i18n="coinDetail.supply">Supply</span></p>
                                 <p id="stat-supply" class="text-2xl font-bold">--</p>
                             </div>
                             <div class="glass-effect rounded-xl p-4">
-                                <p class="text-sm text-gray-400 mb-1">持有人</p>
+                                <p class="text-sm text-gray-400 mb-1"><span data-i18n="coinDetail.holders">Holders</span></p>
                                 <p id="stat-holders" class="text-2xl font-bold">--</p>
                             </div>
                             <div class="glass-effect rounded-xl p-4">
-                                <p class="text-sm text-gray-400 mb-1">交易數</p>
+                                <p class="text-sm text-gray-400 mb-1"><span data-i18n="coinDetail.trades">Trades</span></p>
                                 <p id="stat-transactions" class="text-2xl font-bold">--</p>
                             </div>
                         </div>
@@ -1880,7 +1880,7 @@ app.get('/coin/:id', (c) => {
                         <!-- Description -->
                         <div class="glass-effect rounded-2xl p-6">
                             <h2 class="text-2xl font-bold mb-4">
-                                <i class="fas fa-info-circle mr-2"></i>關於
+                                <i class="fas fa-info-circle mr-2"></i><span data-i18n="coinDetail.about">About</span>
                             </h2>
                             <p id="coin-description" class="text-gray-300">--</p>
                         </div>
@@ -1888,7 +1888,7 @@ app.get('/coin/:id', (c) => {
                         <!-- Recent Transactions -->
                         <div class="glass-effect rounded-2xl p-6">
                             <h2 class="text-2xl font-bold mb-6">
-                                <i class="fas fa-history mr-2"></i>最近交易
+                                <i class="fas fa-history mr-2"></i><span data-i18n="coinDetail.recentTransactions">Recent Transactions</span>
                             </h2>
                             <div id="recent-transactions" class="space-y-3">
                                 <!-- Transactions will be loaded here -->
@@ -1907,7 +1907,7 @@ app.get('/coin/:id', (c) => {
                         <div class="glass-effect rounded-2xl p-6">
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="text-xl font-bold text-white">
-                                    <i class="fas fa-chart-line mr-2 text-orange-500"></i>Bonding Curve 進度
+                                    <i class="fas fa-chart-line mr-2 text-orange-500"></i>Bonding Curve <span data-i18n="coinDetail.progress">Progress</span>
                                 </h3>
                                 <span id="curve-progress-percent" class="text-2xl font-bold text-orange-400">0%</span>
                             </div>
@@ -1927,7 +1927,7 @@ app.get('/coin/:id', (c) => {
                             <!-- Price Milestones -->
                             <div class="grid grid-cols-5 gap-2 text-xs">
                                 <div class="text-center">
-                                    <div class="text-gray-400">初始</div>
+                                    <div class="text-gray-400"><span data-i18n="coinDetail.initial">Initial</span></div>
                                     <div id="price-0" class="font-mono text-white">0.002</div>
                                     <div class="text-gray-500">1.00×</div>
                                 </div>
@@ -1947,7 +1947,7 @@ app.get('/coin/:id', (c) => {
                                     <div class="text-gray-500">20.09×</div>
                                 </div>
                                 <div class="text-center">
-                                    <div class="text-gray-400">畢業</div>
+                                    <div class="text-gray-400"><span data-i18n="coinDetail.graduation">Graduation</span></div>
                                     <div id="price-100" class="font-mono text-white">0.109</div>
                                     <div class="text-green-400">54.60×</div>
                                 </div>
@@ -1957,7 +1957,7 @@ app.get('/coin/:id', (c) => {
                             <div id="destiny-status" class="mt-4 p-3 rounded-lg border bg-gray-500/20 border-gray-500/30">
                                 <div class="flex items-center space-x-2">
                                     <i id="destiny-icon" class="fas fa-question-circle text-gray-400"></i>
-                                    <span id="destiny-text" class="text-gray-300">命運未知...</span>
+                                    <span id="destiny-text" class="text-gray-300"><span data-i18n="coinDetail.destinyUnknown">Destiny Unknown...</span></span>
                                 </div>
                             </div>
                         </div>
@@ -1965,38 +1965,38 @@ app.get('/coin/:id', (c) => {
                         <!-- AI Activity Panel -->
                         <div class="glass-effect rounded-2xl p-6">
                             <h3 class="text-xl font-bold text-white mb-4">
-                                <i class="fas fa-robot mr-2 text-purple-500"></i>AI 交易活動
+                                <i class="fas fa-robot mr-2 text-purple-500"></i>AI <span data-i18n="coinDetail.tradingActivity">Trading Activity</span>
                             </h3>
                             
                             <div class="grid grid-cols-2 gap-4 mb-4">
                                 <div class="p-4 rounded-lg bg-purple-500/10 border border-purple-500/30">
                                     <div class="flex items-center justify-between mb-2">
                                         <span class="text-sm text-gray-300">
-                                            <i class="fas fa-robot mr-1"></i>AI 交易
+                                            <i class="fas fa-robot mr-1"></i>AI <span data-i18n="coinDetail.trades">Trades</span>
                                         </span>
                                         <span id="ai-trade-count" class="text-xl font-bold text-purple-400">0</span>
                                     </div>
-                                    <div class="text-xs text-gray-400">自動市場做市商</div>
+                                    <div class="text-xs text-gray-400"><span data-i18n="coinDetail.automatedMM">Automated Market Maker</span></div>
                                 </div>
                                 
                                 <div class="p-4 rounded-lg bg-green-500/10 border border-green-500/30">
                                     <div class="flex items-center justify-between mb-2">
                                         <span class="text-sm text-gray-300">
-                                            <i class="fas fa-user mr-1"></i>真實交易
+                                            <i class="fas fa-user mr-1"></i><span data-i18n="coinDetail.realTrades">Real Trades</span>
                                         </span>
                                         <span id="real-trade-count" class="text-xl font-bold text-green-400">0</span>
                                     </div>
                                     <div class="text-xs text-gray-400">
-                                        <span id="unique-traders">0</span> 位獨立交易者
+                                        <span id="unique-traders">0</span> <span data-i18n="coinDetail.uniqueTraders">unique traders</span>
                                     </div>
                                 </div>
                             </div>
                             
                             <div class="flex items-center justify-between p-3 rounded-lg bg-gray-800">
-                                <span class="text-sm text-gray-300">AI 系統狀態</span>
+                                <span class="text-sm text-gray-300">AI <span data-i18n="coinDetail.systemStatus">System Status</span></span>
                                 <div id="ai-status" class="flex items-center space-x-2">
                                     <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                    <span class="text-sm text-green-400 font-bold">運行中</span>
+                                    <span class="text-sm text-green-400 font-bold"><span data-i18n="coinDetail.running">Running</span></span>
                                 </div>
                             </div>
                         </div>
@@ -2004,11 +2004,11 @@ app.get('/coin/:id', (c) => {
                         <!-- Event Timeline -->
                         <div class="glass-effect rounded-2xl p-6">
                             <h3 class="text-xl font-bold text-white mb-4">
-                                <i class="fas fa-history mr-2 text-blue-500"></i>事件時間線
+                                <i class="fas fa-history mr-2 text-blue-500"></i><span data-i18n="coinDetail.eventTimeline">Event Timeline</span>
                             </h3>
                             
                             <div id="event-timeline" class="space-y-3 max-h-96 overflow-y-auto">
-                                <p class="text-gray-400 text-center py-4">載入中...</p>
+                                <p class="text-gray-400 text-center py-4"><span data-i18n="coinDetail.loading">Loading...</span></p>
                             </div>
                         </div>
 
@@ -2019,7 +2019,7 @@ app.get('/coin/:id', (c) => {
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="text-sm font-bold">
                                         <i class="fas fa-chart-line mr-1"></i>
-                                        Bonding Curve 進度
+                                        <span data-i18n="coinDetail.bondingCurveProgress">Bonding Curve Progress</span>
                                     </span>
                                     <span id="bonding-progress-percent" class="text-sm font-bold text-orange-500">0%</span>
                                 </div>
@@ -2028,21 +2028,21 @@ app.get('/coin/:id', (c) => {
                                 </div>
                                 <div class="flex justify-between mt-2 text-xs text-gray-400">
                                     <span><span id="bonding-circulating">0</span> / <span id="bonding-total">0</span></span>
-                                    <span id="bonding-remaining">剩餘 0</span>
+                                    <span id="bonding-remaining"><span data-i18n="coinDetail.remaining">Remaining</span> 0</span>
                                 </div>
                             </div>
                             
                             <h2 class="text-2xl font-bold mb-6">
-                                <i class="fas fa-exchange-alt mr-2"></i>交易
+                                <i class="fas fa-exchange-alt mr-2"></i><span data-i18n="coinDetail.trade">Trade</span>
                             </h2>
 
                             <!-- Buy/Sell Tabs -->
                             <div class="flex mb-6 bg-black/30 rounded-lg p-1">
                                 <button id="buy-tab" class="flex-1 py-2 rounded-lg bg-green-500 transition font-bold">
-                                    買入
+                                    <span data-i18n="coinDetail.buy">Buy</span>
                                 </button>
                                 <button id="sell-tab" class="flex-1 py-2 rounded-lg hover:bg-white/10 transition font-bold">
-                                    賣出
+                                    <span data-i18n="coinDetail.sell">Sell</span>
                                 </button>
                             </div>
 
@@ -2051,7 +2051,7 @@ app.get('/coin/:id', (c) => {
                                 <!-- Amount Slider -->
                                 <div class="mb-4">
                                     <div class="flex justify-between items-center mb-2">
-                                        <label class="block text-sm font-medium">購買數量</label>
+                                        <label class="block text-sm font-medium"><span data-i18n="coinDetail.buyAmount">Buy Amount</span></label>
                                         <span class="text-sm text-orange-500 font-bold" id="buy-amount-display">100</span>
                                     </div>
                                     <input
@@ -2068,7 +2068,7 @@ app.get('/coin/:id', (c) => {
                                         min="1"
                                         value="100"
                                         class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition text-white"
-                                        placeholder="輸入數量..."
+                                        placeholder="Enter amount..." data-i18n-placeholder="coinDetail.enterAmount"
                                     />
                                 </div>
                                 
@@ -2087,25 +2087,25 @@ app.get('/coin/:id', (c) => {
                                         500
                                     </button>
                                     <button id="buy-max-btn" class="px-3 py-2 bg-gradient-to-r from-orange-500 to-purple-500 hover:from-orange-600 hover:to-purple-600 rounded-lg text-sm font-bold transition">
-                                        最大
+                                        <span data-i18n="coinDetail.max">Max</span>
                                     </button>
                                 </div>
                                 
                                 <div class="mb-4 p-4 bg-white/5 rounded-lg space-y-2 text-sm">
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">單價:</span>
+                                        <span class="text-gray-400"><span data-i18n="coinDetail.unitPrice">Unit Price:</span></span>
                                         <span id="buy-price-per-coin" class="font-bold">--</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">小計:</span>
+                                        <span class="text-gray-400"><span data-i18n="coinDetail.subtotal">Subtotal:</span></span>
                                         <span id="buy-subtotal" class="font-bold">--</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">手續費 (1%):</span>
+                                        <span class="text-gray-400"><span data-i18n="coinDetail.fee">Fee (1%):</span></span>
                                         <span id="buy-fee" class="font-bold">--</span>
                                     </div>
                                     <div class="flex justify-between border-t border-white/10 pt-2">
-                                        <span class="text-gray-300 font-bold">總計:</span>
+                                        <span class="text-gray-300 font-bold"><span data-i18n="coinDetail.total">Total:</span></span>
                                         <span id="buy-total" class="font-bold text-lg text-green-500">--</span>
                                     </div>
                                 </div>
@@ -2114,7 +2114,7 @@ app.get('/coin/:id', (c) => {
                                 
                                 <button id="buy-button" class="w-full px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 rounded-lg font-bold transition transform hover:scale-105">
                                     <i class="fas fa-arrow-up mr-2"></i>
-                                    立即買入
+                                    <span data-i18n="coinDetail.buyNow">Buy Now</span>
                                 </button>
                             </div>
 
@@ -2123,8 +2123,8 @@ app.get('/coin/:id', (c) => {
                                 <!-- Amount Slider -->
                                 <div class="mb-4">
                                     <div class="flex justify-between items-center mb-2">
-                                        <span class="text-sm font-medium">賣出數量</span>
-                                        <span class="text-sm text-gray-400">持有: <span id="holdings-amount">0</span> <span id="holdings-symbol">--</span></span>
+                                        <span class="text-sm font-medium"><span data-i18n="coinDetail.sellAmount">Sell Amount</span></span>
+                                        <span class="text-sm text-gray-400"><span data-i18n="coinDetail.holdings">Holdings:</span> <span id="holdings-amount">0</span> <span id="holdings-symbol">--</span></span>
                                     </div>
                                     <div class="flex items-center justify-between mb-2">
                                         <span class="text-sm text-red-500 font-bold" id="sell-amount-display">10</span>
@@ -2144,7 +2144,7 @@ app.get('/coin/:id', (c) => {
                                         min="1"
                                         value="10"
                                         class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition text-white"
-                                        placeholder="輸入數量..."
+                                        placeholder="Enter amount..." data-i18n-placeholder="coinDetail.enterAmount"
                                     />
                                 </div>
                                 
@@ -2163,25 +2163,25 @@ app.get('/coin/:id', (c) => {
                                         100%
                                     </button>
                                     <button id="sell-max-btn" class="px-3 py-2 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 rounded-lg text-sm font-bold transition">
-                                        全部
+                                        <span data-i18n="coinDetail.all">All</span>
                                     </button>
                                 </div>
                                 
                                 <div class="mb-4 p-4 bg-white/5 rounded-lg space-y-2 text-sm">
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">單價:</span>
+                                        <span class="text-gray-400"><span data-i18n="coinDetail.unitPrice">Unit Price:</span></span>
                                         <span id="sell-price-per-coin" class="font-bold">--</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">小計:</span>
+                                        <span class="text-gray-400"><span data-i18n="coinDetail.subtotal">Subtotal:</span></span>
                                         <span id="sell-subtotal" class="font-bold">--</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">手續費 (1%):</span>
+                                        <span class="text-gray-400"><span data-i18n="coinDetail.fee">Fee (1%):</span></span>
                                         <span id="sell-fee" class="font-bold">--</span>
                                     </div>
                                     <div class="flex justify-between border-t border-white/10 pt-2">
-                                        <span class="text-gray-300 font-bold">收益:</span>
+                                        <span class="text-gray-300 font-bold"><span data-i18n="coinDetail.proceeds">Proceeds:</span></span>
                                         <span id="sell-total" class="font-bold text-lg text-red-500">--</span>
                                     </div>
                                 </div>
@@ -2189,7 +2189,7 @@ app.get('/coin/:id', (c) => {
                                 <!-- Holdings Info -->
                                 <div id="holdings-info" class="hidden mb-4 p-3 bg-blue-500/20 border border-blue-500/50 rounded-lg text-sm">
                                     <div class="flex justify-between">
-                                        <span class="text-gray-300">持倉價值:</span>
+                                        <span class="text-gray-300"><span data-i18n="coinDetail.holdingsValue">Holdings Value:</span></span>
                                         <span id="holdings-value" class="font-bold text-blue-300">--</span>
                                     </div>
                                 </div>
@@ -2198,7 +2198,7 @@ app.get('/coin/:id', (c) => {
                                 
                                 <button id="sell-button" class="w-full px-6 py-4 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 rounded-lg font-bold transition transform hover:scale-105">
                                     <i class="fas fa-arrow-down mr-2"></i>
-                                    立即賣出
+                                    <span data-i18n="coinDetail.sellNow">Sell Now</span>
                                 </button>
                             </div>
 
@@ -2209,11 +2209,11 @@ app.get('/coin/:id', (c) => {
                         <!-- Hype Score -->
                         <div class="glass-effect rounded-2xl p-6">
                             <h3 class="text-xl font-bold mb-4">
-                                <i class="fas fa-fire text-orange-500 mr-2"></i>Hype 分數
+                                <i class="fas fa-fire text-orange-500 mr-2"></i>Hype <span data-i18n="coinDetail.score">Score</span>
                             </h3>
                             <div class="text-center mb-4">
                                 <div id="hype-score" class="text-5xl font-bold gradient-text">--</div>
-                                <p class="text-sm text-gray-400 mt-1">滿分 200</p>
+                                <p class="text-sm text-gray-400 mt-1"><span data-i18n="coinDetail.outOf200">Out of 200</span></p>
                             </div>
                             <div class="w-full h-3 bg-white/10 rounded-full overflow-hidden">
                                 <div id="hype-bar" class="h-full bg-gradient-to-r from-orange-500 to-pink-500" style="width: 0%"></div>
@@ -2223,14 +2223,14 @@ app.get('/coin/:id', (c) => {
                         <!-- Share -->
                         <div class="glass-effect rounded-2xl p-6">
                             <h3 class="text-xl font-bold mb-4">
-                                <i class="fas fa-share-alt mr-2"></i>分享
+                                <i class="fas fa-share-alt mr-2"></i><span data-i18n="coinDetail.share">Share</span>
                             </h3>
                             <div class="flex space-x-3">
                                 <button id="share-twitter" class="flex-1 px-4 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg font-bold transition">
                                     <i class="fab fa-twitter mr-2"></i>Twitter
                                 </button>
                                 <button id="copy-link" class="flex-1 px-4 py-3 glass-effect hover:bg-white/10 rounded-lg font-bold transition">
-                                    <i class="fas fa-link mr-2"></i>複製連結
+                                    <i class="fas fa-link mr-2"></i><span data-i18n="coinDetail.copyLink">Copy Link</span>
                                 </button>
                             </div>
                         </div>
@@ -2267,6 +2267,8 @@ app.get('/coin/:id', (c) => {
                 }
             });
         </script>
+        <script src="/static/i18n.js?v=20260221151619"></script>
+        <script src="/static/language-switcher.js?v=20260221151619"></script>
         <script src="/static/coin-detail.js?v=20260221151619"></script>
     </body>
     </html>
