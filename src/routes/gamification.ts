@@ -28,6 +28,7 @@ gamification.get('/achievements', async (c) => {
         a.category,
         a.icon,
         a.points,
+        a.rarity,
         a.requirement_type,
         a.requirement_value,
         a.created_at,
