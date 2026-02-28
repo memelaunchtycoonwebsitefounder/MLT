@@ -71,9 +71,9 @@ class UserProfile {
       document.getElementById('profile-content').innerHTML = `
         <div class="text-center py-12">
           <i class="fas fa-exclamation-circle text-6xl text-red-500 mb-4"></i>
-          <h2 class="text-2xl font-bold mb-2">載入失敗</h2>
-          <p class="text-gray-400 mb-4">無法載入用戶資料</p>
-          <a href="/dashboard" class="btn-primary">返回主頁</a>
+          <h2 class="text-2xl font-bold mb-2">${i18n.t('profile.loadFailed')}}</h2>
+          <p class="text-gray-400 mb-4">${i18n.t('profile.loadError')}}</p>
+          <a href="/dashboard" class="btn-primary">${i18n.t('profile.backToHome')}}</a>
         </div>
       `;
     }
@@ -114,7 +114,7 @@ class UserProfile {
                     id="follow-btn"
                     class="px-6 py-2 ${isFollowing ? 'bg-gray-600 hover:bg-gray-700' : 'bg-orange-500 hover:bg-orange-600'} rounded-lg font-bold transition">
                     <i class="fas fa-${isFollowing ? 'user-minus' : 'user-plus'} mr-2"></i>
-                    ${isFollowing ? '取消關注' : '關注'}
+                    ${isFollowing ? i18n.t('profile.unfollow') : i18n.t('profile.following')}
                   </button>`
               }
             </div>
@@ -124,12 +124,12 @@ class UserProfile {
           <div class="mt-6">
             <div class="flex items-center space-x-3 mb-2">
               <h1 class="text-3xl font-bold">${user.username}</h1>
-              ${user.is_verified ? '<i class="fas fa-check-circle text-blue-500" title="已認證"></i>' : ''}
-              ${user.is_premium ? '<i class="fas fa-crown text-yellow-500" title="高級會員"></i>' : ''}
+              ${user.is_verified ? '<i class="fas fa-check-circle text-blue-500" title=i18n.t('profile.verified')></i>' : ''}
+              ${user.is_premium ? '<i class="fas fa-crown text-yellow-500" title=i18n.t('profile.premium')></i>' : ''}
             </div>
             
             <div class="flex items-center space-x-4 text-gray-400 mb-4">
-              <span><i class="fas fa-trophy mr-2"></i>等級 ${user.level}</span>
+              <span><i class="fas fa-trophy mr-2"></i>${i18n.t('profile.level')} ${user.level}</span>
               <span><i class="fas fa-star mr-2"></i>${user.xp} XP</span>
               ${user.location ? `<span><i class="fas fa-map-marker-alt mr-2"></i>${user.location}</span>` : ''}
             </div>
@@ -138,7 +138,7 @@ class UserProfile {
 
             <!-- Social Links -->
             <div class="flex items-center space-x-4 mb-4">
-              ${user.website ? `<a href="${user.website}" target="_blank" class="text-blue-400 hover:text-blue-300"><i class="fas fa-globe mr-1"></i>網站</a>` : ''}
+              ${user.website ? `<a href="${user.website}" target="_blank" class="text-blue-400 hover:text-blue-300"><i class="fas fa-globe mr-1"></i>${i18n.t('profile.websiteLabel')}}</a>` : ''}
               ${user.twitter_handle ? `<a href="https://twitter.com/${user.twitter_handle.replace('@', '')}" target="_blank" class="text-blue-400 hover:text-blue-300"><i class="fab fa-twitter mr-1"></i>${user.twitter_handle}</a>` : ''}
               ${user.discord_handle ? `<span class="text-purple-400"><i class="fab fa-discord mr-1"></i>${user.discord_handle}</span>` : ''}
             </div>
@@ -147,11 +147,11 @@ class UserProfile {
             <div class="flex items-center space-x-6">
               <button onclick="userProfile.showFollowers()" class="hover:text-orange-500 transition">
                 <span class="font-bold">${followStats.followers_count}</span>
-                <span class="text-gray-400"> 粉絲</span>
+                <span class="text-gray-400"> ${i18n.t('profile.followers')}</span>
               </button>
               <button onclick="userProfile.showFollowing()" class="hover:text-orange-500 transition">
                 <span class="font-bold">${followStats.following_count}</span>
-                <span class="text-gray-400"> 關注</span>
+                <span class="text-gray-400"> ${i18n.t('profile.following')}</span>
               </button>
               ${stats ? `
                 <span>
@@ -186,7 +186,7 @@ class UserProfile {
         <!-- MLT Earned Card -->
         <div class="glass-effect rounded-2xl p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-bold text-white">總賺取</h3>
+            <h3 class="text-lg font-bold text-white">${i18n.t('profile.totalBuy')}}</h3>
             <i class="fas fa-arrow-up text-green-500 text-2xl"></i>
           </div>
           <p class="text-4xl font-bold text-green-400 mb-2">
@@ -198,7 +198,7 @@ class UserProfile {
         <!-- MLT Spent Card -->
         <div class="glass-effect rounded-2xl p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-bold text-white">總支出</h3>
+            <h3 class="text-lg font-bold text-white">${i18n.t('profile.totalSell')}}</h3>
             <i class="fas fa-arrow-down text-red-500 text-2xl"></i>
           </div>
           <p class="text-4xl font-bold text-red-400 mb-2">
@@ -213,13 +213,13 @@ class UserProfile {
       <div class="glass-effect rounded-2xl mb-6">
         <div class="flex border-b border-white/10">
           <button onclick="userProfile.switchTab('trades')" id="tab-trades" class="tab-btn active px-6 py-4 font-bold transition">
-            <i class="fas fa-exchange-alt mr-2"></i>交易記錄
+            <i class="fas fa-exchange-alt mr-2"></i>${i18n.t('profile.transactionHistory')}
           </button>
           <button onclick="userProfile.switchTab('achievements')" id="tab-achievements" class="tab-btn px-6 py-4 font-bold transition">
-            <i class="fas fa-trophy mr-2"></i>成就
+            <i class="fas fa-trophy mr-2"></i>${i18n.t('profile.achievements')}
           </button>
           <button onclick="userProfile.switchTab('holdings')" id="tab-holdings" class="tab-btn px-6 py-4 font-bold transition">
-            <i class="fas fa-coins mr-2"></i>持倉
+            <i class="fas fa-coins mr-2"></i>${i18n.t('profile.holdings')}
           </button>
         </div>
       </div>
@@ -275,7 +275,7 @@ class UserProfile {
           content.innerHTML = `
             <div class="text-center py-12">
               <i class="fas fa-exchange-alt text-6xl text-gray-600 mb-4"></i>
-              <p class="text-xl text-gray-400">暫無交易記錄</p>
+              <p class="text-xl text-gray-400">${i18n.t('profile.noTransactions')}}</p>
             </div>
           `;
           return;
@@ -297,10 +297,10 @@ class UserProfile {
                   </div>
                   <div class="text-right">
                     <div class="font-bold ${trade.action === 'buy' ? 'text-green-400' : 'text-red-400'}">
-                      ${trade.action === 'buy' ? '買入' : '賣出'} ${parseFloat(trade.amount).toFixed(2)}
+                      ${trade.action === 'buy' ? i18n.t('profile.buy') : i18n.t('profile.sell')} ${parseFloat(trade.amount).toFixed(2)}
                     </div>
                     <div class="text-sm text-gray-400">
-                      @ ${parseFloat(trade.price).toFixed(4)} = ${parseFloat(trade.total_value).toFixed(2)} 金幣
+                      @ ${parseFloat(trade.price).toFixed(4)} = ${parseFloat(trade.total_value).toFixed(2)} ${i18n.t('profile.coins')}
                     </div>
                   </div>
                 </div>
@@ -312,7 +312,7 @@ class UserProfile {
     } catch (error) {
       console.error('Load trades error:', error);
       document.getElementById('tab-content').innerHTML = `
-        <div class="text-center py-12 text-red-400">載入失敗</div>
+        <div class="text-center py-12 text-red-400">${i18n.t('profile.loadFailed')}}</div>
       `;
     }
   }
@@ -333,11 +333,11 @@ class UserProfile {
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div class="bg-white/5 rounded-lg p-4 text-center">
               <div class="text-3xl font-bold text-orange-500">${stats.total_unlocked}</div>
-              <div class="text-sm text-gray-400">已解鎖</div>
+              <div class="text-sm text-gray-400">${i18n.t('profile.unlocked')}}</div>
             </div>
             <div class="bg-white/5 rounded-lg p-4 text-center">
               <div class="text-3xl font-bold text-blue-500">${stats.total_available}</div>
-              <div class="text-sm text-gray-400">總成就</div>
+              <div class="text-sm text-gray-400">${i18n.t('profile.totalAchievements')}}</div>
             </div>
             <div class="bg-white/5 rounded-lg p-4 text-center">
               <div class="text-3xl font-bold text-green-500">${stats.total_xp_earned}</div>
@@ -345,15 +345,15 @@ class UserProfile {
             </div>
             <div class="bg-white/5 rounded-lg p-4 text-center">
               <div class="text-3xl font-bold text-purple-500">${stats.completion_rate}%</div>
-              <div class="text-sm text-gray-400">完成度</div>
+              <div class="text-sm text-gray-400">${i18n.t('profile.completion')}}</div>
             </div>
           </div>
 
           ${achievements.length === 0 
             ? `<div class="text-center py-12">
                 <i class="fas fa-trophy text-6xl text-gray-600 mb-4"></i>
-                <p class="text-xl text-gray-400">還沒有解鎖任何成就</p>
-                <p class="text-gray-500 mt-2">開始交易來解鎖成就吧！</p>
+                <p class="text-xl text-gray-400">${i18n.t('profile.noAchievements')}}</p>
+                <p class="text-gray-500 mt-2">${i18n.t('profile.startTrading')}</p>
               </div>`
             : `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 ${achievements.map(ach => `
@@ -387,7 +387,7 @@ class UserProfile {
     } catch (error) {
       console.error('Load achievements error:', error);
       document.getElementById('tab-content').innerHTML = `
-        <div class="text-center py-12 text-red-400">載入失敗</div>
+        <div class="text-center py-12 text-red-400">${i18n.t('profile.loadFailed')}}</div>
       `;
     }
   }
@@ -396,7 +396,7 @@ class UserProfile {
     document.getElementById('tab-content').innerHTML = `
       <div class="text-center py-12">
         <i class="fas fa-coins text-6xl text-gray-600 mb-4"></i>
-        <p class="text-xl text-gray-400">持倉功能即將推出</p>
+        <p class="text-xl text-gray-400">${i18n.t('profile.holdingsComingSoon')}}</p>
       </div>
     `;
   }
@@ -441,7 +441,7 @@ class UserProfile {
     modal.innerHTML = `
       <div class="glass-effect rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-2xl font-bold">編輯資料</h2>
+          <h2 class="text-2xl font-bold">${i18n.t('profile.editProfile')}}</h2>
           <button onclick="document.getElementById('edit-modal').remove()" class="text-gray-400 hover:text-white">
             <i class="fas fa-times text-2xl"></i>
           </button>
@@ -449,7 +449,7 @@ class UserProfile {
 
         <form id="edit-form" class="space-y-4">
           <div>
-            <label class="block text-sm font-bold mb-2">個人簡介</label>
+            <label class="block text-sm font-bold mb-2">${i18n.t('profile.bio')}}</label>
             <textarea 
               id="edit-bio" 
               class="input w-full h-24 resize-none" 
@@ -463,11 +463,11 @@ class UserProfile {
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-bold mb-2">所在地</label>
+              <label class="block text-sm font-bold mb-2">${i18n.t('profile.location')}}</label>
               <input type="text" id="edit-location" class="input w-full" value="${user.location || ''}" placeholder="例：Taiwan">
             </div>
             <div>
-              <label class="block text-sm font-bold mb-2">個人網站</label>
+              <label class="block text-sm font-bold mb-2">${i18n.t('profile.website')}}</label>
               <input type="url" id="edit-website" class="input w-full" value="${user.website || ''}" placeholder="https://...">
             </div>
           </div>
@@ -535,12 +535,12 @@ class UserProfile {
 
   async showFollowers() {
     // TODO: Implement followers modal
-    alert('粉絲列表功能即將推出');
+    alert(i18n.t('profile.followersComingSoon'));
   }
 
   async showFollowing() {
     // TODO: Implement following modal
-    alert('關注列表功能即將推出');
+    alert(i18n.t('profile.followingComingSoon'));
   }
 
   updateNavBalances() {
