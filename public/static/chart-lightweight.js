@@ -171,6 +171,12 @@ async function initLightweightCharts(coinData, priceHistory, timeframe = '1h') {
       }
     });
 
+    // Show OHLC data for the latest candle immediately
+    if (aggregatedData.length > 0) {
+      const latestCandle = aggregatedData[aggregatedData.length - 1];
+      updateOHLCDisplay(latestCandle, latestCandle);
+    }
+
     // Fit content to show all data properly
     chart.timeScale().fitContent();
     

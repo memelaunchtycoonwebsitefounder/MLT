@@ -74,7 +74,7 @@ const loadCoins = async (page = 1) => {
   coinsGrid.innerHTML = `
     <div class="col-span-full text-center py-12">
       <i class="fas fa-spinner fa-spin text-5xl text-orange-500 mb-4"></i>
-      <p class="text-xl text-gray-400">載入中...</p>
+      <p class="text-xl text-gray-400">Loading...</p>
     </div>
   `;
   emptyState.classList.add('hidden');
@@ -129,9 +129,9 @@ const loadCoins = async (page = 1) => {
     coinsGrid.innerHTML = `
       <div class="col-span-full text-center py-12">
         <i class="fas fa-exclamation-triangle text-5xl text-red-500 mb-4"></i>
-        <p class="text-xl text-gray-400">載入失敗</p>
+        <p class="text-xl text-gray-400">Load Failed</p>
         <button onclick="loadCoins(${page})" class="mt-4 px-6 py-2 bg-orange-500 hover:bg-orange-600 rounded-lg transition">
-          重試
+          Retry
         </button>
       </div>
     `;
@@ -200,26 +200,26 @@ const renderCoins = (coins) => {
           </div>
           <div class="flex items-center space-x-2">
             <i class="fas fa-user text-green-400"></i>
-            <span class="text-gray-400">真實: ${realTrades}</span>
+            <span class="text-gray-400">Real: ${realTrades}</span>
           </div>
         </div>
 
         <!-- Coin Stats -->
         <div class="grid grid-cols-2 gap-3 text-sm mb-3">
           <div>
-            <p class="text-gray-400">市值</p>
+            <p class="text-gray-400">Market Cap</p>
             <p class="font-bold">${Number(coin.market_cap || 0).toLocaleString()}</p>
           </div>
           <div>
-            <p class="text-gray-400">供應量</p>
+            <p class="text-gray-400">Supply</p>
             <p class="font-bold">${Number(coin.total_supply || 0).toLocaleString()}</p>
           </div>
           <div>
-            <p class="text-gray-400">持有人</p>
+            <p class="text-gray-400">Holders</p>
             <p class="font-bold">${Number(coin.holders_count || 0).toLocaleString()}</p>
           </div>
           <div>
-            <p class="text-gray-400">交易</p>
+            <p class="text-gray-400">Trades</p>
             <p class="font-bold">${Number(coin.transaction_count || 0).toLocaleString()}</p>
           </div>
         </div>
@@ -228,7 +228,7 @@ const renderCoins = (coins) => {
         <div class="mb-3">
           <div class="flex items-center justify-between text-sm mb-1">
             <span class="text-gray-400">
-              <i class="fas fa-fire text-orange-500 mr-1"></i>Hype 分數
+              <i class="fas fa-fire text-orange-500 mr-1"></i>Hype Score
             </span>
             <span class="font-bold">${coin.hype_score || 0}/200</span>
           </div>
@@ -241,7 +241,7 @@ const renderCoins = (coins) => {
         <div class="flex items-center justify-between text-sm text-gray-400">
           <a href="/profile/${coin.creator_id}" class="flex items-center hover:text-orange-500 transition" onclick="event.stopPropagation()">
             <i class="fas fa-user mr-1"></i>
-            創建者: ${coin.creator_username || 'Unknown'}
+            Creator: ${coin.creator_username || 'Unknown'}
           </a>
           <span>
             <i class="fas fa-clock mr-1"></i>
@@ -252,7 +252,7 @@ const renderCoins = (coins) => {
         <!-- Action Button -->
         <div class="mt-4">
           <button class="w-full px-4 py-2 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-lg font-bold transition" onclick="event.stopPropagation(); quickTrade('${coin.id}')">
-            <i class="fas fa-bolt mr-2"></i>快速交易
+            <i class="fas fa-bolt mr-2"></i>Quick Trade
           </button>
         </div>
       </div>
@@ -271,9 +271,9 @@ const formatDate = (dateString) => {
   const hours = Math.floor(diff / 3600000);
   const days = Math.floor(diff / 86400000);
   
-  if (minutes < 60) return `${minutes}分鐘前`;
-  if (hours < 24) return `${hours}小時前`;
-  if (days < 7) return `${days}天前`;
+  if (minutes < 60) return `${minutes} min ago`;
+  if (hours < 24) return `${hours} hours ago`;
+  if (days < 7) return `${days} days ago`;
   
   return date.toLocaleDateString('zh-TW');
 };
@@ -300,10 +300,9 @@ const updateStats = (totalCoins) => {
   document.getElementById('trending-count').textContent = Math.min(10, totalCoins);
 };
 
-// Quick trade function (placeholder)
+// Quick trade function - Navigate to coin detail page
 const quickTrade = (coinId) => {
-  // This will be implemented when we create the trading functionality
-  alert(`快速交易功能即將推出！幣種 ID: ${coinId}`);
+  window.location.href = `/coin/${coinId}`;
 };
 
 // Setup event listeners
@@ -415,10 +414,10 @@ const init = async () => {
  */
 function getDestinyBadge(destinyType) {
   const badges = {
-    'SURVIVAL': '<span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs font-bold">🛡️ 生存</span>',
-    'EARLY_DEATH': '<span class="px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs font-bold">💀 高風險</span>',
-    'LATE_DEATH': '<span class="px-2 py-1 bg-orange-500/20 text-orange-400 rounded text-xs font-bold">⏳ 中風險</span>',
-    'GRADUATION': '<span class="px-2 py-1 bg-purple-500/20 text-purple-400 rounded text-xs font-bold">🎓 畢業</span>',
+    'SURVIVAL': '<span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs font-bold">🛡️ Survival</span>',
+    'EARLY_DEATH': '<span class="px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs font-bold">💀 High Risk</span>',
+    'LATE_DEATH': '<span class="px-2 py-1 bg-orange-500/20 text-orange-400 rounded text-xs font-bold">⏳ Medium Risk</span>',
+    'GRADUATION': '<span class="px-2 py-1 bg-purple-500/20 text-purple-400 rounded text-xs font-bold">🎓 Graduated</span>',
     'RUG_PULL': '<span class="px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded text-xs font-bold">⚠️ Rug</span>',
     'unknown': ''
   };
@@ -426,3 +425,11 @@ function getDestinyBadge(destinyType) {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+// 🌐 Language switcher support
+if (typeof i18n !== 'undefined') {
+  i18n.onLocaleChange(() => {
+    console.log('🌐 Language changed in Market page, reloading...');
+    window.location.reload();
+  });
+}

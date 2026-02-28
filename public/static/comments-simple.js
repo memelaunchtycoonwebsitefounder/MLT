@@ -36,7 +36,7 @@ class CommentsSystem {
       }
     } catch (error) {
       console.error('Init error:', error);
-      this.renderError('載入失敗');
+      this.renderError('Load failed');
     }
   }
   
@@ -55,12 +55,12 @@ class CommentsSystem {
         this.render();
       } else {
         this.comments = [];
-        this.renderError('載入評論失敗');
+        this.renderError('Failed to load comments');
       }
     } catch (error) {
       console.error('Load comments error:', error);
       this.comments = [];
-      this.renderError('載入評論失敗: ' + error.message);
+      this.renderError('Failed to load comments: ' + error.message);
     }
   }
   
@@ -75,7 +75,7 @@ class CommentsSystem {
       <div class="glass-effect rounded-2xl p-6 mt-8">
         <h2 class="text-2xl font-bold mb-6">
           <i class="fas fa-comments mr-2"></i>
-          評論 (${this.comments.length})
+          Comments (${this.comments.length})
         </h2>
         
         <!-- Comment Input -->
@@ -83,7 +83,7 @@ class CommentsSystem {
           <textarea
             id="comment-input"
             class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white resize-none"
-            placeholder="發表您的評論..."
+            placeholder="Write your comment..."
             rows="3"
             maxlength="1000"
           ></textarea>
@@ -94,7 +94,7 @@ class CommentsSystem {
               class="px-6 py-2 bg-orange-500 hover:bg-orange-600 rounded-lg font-bold transition"
             >
               <i class="fas fa-paper-plane mr-2"></i>
-              發表
+              Post
             </button>
           </div>
         </div>
@@ -102,10 +102,10 @@ class CommentsSystem {
         <!-- Sort Options -->
         <div class="flex space-x-2 mb-4">
           <button class="sort-btn active px-4 py-2 rounded-lg text-sm" data-sort="time">
-            <i class="fas fa-clock mr-1"></i>最新
+            <i class="fas fa-clock mr-1"></i>Latest
           </button>
           <button class="sort-btn px-4 py-2 rounded-lg text-sm" data-sort="hot">
-            <i class="fas fa-fire mr-1"></i>熱門
+            <i class="fas fa-fire mr-1"></i>Popular
           </button>
         </div>
         
@@ -146,8 +146,8 @@ class CommentsSystem {
                 Lv.${comment.level || 1}
               </span>
               <span class="text-gray-400 text-sm">${timeAgo}</span>
-              ${comment.edited_at ? '<span class="text-gray-500 text-xs">(已編輯)</span>' : ''}
-              ${comment.pinned ? '<span class="text-yellow-500 text-sm"><i class="fas fa-thumbtack mr-1"></i>已釘選</span>' : ''}
+              ${comment.edited_at ? '<span class="text-gray-500 text-xs">(Edited)</span>' : ''}
+              ${comment.pinned ? '<span class="text-yellow-500 text-sm"><i class="fas fa-thumbtack mr-1"></i>Pinned</span>' : ''}
             </div>
             
             <p class="comment-content text-gray-300 mb-3 whitespace-pre-wrap break-words">${this.escapeHtml(comment.content)}</p>
@@ -159,19 +159,19 @@ class CommentsSystem {
               </button>
               
               <button class="reply-btn text-gray-400 hover:text-orange-500 transition" data-id="${comment.id}" data-username="${this.escapeHtml(comment.username)}">
-                <i class="fas fa-reply mr-1"></i>回覆
+                <i class="fas fa-reply mr-1"></i>Reply
               </button>
               
               ${isOwner ? `
                 <button class="edit-btn text-gray-400 hover:text-blue-500 transition" data-id="${comment.id}">
-                  <i class="fas fa-edit mr-1"></i>編輯
+                  <i class="fas fa-edit mr-1"></i>Edit
                 </button>
                 <button class="delete-btn text-gray-400 hover:text-red-500 transition" data-id="${comment.id}">
-                  <i class="fas fa-trash mr-1"></i>刪除
+                  <i class="fas fa-trash mr-1"></i>Delete
                 </button>
               ` : `
                 <button class="report-btn text-gray-400 hover:text-yellow-500 transition" data-id="${comment.id}">
-                  <i class="fas fa-flag mr-1"></i>舉報
+                  <i class="fas fa-flag mr-1"></i>Report
                 </button>
               `}
             </div>
@@ -180,13 +180,13 @@ class CommentsSystem {
             <div class="reply-input-container hidden mt-3">
               <textarea
                 class="reply-input w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm resize-none"
-                placeholder="輸入回覆..."
+                placeholder="Write your reply..."
                 rows="2"
                 maxlength="1000"
               ></textarea>
               <div class="flex justify-end space-x-2 mt-2">
-                <button class="cancel-reply-btn px-3 py-1 text-sm bg-gray-600 hover:bg-gray-700 rounded transition">取消</button>
-                <button class="submit-reply-btn px-3 py-1 text-sm bg-orange-500 hover:bg-orange-600 rounded transition" data-parent-id="${comment.id}">發表回覆</button>
+                <button class="cancel-reply-btn px-3 py-1 text-sm bg-gray-600 hover:bg-gray-700 rounded transition">Cancel</button>
+                <button class="submit-reply-btn px-3 py-1 text-sm bg-orange-500 hover:bg-orange-600 rounded transition" data-parent-id="${comment.id}">Post Reply</button>
               </div>
             </div>
             
@@ -238,7 +238,7 @@ class CommentsSystem {
             
             ${isOwner ? `
               <button class="delete-btn text-gray-400 hover:text-red-500 transition" data-id="${reply.id}">
-                <i class="fas fa-trash mr-1"></i>刪除
+                <i class="fas fa-trash mr-1"></i>Delete
               </button>
             ` : ''}
           </div>
@@ -251,7 +251,7 @@ class CommentsSystem {
     return `
       <div class="text-center py-12">
         <i class="fas fa-comments text-6xl text-gray-600 mb-4"></i>
-        <p class="text-gray-400">還沒有評論，成為第一個發表評論的人吧！</p>
+        <p class="text-gray-400">No comments yet, be the first to comment!</p>
       </div>
     `;
   }
@@ -262,9 +262,9 @@ class CommentsSystem {
       container.innerHTML = `
         <div class="glass-effect rounded-2xl p-12 text-center">
           <i class="fas fa-sign-in-alt text-6xl text-orange-500 mb-4"></i>
-          <p class="text-xl text-gray-300 mb-6">登入後即可查看和發表評論</p>
+          <p class="text-xl text-gray-300 mb-6">Login to view and post comments</p>
           <a href="/login?redirect=/coin/${this.coinId}" class="inline-block px-6 py-3 bg-orange-500 hover:bg-orange-600 rounded-lg font-bold transition">
-            立即登入
+            Login Now
           </a>
         </div>
       `;
@@ -279,7 +279,7 @@ class CommentsSystem {
           <i class="fas fa-exclamation-triangle text-6xl text-red-500 mb-4"></i>
           <p class="text-xl text-gray-400">${message}</p>
           <button onclick="location.reload()" class="mt-4 px-6 py-2 bg-orange-500 hover:bg-orange-600 rounded-lg font-bold transition">
-            重新載入
+            Reload
           </button>
         </div>
       `;
@@ -370,7 +370,7 @@ class CommentsSystem {
     const content = input.value.trim();
     
     if (!content) {
-      alert('請輸入評論內容');
+      alert('Please enter comment content');
       return;
     }
     
@@ -387,17 +387,17 @@ class CommentsSystem {
         input.value = '';
         document.getElementById('char-count').textContent = '0 / 1000';
         await this.loadComments();
-        this.showSuccess('評論發表成功！');
+        this.showSuccess('Comment posted successfully!');
       }
     } catch (error) {
       console.error('Submit comment error:', error);
-      alert('發表失敗：' + (error.response?.data?.message || error.message));
+      alert('Post failed: ' + (error.response?.data?.message || error.message));
     }
   }
   
   async submitReply(parentId, content, container) {
     if (!content.trim()) {
-      alert('請輸入回覆內容');
+      alert('Please enter reply content');
       return;
     }
     
@@ -415,11 +415,11 @@ class CommentsSystem {
         container.querySelector('.reply-input').value = '';
         container.classList.add('hidden');
         await this.loadComments();
-        this.showSuccess('回覆發表成功！');
+        this.showSuccess('Reply posted successfully!');
       }
     } catch (error) {
       console.error('Submit reply error:', error);
-      alert('回覆失敗：' + (error.response?.data?.message || error.message));
+      alert('Reply failed: ' + (error.response?.data?.message || error.message));
     }
   }
   
@@ -449,7 +449,7 @@ class CommentsSystem {
       }
     } catch (error) {
       console.error('Toggle like error:', error);
-      alert('操作失敗');
+      alert('Operation failed');
     }
   }
   
@@ -464,7 +464,7 @@ class CommentsSystem {
     contentElement.innerHTML = `
       <textarea class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm resize-none" rows="3" maxlength="1000">${originalContent}</textarea>
       <div class="flex justify-end space-x-2 mt-2">
-        <button class="cancel-edit-btn px-3 py-1 text-sm bg-gray-600 hover:bg-gray-700 rounded transition">取消</button>
+        <button class="cancel-edit-btn px-3 py-1 text-sm bg-gray-600 hover:bg-gray-700 rounded transition">Cancel</button>
         <button class="save-edit-btn px-3 py-1 text-sm bg-orange-500 hover:bg-orange-600 rounded transition">保存</button>
       </div>
     `;
@@ -574,3 +574,11 @@ class CommentsSystem {
 
 // Export to window
 window.CommentsSystem = CommentsSystem;
+
+// 🌐 Language switcher support
+if (typeof i18n !== 'undefined') {
+  i18n.onLocaleChange(() => {
+    console.log('🌐 Language changed in Comments, reloading...');
+    window.location.reload();
+  });
+}
