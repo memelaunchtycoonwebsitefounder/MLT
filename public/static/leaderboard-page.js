@@ -112,7 +112,7 @@ const loadRankings = async () => {
     }
   } catch (error) {
     console.error('載入排行榜失敗:', error);
-    showNotification('載入排行榜失敗', 'error');
+    showNotification('Failed to load leaderboard', 'error');
   }
 };
 

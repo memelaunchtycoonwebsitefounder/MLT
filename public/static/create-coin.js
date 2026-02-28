@@ -935,9 +935,16 @@ const showSuccessModal = (coin) => {
   document.getElementById('success-coin-image').src = coin.image_url || coinData.imageUrl;
   document.getElementById('success-coin-name').textContent = coin.name;
   document.getElementById('success-coin-symbol').textContent = `$${coin.symbol}`;
-  document.getElementById('success-market-cap').textContent = Number(coin.market_cap || 0).toFixed(2);
   
-  // Get coin rank (simplified)
+  // Show real initial price
+  const initialPrice = coin.current_price || coin.initial_price || 0.01;
+  document.getElementById('success-initial-price').textContent = `$${Number(initialPrice).toFixed(6)}`;
+  
+  // Show real market cap
+  const marketCap = coin.market_cap || (initialPrice * coin.total_supply);
+  document.getElementById('success-market-cap').textContent = `$${Number(marketCap).toFixed(2)}`;
+  
+  // Show rank - NEW for just created coins
   document.getElementById('success-rank').textContent = 'NEW';
   
   modal.classList.remove('hidden');

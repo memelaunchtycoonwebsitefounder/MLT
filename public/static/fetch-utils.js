@@ -189,11 +189,11 @@ const fetchUtils = {
       return error;
     } else if (error.request) {
       // Request made but no response
-      error.message = '網絡錯誤：無法連接到服務器';
+      error.message = 'Network error: Unable to connect to server';
       return error;
     } else {
       // Something else happened
-      error.message = error.message || '請求失敗';
+      error.message = error.message || 'Request failed';
       return error;
     }
   },

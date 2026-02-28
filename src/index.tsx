@@ -3246,7 +3246,7 @@ app.get('/create', (c) => {
                             <div class="flex justify-around text-sm">
                                 <div>
                                     <p class="text-gray-400"><span data-i18n="create.step2.initialPrice">Initial Price</span></p>
-                                    <p class="font-bold">0.01</p>
+                                    <p class="font-bold" id="success-initial-price">--</p>
                                 </div>
                                 <div>
                                     <p class="text-gray-400"><span data-i18n="create.step3.marketCapLabel">Market Cap</span></p>

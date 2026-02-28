@@ -237,7 +237,7 @@ async function loadRecentTransactions() {
     container.innerHTML = transactions.map(tx => {
       const typeClass = tx.type === 'buy' ? 'text-green-400' : 'text-red-400';
       const typeIcon = tx.type === 'buy' ? 'fa-arrow-up' : 'fa-arrow-down';
-      const typeText = tx.type === 'buy' ? '買入' : tx.type === 'sell' ? '賣出' : '創建';
+      const typeText = tx.type === 'buy' ? 'Buy' : tx.type === 'sell' ? 'Sell' : 'Create';
       
       return `
         <div class="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition">

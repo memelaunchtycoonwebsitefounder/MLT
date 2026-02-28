@@ -88,7 +88,7 @@ async function loadPortfolio() {
     
   } catch (error) {
     console.error('Portfolio: Failed to load data:', error);
-    showError('無法加載投資組合數據');
+    showError('Failed to load portfolio data');
   }
 }
 
