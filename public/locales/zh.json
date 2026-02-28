@@ -712,7 +712,8 @@
       "marketCapLabel": "市值",
       "rankingLabel": "排名",
       "insufficient": "不足！至少需要",
-      "qualityBoost": "高質量分數可能提升 Initial Hype 值"
+      "qualityBoost": "高質量分數可能提升 Initial Hype 值",
+      "noDescription": "沒有描述"
     },
     "actions": {
       "prevStep": "上一步",
@@ -720,7 +721,9 @@
       "launch": "發射幣種",
       "backToDashboard": "返回儀表板",
       "launchCoin": "發射我的 Meme 幣！",
-      "creating": "創建幣種..."
+      "creating": "創建幣種...",
+      "launching": "發射中...",
+      "uploadingImage": "上傳圖片..."
     },
     "success": {
       "title": "發射成功！",
@@ -731,10 +734,20 @@
       "createAnother": "創建另一枚幣",
       "shareToTwitter": "分享到 Twitter",
       "afterLaunch": "發射後，您的幣將出現在市場上供其他玩家交易",
-      "successfullyLaunched": "幣已成功發射到市場！"
+      "successfullyLaunched": "幣已成功發射到市場！",
+      "twitterShare": "🚀 我剛在 MemeLaunch Tycoon 上發射了 {name} (${symbol})！加入我們的 meme 幣革命！"
     },
     "errors": {
-      "insufficientBalance": "餘額不足！您需要至少 2,100 MLT 才能創建幣種"
+      "insufficientBalance": "餘額不足！您需要至少 2,100 MLT 才能創建幣種",
+      "insufficientMLT": "MLT 餘額不足",
+      "fileSizeLimit": "文件大小不能超過 5MB",
+      "fileTypeError": "請選擇圖片文件 (JPG, PNG, GIF)",
+      "symbolTaken": "已被使用",
+      "symbolAvailable": "可用",
+      "nameLength": "名稱必須是 3-50 個字符",
+      "symbolLength": "符號必須是 2-10 個字符",
+      "prePurchaseInsufficient": "預購數量不足！您輸入 {tokens} 個幣，但最低需要 {minTokens} 個幣（價值 100 MLT）",
+      "launchFailed": "發射失敗，請稍後再試"
     }
   },
   "common": {

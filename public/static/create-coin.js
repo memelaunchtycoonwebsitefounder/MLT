@@ -113,7 +113,7 @@ const updateUserUI = (user) => {
     if (step2NextBtn) {
       step2NextBtn.disabled = true;
       step2NextBtn.classList.add('opacity-50', 'cursor-not-allowed');
-      step2NextBtn.title = 'MLT 餘額不足';
+      step2NextBtn.title = typeof i18n !== 'undefined' ? i18n.t('create.errors.insufficientMLT', 'Insufficient MLT balance') : 'Insufficient MLT balance';
     }
   } else {
     if (warningEl) warningEl.classList.add('hidden');
@@ -205,13 +205,13 @@ const setupImageUpload = () => {
   const handleImageFile = (file) => {
     // Validate file size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
-      alert('文件大小不能超過 5MB');
+      alert(typeof i18n !== 'undefined' ? i18n.t('create.errors.fileSizeLimit', 'File size cannot exceed 5MB') : 'File size cannot exceed 5MB');
       return;
     }
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert('請選擇圖片文件 (JPG, PNG, GIF)');
+      alert(typeof i18n !== 'undefined' ? i18n.t('create.errors.fileTypeError', 'Please select an image file (JPG, PNG, GIF)') : 'Please select an image file (JPG, PNG, GIF)');
       return;
     }
 
@@ -316,9 +316,9 @@ const setupStep2 = () => {
           });
           
           if (response.data.success && response.data.data.length > 0) {
-            symbolCheck.innerHTML = '<span class="text-red-400"><i class="fas fa-times-circle mr-1"></i>已被使用</span>';
+            symbolCheck.innerHTML = '<span class="text-red-400"><i class="fas fa-times-circle mr-1"></i>' + (typeof i18n !== 'undefined' ? i18n.t('create.errors.symbolTaken', 'Already taken') : 'Already taken') + '</span>';
           } else {
-            symbolCheck.innerHTML = '<span class="text-green-400"><i class="fas fa-check-circle mr-1"></i>可用</span>';
+            symbolCheck.innerHTML = '<span class="text-green-400"><i class="fas fa-check-circle mr-1"></i>' + (typeof i18n !== 'undefined' ? i18n.t('create.errors.symbolAvailable', 'Available') : 'Available') + '</span>';
           }
         } catch (error) {
           console.error('Symbol check error:', error);
@@ -347,14 +347,14 @@ const setupStep2 = () => {
     
     // Validate name
     if (nameInput.value.length < 3 || nameInput.value.length > 50) {
-      document.getElementById('coin-name-error').textContent = '名稱必須是 3-50 個字符';
+      document.getElementById('coin-name-error').textContent = typeof i18n !== 'undefined' ? i18n.t('create.errors.nameLength', 'Name must be 3-50 characters') : 'Name must be 3-50 characters';
       document.getElementById('coin-name-error').classList.remove('hidden');
       valid = false;
     }
     
     // Validate symbol
     if (symbolInput.value.length < 2 || symbolInput.value.length > 10) {
-      document.getElementById('coin-symbol-error').textContent = '符號必須是 2-10 個字符';
+      document.getElementById('coin-symbol-error').textContent = typeof i18n !== 'undefined' ? i18n.t('create.errors.symbolLength', 'Symbol must be 2-10 characters') : 'Symbol must be 2-10 characters';
       document.getElementById('coin-symbol-error').classList.remove('hidden');
       valid = false;
     }
@@ -509,7 +509,7 @@ const updateCostSummary = () => {
       if (remaining < 0) {
         step2NextBtn.disabled = true;
         step2NextBtn.classList.add('opacity-50', 'cursor-not-allowed');
-        step2NextBtn.title = 'MLT 餘額不足';
+        step2NextBtn.title = typeof i18n !== 'undefined' ? i18n.t('create.errors.insufficientMLT', 'Insufficient MLT balance') : 'Insufficient MLT balance';
       } else {
         step2NextBtn.disabled = false;
         step2NextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -585,7 +585,7 @@ const updatePreview = () => {
   document.getElementById('preview-coin-symbol').textContent = `$${coinData.symbol}`;
   document.getElementById('preview-supply').textContent = coinData.supply.toLocaleString();
   document.getElementById('preview-creator').textContent = userData?.username || '--';
-  document.getElementById('preview-description').textContent = coinData.description || '沒有描述';
+  document.getElementById('preview-description').textContent = coinData.description || (typeof i18n !== 'undefined' ? i18n.t('create.step3.noDescription', 'No description') : 'No description');
   
   // Calculate AI quality score
   const qualityScore = calculateQualityScore();
@@ -620,7 +620,7 @@ const updatePreview = () => {
   
   // Update total cost display
   const totalCostEl = document.querySelector('.text-orange-500');
-  if (totalCostEl && totalCostEl.textContent.includes('金幣')) {
+  if (totalCostEl && (totalCostEl.textContent.includes('金幣') || totalCostEl.textContent.includes('Coins'))) {
     totalCostEl.textContent = totalCost.toFixed(2) + ' MLT';
   }
   
@@ -651,9 +651,9 @@ const calculateQualityScore = () => {
   // Name attractiveness
   const name = coinData.name.toLowerCase();
   if (name.includes('moon')) nameScore += 10;
-  if (name.includes('doge') || name.includes('狗')) nameScore += 10;
-  if (name.includes('rocket') || name.includes('火箭')) nameScore += 10;
-  if (name.includes('diamond') || name.includes('鑽石')) nameScore += 10;
+  if (name.includes('doge')) nameScore += 10;
+  if (name.includes('rocket')) nameScore += 10;
+  if (name.includes('diamond')) nameScore += 10;
   if (coinData.name.length >= 10) nameScore += 10;
   nameScore += Math.floor(Math.random() * 20);
   
@@ -721,7 +721,10 @@ const launchCoin = async () => {
     });
     
     if (safePrePurchaseTokens < minTokens) {
-      launchError.textContent = `預購數量不足！您輸入 ${safePrePurchaseTokens.toLocaleString()} 個幣，但最低需要 ${minTokens.toLocaleString()} 個幣（價值 100 MLT）`;
+      const errorMsg = typeof i18n !== 'undefined' 
+        ? i18n.t('create.errors.prePurchaseInsufficient', `Pre-purchase amount insufficient! You entered ${safePrePurchaseTokens.toLocaleString()} tokens, but minimum is ${minTokens.toLocaleString()} tokens (worth 100 MLT)`)
+        : `Pre-purchase amount insufficient! You entered ${safePrePurchaseTokens.toLocaleString()} tokens, but minimum is ${minTokens.toLocaleString()} tokens (worth 100 MLT)`;
+      launchError.textContent = errorMsg;
       launchError.classList.remove('hidden');
       return;
     }
@@ -739,7 +742,7 @@ const launchCoin = async () => {
   
   launchError.classList.add('hidden');
   launchBtn.disabled = true;
-  launchText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>發射中...';
+  launchText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>' + (typeof i18n !== 'undefined' ? i18n.t('create.actions.launching', 'Launching...') : 'Launching...');
   
   try {
     const token = localStorage.getItem('auth_token');
@@ -749,7 +752,7 @@ const launchCoin = async () => {
     let imageUrl = coinData.imageUrl;
     if (coinData.image && selectedImage === 'upload') {
       try {
-        launchText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>上傳圖片...';
+        launchText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>' + (typeof i18n !== 'undefined' ? i18n.t('create.actions.uploadingImage', 'Uploading image...') : 'Uploading image...');
         
         // Convert image file to base64 (already done in imagePreview)
         const uploadResponse = await fetchUtils.post('/api/upload/image', {
@@ -908,7 +911,7 @@ const launchCoin = async () => {
     console.error('Launch error:', error);
     console.error('Error response:', error.response?.data);
     
-    let errorMsg = '發射失敗，請稍後再試';
+    let errorMsg = typeof i18n !== 'undefined' ? i18n.t('create.errors.launchFailed', 'Launch failed, please try again later') : 'Launch failed, please try again later';
     if (error.response?.data?.error) {
       errorMsg = error.response.data.error;
     } else if (error.response?.data?.message) {
@@ -921,7 +924,7 @@ const launchCoin = async () => {
     launchError.classList.remove('hidden');
   } finally {
     launchBtn.disabled = false;
-    launchText.innerHTML = '<i class="fas fa-rocket mr-2"></i>發射我的 Meme 幣！';
+    launchText.innerHTML = '<i class="fas fa-rocket mr-2"></i>' + (typeof i18n !== 'undefined' ? i18n.t('create.actions.launchCoin', 'Launch My Meme Coin!') : 'Launch My Meme Coin!');
   }
 };
 
@@ -946,7 +949,10 @@ const showSuccessModal = (coin) => {
   
   // Share to Twitter
   document.getElementById('share-twitter-btn').onclick = () => {
-    const text = encodeURIComponent(`🚀 我剛在 MemeLaunch Tycoon 上發射了 ${coin.name} ($${coin.symbol})！加入我們的 meme 幣革命！`);
+    const shareText = typeof i18n !== 'undefined' 
+      ? i18n.t('create.success.twitterShare', `🚀 I just launched ${coin.name} ($${coin.symbol}) on MemeLaunch Tycoon! Join our meme coin revolution!`)
+      : `🚀 I just launched ${coin.name} ($${coin.symbol}) on MemeLaunch Tycoon! Join our meme coin revolution!`;
+    const text = encodeURIComponent(shareText);
     const url = encodeURIComponent(`${window.location.origin}/coin/${coin.id}`);
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
   };

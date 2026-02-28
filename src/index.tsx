@@ -2392,7 +2392,7 @@ app.get('/market', (c) => {
             <div class="mb-6">
                 <a href="/dashboard" class="inline-flex items-center px-4 py-2 rounded-lg glass-effect hover:bg-white/10 transition">
                     <i class="fas fa-arrow-left mr-2"></i>
-                    返回儀表板
+                    <span data-i18n="market.backToDashboard">Back to Dashboard</span>
                 </a>
             </div>
             

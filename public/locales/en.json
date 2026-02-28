@@ -712,7 +712,8 @@
       "marketCapLabel": "Market Cap",
       "rankingLabel": "Ranking",
       "insufficient": "insufficient! At least",
-      "qualityBoost": "High quality score may boost Initial Hype value"
+      "qualityBoost": "High quality score may boost Initial Hype value",
+      "noDescription": "No description"
     },
     "actions": {
       "prevStep": "Previous Step",
@@ -720,7 +721,9 @@
       "launch": "Launch Coin",
       "backToDashboard": "Back to Dashboard",
       "launchCoin": "Launch My Meme Coin!",
-      "creating": "Creating Coin..."
+      "creating": "Creating Coin...",
+      "launching": "Launching...",
+      "uploadingImage": "Uploading image..."
     },
     "success": {
       "title": "Launch Success!",
@@ -731,10 +734,20 @@
       "createAnother": "Create Another Coin",
       "shareToTwitter": "Share to Twitter",
       "afterLaunch": "After launch, your coin will appear on the market for other players to trade",
-      "successfullyLaunched": "coin has been successfully launched to market!"
+      "successfullyLaunched": "coin has been successfully launched to market!",
+      "twitterShare": "🚀 I just launched {name} (${symbol}) on MemeLaunch Tycoon! Join our meme coin revolution!"
     },
     "errors": {
-      "insufficientBalance": "Insufficient balance! You need at least 2,100 MLT to create a coin"
+      "insufficientBalance": "Insufficient balance! You need at least 2,100 MLT to create a coin",
+      "insufficientMLT": "Insufficient MLT balance",
+      "fileSizeLimit": "File size cannot exceed 5MB",
+      "fileTypeError": "Please select an image file (JPG, PNG, GIF)",
+      "symbolTaken": "Already taken",
+      "symbolAvailable": "Available",
+      "nameLength": "Name must be 3-50 characters",
+      "symbolLength": "Symbol must be 2-10 characters",
+      "prePurchaseInsufficient": "Pre-purchase amount insufficient! You entered {tokens} tokens, but minimum is {minTokens} tokens (worth 100 MLT)",
+      "launchFailed": "Launch failed, please try again later"
     }
   },
   "common": {
