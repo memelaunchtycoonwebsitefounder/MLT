@@ -719,7 +719,8 @@
       "nextStep": "下一步",
       "launch": "發射幣種",
       "backToDashboard": "返回儀表板",
-      "launchCoin": "發射我的 Meme 幣！"
+      "launchCoin": "發射我的 Meme 幣！",
+      "creating": "創建幣種..."
     },
     "success": {
       "title": "發射成功！",
@@ -731,6 +732,9 @@
       "shareToTwitter": "分享到 Twitter",
       "afterLaunch": "發射後，您的幣將出現在市場上供其他玩家交易",
       "successfullyLaunched": "幣已成功發射到市場！"
+    },
+    "errors": {
+      "insufficientBalance": "餘額不足！您需要至少 2,100 MLT 才能創建幣種"
     }
   },
   "common": {

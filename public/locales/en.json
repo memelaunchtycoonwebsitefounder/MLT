@@ -719,7 +719,8 @@
       "nextStep": "Next Step",
       "launch": "Launch Coin",
       "backToDashboard": "Back to Dashboard",
-      "launchCoin": "Launch My Meme Coin!"
+      "launchCoin": "Launch My Meme Coin!",
+      "creating": "Creating Coin..."
     },
     "success": {
       "title": "Launch Success!",
@@ -731,6 +732,9 @@
       "shareToTwitter": "Share to Twitter",
       "afterLaunch": "After launch, your coin will appear on the market for other players to trade",
       "successfullyLaunched": "coin has been successfully launched to market!"
+    },
+    "errors": {
+      "insufficientBalance": "Insufficient balance! You need at least 2,100 MLT to create a coin"
     }
   },
   "common": {

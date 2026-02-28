@@ -100,7 +100,8 @@ const updateUserUI = (user) => {
   const remainingBalance = (user.mlt_balance || 0) - 1800;
   const remainingEl = document.getElementById('create-remaining-balance');
   if (remainingEl) {
-    remainingEl.textContent = `創幣後剩餘: ${Math.floor(remainingBalance).toLocaleString()} MLT`;
+    const labelText = typeof i18n !== 'undefined' ? i18n.t('create.step3.afterCreation') : 'Remaining After Creation';
+    remainingEl.textContent = `${labelText}: ${Math.floor(remainingBalance).toLocaleString()} MLT`;
   }
   
   // Check if balance is sufficient
@@ -728,7 +729,10 @@ const launchCoin = async () => {
   
   // Check balance
   if (userData.virtual_balance < 100) {
-    launchError.textContent = '餘額不足！您需要至少 2,100 MLT 才能創建幣種';
+    const errorText = typeof i18n !== 'undefined' 
+      ? i18n.t('create.errors.insufficientBalance', 'Insufficient balance! You need at least 2,100 MLT to create a coin')
+      : 'Insufficient balance! You need at least 2,100 MLT to create a coin';
+    launchError.textContent = errorText;
     launchError.classList.remove('hidden');
     return;
   }
@@ -773,7 +777,10 @@ const launchCoin = async () => {
     }
     
     // Prepare coin creation data
-    launchText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>創建幣種...';
+    const creatingText = typeof i18n !== 'undefined' 
+      ? i18n.t('create.actions.creating', 'Creating Coin...')
+      : 'Creating Coin...';
+    launchText.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>${creatingText}`;
     
     // Helper: Safe number conversion (remove commas, trim, convert)
     const toNumber = (v) => {

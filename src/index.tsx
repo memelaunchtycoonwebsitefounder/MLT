@@ -2281,7 +2281,7 @@ app.get('/market', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>市場 - MemeLaunch Tycoon</title>
+        <title data-i18n="market.title">Market</title> - MemeLaunch Tycoon
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
@@ -2359,18 +2359,18 @@ app.get('/market', (c) => {
                         <span class="text-xl font-bold">MemeLaunch</span>
                     </a>
                     <div class="hidden md:flex items-center space-x-6">
-                        <a href="/dashboard" class="hover:text-orange-500 transition">儀表板</a>
-                        <a href="/market" class="text-orange-500 font-bold">市場</a>
-                        <a href="/portfolio" class="hover:text-orange-500 transition">投資組合</a>
-                        <a href="/achievements" class="hover:text-orange-500 transition">成就</a>
-                        <a href="/leaderboard" class="hover:text-orange-500 transition">排行榜</a>
-                        <a href="/social" class="hover:text-orange-500 transition">社交</a>
+                        <a href="/dashboard" class="hover:text-orange-500 transition" data-i18n="nav.dashboard">Dashboard</a>
+                        <a href="/market" class="text-orange-500 font-bold" data-i18n="nav.market">Market</a>
+                        <a href="/portfolio" class="hover:text-orange-500 transition" data-i18n="nav.portfolio">Portfolio</a>
+                        <a href="/achievements" class="hover:text-orange-500 transition" data-i18n="nav.achievements">Achievements</a>
+                        <a href="/leaderboard" class="hover:text-orange-500 transition" data-i18n="nav.leaderboard">Leaderboard</a>
+                        <a href="/social" class="hover:text-orange-500 transition" data-i18n="nav.social">Social</a>
                     </div>
                     <div class="flex items-center space-x-4">
                         <!-- Virtual Balance (Gold Coins) -->
                         <div class="glass-effect px-4 py-2 rounded-lg">
                             <i class="fas fa-coins text-yellow-500 mr-2"></i>
-                            <span id="user-balance">--</span> 金幣
+                            <span id="user-balance">--</span> <span data-i18n="common.coins">Coins</span>
                         </div>
                         <!-- MLT Balance -->
                         <div class="glass-effect px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20">
@@ -2399,9 +2399,9 @@ app.get('/market', (c) => {
             <!-- Header -->
             <div class="mb-8">
                 <h1 class="text-4xl font-bold mb-2">
-                    <i class="fas fa-store mr-3"></i>Meme 幣市場
+                    <i class="fas fa-store mr-3"></i>Meme <span data-i18n="market.marketTitle">Coin Market</span>
                 </h1>
-                <p class="text-gray-400">探索、交易數千種 Meme 幣</p>
+                <p class="text-gray-400"><span data-i18n="market.subtitle">Explore and trade thousands of Meme coins</span></p>
             </div>
 
             <!-- Search and Filters -->
@@ -2410,12 +2410,12 @@ app.get('/market', (c) => {
                     <!-- Search Bar -->
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium mb-2">
-                            <i class="fas fa-search mr-2"></i>搜索
+                            <i class="fas fa-search mr-2"></i><span data-i18n="market.search">Search</span>
                         </label>
                         <input
                             type="text"
                             id="search-input"
-                            placeholder="搜索幣種名稱或符號..."
+                            placeholder="Search coin name or symbol..." data-i18n-placeholder="market.searchPlaceholder"
                             class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
                         />
                     </div>
@@ -2423,40 +2423,40 @@ app.get('/market', (c) => {
                     <!-- Sort By -->
                     <div>
                         <label class="block text-sm font-medium mb-2">
-                            <i class="fas fa-sort mr-2"></i>排序
+                            <i class="fas fa-sort mr-2"></i><span data-i18n="market.sort">Sort</span>
                         </label>
                         <select
                             id="sort-select"
                             class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
                         >
-                            <option value="created_at_desc">最新創建</option>
-                            <option value="created_at_asc">最早創建</option>
-                            <option value="bonding_curve_progress_desc">🚀 進度最高</option>
-                            <option value="bonding_curve_progress_asc">🐣 進度最低</option>
-                            <option value="real_trade_count_desc">👤 真實交易最多</option>
-                            <option value="current_price_desc">價格最高</option>
-                            <option value="current_price_asc">價格最低</option>
-                            <option value="market_cap_desc">市值最高</option>
-                            <option value="market_cap_asc">市值最低</option>
-                            <option value="hype_score_desc">最熱門</option>
-                            <option value="transaction_count_desc">交易最多</option>
+                            <option value="created_at_desc" data-i18n="market.sortNewest">Newest Created</option>
+                            <option value="created_at_asc" data-i18n="market.sortOldest">Oldest Created</option>
+                            <option value="bonding_curve_progress_desc">🚀 <span data-i18n="market.sortProgressHigh">Progress Highest</span></option>
+                            <option value="bonding_curve_progress_asc">🐣 <span data-i18n="market.sortProgressLow">Progress Lowest</span></option>
+                            <option value="real_trade_count_desc">👤 <span data-i18n="market.sortRealTrades">Most Real Trades</span></option>
+                            <option value="current_price_desc" data-i18n="market.sortPriceHigh">Price Highest</option>
+                            <option value="current_price_asc" data-i18n="market.sortPriceLow">Price Lowest</option>
+                            <option value="market_cap_desc" data-i18n="market.sortMarketCapHigh">Market Cap Highest</option>
+                            <option value="market_cap_asc" data-i18n="market.sortMarketCapLow">Market Cap Lowest</option>
+                            <option value="hype_score_desc" data-i18n="market.sortHottest">Hottest</option>
+                            <option value="transaction_count_desc" data-i18n="market.sortMostTrades">Most Trades</option>
                         </select>
                     </div>
 
                     <!-- Destiny Filter -->
                     <div>
                         <label class="block text-sm font-medium mb-2">
-                            <i class="fas fa-shield-alt mr-2"></i>命運
+                            <i class="fas fa-shield-alt mr-2"></i><span data-i18n="market.destiny">Destiny</span>
                         </label>
                         <select
                             id="destiny-filter"
                             class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
                         >
-                            <option value="">全部</option>
-                            <option value="SURVIVAL">🛡️ 生存</option>
-                            <option value="EARLY_DEATH">💀 高風險</option>
-                            <option value="LATE_DEATH">⏳ 中風險</option>
-                            <option value="GRADUATION">🎓 畢業</option>
+                            <option value="" data-i18n="market.filterAll">All</option>
+                            <option value="SURVIVAL">🛡️ <span data-i18n="market.filterSurvival">Survival</span></option>
+                            <option value="EARLY_DEATH">💀 <span data-i18n="market.filterHighRisk">High Risk</span></option>
+                            <option value="LATE_DEATH">⏳ <span data-i18n="market.filterMediumRisk">Medium Risk</span></option>
+                            <option value="GRADUATION">🎓 <span data-i18n="market.filterGraduated">Graduated</span></option>
                             <option value="RUG_PULL">⚠️ Rug</option>
                         </select>
                     </div>
@@ -2464,7 +2464,7 @@ app.get('/market', (c) => {
                     <!-- Filter Button -->
                     <div class="flex items-end">
                         <button id="apply-filters-btn" class="w-full px-4 py-2 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-lg font-bold transition">
-                            <i class="fas fa-filter mr-2"></i>應用篩選
+                            <i class="fas fa-filter mr-2"></i><span data-i18n="market.applyFilter">Apply Filter</span>
                         </button>
                     </div>
                 </div>
@@ -2475,22 +2475,22 @@ app.get('/market', (c) => {
                 <div class="glass-effect rounded-xl p-4 text-center">
                     <i class="fas fa-coins text-3xl text-yellow-500 mb-2"></i>
                     <p class="text-2xl font-bold" id="total-coins">--</p>
-                    <p class="text-sm text-gray-400">總幣種數</p>
+                    <p class="text-sm text-gray-400"><span data-i18n="market.totalCoins">Total Coins</span></p>
                 </div>
                 <div class="glass-effect rounded-xl p-4 text-center">
                     <i class="fas fa-chart-line text-3xl text-green-500 mb-2"></i>
                     <p class="text-2xl font-bold" id="total-volume">--</p>
-                    <p class="text-sm text-gray-400">24h 交易量</p>
+                    <p class="text-sm text-gray-400"><span data-i18n="market.volume24h">24h Volume</span></p>
                 </div>
                 <div class="glass-effect rounded-xl p-4 text-center">
                     <i class="fas fa-users text-3xl text-blue-500 mb-2"></i>
                     <p class="text-2xl font-bold" id="total-holders">--</p>
-                    <p class="text-sm text-gray-400">持有人數</p>
+                    <p class="text-sm text-gray-400"><span data-i18n="market.holders">Holders</span></p>
                 </div>
                 <div class="glass-effect rounded-xl p-4 text-center">
                     <i class="fas fa-fire text-3xl text-orange-500 mb-2"></i>
                     <p class="text-2xl font-bold" id="trending-count">--</p>
-                    <p class="text-sm text-gray-400">熱門幣種</p>
+                    <p class="text-sm text-gray-400"><span data-i18n="market.trending">Trending</span></p>
                 </div>
             </div>
 
@@ -2500,7 +2500,7 @@ app.get('/market', (c) => {
                     <!-- Loading State -->
                     <div class="col-span-full text-center py-12">
                         <i class="fas fa-spinner fa-spin text-5xl text-orange-500 mb-4"></i>
-                        <p class="text-xl text-gray-400">載入中...</p>
+                        <p class="text-xl text-gray-400"><span data-i18n="market.loading">Loading...</span></p>
                     </div>
                 </div>
             </div>
@@ -2509,17 +2509,17 @@ app.get('/market', (c) => {
             <div class="mt-8 flex justify-center">
                 <div class="glass-effect rounded-xl p-4 inline-flex items-center space-x-4">
                     <button id="prev-page-btn" class="px-4 py-2 rounded-lg hover:bg-white/10 transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                        <i class="fas fa-chevron-left mr-2"></i>上一頁
+                        <i class="fas fa-chevron-left mr-2"></i><span data-i18n="market.prevPage">Previous</span>
                     </button>
                     <div class="flex items-center space-x-2">
-                        <span class="text-sm text-gray-400">第</span>
+                        <span class="text-sm text-gray-400"><span data-i18n="market.page">Page</span></span>
                         <span id="current-page" class="font-bold">1</span>
                         <span class="text-sm text-gray-400">/ </span>
                         <span id="total-pages" class="font-bold">1</span>
-                        <span class="text-sm text-gray-400">頁</span>
+                        <span class="text-sm text-gray-400"></span>
                     </div>
                     <button id="next-page-btn" class="px-4 py-2 rounded-lg hover:bg-white/10 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                        下一頁<i class="fas fa-chevron-right ml-2"></i>
+                        <span data-i18n="market.nextPage">Next</span><i class="fas fa-chevron-right ml-2"></i>
                     </button>
                 </div>
             </div>
@@ -2527,8 +2527,8 @@ app.get('/market', (c) => {
             <!-- Empty State -->
             <div id="empty-state" class="hidden text-center py-20">
                 <i class="fas fa-search text-6xl text-gray-600 mb-4"></i>
-                <p class="text-xl text-gray-400 mb-2">找不到符合條件的幣種</p>
-                <p class="text-gray-500">試試調整搜索或篩選條件</p>
+                <p class="text-xl text-gray-400 mb-2"><span data-i18n="market.noResults">No coins found matching criteria</span></p>
+                <p class="text-gray-500"><span data-i18n="market.tryAdjust">Try adjusting search or filter criteria</span></p>
             </div>
         </div>
 
@@ -2536,6 +2536,8 @@ app.get('/market', (c) => {
         
         
         <script src="/static/fetch-utils.js?v=20260221151619"></script>
+        <script src="/static/i18n.js?v=20260221151619"></script>
+        <script src="/static/language-switcher.js?v=20260221151619"></script>
         <script src="/static/websocket-service.js?v=20260221151619"></script>
         <script src="/static/realtime-service.js?v=20260221151619"></script>
         <script src="/static/market.js?v=20260221151619"></script>
@@ -2905,7 +2907,7 @@ app.get('/create', (c) => {
                         <!-- MLT Investment Slider -->
                         <div class="mb-6">
                             <label class="block text-white mb-3">
-                                <i class="fas fa-coins mr-2 text-orange-500"></i><span data-i18n="create.step2.initial">Initial</span> MLT 投資
+                                <i class="fas fa-coins mr-2 text-orange-500"></i><span data-i18n="create.step2.initial">Initial</span> MLT <span data-i18n="create.step2.investment">Investment</span>
                                 <span class="text-gray-400 text-sm ml-2">(<span data-i18n="create.step2.determines">Determines</span> <span data-i18n="create.step2.initialPrice">Initial Price</span>)</span>
                             </label>
                             <div class="flex items-center space-x-4">
