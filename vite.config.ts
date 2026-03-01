@@ -16,7 +16,7 @@ export default defineConfig({
           routes.exclude = routes.exclude || []
           
           // Add static files to exclusions
-          const staticFiles = ['/index.html', '/sw.js', '/manifest.json', '/locales/*', '/favicon.ico', '/favicon.svg']
+          const staticFiles = ['/index.html', '/sw.js', '/manifest.json', '/locales/*', '/favicon.ico', '/favicon.svg', '/legal.html']
           staticFiles.forEach(file => {
             if (!routes.exclude.includes(file)) {
               routes.exclude.push(file)
