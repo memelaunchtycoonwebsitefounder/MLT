@@ -196,30 +196,30 @@ const renderCoins = (coins) => {
         <div class="flex items-center justify-between text-xs mb-3">
           <div class="flex items-center space-x-2">
             <i class="fas fa-robot text-purple-400"></i>
-            <span class="text-gray-400">AI: ${aiTrades}</span>
+            <span class="text-gray-400">${typeof i18n !== 'undefined' ? i18n.t('market.ai') : 'AI'}: ${aiTrades}</span>
           </div>
           <div class="flex items-center space-x-2">
             <i class="fas fa-user text-green-400"></i>
-            <span class="text-gray-400">Real: ${realTrades}</span>
+            <span class="text-gray-400">${typeof i18n !== 'undefined' ? i18n.t('market.real') : 'Real'}: ${realTrades}</span>
           </div>
         </div>
 
         <!-- Coin Stats -->
         <div class="grid grid-cols-2 gap-3 text-sm mb-3">
           <div>
-            <p class="text-gray-400">Market Cap</p>
+            <p class="text-gray-400">${typeof i18n !== 'undefined' ? i18n.t('market.marketCap') : 'Market Cap'}</p>
             <p class="font-bold">${Number(coin.market_cap || 0).toLocaleString()}</p>
           </div>
           <div>
-            <p class="text-gray-400">Supply</p>
+            <p class="text-gray-400">${typeof i18n !== 'undefined' ? i18n.t('market.supply') : 'Supply'}</p>
             <p class="font-bold">${Number(coin.total_supply || 0).toLocaleString()}</p>
           </div>
           <div>
-            <p class="text-gray-400">Holders</p>
+            <p class="text-gray-400">${typeof i18n !== 'undefined' ? i18n.t('market.holders') : 'Holders'}</p>
             <p class="font-bold">${Number(coin.holders_count || 0).toLocaleString()}</p>
           </div>
           <div>
-            <p class="text-gray-400">Trades</p>
+            <p class="text-gray-400">${typeof i18n !== 'undefined' ? i18n.t('market.trades') : 'Trades'}</p>
             <p class="font-bold">${Number(coin.transaction_count || 0).toLocaleString()}</p>
           </div>
         </div>
@@ -228,7 +228,7 @@ const renderCoins = (coins) => {
         <div class="mb-3">
           <div class="flex items-center justify-between text-sm mb-1">
             <span class="text-gray-400">
-              <i class="fas fa-fire text-orange-500 mr-1"></i>Hype Score
+              <i class="fas fa-fire text-orange-500 mr-1"></i>${typeof i18n !== 'undefined' ? i18n.t('market.hypeScore') : 'Hype Score'}
             </span>
             <span class="font-bold">${coin.hype_score || 0}/200</span>
           </div>
@@ -241,7 +241,7 @@ const renderCoins = (coins) => {
         <div class="flex items-center justify-between text-sm text-gray-400">
           <a href="/profile/${coin.creator_id}" class="flex items-center hover:text-orange-500 transition" onclick="event.stopPropagation()">
             <i class="fas fa-user mr-1"></i>
-            Creator: ${coin.creator_username || 'Unknown'}
+            ${typeof i18n !== 'undefined' ? i18n.t('market.creator') : 'Creator'}: ${coin.creator_username || 'Unknown'}
           </a>
           <span>
             <i class="fas fa-clock mr-1"></i>

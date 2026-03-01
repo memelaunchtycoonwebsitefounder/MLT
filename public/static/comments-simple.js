@@ -71,11 +71,18 @@ class CommentsSystem {
       return;
     }
     
+    // Get i18n strings first to avoid template literal issues
+    const commentsTitle = typeof i18n !== "undefined" ? i18n.t("coinDetail.comments") : "Comments";
+    const writePlaceholder = typeof i18n !== "undefined" ? i18n.t("coinDetail.writeComment") : "Write your comment...";
+    const postText = typeof i18n !== "undefined" ? i18n.t("coinDetail.post") : "Post";
+    const latestText = typeof i18n !== "undefined" ? i18n.t("coinDetail.latest") : "Latest";
+    const popularText = typeof i18n !== "undefined" ? i18n.t("coinDetail.popular") : "Popular";
+    
     container.innerHTML = `
       <div class="glass-effect rounded-2xl p-6 mt-8">
         <h2 class="text-2xl font-bold mb-6">
           <i class="fas fa-comments mr-2"></i>
-          ${typeof i18n !== "undefined" ? i18n.t("coinDetail.comments") : "Comments"} (${this.comments.length})
+          ${commentsTitle} (${this.comments.length})
         </h2>
         
         <!-- Comment Input -->
@@ -83,7 +90,7 @@ class CommentsSystem {
           <textarea
             id="comment-input"
             class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white resize-none"
-            placeholder=(typeof i18n !== "undefined" ? " + i18n.t("coinDetail.writeComment") + " : "Write your comment...")
+            placeholder="${writePlaceholder}"
             rows="3"
             maxlength="1000"
           ></textarea>
@@ -94,7 +101,7 @@ class CommentsSystem {
               class="px-6 py-2 bg-orange-500 hover:bg-orange-600 rounded-lg font-bold transition"
             >
               <i class="fas fa-paper-plane mr-2"></i>
-              ${typeof i18n !== "undefined" ? i18n.t("coinDetail.post") : "Post"}
+              ${postText}
             </button>
           </div>
         </div>
@@ -102,10 +109,10 @@ class CommentsSystem {
         <!-- Sort Options -->
         <div class="flex space-x-2 mb-4">
           <button class="sort-btn active px-4 py-2 rounded-lg text-sm" data-sort="time">
-            <i class="fas fa-clock mr-1"></i>Latest
+            <i class="fas fa-clock mr-1"></i>${latestText}
           </button>
           <button class="sort-btn px-4 py-2 rounded-lg text-sm" data-sort="hot">
-            <i class="fas fa-fire mr-1"></i>Popular
+            <i class="fas fa-fire mr-1"></i>${popularText}
           </button>
         </div>
         
