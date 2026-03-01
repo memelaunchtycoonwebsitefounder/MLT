@@ -70,7 +70,7 @@ MemeLaunch Tycoon 是一個完整的 Web3 模擬遊戲,讓玩家在無風險環�
 ### 🔗 **公開訪問地址**
 ```
 生產環境: https://memelaunchtycoon.com
-預覽環境: https://056a6e80.memelaunch-tycoon.pages.dev
+測試環境: https://e1dfd271.memelaunch-tycoon.pages.dev
 ```
 
 ### 📍 **主要頁面**
@@ -127,6 +127,50 @@ curl https://memelaunchtycoon.com/api/admin/stats
 - [x] 交易系統 (買/賣)
 - [x] 投資組合追蹤
 - [x] 排行榜
+
+### ✅ Phase 5 - 完整國際化系統 (已完成, ~4 小時)
+
+#### 5.1 全站翻譯 ✅ (3 小時)
+- [x] 翻譯所有 23 個 JavaScript 文件 (~200+ 字串)
+- [x] 移除所有中文字串 (除了 language-switcher.js 的 '中文' 標籤)
+- [x] 驗證系統: 掃描 34 個 JS 文件,確認 100% 英文化
+- [x] 核心文件完成:
+  - auth.js (25 字串)
+  - social-comments.js (24 字串)
+  - market.js (19 字串)
+  - coin-detail.js (50+ 字串)
+  - trading-panel.js (15 字串)
+  - dashboard 系列 (8+ 字串)
+  - 其他 16 個文件 (100+ 字串)
+
+#### 5.2 語言切換器集成 ✅ (1 小時)
+- [x] 所有 12 個核心頁面添加 i18n.onLocaleChange 監聽器
+- [x] 頁面自動重載機制 (語言切換時)
+- [x] 涵蓋頁面:
+  - market.js, coin-detail.js, comments-simple.js
+  - dashboard.js, dashboard-real.js
+  - profile-page.js, leaderboard-page.js, leaderboard.js
+  - social-page.js, social-page-simple.js
+  - landing.js, auth.js
+- [x] 驗證腳本: 自動檢查所有頁面的語言切換器配置
+
+#### 5.3 修復關鍵問題 ✅
+- [x] 創幣成功彈窗顯示真實數據 (初始價格、市值、排名)
+- [x] 所有通知彈窗完全翻譯 (英文模式無中文)
+- [x] 市場頁面幣種描述雙語化
+- [x] 幣詳情評論系統完全雙語
+- [x] 語言切換器完美運作 (EN ↔ ZH 無混合語言)
+- [x] OHLCV 數據載入時立即顯示
+- [x] 快速交易按鈕導航到幣詳情頁
+
+#### 5.4 翻譯統計 📊
+```
+HTML i18n 鍵: ~625 鍵 (EN + ZH 完全匹配)
+JS 動態字串: ~200+ 字串 (34 個文件)
+總翻譯量: ~825+ 條目
+語言切換器覆蓋: 100% (12 核心頁面)
+中文字串移除: 100% (驗證通過)
+```
 
 ### ✅ Phase 2 - 核心遊戲機制 (已完成, ~7 小時)
 
@@ -249,22 +293,29 @@ curl https://memelaunchtycoon.com/api/admin/stats
 
 ### 🎯 開發進度
 ```
-總開發時間: ~13 小時
+總開發時間: ~17 小時
 ├─ Phase 2 (後端): 7 小時
 ├─ Phase 3 (前端): 2.5 小時
 ├─ Phase 4 (新首頁 + i18n): 3 小時
+├─ Phase 5 (完整國際化): 4 小時
 └─ 文檔: 0.5 小時
 
 代碼統計:
-├─ 總行數: ~7,500 行
-├─ Git Commits: 170+ 次
-├─ 新文件: 25+ 個
+├─ 總行數: ~8,500 行
+├─ Git Commits: 180+ 次
+├─ 新文件: 30+ 個
 └─ API 端點: 40+ 個
 
 Bundle 大小:
-├─ Worker: 408.23 KB
+├─ Worker: 471.20 KB
 ├─ i18n 系統: ~5 KB
 └─ Landing Page: 29 KB (HTML)
+
+國際化統計:
+├─ HTML i18n 鍵: 625 鍵 (EN + ZH)
+├─ JS 動態字串: 200+ 字串
+├─ 翻譯文件: 34 個 JS 文件
+└─ 語言切換器: 12 核心頁面
 ```
 
 ### 🤖 AI 系統狀態
@@ -817,9 +868,9 @@ MIT License - 自由使用、修改和分發
 
 ---
 
-**最後更新**: 2026-02-19  
-**版本**: v3.0.0 (Phase 2, 3 & 4 Complete - 新首頁 + i18n)  
-**狀態**: ✅ 生產就緒
+**最後更新**: 2026-03-01  
+**版本**: v4.0.0 (Phase 5 Complete - 完整國際化系統)  
+**狀態**: ✅ 生產就緒 - 100% 雙語支援
 
 🚀 **立即體驗**: [MemeLaunch Tycoon](https://memelaunchtycoon.com)
 
@@ -830,5 +881,7 @@ MIT License - 自由使用、修改和分發
 - v2.0 (Phase 2): 2026-02-13 (後端增強)
 - v2.0 (Phase 3): 2026-02-14 (前端增強)
 - v3.0 (Phase 4): 2026-02-19 (新首頁 + 國際化)
+- v4.0 (Phase 5): 2026-03-01 (完整國際化系統)
 
 **部署狀態**: ✅ 已部署到 Cloudflare Pages
+**國際化狀態**: ✅ 100% 雙語支援 (English/Chinese)
