@@ -1379,132 +1379,120 @@ app.get('/login', (c) => {
 // Forgot Password page
 app.get('/forgot-password', (c) => {
   return c.html(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>忘記密碼 - MemeLaunch Tycoon</title>
-        <script defer src="https://cdn.tailwindcss.com"></script>
-        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
-        <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
-        <style>
-            /* Critical CSS - Load immediately to prevent flash */
-            #page-loader {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 9999;
-                opacity: 1;
-                transition: opacity 0.3s ease-out;
-            }
-            #page-loader.hidden {
-                opacity: 0;
-                pointer-events: none;
-            }
-            .loader-spinner {
-                width: 50px;
-                height: 50px;
-                border: 4px solid rgba(255, 107, 53, 0.2);
-                border-top-color: #FF6B35;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
-            }
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-            /* Hide body content until loader is ready */
-        /* Language Switcher White Text */
-        .language-switcher-container,
-        .language-switcher-container * {
-            color: white !important;
-        }
-        .language-switcher-container .dropdown {
-            background: #2a2a2a;
-            border: 1px solid #3a3a3a;
-        }
-        .language-switcher-container .dropdown-item:hover {
-            background: #3a3a3a;
-        }
-    </style>
-    </head>
-    <body class="gradient-bg text-white min-h-screen">
-        <div class="min-h-screen flex items-center justify-center px-4 py-12">
-            <div class="max-w-md w-full">
-                <!-- Logo -->
-                <div class="text-center mb-8">
-                    <a href="/" class="inline-block">
-                        <h1 class="text-3xl font-bold gradient-text">
-                            <i class="fas fa-rocket"></i> MemeLaunch
-                        </h1>
-                    </a>
-                    <p class="text-gray-400 mt-2">重置您的密碼</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="auth.forgotPassword.pageTitle">Forgot Password - MemeLaunch Tycoon</title>
+    <script defer src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
+</head>
+<body class="gradient-bg text-white min-h-screen">
+    <div id="language-switcher-container"></div>
+    
+    <div class="min-h-screen flex items-center justify-center px-4 py-12">
+        <div class="max-w-md w-full">
+            <!-- Logo -->
+            <div class="text-center mb-8">
+                <a href="/" class="inline-block">
+                    <h1 class="text-3xl font-bold gradient-text">
+                        <i class="fas fa-rocket"></i> MemeLaunch
+                    </h1>
+                </a>
+                <p class="text-gray-400 mt-2" data-i18n="auth.forgotPassword.subtitle">Reset Your Password</p>
+            </div>
+
+            <!-- Reset Form -->
+            <div class="glass-effect rounded-2xl p-8">
+                <div class="text-center mb-6">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-orange-500/20 rounded-full mb-4">
+                        <i class="fas fa-key text-3xl text-orange-500"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold" data-i18n="auth.forgotPassword.title">Forgot Password?</h2>
+                    <p class="text-gray-400 mt-2 text-sm" data-i18n="auth.forgotPassword.description">Don't worry! Enter your email and we'll send you a reset link.</p>
                 </div>
-
-                <!-- Reset Form -->
-                <div class="glass-effect rounded-2xl p-8">
-                    <div class="text-center mb-6">
-                        <div class="inline-flex items-center justify-center w-16 h-16 bg-orange-500/20 rounded-full mb-4">
-                            <i class="fas fa-key text-3xl text-orange-500"></i>
-                        </div>
-                        <h2 class="text-2xl font-bold"><span data-i18n="auth.login.forgotPassword">Forgot password?</span></h2>
-                        <p class="text-gray-400 mt-2 text-sm">別擔心！輸入您的郵箱，我們會發送重置連結給您</p>
+                
+                <form id="forgot-password-form" class="space-y-4">
+                    <!-- Email -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium mb-2">
+                            <i class="fas fa-envelope mr-2"></i><span data-i18n="auth.emailLabel">Email</span>
+                        </label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            required
+                            class="input-field w-full"
+                            data-i18n-placeholder="auth.emailPlaceholder"
+                            placeholder="your@email.com"
+                        />
+                        <p class="text-red-400 text-sm mt-1 hidden" id="email-error"></p>
                     </div>
-                    
-                    <form id="forgot-password-form" class="space-y-4">
-                        <!-- Email -->
-                        <div>
-                            <label for="email" class="block text-sm font-medium mb-2">
-                                <i class="fas fa-envelope mr-2"></i>電子郵箱
-                            </label>
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                required
-                                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white"
-                                placeholder="your@email.com"
-                            />
-                            <p class="text-red-400 text-sm mt-1 hidden" id="email-error"></p>
-                        </div>
 
-                        <!-- Submit Button -->
-                        <button
-                            type="submit"
-                            id="submit-btn"
-                            class="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-lg transition transform hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
-                        >
-                            <i class="fas fa-paper-plane mr-2"></i>
-                            <span id="submit-text">發送重置連結</span>
-                        </button>
+                    <!-- Submit Button -->
+                    <button type="submit" class="gradient-button w-full">
+                        <i class="fas fa-paper-plane mr-2"></i><span data-i18n="auth.forgotPassword.submitButton">Send Reset Link</span>
+                    </button>
 
-                        <!-- Form Message -->
-                        <div id="form-message" class="hidden mt-4 p-4 rounded-lg"></div>
-                    </form>
+                    <!-- Form Message -->
+                    <div id="form-message" class="hidden mt-4 p-4 rounded-lg"></div>
+                </form>
 
-                    <!-- Back to Login -->
-                    <div class="mt-6 text-center">
-                        <a href="/login" class="text-sm text-gray-400 hover:text-orange-500 transition">
-                            <i class="fas fa-arrow-left mr-2"></i>返回<span data-i18n="auth.login.submitButton">Sign In</span>
-                        </a>
-                    </div>
+                <!-- Back to Login -->
+                <div class="mt-6 text-center">
+                    <a href="/login" class="link-text">
+                        <i class="fas fa-arrow-left mr-2"></i><span data-i18n="auth.forgotPassword.backToLogin">Back to Sign In</span>
+                    </a>
                 </div>
             </div>
         </div>
+    </div>
 
-        
-        
-        
-        <script src="/static/auth.js?v=20260221151619"></script>
-    </body>
-    </html>
+    <script>
+        document.getElementById('forgot-password-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submit-btn');
+            const emailError = document.getElementById('email-error');
+            const formMessage = document.getElementById('form-message');
+            const email = document.getElementById('email').value;
+
+            emailError.classList.add('hidden');
+            formMessage.classList.add('hidden');
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/auth/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    formMessage.textContent = result.message || 'Reset link sent! Check your email.';
+                    formMessage.className = 'mt-4 p-4 rounded-lg bg-green-500/20 border border-green-500 text-green-500';
+                    formMessage.classList.remove('hidden');
+                } else {
+                    emailError.textContent = result.error || result.message || 'Failed to send reset email';
+                    emailError.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Forgot password error:', error);
+                emailError.textContent = 'Network error. Please try again.';
+                emailError.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+    <script src="/static/i18n.js?v=20260221151619"></script>
+    <script src="/static/language-switcher.js?v=20260221151619"></script>
+</body>
+</html>
   `);
 });
 

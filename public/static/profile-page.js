@@ -124,8 +124,8 @@ class UserProfile {
           <div class="mt-6">
             <div class="flex items-center space-x-3 mb-2">
               <h1 class="text-3xl font-bold">${user.username}</h1>
-              ${user.is_verified ? '<i class="fas fa-check-circle text-blue-500" title=i18n.t('profile.verified')></i>' : ''}
-              ${user.is_premium ? '<i class="fas fa-crown text-yellow-500" title=i18n.t('profile.premium')></i>' : ''}
+              ${user.is_verified ? `<i class="fas fa-check-circle text-blue-500" title="${typeof i18n !== \'undefined\' ? i18n.t(\'profile.verified\') : \'Verified\'}"></i>` : \'\'}
+              ${user.is_premium ? `<i class="fas fa-crown text-yellow-500" title="${typeof i18n !== \'undefined\' ? i18n.t(\'profile.premium\') : \'Premium\'}"></i>` : \'\'}
             </div>
             
             <div class="flex items-center space-x-4 text-gray-400 mb-4">

@@ -265,7 +265,18 @@
       "loginSuccess": "Welcome back!",
       "registerSuccess": "Account created successfully! Redirecting..."
     },
-    "disclaimer": "🔒 100% Simulation Game • No Real Money • Your Data is Protected"
+    "disclaimer": "🔒 100% Simulation Game • No Real Money • Your Data is Protected",
+    "forgotPassword": {
+      "pageTitle": "Forgot Password - MemeLaunch Tycoon",
+      "title": "Forgot Password?",
+      "subtitle": "Reset Your Password",
+      "description": "Don't worry! Enter your email and we'll send you a reset link.",
+      "submitButton": "Send Reset Link",
+      "backToLogin": "Back to Sign In",
+      "emailSent": "Reset link sent! Check your email.",
+      "emailNotFound": "Email not found",
+      "networkError": "Network error. Please try again."
+    }
   },
   "dashboard": {
     "pageTitle": "Dashboard - MemeLaunch Tycoon",

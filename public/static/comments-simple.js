@@ -71,6 +71,15 @@ class CommentsSystem {
       return;
     }
     
+    
+    // Get translations
+    const commentsTitle = typeof i18n !== 'undefined' ? i18n.t('coinDetail.comments') : 'Comments';
+    const writePlaceholder = typeof i18n !== 'undefined' ? i18n.t('coinDetail.writeComment') : 'Write your comment...';
+    const postBtn = typeof i18n !== 'undefined' ? i18n.t('coinDetail.post') : 'Post';
+    const latestBtn = typeof i18n !== 'undefined' ? i18n.t('coinDetail.latest') : 'Latest';
+    const popularBtn = typeof i18n !== 'undefined' ? i18n.t('coinDetail.popular') : 'Popular';
+    const noComments = typeof i18n !== 'undefined' ? i18n.t('coinDetail.noComments') : 'No comments yet. Be the first to comment!';
+    
     container.innerHTML = `
       <div class="glass-effect rounded-2xl p-6 mt-8">
         <h2 class="text-2xl font-bold mb-6">

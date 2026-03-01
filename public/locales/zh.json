@@ -265,7 +265,18 @@
       "loginSuccess": "歡迎回來！",
       "registerSuccess": "帳號創建成功！正在跳轉..."
     },
-    "disclaimer": "🔒 100% 模擬遊戲 • 無實際金錢交易 • 您的數據安全受保護"
+    "disclaimer": "🔒 100% 模擬遊戲 • 無實際金錢交易 • 您的數據安全受保護",
+    "forgotPassword": {
+      "pageTitle": "忘記密碼 - MemeLaunch Tycoon",
+      "title": "忘記密碼？",
+      "subtitle": "重置您的密碼",
+      "description": "別擔心！輸入您的郵箱，我們會發送重置連結給您",
+      "submitButton": "發送重置連結",
+      "backToLogin": "返回登入",
+      "emailSent": "重置連結已發送！請檢查您的郵箱",
+      "emailNotFound": "找不到此郵箱",
+      "networkError": "網路錯誤，請稍後再試"
+    }
   },
   "dashboard": {
     "pageTitle": "儀表板 - MemeLaunch Tycoon",
