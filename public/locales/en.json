@@ -592,7 +592,16 @@
     "loading": "Loading...",
     "prevPage": "Previous",
     "nextPage": "Next",
-    "page": "Page"
+    "page": "Page",
+    "marketCap": "Market Cap",
+    "supply": "Supply",
+    "holders": "Holders",
+    "trades": "Trades",
+    "hypeScore": "Hype Score",
+    "creator": "Creator",
+    "ai": "AI",
+    "real": "Real",
+    "quickTrade": "Quick Trade"
   },
   "create": {
     "title": "Create Meme Coin",

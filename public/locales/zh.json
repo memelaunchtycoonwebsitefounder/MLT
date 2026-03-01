@@ -592,7 +592,16 @@
     "loading": "載入中...",
     "prevPage": "上一頁",
     "nextPage": "下一頁",
-    "page": "第"
+    "page": "第",
+    "marketCap": "市值",
+    "supply": "供應量",
+    "holders": "持有人",
+    "trades": "交易",
+    "hypeScore": "Hype 分數",
+    "creator": "創建者",
+    "ai": "AI",
+    "real": "真實",
+    "quickTrade": "快速交易"
   },
   "create": {
     "title": "創建模因幣",
