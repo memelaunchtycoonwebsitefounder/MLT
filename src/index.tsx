@@ -4870,6 +4870,11 @@ app.get('/terms-of-service', (c) => {
   return c.redirect('/legal.html#terms');
 });
 
+// Alias for /terms (shorter URL)
+app.get('/terms', (c) => {
+  return c.redirect('/legal.html#terms');
+});
+
 
 
 export default app;
