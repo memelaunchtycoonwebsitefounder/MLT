@@ -36,7 +36,7 @@ class CommentsSystem {
       }
     } catch (error) {
       console.error('Init error:', error);
-      this.renderError('Load failed');
+      this.renderError((typeof i18n !== "undefined" ? " + i18n.t("coinDetail.loadFailed") + " : "Load failed"));
     }
   }
   
@@ -55,7 +55,7 @@ class CommentsSystem {
         this.render();
       } else {
         this.comments = [];
-        this.renderError('Failed to load comments');
+        this.renderError((typeof i18n !== "undefined" ? " + i18n.t("coinDetail.loadCommentsFailed") + " : "Failed to load comments"));
       }
     } catch (error) {
       console.error('Load comments error:', error);
@@ -75,7 +75,7 @@ class CommentsSystem {
       <div class="glass-effect rounded-2xl p-6 mt-8">
         <h2 class="text-2xl font-bold mb-6">
           <i class="fas fa-comments mr-2"></i>
-          Comments (${this.comments.length})
+          ${typeof i18n !== "undefined" ? i18n.t("coinDetail.comments") : "Comments"} (${this.comments.length})
         </h2>
         
         <!-- Comment Input -->
@@ -83,7 +83,7 @@ class CommentsSystem {
           <textarea
             id="comment-input"
             class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white resize-none"
-            placeholder="Write your comment..."
+            placeholder=(typeof i18n !== "undefined" ? " + i18n.t("coinDetail.writeComment") + " : "Write your comment...")
             rows="3"
             maxlength="1000"
           ></textarea>
@@ -94,7 +94,7 @@ class CommentsSystem {
               class="px-6 py-2 bg-orange-500 hover:bg-orange-600 rounded-lg font-bold transition"
             >
               <i class="fas fa-paper-plane mr-2"></i>
-              Post
+              ${typeof i18n !== "undefined" ? i18n.t("coinDetail.post") : "Post"}
             </button>
           </div>
         </div>
@@ -387,7 +387,7 @@ class CommentsSystem {
         input.value = '';
         document.getElementById('char-count').textContent = '0 / 1000';
         await this.loadComments();
-        this.showSuccess('Comment posted successfully!');
+        this.showSuccess((typeof i18n !== "undefined" ? " + i18n.t("coinDetail.commentSuccess") + " : "Comment posted successfully!"));
       }
     } catch (error) {
       console.error('Submit comment error:', error);
@@ -415,7 +415,7 @@ class CommentsSystem {
         container.querySelector('.reply-input').value = '';
         container.classList.add('hidden');
         await this.loadComments();
-        this.showSuccess('Reply posted successfully!');
+        this.showSuccess((typeof i18n !== "undefined" ? " + i18n.t("coinDetail.replySuccess") + " : "Reply posted successfully!"));
       }
     } catch (error) {
       console.error('Submit reply error:', error);
@@ -449,7 +449,7 @@ class CommentsSystem {
       }
     } catch (error) {
       console.error('Toggle like error:', error);
-      alert('Operation failed');
+      alert((typeof i18n !== "undefined" ? " + i18n.t("coinDetail.operationFailed") + " : "Operation failed"));
     }
   }
   
@@ -508,7 +508,7 @@ class CommentsSystem {
   }
   
   async deleteComment(commentId) {
-    if (!confirm('Are you sure you want to delete this comment?')) {
+    if (!confirm((typeof i18n !== "undefined" ? " + i18n.t("coinDetail.confirmDelete") + " : "Are you sure you want to delete this comment?"))) {
       return;
     }
     
