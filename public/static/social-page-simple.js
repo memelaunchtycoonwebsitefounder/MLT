@@ -117,7 +117,7 @@ const loadFeed = async () => {
         <i class="fas fa-exclamation-triangle text-6xl text-red-500 mb-4"></i>
         <p class="text-gray-400">Load failed，Please try again later</p>
         <button onclick="location.reload()" class="mt-4 px-6 py-2 bg-orange-500 hover:bg-orange-600 rounded-lg font-bold transition">
-          重新載入
+          Reload
         </button>
       </div>
     `;
@@ -145,7 +145,7 @@ const loadRecentComments = async () => {
         container.innerHTML = `
           <div class="glass-effect rounded-2xl p-12 text-center">
             <i class="fas fa-comments text-6xl text-gray-600 mb-4"></i>
-            <p class="text-gray-400">還沒有評論</p>
+            <p class="text-gray-400">No comments yet</p>
           </div>
         `;
         return;
@@ -186,7 +186,7 @@ const loadPopularComments = async () => {
         container.innerHTML = `
           <div class="glass-effect rounded-2xl p-12 text-center">
             <i class="fas fa-fire text-6xl text-gray-600 mb-4"></i>
-            <p class="text-gray-400">還沒有熱門評論</p>
+            <p class="text-gray-400">No popular comments yet</p>
           </div>
         `;
         return;
@@ -231,7 +231,7 @@ const renderActivity = (activity) => {
     case 'achievement':
       icon = 'fa-trophy';
       iconColor = 'text-yellow-500';
-      message = '解鎖了成就';
+      message = 'unlocked an achievement';
       link = '/achievements';
       break;
     default:
@@ -263,7 +263,7 @@ const renderActivity = (activity) => {
           
           ${link ? `
             <a href="${link}" class="inline-flex items-center text-sm text-orange-500 hover:text-orange-400">
-              查看詳情 <i class="fas fa-arrow-right ml-1"></i>
+              View Details <i class="fas fa-arrow-right ml-1"></i>
             </a>
           ` : ''}
         </div>

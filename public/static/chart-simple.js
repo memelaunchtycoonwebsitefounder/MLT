@@ -154,7 +154,7 @@ function createPriceChart(chartData, coinData) {
               return labels[items[0].dataIndex];
             },
             label: (context) => {
-              return `價格: $${context.parsed.y.toFixed(8)}`;
+              return `Price: $${context.parsed.y.toFixed(8)}`;
             }
           }
         }
@@ -259,7 +259,7 @@ function createVolumeChart(chartData) {
               return labels[items[0].dataIndex];
             },
             label: (context) => {
-              return `成交量: ${context.parsed.y.toLocaleString()}`;
+              return `Volume: ${context.parsed.y.toLocaleString()}`;
             }
           }
         }

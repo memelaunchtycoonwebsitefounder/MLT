@@ -168,7 +168,7 @@ class SocialComments {
     return `
       <div class="glass-effect rounded-xl p-6 hover:bg-white/5 transition animate-slide-in ${isPinned ? 'ring-2 ring-yellow-500' : ''}" 
            data-comment-id="${comment.id}">
-        ${isPinned ? '<div class="flex items-center gap-2 text-yellow-500 text-sm font-bold mb-3"><i class="fas fa-thumbtack"></i> 釘選評論</div>' : ''}
+        ${isPinned ? '<div class="flex items-center gap-2 text-yellow-500 text-sm font-bold mb-3"><i class="fas fa-thumbtack"></i> Pinned Comment</div>' : ''}
         
         <!-- Header -->
         <div class="flex items-start justify-between mb-3">
@@ -628,7 +628,7 @@ class SocialComments {
   }
   
   async reportComment(commentId) {
-    const reason = prompt('請說明Report原因:');
+    const reason = prompt('Please state the reason for reporting:');
     if (!reason || !reason.trim()) return;
     
     try {
@@ -640,11 +640,11 @@ class SocialComments {
       });
       
       if (response.data.success) {
-        this.showNotification('Report已提交，感謝您的反饋', 'success');
+        this.showNotification('Report submitted, thank you for your feedback', 'success');
       }
     } catch (error) {
       console.error('Report error:', error);
-      this.showNotification(error.response?.data?.error || 'Report失敗', 'error');
+      this.showNotification(error.response?.data?.error || 'Report failed', 'error');
     }
   }
   

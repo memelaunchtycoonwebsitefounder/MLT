@@ -620,7 +620,7 @@ const updatePreview = () => {
   
   // Update total cost display
   const totalCostEl = document.querySelector('.text-orange-500');
-  if (totalCostEl && (totalCostEl.textContent.includes('金幣') || totalCostEl.textContent.includes('Coins'))) {
+  if (totalCostEl && (totalCostEl.textContent.includes('Coins') || totalCostEl.textContent.includes('Coins'))) {
     totalCostEl.textContent = totalCost.toFixed(2) + ' MLT';
   }
   

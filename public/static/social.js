@@ -53,7 +53,7 @@ class SocialUI {
           </span>
           <button id="sort-comments" class="text-sm glass-effect px-4 py-2 rounded-lg hover:bg-white/10 transition">
             <i class="fas fa-sort mr-1"></i>
-            最新優先
+            Latest First
           </button>
         </h2>
 
@@ -62,7 +62,7 @@ class SocialUI {
           <textarea
             id="comment-input"
             rows="3"
-            placeholder="分享你的想法..."
+            placeholder="Share your thoughts..."
             class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-white resize-none"
             maxlength="1000"
           ></textarea>
@@ -72,7 +72,7 @@ class SocialUI {
               id="post-comment-btn"
               class="px-6 py-2 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-lg font-bold transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <i class="fas fa-paper-plane mr-2"></i>發表
+              <i class="fas fa-paper-plane mr-2"></i>Post
             </button>
           </div>
         </div>
@@ -103,7 +103,7 @@ class SocialUI {
     return `
       <div class="text-center py-12">
         <i class="fas fa-comment-slash text-6xl text-gray-500 mb-4"></i>
-        <p class="text-xl text-gray-400">還沒有評論，搶先發表吧！</p>
+        <p class="text-xl text-gray-400">No comments yet, be the first to post!</p>
       </div>
     `;
   }
@@ -124,7 +124,7 @@ class SocialUI {
         <div class="flex-1 min-w-0">
           <div class="flex items-center justify-between mb-2">
             <div class="flex items-center space-x-2">
-              <span class="font-bold">${comment.username || '匿名'}</span>
+              <span class="font-bold">${comment.username || 'Anonymous'}</span>
               ${comment.user_level ? `
                 <span class="text-xs px-2 py-0.5 bg-white/10 rounded-full">
                   Lv.${comment.user_level}
@@ -152,7 +152,7 @@ class SocialUI {
               class="reply-btn text-gray-400 hover:text-orange-500 transition"
               data-comment-id="${comment.id}"
             >
-              <i class="fas fa-reply mr-1"></i>回覆
+              <i class="fas fa-reply mr-1"></i>Reply
             </button>
           </div>
           
@@ -160,7 +160,7 @@ class SocialUI {
           <div id="reply-form-${comment.id}" class="hidden mt-4">
             <textarea
               rows="2"
-              placeholder="回覆 ${comment.username}..."
+              placeholder="Reply to ${comment.username}..."
               class="w-full px-3 py-2 bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-orange-500 text-white text-sm resize-none mb-2"
               maxlength="500"
             ></textarea>
@@ -174,9 +174,7 @@ class SocialUI {
               <button
                 class="submit-reply-btn px-4 py-1 text-sm bg-orange-500 hover:bg-orange-600 rounded font-bold transition"
                 data-comment-id="${comment.id}"
-              >
-                回覆
-              </button>
+              >Reply</button>
             </div>
           </div>
           
@@ -202,7 +200,7 @@ class SocialUI {
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center space-x-2 mb-1">
-            <span class="text-sm font-bold">${reply.username || '匿名'}</span>
+            <span class="text-sm font-bold">${reply.username || 'Anonymous'}</span>
             <span class="text-xs text-gray-400">${timeAgo}</span>
           </div>
           <p class="text-sm text-gray-300">${this.escapeHtml(reply.content)}</p>
@@ -254,7 +252,7 @@ class SocialUI {
     const content = input.value.trim();
 
     if (!content) {
-      this.showNotification('請輸入評論內容', 'warning');
+      this.showNotification('Please enter comment content', 'warning');
       return;
     }
 
@@ -275,7 +273,7 @@ class SocialUI {
       }
     } catch (error) {
       console.error('Failed to post comment:', error);
-      this.showNotification(error.response?.data?.message || '發表失敗', 'error');
+      this.showNotification(error.response?.data?.message || 'Post failed', 'error');
     }
   }
 
@@ -310,7 +308,7 @@ class SocialUI {
       }
     } catch (error) {
       console.error('Failed to toggle like:', error);
-      this.showNotification('操作失敗', 'error');
+      this.showNotification('Operation failed', 'error');
     }
   }
 
@@ -323,11 +321,11 @@ class SocialUI {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      this.showNotification('評論已刪除', 'success');
+      this.showNotification('Comment deleted', 'success');
       await this.loadComments();
     } catch (error) {
       console.error('Failed to delete comment:', error);
-      this.showNotification('刪除失敗', 'error');
+      this.showNotification('Delete failed', 'error');
     }
   }
 
@@ -353,7 +351,7 @@ class SocialUI {
     const content = textarea?.value.trim();
 
     if (!content) {
-      this.showNotification('請輸入回覆內容', 'warning');
+      this.showNotification('Please enter reply content', 'warning');
       return;
     }
 
@@ -367,7 +365,7 @@ class SocialUI {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      this.showNotification('回覆成功！', 'success');
+      this.showNotification('Reply successful!', 'success');
       this.hideReplyForm(parentId);
       await this.loadComments();
     } catch (error) {

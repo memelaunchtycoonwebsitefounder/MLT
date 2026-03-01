@@ -68,7 +68,7 @@ class LeaderboardUI {
       container.innerHTML = `
         <div class="text-center py-20">
           <i class="fas fa-spinner fa-spin text-6xl text-orange-500 mb-4"></i>
-          <p class="text-xl text-gray-400">載入排行榜...</p>
+          <p class="text-xl text-gray-400">Loading leaderboard...</p>
         </div>
       `;
     }
@@ -80,7 +80,7 @@ class LeaderboardUI {
       container.innerHTML = `
         <div class="text-center py-20">
           <i class="fas fa-exclamation-triangle text-6xl text-red-500 mb-4"></i>
-          <p class="text-xl text-gray-400">載入失敗，Please try again later</p>
+          <p class="text-xl text-gray-400">Load failed, please try again later</p>
         </div>
       `;
     }
@@ -164,7 +164,7 @@ class LeaderboardUI {
           <thead class="bg-white/5">
             <tr>
               <th class="px-6 py-4 text-left text-sm font-bold uppercase">Rank</th>
-              <th class="px-6 py-4 text-left text-sm font-bold uppercase">用戶</th>
+              <th class="px-6 py-4 text-left text-sm font-bold uppercase">User</th>
               <th class="px-6 py-4 text-right text-sm font-bold uppercase">${this.getCategoryLabel()}</th>
               <th class="px-6 py-4 text-center text-sm font-bold uppercase">Level</th>
               <th class="px-6 py-4 text-center text-sm font-bold uppercase">Achievements</th>
@@ -182,7 +182,7 @@ class LeaderboardUI {
                     <div class="flex items-center">
                       ${this.getRankBadge(rank)}
                       <span class="ml-2 font-bold">#${rank}</span>
-                      ${isCurrentUser ? '<span class="ml-2 text-xs px-2 py-1 bg-orange-500 rounded-full">你</span>' : ''}
+                      ${isCurrentUser ? '<span class="ml-2 text-xs px-2 py-1 bg-orange-500 rounded-full">You</span>' : ''}
                     </div>
                   </td>
                   <td class="px-6 py-4">
@@ -193,7 +193,7 @@ class LeaderboardUI {
                       <div>
                         <div class="font-bold">${user.username}</div>
                         <div class="text-xs text-gray-400">
-                          <i class="fas fa-user-friends mr-1"></i>${user.followers_count || 0} 粉絲
+                          <i class="fas fa-user-friends mr-1"></i>${user.followers_count || 0} Followers
                         </div>
                       </div>
                     </div>
@@ -243,12 +243,12 @@ class LeaderboardUI {
 
   getCategoryLabel() {
     const labels = {
-      networth: '淨資產',
-      trades: 'Trades數',
-      level: '經驗值',
-      profit: '總利潤'
+      networth: 'Net Worth',
+      trades: 'Trades',
+      level: 'Experience',
+      profit: 'Total Profit'
     };
-    return labels[this.currentCategory] || '分數';
+    return labels[this.currentCategory] || 'Score';
   }
 
   formatScore(user) {
@@ -288,3 +288,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Export
 window.LeaderboardUI = LeaderboardUI;
+
+// Language switcher support
+if (typeof i18n !== 'undefined' && i18n.onLocaleChange) {
+    i18n.onLocaleChange(() => {
+        location.reload();
+    });
+}

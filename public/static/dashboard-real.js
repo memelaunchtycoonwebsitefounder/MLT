@@ -129,7 +129,7 @@ const displayMyCoins = (coins) => {
     container.innerHTML = `
       <div class="text-center py-12">
         <i class="fas fa-rocket text-6xl text-gray-600 mb-4"></i>
-        <p class="text-gray-400 mb-4">你還沒有創建任何幣種</p>
+        <p class="text-gray-400 mb-4">You haven't created any coins yet</p>
         <a href="/create" class="btn-primary inline-block">
           <i class="fas fa-plus mr-2"></i>Create your first coin
         </a>
@@ -246,7 +246,7 @@ const displayRecentActivity = (trades) => {
           </div>
         </div>
         <div class="text-right">
-          <p class="font-bold">${Number(trade.amount).toFixed(2)} 幣</p>
+          <p class="font-bold">${Number(trade.amount).toFixed(2)} tokens</p>
           <p class="text-sm text-gray-400">$${Number(trade.total_cost).toFixed(2)}</p>
         </div>
       </div>
@@ -276,7 +276,7 @@ const displayTrendingCoins = (coins) => {
   if (!container) return;
   
   if (coins.length === 0) {
-    container.innerHTML = `<p class="text-center text-gray-400 py-4">暫無熱門幣種</p>`;
+    container.innerHTML = `<p class="text-center text-gray-400 py-4">No trending coins</p>`;
     return;
   }
   
@@ -317,3 +317,10 @@ document.addEventListener('DOMContentLoaded', () => {
   
   console.log('✅ Dashboard initialized');
 });
+
+// Language switcher support
+if (typeof i18n !== 'undefined' && i18n.onLocaleChange) {
+    i18n.onLocaleChange(() => {
+        location.reload();
+    });
+}

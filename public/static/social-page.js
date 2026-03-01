@@ -65,7 +65,7 @@ const formatRelativeTime = (timestamp) => {
   if (hours < 24) return `${hours} hours ago`;
   if (days < 7) return `${days} days ago`;
   if (weeks < 4) return `${weeks} weeks ago`;
-  if (months < 12) return `${months} 個月前`;
+  if (months < 12) return `${months} months ago`;
   return `${years}  years ago`;
 };
 
@@ -88,7 +88,7 @@ const loadActivityFeed = async (reset = false) => {
     document.getElementById('activity-feed').innerHTML = `
       <div class="glass-effect rounded-2xl p-12 text-center">
         <i class="fas fa-spinner fa-spin text-6xl text-orange-500 mb-4"></i>
-        <p class="text-xl text-gray-400">載入中...</p>
+        <p class="text-xl text-gray-400">Loading...</p>
       </div>
     `;
   }
@@ -150,7 +150,7 @@ const renderActivityFeed = (activities) => {
     feedContainer.innerHTML = `
       <div class="glass-effect rounded-2xl p-12 text-center">
         <i class="fas fa-comments text-6xl text-gray-500 mb-4"></i>
-        <p class="text-xl text-gray-400">暫無動態</p>
+        <p class="text-xl text-gray-400">No activities</p>
       </div>
     `;
     return;
@@ -221,7 +221,7 @@ const renderCommentActivity = (comment) => {
             </button>
             <a href="/coin/${comment.coin_id}#comment-${comment.id}" class="hover:text-orange-500 transition">
               <i class="fas fa-comment mr-1"></i>
-              回覆
+              Reply
             </a>
             ${comment.pinned ? '<span class="text-yellow-500"><i class="fas fa-thumbtack mr-1"></i>Pinned</span>' : ''}
           </div>
@@ -242,22 +242,22 @@ const renderGenericActivity = (activity) => {
     case 'trade':
       icon = 'fa-exchange-alt';
       iconColor = 'text-green-500';
-      message = '進行了一筆交易';
+      message = 'made a trade';
       break;
     case 'follow':
       icon = 'fa-user-plus';
       iconColor = 'text-purple-500';
-      message = '關注了新用戶';
+      message = 'followed a new user';
       break;
     case 'achievement':
       icon = 'fa-trophy';
       iconColor = 'text-yellow-500';
-      message = '解鎖了新成就';
+      message = 'unlocked a new achievement';
       break;
     case 'coin_created':
       icon = 'fa-plus-circle';
       iconColor = 'text-orange-500';
-      message = '創建了新幣種';
+      message = 'created a new coin';
       break;
   }
 
@@ -272,7 +272,7 @@ const renderGenericActivity = (activity) => {
         
         <div class="flex-1 min-w-0">
           <div class="flex items-center space-x-2 mb-2">
-            <span class="font-bold">${activity.username || '用戶'}</span>
+            <span class="font-bold">${activity.username || 'User'}</span>
             <span class="text-gray-400 text-sm">${message}</span>
             <span class="text-gray-500 text-sm">${timeAgo}</span>
           </div>
@@ -346,7 +346,7 @@ const loadActiveUsers = async () => {
             <span class="text-xl">${levelIcon}</span>
             <div class="flex-1 min-w-0">
               <p class="font-bold truncate">${escapeHtml(user.username)}</p>
-              <p class="text-sm text-gray-400">Lv.${user.level || 1} • ${user.value || 0} 筆交易</p>
+              <p class="text-sm text-gray-400">Lv.${user.level || 1} • ${user.value || 0} trades</p>
             </div>
           </div>
         `;
@@ -493,3 +493,10 @@ if (!document.getElementById('social-animations')) {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+// Language switcher support
+if (typeof i18n !== 'undefined' && i18n.onLocaleChange) {
+    i18n.onLocaleChange(() => {
+        location.reload();
+    });
+}

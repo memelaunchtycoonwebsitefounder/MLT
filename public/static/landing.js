@@ -22,7 +22,7 @@ function initEmailForms() {
       
       // Validation
       if (!email) {
-        showMessage(messageDiv, '請輸入郵箱地址', 'error');
+        showMessage(messageDiv, 'Please enter email address', 'error');
         return;
       }
       
@@ -64,15 +64,15 @@ function initEmailForms() {
           // }, 3000);
           
         } else {
-          showMessage(messageDiv, data.error || 'Submission failed，請稍後重試', 'error');
+          showMessage(messageDiv, data.error || 'Submission failed, please try again later', 'error');
         }
         
       } catch (error) {
         console.error('Email subscription error:', error);
-        showMessage(messageDiv, 'Network error，請稍後重試', 'error');
+        showMessage(messageDiv, 'Network error, please try again later', 'error');
       } finally {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-rocket mr-2"></i>立即開始（Completely free）';
+        submitBtn.innerHTML = '<i class="fas fa-rocket mr-2"></i>Get Started (Completely Free)';
       }
     });
   });
@@ -247,6 +247,13 @@ document.addEventListener('DOMContentLoaded', () => {
   
   console.log('✅ All features initialized');
 });
+// Language switcher support
+if (typeof i18n !== 'undefined' && i18n.onLocaleChange) {
+    i18n.onLocaleChange(() => {
+        location.reload();
+    });
+}
+
 
 // ===================================
 // 8. UTILITY: AUTO-HIDE ALERTS

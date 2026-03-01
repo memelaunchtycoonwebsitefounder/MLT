@@ -368,3 +368,10 @@ if (logoutBtn) {
 }
 
 console.log('=== Dashboard.js Loaded ===');
+
+// Language switcher support
+if (typeof i18n !== 'undefined' && i18n.onLocaleChange) {
+    i18n.onLocaleChange(() => {
+        location.reload();
+    });
+}

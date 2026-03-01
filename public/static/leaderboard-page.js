@@ -411,3 +411,10 @@ if (!document.getElementById('leaderboard-animations')) {
   `;
   document.head.appendChild(style);
 }
+
+// Language switcher support
+if (typeof i18n !== 'undefined' && i18n.onLocaleChange) {
+    i18n.onLocaleChange(() => {
+        location.reload();
+    });
+}

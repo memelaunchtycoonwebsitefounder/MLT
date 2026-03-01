@@ -44,7 +44,7 @@ class GamificationUI {
     const categories = {
       trading: { name: 'Trading Achievement', icon: 'fa-chart-line', achievements: [] },
       creation: { name: 'Creator Achievement', icon: 'fa-rocket', achievements: [] },
-      social: { name: '社交achievement', icon: 'fa-users', achievements: [] },
+      social: { name: 'Social Achievement', icon: 'fa-users', achievements: [] },
       milestone: { name: 'Milestone', icon: 'fa-trophy', achievements: [] }
     };
 
@@ -100,7 +100,7 @@ class GamificationUI {
       ${!isUnlocked ? `
         <div class="mb-3">
           <div class="flex justify-between text-xs text-gray-400 mb-1">
-            <span>進度</span>
+            <span>Progress</span>
             <span>${progress}/${requirement}</span>
           </div>
           <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
@@ -110,7 +110,7 @@ class GamificationUI {
         </div>
       ` : `
         <p class="text-yellow-500 text-sm font-bold">
-          <i class="fas fa-star mr-1"></i>已解鎖！
+          <i class="fas fa-star mr-1"></i>Unlocked!
         </p>
       `}
       
@@ -155,9 +155,9 @@ class GamificationUI {
   getRarityText(rarity) {
     const text = {
       common: 'Common',
-      rare: '稀有',
-      epic: '史詩',
-      legendary: '傳奇'
+      rare: 'Rare',
+      epic: 'Epic',
+      legendary: 'Legendary'
     };
     return text[rarity] || 'Common';
   }
@@ -182,11 +182,11 @@ class GamificationUI {
           </div>
           ${achievement.completed_at ? `
             <p class="text-sm text-gray-400 mb-4">
-              解鎖時間: ${new Date(achievement.completed_at).toLocaleString('zh-TW')}
+              Unlock Time: ${new Date(achievement.completed_at).toLocaleString('en-US')}
             </p>
           ` : ''}
           <button class="px-8 py-3 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-lg font-bold transition" onclick="this.closest('.fixed').remove()">
-            太棒了！
+            Awesome!
           </button>
         </div>
       </div>
@@ -228,17 +228,17 @@ class GamificationUI {
 
     if (filter === 'unlocked') {
       const unlocked = this.achievements.filter(a => a.completed === 1);
-      this.renderFilteredAchievements(unlocked, '已解鎖achievement');
+      this.renderFilteredAchievements(unlocked, 'Unlocked Achievements');
     } else if (filter === 'locked') {
       const locked = this.achievements.filter(a => a.completed !== 1);
-      this.renderFilteredAchievements(locked, '未解鎖achievement');
+      this.renderFilteredAchievements(locked, 'Locked Achievements');
     } else {
       // Filter by category
       const filtered = this.achievements.filter(a => a.category === filter);
       const categoryNames = {
         trading: 'Trading Achievement',
         creation: 'Creator Achievement',
-        social: '社交achievement',
+        social: 'Social Achievement',
         milestone: 'Milestone'
       };
       this.renderFilteredAchievements(filtered, categoryNames[filter] || 'achievement');
@@ -278,7 +278,7 @@ class GamificationUI {
         </div>
         <button class="px-12 py-4 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-xl font-bold text-xl transition transform hover:scale-105" 
                 onclick="this.closest('.fixed').remove()">
-          太棒了！
+          Awesome!
         </button>
       </div>
     `;
@@ -337,7 +337,7 @@ class LevelProgress {
       <div class="glass-effect rounded-2xl p-6 mb-6">
         <div class="flex items-center justify-between mb-4">
           <div>
-            <h3 class="text-2xl font-bold">等Level ${level}</h3>
+            <h3 class="text-2xl font-bold">Level ${level}</h3>
             <p class="text-gray-400">${currentXP.toLocaleString()} / ${xpForNext.toLocaleString()} XP</p>
           </div>
           <div class="text-5xl">
@@ -348,7 +348,7 @@ class LevelProgress {
           <div class="h-full bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 transition-all duration-500" 
                style="width: ${progress}%"></div>
         </div>
-        <p class="text-sm text-gray-400 mt-2">還需 ${(xpForNext - currentXP).toLocaleString()} XP 升到下一Level</p>
+        <p class="text-sm text-gray-400 mt-2">Need ${(xpForNext - currentXP).toLocaleString()} XP for next level</p>
       </div>
     `;
   }

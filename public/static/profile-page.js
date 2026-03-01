@@ -156,7 +156,7 @@ class UserProfile {
               ${stats ? `
                 <span>
                   <span class="font-bold">${stats.total_trades || 0}</span>
-                  <span class="text-gray-400"> 交易</span>
+                  <span class="text-gray-400"> Trades</span>
                 </span>
                 <span>
                   <span class="font-bold">${stats.coins_created || 0}</span>
@@ -174,7 +174,7 @@ class UserProfile {
         <!-- MLT Balance Card -->
         <div class="glass-effect rounded-2xl p-6 bg-gradient-to-br from-orange-500/10 to-purple-500/10 border border-orange-500/20">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-bold text-white">MLT 餘額</h3>
+            <h3 class="text-lg font-bold text-white">MLT Balance</h3>
             <img src="/static/mlt-token.png" class="w-12 h-12" alt="MLT" />
           </div>
           <p class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400 mb-2">
@@ -341,7 +341,7 @@ class UserProfile {
             </div>
             <div class="bg-white/5 rounded-lg p-4 text-center">
               <div class="text-3xl font-bold text-green-500">${stats.total_xp_earned}</div>
-              <div class="text-sm text-gray-400">獲得XP</div>
+              <div class="text-sm text-gray-400">Earned XP</div>
             </div>
             <div class="bg-white/5 rounded-lg p-4 text-center">
               <div class="text-3xl font-bold text-purple-500">${stats.completion_rate}%</div>
@@ -429,7 +429,7 @@ class UserProfile {
       }
     } catch (error) {
       console.error('Toggle follow error:', error);
-      alert('操作失敗，Please try again later');
+      alert('Operation failed, please try again later');
     }
   }
 
@@ -464,7 +464,7 @@ class UserProfile {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-bold mb-2">${i18n.t('profile.location')}}</label>
-              <input type="text" id="edit-location" class="input w-full" value="${user.location || ''}" placeholder="例：Taiwan">
+              <input type="text" id="edit-location" class="input w-full" value="${user.location || ''}" placeholder="e.g., Taiwan">
             </div>
             <div>
               <label class="block text-sm font-bold mb-2">${i18n.t('profile.website')}}</label>
@@ -610,6 +610,13 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     userProfile = new UserProfile();
   });
+// Language switcher support
+if (typeof i18n !== 'undefined' && i18n.onLocaleChange) {
+    i18n.onLocaleChange(() => {
+        location.reload();
+    });
+}
+
 } else {
   userProfile = new UserProfile();
 }

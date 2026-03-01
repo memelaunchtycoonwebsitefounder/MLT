@@ -151,17 +151,17 @@ class TradingPanel {
       if (this.amount <= 0) {
         buyButton.disabled = true;
         buyButton.classList.add('opacity-50', 'cursor-not-allowed');
-        warningEl.textContent = 'Please enter購買amount';
+        warningEl.textContent = 'Please enter purchase amount';
         warningEl.classList.remove('hidden');
       } else if (total > this.userData.virtual_balance) {
         buyButton.disabled = true;
         buyButton.classList.add('opacity-50', 'cursor-not-allowed');
-        warningEl.textContent = `Insufficient balance！需要 ${total.toFixed(2)} coins`;
+        warningEl.textContent = `Insufficient balance! Need ${total.toFixed(2)} coins`;
         warningEl.classList.remove('hidden');
       } else if (this.amount > (this.coinData.total_supply - this.coinData.circulating_supply)) {
         buyButton.disabled = true;
         buyButton.classList.add('opacity-50', 'cursor-not-allowed');
-        warningEl.textContent = '可用供應量不足';
+        warningEl.textContent = 'Insufficient available supply';
         warningEl.classList.remove('hidden');
       } else {
         buyButton.disabled = false;
@@ -185,12 +185,12 @@ class TradingPanel {
       if (this.amount <= 0) {
         sellButton.disabled = true;
         sellButton.classList.add('opacity-50', 'cursor-not-allowed');
-        warningEl.textContent = 'Please enter出售amount';
+        warningEl.textContent = 'Please enter sell amount';
         warningEl.classList.remove('hidden');
       } else if (this.amount > this.holdings) {
         sellButton.disabled = true;
         sellButton.classList.add('opacity-50', 'cursor-not-allowed');
-        warningEl.textContent = `持有量不足！您只有 ${this.holdings} ${this.coinData.symbol}`;
+        warningEl.textContent = `Insufficient holdings! You only have ${this.holdings} ${this.coinData.symbol}`;
         warningEl.classList.remove('hidden');
       } else {
         sellButton.disabled = false;
@@ -232,7 +232,7 @@ class TradingPanel {
     
     // Disable button and show loading
     button.disabled = true;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>處理中...';
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
 
     try {
       const token = localStorage.getItem('auth_token');
