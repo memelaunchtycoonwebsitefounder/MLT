@@ -54,28 +54,45 @@ class UserProfile {
   }
 
   async loadProfile() {
+    console.log('📥 Loading profile for user ID:', this.userId);
+    
     try {
       const token = localStorage.getItem('auth_token');
+      console.log('🔑 Token exists:', !!token);
+      
       const response = await fetchUtils.get(`/api/profile/${this.userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
+      console.log('📊 API Response:', response);
+
       if (response.data.success) {
         this.profileData = response.data.data;
         this.isOwnProfile = response.data.data.isOwnProfile;
-        console.log('✅ Profile loaded:', this.profileData.user.username);
+        console.log('✅ Profile loaded successfully:', this.profileData.user.username);
         this.render();
+      } else {
+        console.error('❌ API returned success=false:', response.data);
+        this.showError('Failed to load profile: ' + (response.data.message || 'Unknown error'));
       }
     } catch (error) {
-      console.error('Load profile error:', error);
-      const loader = document.getElementById(\'profile-loading\');
-      if (loader) loader.classList.add(\'hidden\');
-      document.getElementById('profile-content').innerHTML = `
-        <div class="text-center py-12">
+      console.error('💥 Load profile error:', error);
+      this.showError('Failed to load profile. Please try again.');
+    }
+  }
+  
+  showError(message) {
+    console.log('🚨 Showing error:', message);
+    const content = document.getElementById('profile-content');
+    if (content) {
+      content.innerHTML = `
+        <div class="text-center py-12 glass-effect rounded-2xl p-8">
           <i class="fas fa-exclamation-circle text-6xl text-red-500 mb-4"></i>
-          <h2 class="text-2xl font-bold mb-2">${i18n.t('profile.loadFailed')}}</h2>
-          <p class="text-gray-400 mb-4">${i18n.t('profile.loadError')}}</p>
-          <a href="/dashboard" class="btn-primary">${i18n.t('profile.backToHome')}}</a>
+          <h2 class="text-2xl font-bold mb-2">Failed to Load Profile</h2>
+          <p class="text-gray-400 mb-4">${message}</p>
+          <a href="/dashboard" class="btn-primary inline-block">
+            <i class="fas fa-home mr-2"></i>Back to Dashboard
+          </a>
         </div>
       `;
     }
