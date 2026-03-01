@@ -151,12 +151,12 @@ class TradingPanel {
       if (this.amount <= 0) {
         buyButton.disabled = true;
         buyButton.classList.add('opacity-50', 'cursor-not-allowed');
-        warningEl.textContent = '請輸入購買數量';
+        warningEl.textContent = 'Please enter購買amount';
         warningEl.classList.remove('hidden');
       } else if (total > this.userData.virtual_balance) {
         buyButton.disabled = true;
         buyButton.classList.add('opacity-50', 'cursor-not-allowed');
-        warningEl.textContent = `餘額不足！需要 ${total.toFixed(2)} 金幣`;
+        warningEl.textContent = `Insufficient balance！需要 ${total.toFixed(2)} coins`;
         warningEl.classList.remove('hidden');
       } else if (this.amount > (this.coinData.total_supply - this.coinData.circulating_supply)) {
         buyButton.disabled = true;
@@ -185,7 +185,7 @@ class TradingPanel {
       if (this.amount <= 0) {
         sellButton.disabled = true;
         sellButton.classList.add('opacity-50', 'cursor-not-allowed');
-        warningEl.textContent = '請輸入出售數量';
+        warningEl.textContent = 'Please enter出售amount';
         warningEl.classList.remove('hidden');
       } else if (this.amount > this.holdings) {
         sellButton.disabled = true;
@@ -247,8 +247,8 @@ class TradingPanel {
         // Show success message
         this.showNotification(
           type === 'buy' 
-            ? `✅ 成功買入 ${this.amount} ${this.coinData.symbol}！` 
-            : `✅ 成功賣出 ${this.amount} ${this.coinData.symbol}！`,
+            ? `✅ Successfully bought ${this.amount} ${this.coinData.symbol}！` 
+            : `✅ Successfully sold ${this.amount} ${this.coinData.symbol}！`,
           'success'
         );
 
@@ -306,7 +306,7 @@ class TradingPanel {
     } catch (error) {
       console.error(`${type} failed:`, error);
       this.showNotification(
-        error.response?.data?.message || `${type === 'buy' ? '買入' : '賣出'}失敗，請稍後再試`,
+        error.response?.data?.message || `${type === 'buy' ? 'Buy' : 'Sell'}failed，Please try again later`,
         'error'
       );
     } finally {

@@ -237,7 +237,7 @@ class WebSocketService {
       }
       
       // Show notification
-      const action = trade.type === 'buy' ? '買入' : '賣出';
+      const action = trade.type === 'buy' ? 'Buy' : 'Sell';
       const icon = trade.type === 'buy' ? '📈' : '📉';
       const message = `${icon} AI Trader (${traderType}) ${action} ${Math.floor(trade.amount).toLocaleString()} ${trade.coin_symbol || 'tokens'}`;
       this.showNotification(message, trade.type === 'buy' ? 'info' : 'warning');

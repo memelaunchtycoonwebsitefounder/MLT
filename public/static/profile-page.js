@@ -107,7 +107,7 @@ class UserProfile {
             <div class="space-x-3">
               ${this.isOwnProfile 
                 ? `<button onclick="userProfile.showEditModal()" class="px-6 py-2 bg-orange-500 hover:bg-orange-600 rounded-lg font-bold transition">
-                    <i class="fas fa-edit mr-2"></i>編輯資料
+                    <i class="fas fa-edit mr-2"></i>Edit Profile
                   </button>`
                 : `<button 
                     onclick="userProfile.toggleFollow()" 
@@ -160,7 +160,7 @@ class UserProfile {
                 </span>
                 <span>
                   <span class="font-bold">${stats.coins_created || 0}</span>
-                  <span class="text-gray-400"> 創建</span>
+                  <span class="text-gray-400"> Created</span>
                 </span>
               ` : ''}
             </div>
@@ -429,7 +429,7 @@ class UserProfile {
       }
     } catch (error) {
       console.error('Toggle follow error:', error);
-      alert('操作失敗，請稍後再試');
+      alert('操作失敗，Please try again later');
     }
   }
 
@@ -453,7 +453,7 @@ class UserProfile {
             <textarea 
               id="edit-bio" 
               class="input w-full h-24 resize-none" 
-              placeholder="介紹一下自己..."
+              placeholder="Introduce yourself..."
               maxlength="500"
             >${user.bio || ''}</textarea>
             <div class="text-xs text-gray-400 text-right mt-1">
@@ -485,10 +485,10 @@ class UserProfile {
 
           <div class="flex space-x-3 pt-4">
             <button type="submit" class="btn-primary flex-1">
-              <i class="fas fa-save mr-2"></i>保存
+              <i class="fas fa-save mr-2"></i>Save
             </button>
             <button type="button" onclick="document.getElementById('edit-modal').remove()" class="btn-secondary flex-1">
-              取消
+              Cancel
             </button>
           </div>
         </form>
@@ -529,7 +529,7 @@ class UserProfile {
       }
     } catch (error) {
       console.error('Update profile error:', error);
-      alert('更新失敗，請稍後再試');
+      alert('Update failed，Please try again later');
     }
   }
 

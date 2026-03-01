@@ -107,7 +107,7 @@ class SocialComments {
       }
     } catch (error) {
       console.error('Load comments error:', error);
-      this.showNotification('載入評論失敗', 'error');
+      this.showNotification('Failed to load comments', 'error');
     }
   }
   
@@ -121,7 +121,7 @@ class SocialComments {
       container.innerHTML = `
         <div class="text-center py-12 text-gray-400">
           <i class="fas fa-comments text-4xl mb-3"></i>
-          <p>尚無評論，成為第一個留言的人！</p>
+          <p>No comments yet, be the first to comment!</p>
         </div>
       `;
       return;
@@ -163,7 +163,7 @@ class SocialComments {
     const isOwner = this.userId && comment.user_id === this.userId;
     const timeAgo = this.getTimeAgo(comment.created_at);
     const levelBadge = this.getLevelBadge(comment.level);
-    const editedLabel = comment.edited_at ? '<span class="text-xs text-gray-500">(已編輯)</span>' : '';
+    const editedLabel = comment.edited_at ? '<span class="text-xs text-gray-500">(Edited)</span>' : '';
     
     return `
       <div class="glass-effect rounded-xl p-6 hover:bg-white/5 transition animate-slide-in ${isPinned ? 'ring-2 ring-yellow-500' : ''}" 
@@ -215,14 +215,14 @@ class SocialComments {
                   data-comment-id="${comment.id}" 
                   data-username="${comment.username}">
             <i class="fas fa-reply"></i>
-            <span>${comment.replies_count || 0} 回覆</span>
+            <span>${comment.replies_count || 0} Replies</span>
           </button>
           
           ${!isOwner ? `
             <button class="flex items-center gap-2 hover:text-yellow-500 transition report-btn" 
                     data-comment-id="${comment.id}">
               <i class="fas fa-flag"></i>
-              舉報
+              Report
             </button>
           ` : ''}
         </div>
@@ -236,7 +236,7 @@ class SocialComments {
                       data-comment-id="${comment.id}" 
                       data-offset="${comment.replies.length}">
                 <i class="fas fa-chevron-down mr-1"></i>
-                查看更多回覆...
+                View more replies...
               </button>
             ` : ''}
           </div>
@@ -248,12 +248,12 @@ class SocialComments {
             <textarea 
               class="flex-1 bg-gray-800 text-white rounded-lg p-3 resize-none border border-gray-700 focus:border-orange-500 focus:outline-none"
               rows="2" 
-              placeholder="輸入回覆..."
+              placeholder="Enter reply..."
               id="reply-input-${comment.id}"
               maxlength="1000"></textarea>
             <button class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition submit-reply-btn" 
                     data-comment-id="${comment.id}">
-              回覆
+              Replies
             </button>
           </div>
           <div class="text-xs text-gray-400 mt-1">
@@ -308,7 +308,7 @@ class SocialComments {
                   data-username="${reply.username}"
                   data-mention="true">
             <i class="fas fa-reply"></i>
-            回覆
+            Replies
           </button>
         </div>
       </div>
@@ -353,10 +353,10 @@ class SocialComments {
     const now = new Date();
     const seconds = Math.floor((now - date) / 1000);
     
-    if (seconds < 60) return '剛剛';
-    if (seconds < 3600) return `${Math.floor(seconds / 60)} 分鐘前`;
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)} 小時前`;
-    if (seconds < 604800) return `${Math.floor(seconds / 86400)} 天前`;
+    if (seconds < 60) return 'Just now';
+    if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+    if (seconds < 604800) return `${Math.floor(seconds / 86400)} days ago`;
     return date.toLocaleDateString('zh-TW');
   }
   
@@ -371,19 +371,19 @@ class SocialComments {
     const content = textarea.value.trim();
     
     if (!content) {
-      this.showNotification('請輸入評論內容', 'error');
+      this.showNotification('Please enter comment content', 'error');
       return;
     }
     
     if (content.length > 1000) {
-      this.showNotification('評論長度不能超過 1000 字', 'error');
+      this.showNotification('Comment length cannot exceed 1000 characters', 'error');
       return;
     }
     
     try {
       const token = localStorage.getItem('auth_token');
       if (!token) {
-        this.showNotification('請先登入', 'error');
+        this.showNotification('Please login first', 'error');
         return;
       }
       
@@ -404,12 +404,12 @@ class SocialComments {
           document.getElementById(`reply-form-${parentId}`).classList.add('hidden');
         }
         
-        this.showNotification('評論發表成功！', 'success');
+        this.showNotification('Comment posted successfully!', 'success');
         await this.loadComments();
       }
     } catch (error) {
       console.error('Submit comment error:', error);
-      this.showNotification('發表評論失敗', 'error');
+      this.showNotification('Failed to post comment', 'error');
     }
   }
   
@@ -533,7 +533,7 @@ class SocialComments {
     try {
       const token = localStorage.getItem('auth_token');
       if (!token) {
-        this.showNotification('請先登入', 'error');
+        this.showNotification('Please login first', 'error');
         return;
       }
       
@@ -560,7 +560,7 @@ class SocialComments {
       }
     } catch (error) {
       console.error('Like error:', error);
-      this.showNotification('操作失敗', 'error');
+      this.showNotification('Operation failed', 'error');
     }
   }
   
@@ -582,7 +582,7 @@ class SocialComments {
   }
   
   async deleteComment(commentId) {
-    if (!confirm('確定要刪除此評論嗎？')) return;
+    if (!confirm('Are you sure you want to delete this comment?')) return;
     
     try {
       const token = localStorage.getItem('auth_token');
@@ -591,12 +591,12 @@ class SocialComments {
       });
       
       if (response.data.success) {
-        this.showNotification('評論已刪除', 'success');
+        this.showNotification('Comment deleted', 'success');
         await this.loadComments();
       }
     } catch (error) {
       console.error('Delete error:', error);
-      this.showNotification('刪除失敗', 'error');
+      this.showNotification('Delete failed', 'error');
     }
   }
   
@@ -605,7 +605,7 @@ class SocialComments {
     if (!contentEl) return;
     
     const currentContent = contentEl.textContent.trim();
-    const newContent = prompt('編輯評論:', currentContent);
+    const newContent = prompt('Edit comment:', currentContent);
     
     if (!newContent || newContent === currentContent) return;
     
@@ -618,17 +618,17 @@ class SocialComments {
       });
       
       if (response.data.success) {
-        this.showNotification('評論已更新', 'success');
+        this.showNotification('Comment updated', 'success');
         await this.loadComments();
       }
     } catch (error) {
       console.error('Edit error:', error);
-      this.showNotification('編輯失敗', 'error');
+      this.showNotification('Edit failed', 'error');
     }
   }
   
   async reportComment(commentId) {
-    const reason = prompt('請說明舉報原因:');
+    const reason = prompt('請說明Report原因:');
     if (!reason || !reason.trim()) return;
     
     try {
@@ -640,11 +640,11 @@ class SocialComments {
       });
       
       if (response.data.success) {
-        this.showNotification('舉報已提交，感謝您的反饋', 'success');
+        this.showNotification('Report已提交，感謝您的反饋', 'success');
       }
     } catch (error) {
       console.error('Report error:', error);
-      this.showNotification(error.response?.data?.error || '舉報失敗', 'error');
+      this.showNotification(error.response?.data?.error || 'Report失敗', 'error');
     }
   }
   
@@ -666,7 +666,7 @@ class SocialComments {
       }
     } catch (error) {
       console.error('Load more replies error:', error);
-      this.showNotification('載入失敗', 'error');
+      this.showNotification('Load failed', 'error');
     }
   }
 }

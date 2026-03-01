@@ -60,13 +60,13 @@ const formatRelativeTime = (timestamp) => {
   const months = Math.floor(days / 30);
   const years = Math.floor(days / 365);
 
-  if (seconds < 60) return '剛剛';
-  if (minutes < 60) return `${minutes} 分鐘前`;
-  if (hours < 24) return `${hours} 小時前`;
-  if (days < 7) return `${days} 天前`;
-  if (weeks < 4) return `${weeks} 週前`;
+  if (seconds < 60) return 'Just now';
+  if (minutes < 60) return `${minutes} minutes ago`;
+  if (hours < 24) return `${hours} hours ago`;
+  if (days < 7) return `${days} days ago`;
+  if (weeks < 4) return `${weeks} weeks ago`;
   if (months < 12) return `${months} 個月前`;
-  return `${years} 年前`;
+  return `${years}  years ago`;
 };
 
 // Get level icon
@@ -134,7 +134,7 @@ const loadActivityFeed = async (reset = false) => {
     document.getElementById('activity-feed').innerHTML = `
       <div class="glass-effect rounded-2xl p-12 text-center">
         <i class="fas fa-exclamation-triangle text-6xl text-red-500 mb-4"></i>
-        <p class="text-xl text-gray-400">載入失敗，請稍後再試</p>
+        <p class="text-xl text-gray-400">Load failed，Please try again later</p>
       </div>
     `;
   } finally {
@@ -196,7 +196,7 @@ const renderCommentActivity = (comment) => {
         
         <div class="flex-1 min-w-0">
           <div class="flex items-center space-x-2 mb-2">
-            <span class="font-bold">${comment.username || '匿名用戶'}</span>
+            <span class="font-bold">${comment.username || 'Anonymous'}</span>
             <span class="px-2 py-1 bg-orange-500/20 text-orange-500 rounded text-xs">
               ${levelIcon} Lv.${comment.level || 1}
             </span>
@@ -223,7 +223,7 @@ const renderCommentActivity = (comment) => {
               <i class="fas fa-comment mr-1"></i>
               回覆
             </a>
-            ${comment.pinned ? '<span class="text-yellow-500"><i class="fas fa-thumbtack mr-1"></i>已釘選</span>' : ''}
+            ${comment.pinned ? '<span class="text-yellow-500"><i class="fas fa-thumbtack mr-1"></i>Pinned</span>' : ''}
           </div>
         </div>
       </div>
@@ -298,7 +298,7 @@ const loadTrendingCoins = async () => {
       const container = document.getElementById('trending-coins');
       
       if (coins.length === 0) {
-        container.innerHTML = '<p class="text-gray-400 text-sm">暫無數據</p>';
+        container.innerHTML = '<p class="text-gray-400 text-sm">No data</p>';
         return;
       }
 
@@ -335,7 +335,7 @@ const loadActiveUsers = async () => {
       const container = document.getElementById('active-users');
       
       if (users.length === 0) {
-        container.innerHTML = '<p class="text-gray-400 text-sm">暫無數據</p>';
+        container.innerHTML = '<p class="text-gray-400 text-sm">No data</p>';
         return;
       }
 

@@ -50,7 +50,7 @@ const setButtonLoading = (buttonId, isLoading, originalText = '') => {
   
   if (isLoading) {
     button.setAttribute('data-original-text', button.innerHTML);
-    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>處理中...';
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
   } else {
     const original = button.getAttribute('data-original-text');
     button.innerHTML = original || originalText;
@@ -63,16 +63,16 @@ const checkPasswordStrength = (password) => {
   const feedback = [];
 
   if (password.length >= 8) strength += 25;
-  else feedback.push('至少 8 個字符');
+  else feedback.push('At least 8 characters');
 
   if (/[A-Z]/.test(password)) strength += 25;
-  else feedback.push('至少 1 個大寫字母');
+  else feedback.push('At least 1 uppercase letter');
 
   if (/[0-9]/.test(password)) strength += 25;
-  else feedback.push('至少 1 個數字');
+  else feedback.push('At least 1 number');
 
   if (/[^A-Za-z0-9]/.test(password)) strength += 25;
-  else feedback.push('至少 1 個特殊字符');
+  else feedback.push('At least 1 special character');
 
   let level = 'weak';
   if (strength >= 75) level = 'strong';
@@ -93,9 +93,9 @@ const updatePasswordStrength = (password) => {
   strengthBar.className = `password-strength-fill ${level}`;
   
   let text = '';
-  if (level === 'weak') text = '弱 - ' + feedback.join(', ');
-  else if (level === 'medium') text = '中等 - ' + feedback.join(', ');
-  else text = '強 - 密碼安全';
+  if (level === 'weak') text = 'Weak - ' + feedback.join(', ');
+  else if (level === 'medium') text = 'Medium - ' + feedback.join(', ');
+  else text = 'Strong - Password secure';
   
   strengthText.textContent = text;
 };
@@ -116,7 +116,7 @@ const setupEmailCollection = () => {
       const originalHTML = button.innerHTML;
       
       button.disabled = true;
-      button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>處理中...';
+      button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
       
       try {
         const response = await fetchUtils.post(`${API_BASE}/email`, {
@@ -125,7 +125,7 @@ const setupEmailCollection = () => {
         });
         
         if (response.data.success) {
-          showToast('太好了！我們會通知您最新消息 🎉', 'success');
+          showToast('Great! We will notify you of updates 🎉', 'success');
           form.querySelector('input').value = '';
           
           // Redirect to signup after a delay
@@ -135,7 +135,7 @@ const setupEmailCollection = () => {
         }
       } catch (error) {
         console.error('Email collection error:', error);
-        const message = error.response?.data?.error || error.response?.data?.message || '提交失敗，請稍後再試';
+        const message = error.response?.data?.error || error.response?.data?.message || 'Submission failed, please try again later';
         showToast(message, 'error');
       } finally {
         button.disabled = false;
@@ -178,12 +178,12 @@ const setupSignup = () => {
     
     // Validation
     if (!email || !username || !password) {
-      showMessage('請填寫所有欄位', 'error');
+      showMessage('Please fill in all fields', 'error');
       return;
     }
     
     if (password.length < 8) {
-      showMessage('密碼至少需要 8 個字符', 'error');
+      showMessage('Password must be at least 8 characters', 'error');
       return;
     }
     
@@ -218,7 +218,7 @@ const setupSignup = () => {
         
         if (!storedToken || storedToken !== token) {
           console.error('❌ Token storage failed!');
-          showMessage('儲存失敗，請重試', 'error');
+          showMessage('Save failed, please try again', 'error');
           return;
         }
         
@@ -232,7 +232,7 @@ const setupSignup = () => {
           });
         }
         
-        showMessage('註冊成功！正在跳轉...', 'success');
+        showMessage('Registration successful! Redirecting...', 'success');
         
         console.log('✅ Redirecting to /dashboard immediately');
         // localStorage is synchronous, no need to wait
@@ -240,7 +240,7 @@ const setupSignup = () => {
       }
     } catch (error) {
       console.error('Signup error:', error);
-      const message = error.response?.data?.error || error.response?.data?.message || '註冊失敗，請稍後再試';
+      const message = error.response?.data?.error || error.response?.data?.message || 'Registration failed, please try again later';
       showMessage(message, 'error');
     } finally {
       setButtonLoading('submit-btn', false);
@@ -263,7 +263,7 @@ const setupLogin = () => {
     const password = formData.get('password');
     
     if (!email || !password) {
-      showMessage('請填寫所有欄位', 'error');
+      showMessage('Please fill in all fields', 'error');
       return;
     }
     
@@ -297,7 +297,7 @@ const setupLogin = () => {
         
         if (!storedToken || storedToken !== token) {
           console.error('❌ Token storage failed!');
-          showMessage('儲存失敗，請重試', 'error');
+          showMessage('Save failed, please try again', 'error');
           return;
         }
         
@@ -310,7 +310,7 @@ const setupLogin = () => {
           });
         }
         
-        showMessage('登入成功！正在跳轉...', 'success');
+        showMessage('Login successful! Redirecting...', 'success');
         
         // Get redirect URL or default to dashboard
         const params = new URLSearchParams(window.location.search);
@@ -322,7 +322,7 @@ const setupLogin = () => {
       }
     } catch (error) {
       console.error('Login error:', error);
-      const message = error.response?.data?.error || error.response?.data?.message || '登入失敗，請檢查您的郵箱和密碼';
+      const message = error.response?.data?.error || error.response?.data?.message || 'Login failed, please check your email and password';
       showMessage(message, 'error');
     } finally {
       setButtonLoading('submit-btn', false);
@@ -344,7 +344,7 @@ const setupForgotPassword = () => {
     const email = formData.get('email');
     
     if (!email) {
-      showMessage('請輸入您的郵箱', 'error');
+      showMessage('Please enter your email', 'error');
       return;
     }
     
@@ -356,12 +356,12 @@ const setupForgotPassword = () => {
       });
       
       if (response.data.success) {
-        showMessage('如果該郵箱已註冊，您將收到密碼重置連結', 'success');
+        showMessage('If the email is registered, you will receive a password reset link', 'success');
         form.reset();
       }
     } catch (error) {
       console.error('Forgot password error:', error);
-      const message = error.response?.data?.error || error.response?.data?.message || '請求失敗，請稍後再試';
+      const message = error.response?.data?.error || error.response?.data?.message || 'Request failed, please try again later';
       showMessage(message, 'error');
     } finally {
       setButtonLoading('submit-btn', false);
@@ -380,7 +380,7 @@ const setupResetPassword = () => {
   const token = params.get('token');
   
   if (!token) {
-    showMessage('無效的重置連結', 'error');
+    showMessage('Invalid reset link', 'error');
     return;
   }
   
@@ -392,17 +392,17 @@ const setupResetPassword = () => {
     const confirmPassword = formData.get('confirmPassword');
     
     if (!password || !confirmPassword) {
-      showMessage('請填寫所有欄位', 'error');
+      showMessage('Please fill in all fields', 'error');
       return;
     }
     
     if (password !== confirmPassword) {
-      showMessage('密碼不匹配', 'error');
+      showMessage('Passwords do not match', 'error');
       return;
     }
     
     if (password.length < 8) {
-      showMessage('密碼至少需要 8 個字符', 'error');
+      showMessage('Password must be at least 8 characters', 'error');
       return;
     }
     
@@ -415,7 +415,7 @@ const setupResetPassword = () => {
       });
       
       if (response.data.success) {
-        showMessage('密碼已成功重置！正在跳轉到登入頁面...', 'success');
+        showMessage('Password reset successfully! Redirecting to login page...', 'success');
         
         setTimeout(() => {
           window.location.href = '/login';
@@ -423,7 +423,7 @@ const setupResetPassword = () => {
       }
     } catch (error) {
       console.error('Reset password error:', error);
-      const message = error.response?.data?.error || error.response?.data?.message || '重置失敗，請稍後再試';
+      const message = error.response?.data?.error || error.response?.data?.message || 'Reset failed, please try again later';
       showMessage(message, 'error');
     } finally {
       setButtonLoading('submit-btn', false);
@@ -442,7 +442,7 @@ const setupLogout = () => {
       e.preventDefault();
       
       localStorage.removeItem('auth_token');
-      showToast('已登出', 'success');
+      showToast('Logged out', 'success');
       
       setTimeout(() => {
         window.location.href = '/';

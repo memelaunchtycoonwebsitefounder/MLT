@@ -266,7 +266,7 @@ class RealtimeUpdates {
           <p class="text-sm text-gray-300 mb-2">${event.description}</p>
           <div class="flex items-center justify-between text-xs text-gray-400">
             <span>${event.coin_name} ($${event.coin_symbol})</span>
-            <span>影響: ${(event.impact_multiplier * 100 - 100).toFixed(0)}%</span>
+            <span>Impact: ${(event.impact_multiplier * 100 - 100).toFixed(0)}%</span>
           </div>
         </div>
         <button onclick="this.closest('[data-event-id]').remove()" class="text-gray-400 hover:text-white">
@@ -301,11 +301,11 @@ class RealtimeUpdates {
       <div class="flex items-center space-x-3">
         <i class="fas fa-exclamation-triangle text-yellow-500 text-2xl"></i>
         <div>
-          <p class="font-bold">連線已中斷</p>
-          <p class="text-sm text-gray-400">實時更新已停止</p>
+          <p class="font-bold">Connection lost</p>
+          <p class="text-sm text-gray-400">Real-time updates stopped</p>
         </div>
         <button onclick="window.location.reload()" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 rounded-lg font-bold transition ml-4">
-          重新連線
+          Reconnect
         </button>
       </div>
     `;

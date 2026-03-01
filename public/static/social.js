@@ -49,7 +49,7 @@ class SocialUI {
         <h2 class="text-2xl font-bold mb-6 flex items-center justify-between">
           <span>
             <i class="fas fa-comments mr-2"></i>
-            討論區 (${this.comments.length})
+            Discussion (${this.comments.length})
           </span>
           <button id="sort-comments" class="text-sm glass-effect px-4 py-2 rounded-lg hover:bg-white/10 transition">
             <i class="fas fa-sort mr-1"></i>
@@ -169,7 +169,7 @@ class SocialUI {
                 class="cancel-reply-btn px-4 py-1 text-sm glass-effect rounded hover:bg-white/10 transition"
                 data-comment-id="${comment.id}"
               >
-                取消
+                Cancel
               </button>
               <button
                 class="submit-reply-btn px-4 py-1 text-sm bg-orange-500 hover:bg-orange-600 rounded font-bold transition"
@@ -268,7 +268,7 @@ class SocialUI {
       });
 
       if (response.data.success) {
-        this.showNotification('評論發表成功！', 'success');
+        this.showNotification('Comment posted successfully！', 'success');
         input.value = '';
         document.getElementById('char-count').textContent = '0/1000';
         await this.loadComments();
@@ -315,7 +315,7 @@ class SocialUI {
   }
 
   async deleteComment(commentId) {
-    if (!confirm('確定要刪除此評論嗎？')) return;
+    if (!confirm('Are you sure you want to delete this comment？')) return;
 
     try {
       const token = localStorage.getItem('auth_token');
@@ -372,7 +372,7 @@ class SocialUI {
       await this.loadComments();
     } catch (error) {
       console.error('Failed to reply:', error);
-      this.showNotification('回覆失敗', 'error');
+      this.showNotification('Reply failed', 'error');
     }
   }
 
@@ -381,10 +381,10 @@ class SocialUI {
     const then = new Date(timestamp);
     const seconds = Math.floor((now - then) / 1000);
 
-    if (seconds < 60) return '剛剛';
-    if (seconds < 3600) return `${Math.floor(seconds / 60)} 分鐘前`;
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)} 小時前`;
-    if (seconds < 2592000) return `${Math.floor(seconds / 86400)} 天前`;
+    if (seconds < 60) return 'Just now';
+    if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+    if (seconds < 2592000) return `${Math.floor(seconds / 86400)} days ago`;
     return then.toLocaleDateString('zh-TW');
   }
 

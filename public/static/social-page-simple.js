@@ -115,7 +115,7 @@ const loadFeed = async () => {
     container.innerHTML = `
       <div class="glass-effect rounded-2xl p-12 text-center">
         <i class="fas fa-exclamation-triangle text-6xl text-red-500 mb-4"></i>
-        <p class="text-gray-400">載入失敗，請稍後再試</p>
+        <p class="text-gray-400">Load failed，Please try again later</p>
         <button onclick="location.reload()" class="mt-4 px-6 py-2 bg-orange-500 hover:bg-orange-600 rounded-lg font-bold transition">
           重新載入
         </button>
@@ -159,7 +159,7 @@ const loadRecentComments = async () => {
     container.innerHTML = `
       <div class="glass-effect rounded-2xl p-12 text-center">
         <i class="fas fa-exclamation-triangle text-6xl text-red-500 mb-4"></i>
-        <p class="text-gray-400">載入失敗</p>
+        <p class="text-gray-400">Load failed</p>
       </div>
     `;
   }
@@ -200,7 +200,7 @@ const loadPopularComments = async () => {
     container.innerHTML = `
       <div class="glass-effect rounded-2xl p-12 text-center">
         <i class="fas fa-exclamation-triangle text-6xl text-red-500 mb-4"></i>
-        <p class="text-gray-400">載入失敗</p>
+        <p class="text-gray-400">Load failed</p>
       </div>
     `;
   }
@@ -220,13 +220,13 @@ const renderActivity = (activity) => {
     case 'comment':
       icon = 'fa-comment';
       iconColor = 'text-green-500';
-      message = '發表了評論';
+      message = 'posted a comment';
       link = activity.entity_type === 'coin' ? `/coin/${activity.entity_id}` : '';
       break;
     case 'trade':
       icon = 'fa-exchange-alt';
       iconColor = 'text-green-500';
-      message = '進行了交易';
+      message = 'made a trade';
       break;
     case 'achievement':
       icon = 'fa-trophy';
@@ -309,7 +309,7 @@ const renderComment = (comment) => {
               <i class="fas fa-heart mr-1"></i>
               ${comment.likes_count || 0}
             </span>
-            ${comment.pinned ? '<span class="text-yellow-500"><i class="fas fa-thumbtack mr-1"></i>已釘選</span>' : ''}
+            ${comment.pinned ? '<span class="text-yellow-500"><i class="fas fa-thumbtack mr-1"></i>Pinned</span>' : ''}
           </div>
         </div>
       </div>
@@ -329,7 +329,7 @@ const loadTrendingCoins = async () => {
       if (!container) return;
       
       if (coins.length === 0) {
-        container.innerHTML = '<p class="text-gray-400 text-sm">暫無數據</p>';
+        container.innerHTML = '<p class="text-gray-400 text-sm">No data</p>';
         return;
       }
 

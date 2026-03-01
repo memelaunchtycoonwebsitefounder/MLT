@@ -131,7 +131,7 @@ const displayMyCoins = (coins) => {
         <i class="fas fa-rocket text-6xl text-gray-600 mb-4"></i>
         <p class="text-gray-400 mb-4">你還沒有創建任何幣種</p>
         <a href="/create" class="btn-primary inline-block">
-          <i class="fas fa-plus mr-2"></i>創建第一個幣種
+          <i class="fas fa-plus mr-2"></i>Create your first coin
         </a>
       </div>
     `;
@@ -148,7 +148,7 @@ const displayMyCoins = (coins) => {
         </div>
         <div class="text-right">
           <p class="text-lg font-bold text-green-500">$${Number(coin.current_price).toFixed(4)}</p>
-          <p class="text-sm text-gray-400">${coin.holders_count} 持有人</p>
+          <p class="text-sm text-gray-400">${coin.holders_count} Holders</p>
         </div>
       </div>
     </div>
@@ -226,7 +226,7 @@ const displayRecentActivity = (trades) => {
   
   if (trades.length === 0) {
     container.innerHTML = `
-      <p class="text-center text-gray-400 py-4">暫無交易記錄</p>
+      <p class="text-center text-gray-400 py-4">No transactions yet</p>
     `;
     return;
   }
@@ -234,7 +234,7 @@ const displayRecentActivity = (trades) => {
   const html = trades.map(trade => {
     const typeIcon = trade.type === 'buy' ? 'fa-arrow-up' : 'fa-arrow-down';
     const typeColor = trade.type === 'buy' ? 'text-green-500' : 'text-red-500';
-    const typeText = trade.type === 'buy' ? '買入' : '賣出';
+    const typeText = trade.type === 'buy' ? 'Buy' : 'Sell';
     
     return `
       <div class="flex items-center justify-between py-3 border-b border-gray-700 last:border-0">
@@ -291,7 +291,7 @@ const displayTrendingCoins = (coins) => {
       </div>
       <div class="text-right">
         <p class="font-bold text-green-500">$${Number(coin.current_price).toFixed(4)}</p>
-        <p class="text-xs text-gray-400">${coin.transaction_count} 交易</p>
+        <p class="text-xs text-gray-400">${coin.transaction_count} Trade</p>
       </div>
     </div>
   `).join('');

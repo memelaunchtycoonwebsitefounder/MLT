@@ -94,7 +94,7 @@ function initTradingViewWidget(containerId, coinData, priceHistory) {
     console.log('✅ TradingView Widget initialized');
   } catch (error) {
     console.error('❌ TradingView Widget error:', error);
-    showChartError(container, '無法載入圖表');
+    showChartError(container, 'Failed to load chart');
   }
 }
 

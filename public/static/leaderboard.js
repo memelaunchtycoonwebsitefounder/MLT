@@ -80,7 +80,7 @@ class LeaderboardUI {
       container.innerHTML = `
         <div class="text-center py-20">
           <i class="fas fa-exclamation-triangle text-6xl text-red-500 mb-4"></i>
-          <p class="text-xl text-gray-400">載入失敗，請稍後再試</p>
+          <p class="text-xl text-gray-400">載入失敗，Please try again later</p>
         </div>
       `;
     }
@@ -94,7 +94,7 @@ class LeaderboardUI {
       container.innerHTML = `
         <div class="text-center py-20">
           <i class="fas fa-inbox text-6xl text-gray-500 mb-4"></i>
-          <p class="text-xl text-gray-400">暫無排行榜數據</p>
+          <p class="text-xl text-gray-400">No leaderboard data</p>
         </div>
       `;
       return;
@@ -163,11 +163,11 @@ class LeaderboardUI {
         <table class="w-full">
           <thead class="bg-white/5">
             <tr>
-              <th class="px-6 py-4 text-left text-sm font-bold uppercase">排名</th>
+              <th class="px-6 py-4 text-left text-sm font-bold uppercase">Rank</th>
               <th class="px-6 py-4 text-left text-sm font-bold uppercase">用戶</th>
               <th class="px-6 py-4 text-right text-sm font-bold uppercase">${this.getCategoryLabel()}</th>
-              <th class="px-6 py-4 text-center text-sm font-bold uppercase">等級</th>
-              <th class="px-6 py-4 text-center text-sm font-bold uppercase">成就</th>
+              <th class="px-6 py-4 text-center text-sm font-bold uppercase">Level</th>
+              <th class="px-6 py-4 text-center text-sm font-bold uppercase">Achievements</th>
             </tr>
           </thead>
           <tbody>
@@ -244,7 +244,7 @@ class LeaderboardUI {
   getCategoryLabel() {
     const labels = {
       networth: '淨資產',
-      trades: '交易數',
+      trades: 'Trades數',
       level: '經驗值',
       profit: '總利潤'
     };
@@ -256,7 +256,7 @@ class LeaderboardUI {
       case 'networth':
         return `$${(user.total_networth || 0).toLocaleString()}`;
       case 'trades':
-        return `${(user.total_trades || 0).toLocaleString()} 筆`;
+        return `${(user.total_trades || 0).toLocaleString()}  coins`;
       case 'level':
         return `${(user.xp || 0).toLocaleString()} XP`;
       case 'profit':

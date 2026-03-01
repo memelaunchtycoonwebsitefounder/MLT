@@ -27,13 +27,13 @@ function initEmailForms() {
       }
       
       if (!validateEmail(email)) {
-        showMessage(messageDiv, '請輸入有效的郵箱地址', 'error');
+        showMessage(messageDiv, 'Please enter a valid email address', 'error');
         return;
       }
       
       // Disable button during submission
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>提交中...';
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Submitting...';
       
       try {
         const response = await fetch(`${API_BASE}/email/subscribe`, {
@@ -64,15 +64,15 @@ function initEmailForms() {
           // }, 3000);
           
         } else {
-          showMessage(messageDiv, data.error || '提交失敗，請稍後重試', 'error');
+          showMessage(messageDiv, data.error || 'Submission failed，請稍後重試', 'error');
         }
         
       } catch (error) {
         console.error('Email subscription error:', error);
-        showMessage(messageDiv, '網絡錯誤，請稍後重試', 'error');
+        showMessage(messageDiv, 'Network error，請稍後重試', 'error');
       } finally {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-rocket mr-2"></i>立即開始（完全免費）';
+        submitBtn.innerHTML = '<i class="fas fa-rocket mr-2"></i>立即開始（Completely free）';
       }
     });
   });

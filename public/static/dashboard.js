@@ -230,7 +230,7 @@ async function loadRecentTransactions() {
     if (!container) return;
     
     if (transactions.length === 0) {
-      container.innerHTML = '<p class="text-gray-400 text-center py-4">暫無交易記錄</p>';
+      container.innerHTML = '<p class="text-gray-400 text-center py-4">No transactions yet</p>';
       return;
     }
     
@@ -250,7 +250,7 @@ async function loadRecentTransactions() {
           </div>
           <div class="text-right">
             <p class="font-semibold">${tx.amount} ${tx.coin_symbol || ''}</p>
-            <p class="text-sm ${typeClass}">${tx.type === 'buy' ? '-' : '+'}${tx.total_cost.toFixed(2)} 金幣</p>
+            <p class="text-sm ${typeClass}">${tx.type === 'buy' ? '-' : '+'}${tx.total_cost.toFixed(2)} Coins</p>
           </div>
         </div>
       `;
@@ -261,7 +261,7 @@ async function loadRecentTransactions() {
     console.error('Dashboard: Failed to load transactions:', error);
     const container = document.getElementById('recent-transactions');
     if (container) {
-      container.innerHTML = '<p class="text-gray-400 text-center py-4">暫無交易記錄</p>';
+      container.innerHTML = '<p class="text-gray-400 text-center py-4">No transactions yet</p>';
     }
   }
 }
@@ -275,7 +275,7 @@ async function loadTrendingCoins() {
     if (!container) return;
     
     if (coins.length === 0) {
-      container.innerHTML = '<p class="text-gray-400 text-center py-4">暫無熱門幣種</p>';
+      container.innerHTML = '<p class="text-gray-400 text-center py-4">No trending coins</p>';
       return;
     }
     
@@ -290,7 +290,7 @@ async function loadTrendingCoins() {
         </div>
         <div class="text-right">
           <p class="font-semibold">$${coin.current_price.toFixed(6)}</p>
-          <p class="text-sm text-gray-400">市值: $${coin.market_cap.toFixed(2)}</p>
+          <p class="text-sm text-gray-400">Market Cap: $${coin.market_cap.toFixed(2)}</p>
         </div>
       </a>
     `).join('');
@@ -314,7 +314,7 @@ async function loadUserHoldings() {
     if (!container) return;
     
     if (holdings.length === 0) {
-      container.innerHTML = '<p class="text-gray-400 text-center py-4">您還沒有持倉</p>';
+      container.innerHTML = '<p class="text-gray-400 text-center py-4">You have no holdings yet</p>';
       return;
     }
     
@@ -331,7 +331,7 @@ async function loadUserHoldings() {
             </div>
           </div>
           <div class="text-right">
-            <p class="font-semibold">${holding.current_value.toFixed(2)} 金幣</p>
+            <p class="font-semibold">${holding.current_value.toFixed(2)} Coins</p>
             <p class="text-sm ${pnlClass}">${holding.profit_loss_percent >= 0 ? '+' : ''}${holding.profit_loss_percent.toFixed(2)}%</p>
           </div>
         </a>

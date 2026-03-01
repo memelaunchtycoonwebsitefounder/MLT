@@ -131,9 +131,9 @@ function updateHoldings(holdings) {
       <tr>
         <td colspan="7" class="text-center py-8 text-gray-400">
           <i class="fas fa-inbox text-4xl mb-2"></i>
-          <p>您還沒有任何持倉</p>
+          <p>You don't have any holdings yet</p>
           <a href="/market" class="text-orange-500 hover:text-orange-400 transition mt-2 inline-block">
-            前往市場 <i class="fas fa-arrow-right ml-1"></i>
+            Go to Market <i class="fas fa-arrow-right ml-1"></i>
           </a>
         </td>
       </tr>

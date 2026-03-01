@@ -47,7 +47,7 @@ async function initSimpleCharts(coinData, priceHistory, limit = 100) {
     return true;
   } catch (error) {
     console.error('❌ Chart initialization error:', error);
-    showChartError('price-chart', '無法載入價格圖表');
+    showChartError('price-chart', 'Failed to load price chart');
     return false;
   }
 }
@@ -121,7 +121,7 @@ function createPriceChart(chartData, coinData) {
     data: {
       labels: labels,
       datasets: [{
-        label: '價格',
+        label: 'Price',
         data: prices,
         backgroundColor: colors,
         borderColor: colors,
@@ -226,7 +226,7 @@ function createVolumeChart(chartData) {
     data: {
       labels: labels,
       datasets: [{
-        label: '成交量',
+        label: 'Volume',
         data: volumes,
         backgroundColor: colors,
         borderColor: colors,

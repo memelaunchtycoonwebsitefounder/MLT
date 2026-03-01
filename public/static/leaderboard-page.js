@@ -111,7 +111,7 @@ const loadRankings = async () => {
       renderUserStats(currentUser);
     }
   } catch (error) {
-    console.error('載入排行榜失敗:', error);
+    console.error('Failed to load leaderboard:', error);
     showNotification('Failed to load leaderboard', 'error');
   }
 };
@@ -258,7 +258,7 @@ const renderRankingsTable = () => {
     `;
   });
 
-  tbody.innerHTML = html || '<tr><td colspan="5" class="text-center py-8 text-gray-400">暫無數據</td></tr>';
+  tbody.innerHTML = html || '<tr><td colspan="5" class="text-center py-8 text-gray-400">No data</td></tr>';
 };
 
 // Render user stats card

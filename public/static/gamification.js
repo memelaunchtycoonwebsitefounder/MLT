@@ -42,10 +42,10 @@ class GamificationUI {
 
     // Group by category
     const categories = {
-      trading: { name: '交易成就', icon: 'fa-chart-line', achievements: [] },
-      creation: { name: '創作成就', icon: 'fa-rocket', achievements: [] },
-      social: { name: '社交成就', icon: 'fa-users', achievements: [] },
-      milestone: { name: '里程碑', icon: 'fa-trophy', achievements: [] }
+      trading: { name: 'Trading Achievement', icon: 'fa-chart-line', achievements: [] },
+      creation: { name: 'Creator Achievement', icon: 'fa-rocket', achievements: [] },
+      social: { name: '社交achievement', icon: 'fa-users', achievements: [] },
+      milestone: { name: 'Milestone', icon: 'fa-trophy', achievements: [] }
     };
 
     this.achievements.forEach(ach => {
@@ -154,12 +154,12 @@ class GamificationUI {
 
   getRarityText(rarity) {
     const text = {
-      common: '普通',
+      common: 'Common',
       rare: '稀有',
       epic: '史詩',
       legendary: '傳奇'
     };
-    return text[rarity] || '普通';
+    return text[rarity] || 'Common';
   }
 
   showAchievementDetails(achievement) {
@@ -228,20 +228,20 @@ class GamificationUI {
 
     if (filter === 'unlocked') {
       const unlocked = this.achievements.filter(a => a.completed === 1);
-      this.renderFilteredAchievements(unlocked, '已解鎖成就');
+      this.renderFilteredAchievements(unlocked, '已解鎖achievement');
     } else if (filter === 'locked') {
       const locked = this.achievements.filter(a => a.completed !== 1);
-      this.renderFilteredAchievements(locked, '未解鎖成就');
+      this.renderFilteredAchievements(locked, '未解鎖achievement');
     } else {
       // Filter by category
       const filtered = this.achievements.filter(a => a.category === filter);
       const categoryNames = {
-        trading: '交易成就',
-        creation: '創作成就',
-        social: '社交成就',
-        milestone: '里程碑'
+        trading: 'Trading Achievement',
+        creation: 'Creator Achievement',
+        social: '社交achievement',
+        milestone: 'Milestone'
       };
-      this.renderFilteredAchievements(filtered, categoryNames[filter] || '成就');
+      this.renderFilteredAchievements(filtered, categoryNames[filter] || 'achievement');
     }
   }
 
@@ -270,7 +270,7 @@ class GamificationUI {
         <div class="mb-6">
           <div class="text-9xl animate-bounce">${achievement.icon_emoji || '🏆'}</div>
         </div>
-        <h2 class="text-6xl font-bold mb-4 gradient-text animate-pulse">成就解鎖！</h2>
+        <h2 class="text-6xl font-bold mb-4 gradient-text animate-pulse">Achievement Unlocked！</h2>
         <h3 class="text-4xl font-bold mb-4">${achievement.name}</h3>
         <p class="text-xl text-gray-300 mb-8">${achievement.description}</p>
         <div class="text-3xl font-bold text-orange-500 mb-8">
@@ -337,7 +337,7 @@ class LevelProgress {
       <div class="glass-effect rounded-2xl p-6 mb-6">
         <div class="flex items-center justify-between mb-4">
           <div>
-            <h3 class="text-2xl font-bold">等級 ${level}</h3>
+            <h3 class="text-2xl font-bold">等Level ${level}</h3>
             <p class="text-gray-400">${currentXP.toLocaleString()} / ${xpForNext.toLocaleString()} XP</p>
           </div>
           <div class="text-5xl">
@@ -348,7 +348,7 @@ class LevelProgress {
           <div class="h-full bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 transition-all duration-500" 
                style="width: ${progress}%"></div>
         </div>
-        <p class="text-sm text-gray-400 mt-2">還需 ${(xpForNext - currentXP).toLocaleString()} XP 升到下一級</p>
+        <p class="text-sm text-gray-400 mt-2">還需 ${(xpForNext - currentXP).toLocaleString()} XP 升到下一Level</p>
       </div>
     `;
   }

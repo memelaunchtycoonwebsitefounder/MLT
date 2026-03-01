@@ -98,7 +98,7 @@ const PWAManager = {
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
         </svg>
-        <span>安裝應用</span>
+        <span>Install App</span>
       `;
       
       document.body.appendChild(installBtn);
@@ -167,9 +167,9 @@ const PWAManager = {
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
       </svg>
-      <span>新版本可用！</span>
+      <span>New version available！</span>
       <button class="ml-2 bg-white text-blue-500 px-3 py-1 rounded hover:bg-blue-50 transition-colors" onclick="window.location.reload()">
-        重新載入
+        Reload
       </button>
       <button class="ml-2 text-white hover:text-blue-100" onclick="this.parentElement.remove()">
         ✕
