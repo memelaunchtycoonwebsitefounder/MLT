@@ -1,4 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
+#!/usr/bin/env python3
+
+print("🔧 Updating sitemap.xml with legal pages...")
+
+sitemap_content = """<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Main Pages -->
   <url>
@@ -72,3 +76,14 @@
     <priority>0.5</priority>
   </url>
 </urlset>
+"""
+
+with open('public/sitemap.xml', 'w', encoding='utf-8') as f:
+    f.write(sitemap_content)
+
+print("✅ Updated sitemap.xml with 4 legal pages!")
+print("\nPages added:")
+print("  - /about")
+print("  - /contact")
+print("  - /privacy-policy")
+print("  - /terms-of-service")
