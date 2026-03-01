@@ -68,6 +68,8 @@ class UserProfile {
       }
     } catch (error) {
       console.error('Load profile error:', error);
+      const loader = document.getElementById(\'profile-loading\');
+      if (loader) loader.classList.add(\'hidden\');
       document.getElementById('profile-content').innerHTML = `
         <div class="text-center py-12">
           <i class="fas fa-exclamation-circle text-6xl text-red-500 mb-4"></i>
@@ -80,6 +82,9 @@ class UserProfile {
   }
 
   render() {
+    // Hide loading screen
+    const loader = document.getElementById(\'profile-loading\');
+    if (loader) loader.classList.add(\'hidden\');
     const { user, stats, followStats, isFollowing } = this.profileData;
     
     document.getElementById('profile-content').innerHTML = `

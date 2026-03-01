@@ -275,7 +275,8 @@
       "backToLogin": "Back to Sign In",
       "emailSent": "Reset link sent! Check your email.",
       "emailNotFound": "Email not found",
-      "networkError": "Network error. Please try again."
+      "networkError": "Network error. Please try again.",
+      "securityNote": "Your password reset link is secure and expires in 1 hour"
     }
   },
   "dashboard": {

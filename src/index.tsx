@@ -1388,6 +1388,11 @@ app.get('/forgot-password', (c) => {
     <script defer src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
     <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
+    <style>
+        /* Prevent flash of unstyled content */
+        body { opacity: 0; animation: fadeIn 0.3s ease-in forwards; }
+        @keyframes fadeIn { to { opacity: 1; } }
+    </style>
 </head>
 <body class="gradient-bg text-white min-h-screen">
     <div id="language-switcher-container"></div>
@@ -1407,10 +1412,10 @@ app.get('/forgot-password', (c) => {
             <!-- Reset Form -->
             <div class="glass-effect rounded-2xl p-8">
                 <div class="text-center mb-6">
-                    <div class="inline-flex items-center justify-center w-16 h-16 bg-orange-500/20 rounded-full mb-4">
-                        <i class="fas fa-key text-3xl text-orange-500"></i>
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full mb-4 animate-pulse">
+                        <i class="fas fa-key text-3xl text-white"></i>
                     </div>
-                    <h2 class="text-2xl font-bold" data-i18n="auth.forgotPassword.title">Forgot Password?</h2>
+                    <h2 class="text-2xl font-bold bg-gradient-to-r from-orange-400 to-pink-500 bg-clip-text text-transparent" data-i18n="auth.forgotPassword.title">Forgot Password?</h2>
                     <p class="text-gray-400 mt-2 text-sm" data-i18n="auth.forgotPassword.description">Don't worry! Enter your email and we'll send you a reset link.</p>
                 </div>
                 
@@ -1418,7 +1423,7 @@ app.get('/forgot-password', (c) => {
                     <!-- Email -->
                     <div>
                         <label for="email" class="block text-sm font-medium mb-2">
-                            <i class="fas fa-envelope mr-2"></i><span data-i18n="auth.emailLabel">Email</span>
+                            <i class="fas fa-envelope mr-2 text-orange-400"></i><span data-i18n="auth.emailLabel">Email</span>
                         </label>
                         <input
                             type="email"
@@ -1433,7 +1438,7 @@ app.get('/forgot-password', (c) => {
                     </div>
 
                     <!-- Submit Button -->
-                    <button type="submit" class="gradient-button w-full">
+                    <button type="submit" id="submit-btn" class="gradient-button w-full">
                         <i class="fas fa-paper-plane mr-2"></i><span data-i18n="auth.forgotPassword.submitButton">Send Reset Link</span>
                     </button>
 
@@ -1443,11 +1448,18 @@ app.get('/forgot-password', (c) => {
 
                 <!-- Back to Login -->
                 <div class="mt-6 text-center">
-                    <a href="/login" class="link-text">
-                        <i class="fas fa-arrow-left mr-2"></i><span data-i18n="auth.forgotPassword.backToLogin">Back to Sign In</span>
+                    <a href="/login" class="link-text group">
+                        <i class="fas fa-arrow-left mr-2 group-hover:translate-x-[-4px] transition-transform"></i>
+                        <span data-i18n="auth.forgotPassword.backToLogin">Back to Sign In</span>
                     </a>
                 </div>
             </div>
+
+            <!-- Security Note -->
+            <p class="mt-6 text-center text-xs text-gray-500">
+                <i class="fas fa-shield-alt mr-1 text-green-400"></i>
+                <span data-i18n="auth.forgotPassword.securityNote">Your password reset link is secure and expires in 1 hour</span>
+            </p>
         </div>
     </div>
 
@@ -1461,7 +1473,10 @@ app.get('/forgot-password', (c) => {
 
             emailError.classList.add('hidden');
             formMessage.classList.add('hidden');
+            
+            // Disable button with loading state
             submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span>Sending...</span>';
 
             try {
                 const response = await fetch('/api/auth/forgot-password', {
@@ -1474,8 +1489,11 @@ app.get('/forgot-password', (c) => {
 
                 if (response.ok && result.success) {
                     formMessage.textContent = result.message || 'Reset link sent! Check your email.';
-                    formMessage.className = 'mt-4 p-4 rounded-lg bg-green-500/20 border border-green-500 text-green-500';
+                    formMessage.className = 'mt-4 p-4 rounded-lg bg-green-500/20 border border-green-500 text-green-400';
                     formMessage.classList.remove('hidden');
+                    
+                    // Disable form after success
+                    document.getElementById('email').disabled = true;
                 } else {
                     emailError.textContent = result.error || result.message || 'Failed to send reset email';
                     emailError.classList.remove('hidden');
@@ -1485,7 +1503,10 @@ app.get('/forgot-password', (c) => {
                 emailError.textContent = 'Network error. Please try again.';
                 emailError.classList.remove('hidden');
             } finally {
+                // Re-enable button
                 submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i><span data-i18n="auth.forgotPassword.submitButton">Send Reset Link</span>';
+                if (typeof i18n !== 'undefined') i18n.translatePage();
             }
         });
     </script>

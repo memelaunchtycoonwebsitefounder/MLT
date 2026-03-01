@@ -275,7 +275,8 @@
       "backToLogin": "返回登入",
       "emailSent": "重置連結已發送！請檢查您的郵箱",
       "emailNotFound": "找不到此郵箱",
-      "networkError": "網路錯誤，請稍後再試"
+      "networkError": "網路錯誤，請稍後再試",
+      "securityNote": "您的密碼重置連結是安全的，將在 1 小時後過期"
     }
   },
   "dashboard": {
