@@ -412,6 +412,35 @@ app.get('/', (c) => {
             background: #3a3a3a;
         }
     </style>
+    <script>
+      // Register Service Worker for PWA
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('[PWA] Service Worker registered successfully:', registration.scope);
+              
+              // Check for updates
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                console.log('[PWA] New Service Worker installing...');
+                
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    console.log('[PWA] New version available! Refresh to update.');
+                    // Optionally show update notification to user
+                  }
+                });
+              });
+            })
+            .catch((error) => {
+              console.error('[PWA] Service Worker registration failed:', error);
+            });
+        });
+      } else {
+        console.warn('[PWA] Service Workers not supported in this browser');
+      }
+    </script>
 </head>
 <body class="gradient-bg text-white min-h-screen">
     <!-- Loading overlay -->
