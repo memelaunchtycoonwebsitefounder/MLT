@@ -184,6 +184,7 @@ app.get('/', (c) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
     
     <!-- Primary Meta Tags -->
     <title>MemeLaunch Tycoon - Free Meme Coin Trading Simulator | Create & Trade</title>
@@ -838,6 +839,7 @@ app.get('/signup', (c) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
     <title data-i18n="auth.register.pageTitle">Sign Up - MemeLaunch Tycoon</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
@@ -1189,6 +1191,7 @@ app.get('/login', (c) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
     <title><span data-i18n="auth.login.submitButton">Sign In</span> - MemeLaunch Tycoon</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
@@ -1453,6 +1456,7 @@ app.get('/forgot-password', (c) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
     <title data-i18n="auth.forgotPassword.pageTitle">Forgot Password - MemeLaunch Tycoon</title>
     <script defer src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
@@ -1599,6 +1603,7 @@ app.get('/reset-password', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
         <title>重置密碼 - MemeLaunch Tycoon</title>
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
@@ -1758,6 +1763,7 @@ app.get('/coin/:id', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
         <title data-i18n="coinDetail.title">Coin Detail</title> - MemeLaunch Tycoon
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
@@ -2370,6 +2376,7 @@ app.get('/market', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
         <title data-i18n="market.title">Market</title> - MemeLaunch Tycoon
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
@@ -2646,6 +2653,7 @@ app.get('/create', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
         <title data-i18n="create.title">Create Meme Coin</title> - MemeLaunch Tycoon
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
@@ -3392,6 +3400,7 @@ app.get('/dashboard', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
         <title data-i18n="dashboard.pageTitle">Dashboard - MemeLaunch Tycoon</title>
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
@@ -3691,6 +3700,7 @@ app.get('/portfolio', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
         <title>投資組合 - MemeLaunch Tycoon</title>
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
@@ -3923,6 +3933,7 @@ app.get('/achievements', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
         <title data-i18n="achievements.pageTitle">Achievements - MemeLaunch Tycoon</title>
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
@@ -4182,6 +4193,7 @@ app.get('/leaderboard', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
         <title data-i18n="leaderboard.pageTitle">Leaderboard - MemeLaunch Tycoon</title>
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
@@ -4413,6 +4425,7 @@ app.get('/social', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
         <title data-i18n="social.pageTitle">Social - MemeLaunch Tycoon</title>
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
@@ -4658,6 +4671,7 @@ app.get('/profile/:userId', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
         <title data-i18n="profile.pageTitle">User Profile - MemeLaunch</title>
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
@@ -4857,6 +4871,7 @@ app.get('/legal.html', (c) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
     <title>MemeLaunch Tycoon - Legal Pages (About, Contact, Privacy, Terms)</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
@@ -6353,6 +6368,7 @@ app.get('/about', (c) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
     <title>MemeLaunch Tycoon - Legal Pages (About, Contact, Privacy, Terms)</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
@@ -7849,6 +7865,7 @@ app.get('/contact', (c) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
     <title>MemeLaunch Tycoon - Legal Pages (About, Contact, Privacy, Terms)</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
@@ -9345,6 +9362,7 @@ app.get('/privacy-policy', (c) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
     <title>MemeLaunch Tycoon - Legal Pages (About, Contact, Privacy, Terms)</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
@@ -10841,6 +10859,7 @@ app.get('/terms-of-service', (c) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
     <title>MemeLaunch Tycoon - Legal Pages (About, Contact, Privacy, Terms)</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
@@ -12338,6 +12357,7 @@ app.get('/privacy', (c) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
     <title>MemeLaunch Tycoon - Legal Pages (About, Contact, Privacy, Terms)</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
@@ -13833,6 +13853,7 @@ app.get('/terms', (c) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="version" content="202603020321">
     <title>MemeLaunch Tycoon - Legal Pages (About, Contact, Privacy, Terms)</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
