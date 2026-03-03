@@ -12,5 +12,8 @@
       "database_name": "memelaunch-db",
       "database_id": "21402e76-3247-4655-bb05-b2e3b52c608c"
     }
-  ]
+  ],
+  "vars": {
+    "EMAIL_FROM": "MemeLaunch Tycoon <noreply@memelaunchtycoon.com>"
+  }
 }

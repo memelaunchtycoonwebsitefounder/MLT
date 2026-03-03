@@ -11,6 +11,7 @@ import {
   errorResponse,
   successResponse,
 } from '../utils';
+import { sendWelcomeEmail } from '../services/email';
 
 const auth = new Hono<{ Bindings: Env }>();
 
@@ -91,6 +92,15 @@ auth.post('/register', async (c) => {
       .first() as any;
       
     console.log('[REGISTER] User created successfully:', newUser.id, newUser.username);
+
+    // Send welcome email (non-blocking)
+    try {
+      await sendWelcomeEmail(c.env, newUser.username, newUser.email);
+      console.log('[REGISTER] Welcome email sent to:', newUser.email);
+    } catch (emailError: any) {
+      // Don't fail registration if email fails
+      console.error('[REGISTER] Failed to send welcome email:', emailError.message);
+    }
 
     // Generate token
     const tokenPayload: JWTPayload = {

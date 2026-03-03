@@ -207,4 +207,100 @@ admin.get('/stats', async (c) => {
   }
 });
 
+/**
+ * Get user registration statistics
+ */
+admin.get('/stats/users', async (c) => {
+  try {
+    // Total users
+    const totalUsers = await c.env.DB.prepare(
+      'SELECT COUNT(*) as count FROM users'
+    ).first() as any;
+
+    // Users registered today
+    const todayUsers = await c.env.DB.prepare(
+      `SELECT COUNT(*) as count FROM users 
+       WHERE DATE(created_at) = DATE('now')`
+    ).first() as any;
+
+    // Users registered this week
+    const weekUsers = await c.env.DB.prepare(
+      `SELECT COUNT(*) as count FROM users 
+       WHERE DATE(created_at) >= DATE('now', '-7 days')`
+    ).first() as any;
+
+    // Users registered this month
+    const monthUsers = await c.env.DB.prepare(
+      `SELECT COUNT(*) as count FROM users 
+       WHERE DATE(created_at) >= DATE('now', 'start of month')`
+    ).first() as any;
+
+    // Recent registrations (last 10)
+    const recentUsers = await c.env.DB.prepare(
+      `SELECT id, username, email, created_at 
+       FROM users 
+       ORDER BY created_at DESC 
+       LIMIT 10`
+    ).all();
+
+    // Registration trend (last 7 days)
+    const trend = await c.env.DB.prepare(
+      `SELECT DATE(created_at) as date, COUNT(*) as count 
+       FROM users 
+       WHERE DATE(created_at) >= DATE('now', '-7 days')
+       GROUP BY DATE(created_at)
+       ORDER BY date DESC`
+    ).all();
+
+    return successResponse({
+      total: totalUsers?.count || 0,
+      today: todayUsers?.count || 0,
+      week: weekUsers?.count || 0,
+      month: monthUsers?.count || 0,
+      recent: recentUsers.results || [],
+      trend: trend.results || []
+    });
+  } catch (error: any) {
+    console.error('Get user stats error:', error);
+    return errorResponse('獲取用戶統計時發生錯誤', 500);
+  }
+});
+
+/**
+ * Get all users list (paginated)
+ */
+admin.get('/users', async (c) => {
+  try {
+    const page = parseInt(c.req.query('page') || '1');
+    const limit = parseInt(c.req.query('limit') || '20');
+    const offset = (page - 1) * limit;
+
+    // Get total count
+    const totalCount = await c.env.DB.prepare(
+      'SELECT COUNT(*) as count FROM users'
+    ).first() as any;
+
+    // Get users
+    const users = await c.env.DB.prepare(
+      `SELECT id, username, email, virtual_balance, mlt_balance, created_at
+       FROM users
+       ORDER BY created_at DESC
+       LIMIT ? OFFSET ?`
+    ).bind(limit, offset).all();
+
+    return successResponse({
+      users: users.results || [],
+      pagination: {
+        page,
+        limit,
+        total: totalCount?.count || 0,
+        totalPages: Math.ceil((totalCount?.count || 0) / limit)
+      }
+    });
+  } catch (error: any) {
+    console.error('Get users list error:', error);
+    return errorResponse('獲取用戶列表時發生錯誤', 500);
+  }
+});
+
 export default admin;

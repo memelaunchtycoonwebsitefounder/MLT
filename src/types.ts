@@ -3,7 +3,12 @@ export interface Env {
   IMAGES?: R2Bucket;  // Optional R2 bucket for image storage
   JWT_SECRET: string;
   STARTING_BALANCE: string;
+  STARTING_MLT?: string;
   REALTIME: DurableObjectNamespace; // WebSocket Durable Object
+  
+  // Email configuration (Resend API)
+  RESEND_API_KEY?: string;  // API key from resend.com
+  EMAIL_FROM?: string;       // From email address (default: noreply@memelaunchtycoon.com)
 }
 
 export interface User {
