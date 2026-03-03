@@ -212,48 +212,67 @@ admin.get('/stats', async (c) => {
  */
 admin.get('/stats/users', async (c) => {
   try {
-    // Total users
+    // Total users (all)
     const totalUsers = await c.env.DB.prepare(
       'SELECT COUNT(*) as count FROM users'
     ).first() as any;
 
-    // Users registered today
+    // Real users (exclude AI traders)
+    const realUsers = await c.env.DB.prepare(
+      `SELECT COUNT(*) as count FROM users 
+       WHERE email NOT LIKE '%@ai.memelaunch.system'`
+    ).first() as any;
+
+    // AI traders
+    const aiTraders = await c.env.DB.prepare(
+      `SELECT COUNT(*) as count FROM users 
+       WHERE email LIKE '%@ai.memelaunch.system'`
+    ).first() as any;
+
+    // Real users registered today
     const todayUsers = await c.env.DB.prepare(
       `SELECT COUNT(*) as count FROM users 
-       WHERE DATE(created_at) = DATE('now')`
+       WHERE DATE(created_at) = DATE('now')
+       AND email NOT LIKE '%@ai.memelaunch.system'`
     ).first() as any;
 
-    // Users registered this week
+    // Real users registered this week
     const weekUsers = await c.env.DB.prepare(
       `SELECT COUNT(*) as count FROM users 
-       WHERE DATE(created_at) >= DATE('now', '-7 days')`
+       WHERE DATE(created_at) >= DATE('now', '-7 days')
+       AND email NOT LIKE '%@ai.memelaunch.system'`
     ).first() as any;
 
-    // Users registered this month
+    // Real users registered this month
     const monthUsers = await c.env.DB.prepare(
       `SELECT COUNT(*) as count FROM users 
-       WHERE DATE(created_at) >= DATE('now', 'start of month')`
+       WHERE DATE(created_at) >= DATE('now', 'start of month')
+       AND email NOT LIKE '%@ai.memelaunch.system'`
     ).first() as any;
 
-    // Recent registrations (last 10)
+    // Recent registrations (last 10 real users only)
     const recentUsers = await c.env.DB.prepare(
       `SELECT id, username, email, created_at 
        FROM users 
+       WHERE email NOT LIKE '%@ai.memelaunch.system'
        ORDER BY created_at DESC 
        LIMIT 10`
     ).all();
 
-    // Registration trend (last 7 days)
+    // Registration trend (last 7 days, real users only)
     const trend = await c.env.DB.prepare(
       `SELECT DATE(created_at) as date, COUNT(*) as count 
        FROM users 
        WHERE DATE(created_at) >= DATE('now', '-7 days')
+       AND email NOT LIKE '%@ai.memelaunch.system'
        GROUP BY DATE(created_at)
        ORDER BY date DESC`
     ).all();
 
     return successResponse({
       total: totalUsers?.count || 0,
+      realUsers: realUsers?.count || 0,
+      aiTraders: aiTraders?.count || 0,
       today: todayUsers?.count || 0,
       week: weekUsers?.count || 0,
       month: monthUsers?.count || 0,

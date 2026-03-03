@@ -9,6 +9,9 @@ export interface Env {
   // Email configuration (Resend API)
   RESEND_API_KEY?: string;  // API key from resend.com
   EMAIL_FROM?: string;       // From email address (default: noreply@memelaunchtycoon.com)
+  
+  // Admin configuration
+  ADMIN_TOKEN?: string;      // Admin dashboard access token (default: mlt-admin-2026-secure)
 }
 
 export interface User {

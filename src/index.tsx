@@ -15561,8 +15561,84 @@ app.get('/terms', (c) => {
 
 
 
-// Admin Dashboard page
+// Admin Dashboard page - Protected with token authentication
 app.get('/admin-dashboard', (c) => {
+  // Check for authentication token
+  const token = c.req.query('token');
+  const correctToken = c.env.ADMIN_TOKEN || 'mlt-admin-2026-secure';
+  
+  if (token !== correctToken) {
+    return c.html(`
+      <!DOCTYPE html>
+      <html lang="zh-TW">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>需要認證 - MemeLaunch Tycoon</title>
+          <script src="https://cdn.tailwindcss.com"></script>
+          <style>
+              body {
+                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                  background: linear-gradient(135deg, #0A0B0D 0%, #1A1B1F 50%, #0A0B0D 100%);
+                  min-height: 100vh;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+              }
+          </style>
+      </head>
+      <body>
+          <div class="max-w-md w-full mx-4">
+              <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl p-8 border border-gray-700">
+                  <div class="text-center mb-6">
+                      <div class="inline-block p-4 bg-orange-500/10 rounded-full mb-4">
+                          <i class="fas fa-lock text-4xl text-orange-500"></i>
+                      </div>
+                      <h1 class="text-2xl font-bold text-white mb-2">需要認證</h1>
+                      <p class="text-gray-400">請輸入管理員訪問令牌</p>
+                  </div>
+                  
+                  <form id="auth-form" class="space-y-4">
+                      <div>
+                          <input 
+                              type="password" 
+                              id="token-input" 
+                              placeholder="輸入訪問令牌"
+                              class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition"
+                              autofocus
+                          />
+                      </div>
+                      
+                      <button 
+                          type="submit"
+                          class="w-full px-6 py-3 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-lg font-semibold text-white transition shadow-lg"
+                      >
+                          訪問儀表板
+                      </button>
+                  </form>
+                  
+                  <p class="text-xs text-gray-500 text-center mt-6">
+                      如果你是網站管理員但忘記了令牌，請聯繫技術支援
+                  </p>
+              </div>
+          </div>
+          
+          <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+          
+          <script>
+              document.getElementById('auth-form').addEventListener('submit', (e) => {
+                  e.preventDefault();
+                  const token = document.getElementById('token-input').value;
+                  if (token) {
+                      window.location.href = '/admin-dashboard?token=' + encodeURIComponent(token);
+                  }
+              });
+          </script>
+      </body>
+      </html>
+    `, 401);
+  }
+  
   return c.html(`
     <!DOCTYPE html>
     <html lang="zh-TW">
@@ -15625,15 +15701,25 @@ app.get('/admin-dashboard', (c) => {
 
         <div class="container mx-auto px-4 pb-12">
             <!-- Stats Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <!-- Total Users -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+                <!-- Real Users -->
                 <div class="stat-card p-6 rounded-xl">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-gray-400 text-sm">總註冊人數</span>
-                        <i class="fas fa-users text-2xl text-blue-500"></i>
+                        <span class="text-gray-400 text-sm">真實用戶</span>
+                        <i class="fas fa-user-check text-2xl text-green-500"></i>
                     </div>
-                    <div class="text-3xl font-bold" id="total-users">-</div>
-                    <div class="text-xs text-gray-500 mt-1">所有時間</div>
+                    <div class="text-3xl font-bold" id="real-users">-</div>
+                    <div class="text-xs text-gray-500 mt-1">實際註冊</div>
+                </div>
+                
+                <!-- AI Traders -->
+                <div class="stat-card p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-gray-400 text-sm">AI 交易員</span>
+                        <i class="fas fa-robot text-2xl text-purple-500"></i>
+                    </div>
+                    <div class="text-3xl font-bold" id="ai-traders">-</div>
+                    <div class="text-xs text-gray-500 mt-1">模擬帳號</div>
                 </div>
 
                 <!-- Today Users -->
@@ -15671,7 +15757,7 @@ app.get('/admin-dashboard', (c) => {
             <div class="mb-8">
                 <h2 class="text-xl font-bold mb-4">
                     <i class="fas fa-chart-line mr-2 text-orange-500"></i>
-                    註冊趨勢（最近 7 天）
+                    真實用戶註冊趨勢（最近 7 天）
                 </h2>
                 <div class="chart-container">
                     <canvas id="registrationChart"></canvas>
@@ -15682,7 +15768,7 @@ app.get('/admin-dashboard', (c) => {
             <div class="mb-8">
                 <h2 class="text-xl font-bold mb-4">
                     <i class="fas fa-clock mr-2 text-orange-500"></i>
-                    最近註冊用戶（最新 10 位）
+                    最近註冊的真實用戶（最新 10 位）
                 </h2>
                 <div class="table-container">
                     <div class="overflow-x-auto">
@@ -15734,7 +15820,8 @@ app.get('/admin-dashboard', (c) => {
                     const stats = data.data;
 
                     // Update stats cards
-                    document.getElementById('total-users').textContent = stats.total.toLocaleString();
+                    document.getElementById('real-users').textContent = stats.realUsers.toLocaleString();
+                    document.getElementById('ai-traders').textContent = stats.aiTraders.toLocaleString();
                     document.getElementById('today-users').textContent = stats.today.toLocaleString();
                     document.getElementById('week-users').textContent = stats.week.toLocaleString();
                     document.getElementById('month-users').textContent = stats.month.toLocaleString();
