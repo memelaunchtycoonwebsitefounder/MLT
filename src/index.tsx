@@ -1205,7 +1205,7 @@ app.get('/signup', (c) => {
                         localStorage.setItem('auth_token', result.data.token);
                         localStorage.setItem('user', JSON.stringify(result.data.user));
                     }
-                    alert('註冊成功！歡迎加入 MemeLaunch Tycoon！');
+                    // Redirect directly without alert popup
                     window.location.href = '/dashboard';
                 } else {
                     errorEl.textContent = result.error || result.message || '註冊失敗，請稍後再試';
