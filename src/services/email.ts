@@ -71,6 +71,8 @@ export async function sendWelcomeEmail(env: Env, username: string, email: string
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <meta name="supported-color-schemes" content="light dark">
     <title>歡迎加入 MemeLaunch Tycoon！</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #0A0B0D;">
@@ -81,9 +83,16 @@ export async function sendWelcomeEmail(env: Env, username: string, email: string
                     <!-- Header -->
                     <tr>
                         <td style="background: linear-gradient(135deg, #FF6B35 0%, #F97316 100%); padding: 40px; text-align: center;">
-                            <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: bold;">
-                                🚀 歡迎加入 MemeLaunch Tycoon！
+                            <!-- Logo -->
+                            <div style="margin-bottom: 20px;">
+                                <span style="display: inline-block; width: 80px; height: 80px; background: #ffffff; border-radius: 50%; line-height: 80px; font-size: 40px; font-weight: bold; color: #FF6B35;">M</span>
+                            </div>
+                            <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">
+                                歡迎加入 MemeLaunch Tycoon！
                             </h1>
+                            <p style="margin: 10px 0 0; color: rgba(255,255,255,0.9); font-size: 16px;">
+                                開始你的模擬交易之旅
+                            </p>
                         </td>
                     </tr>
                     
@@ -91,11 +100,11 @@ export async function sendWelcomeEmail(env: Env, username: string, email: string
                     <tr>
                         <td style="padding: 40px; color: #e2e8f0;">
                             <p style="margin: 0 0 20px; font-size: 18px; color: #ffffff;">
-                                嗨 <strong>${username}</strong>！👋
+                                你好 <strong>${username}</strong>，
                             </p>
                             
                             <p style="margin: 0 0 20px; font-size: 16px; line-height: 1.6;">
-                                感謝你加入 <strong>MemeLaunch Tycoon</strong> - 最有趣的迷因幣交易模擬平台！
+                                感謝註冊 <strong>MemeLaunch Tycoon</strong>！這是一個安全的模擬交易環境，讓你在零風險的情況下學習加密貨幣交易。
                             </p>
                             
                             <p style="margin: 0 0 20px; font-size: 16px; line-height: 1.6;">
@@ -139,7 +148,11 @@ export async function sendWelcomeEmail(env: Env, username: string, email: string
                             </div>
                             
                             <p style="margin: 30px 0 0; font-size: 14px; color: #94a3b8; line-height: 1.6;">
-                                如有任何問題，歡迎聯繫我們的支援團隊。祝你交易愉快！🎉
+                                如有任何問題或建議，歡迎隨時與我們聯繫。
+                            </p>
+                            <p style="margin: 10px 0 0; font-size: 14px; color: #94a3b8;">
+                                祝交易順利！<br>
+                                MemeLaunch Tycoon 團隊
                             </p>
                         </td>
                     </tr>
@@ -152,9 +165,14 @@ export async function sendWelcomeEmail(env: Env, username: string, email: string
                                 <a href="https://memelaunchtycoon.com/market" style="color: #FF6B35; text-decoration: none; margin: 0 10px;">📊 市場</a>
                                 <a href="https://memelaunchtycoon.com/leaderboard" style="color: #FF6B35; text-decoration: none; margin: 0 10px;">🏆 排行榜</a>
                             </p>
-                            <p style="margin: 15px 0 0; font-size: 12px; color: #64748b;">
+                            <p style="margin: 15px 0; font-size: 12px; color: #64748b;">
                                 © 2026 MemeLaunch Tycoon. All rights reserved.<br>
-                                這是一個模擬交易平台，沒有真實金融價值。
+                                這是一個模擬交易平台，不涉及真實資金。
+                            </p>
+                            <p style="margin: 10px 0 0; font-size: 11px; color: #64748b;">
+                                你收到此郵件是因為你在 memelaunchtycoon.com 註冊了帳戶。<br>
+                                <a href="https://memelaunchtycoon.com/privacy-policy" style="color: #64748b; text-decoration: underline;">隱私政策</a> | 
+                                <a href="https://memelaunchtycoon.com/terms-of-service" style="color: #64748b; text-decoration: underline;">服務條款</a>
                             </p>
                         </td>
                     </tr>
@@ -195,7 +213,7 @@ https://memelaunchtycoon.com
 
   return await sendEmail(env, {
     to: email,
-    subject: '🎉 歡迎加入 MemeLaunch Tycoon！開始你的交易之旅',
+    subject: '歡迎加入 MemeLaunch Tycoon - 你的帳戶已啟用',
     html,
     text
   });
