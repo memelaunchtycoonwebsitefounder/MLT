@@ -14,6 +14,6 @@
     }
   ],
   "vars": {
-    "EMAIL_FROM": "MemeLaunch Tycoon <onboarding@resend.dev>"
+    "EMAIL_FROM": "MemeLaunch Tycoon <noreply@memelaunchtycoon.com>"
   }
 }

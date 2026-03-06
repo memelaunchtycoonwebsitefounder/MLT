@@ -37,7 +37,7 @@ export async function sendEmail(env: Env, options: SendEmailOptions): Promise<bo
         'Authorization': `Bearer ${env.RESEND_API_KEY}`
       },
       body: JSON.stringify({
-        from: env.EMAIL_FROM || 'MemeLaunch Tycoon <onboarding@resend.dev>',
+        from: env.EMAIL_FROM || 'MemeLaunch Tycoon <noreply@memelaunchtycoon.com>',
         to: options.to,
         subject: options.subject,
         html: options.html,
