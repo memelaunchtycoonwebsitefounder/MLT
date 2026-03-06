@@ -15807,7 +15807,15 @@ app.get('/admin-dashboard', (c) => {
 
             async function loadStats() {
                 try {
-                    const response = await fetch('/api/admin/stats/users');
+                    // Get token from URL
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const token = urlParams.get('token');
+                    
+                    if (!token) {
+                        throw new Error('Missing admin token');
+                    }
+                    
+                    const response = await fetch(\`/api/admin/stats/users?token=\${token}\`);
                     if (!response.ok) {
                         throw new Error('Failed to fetch stats');
                     }
