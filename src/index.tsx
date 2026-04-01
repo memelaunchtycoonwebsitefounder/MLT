@@ -866,7 +866,7 @@ app.get('/', (c) => {
     <link rel="stylesheet" href="/static/cookie-styles.css">
     <script src="/static/cookie-consent.js"></script>
       <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
 </html>`);
 });
@@ -1226,7 +1226,7 @@ app.get('/signup', (c) => {
     <link rel="stylesheet" href="/static/cookie-styles.css">
     <script src="/static/cookie-consent.js"></script>
       <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
 </html>
   `);
@@ -1500,7 +1500,7 @@ app.get('/login', (c) => {
     <link rel="stylesheet" href="/static/cookie-styles.css">
     <script src="/static/cookie-consent.js"></script>
       <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
 </html>
   `);
@@ -1656,7 +1656,7 @@ app.get('/forgot-password', (c) => {
     <link rel="stylesheet" href="/static/cookie-styles.css">
     <script src="/static/cookie-consent.js"></script>
       <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
 </html>
   `);
@@ -1827,7 +1827,7 @@ app.get('/reset-password', (c) => {
     <link rel="stylesheet" href="/static/cookie-styles.css">
     <script src="/static/cookie-consent.js"></script>
       <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
     </html>
   `);
@@ -2453,7 +2453,7 @@ app.get('/coin/:id', (c) => {
     <link rel="stylesheet" href="/static/cookie-styles.css">
     <script src="/static/cookie-consent.js"></script>
       <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
     </html>
   `);
@@ -2741,7 +2741,7 @@ app.get('/market', (c) => {
     <link rel="stylesheet" href="/static/cookie-styles.css">
     <script src="/static/cookie-consent.js"></script>
       <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
     </html>
   `);
@@ -3499,7 +3499,7 @@ app.get('/create', (c) => {
     <link rel="stylesheet" href="/static/cookie-styles.css">
     <script src="/static/cookie-consent.js"></script>
       <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
     </html>
   `);
@@ -3810,7 +3810,7 @@ app.get('/dashboard', (c) => {
     <link rel="stylesheet" href="/static/cookie-styles.css">
     <script src="/static/cookie-consent.js"></script>
       <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
     </html>
   `)
@@ -4054,7 +4054,7 @@ app.get('/portfolio', (c) => {
     <link rel="stylesheet" href="/static/cookie-styles.css">
     <script src="/static/cookie-consent.js"></script>
       <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
     </html>
   `)
@@ -4325,7 +4325,7 @@ app.get('/achievements', (c) => {
     <link rel="stylesheet" href="/static/cookie-styles.css">
     <script src="/static/cookie-consent.js"></script>
       <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
     </html>
   `);
@@ -4568,7 +4568,7 @@ app.get('/leaderboard', (c) => {
     <link rel="stylesheet" href="/static/cookie-styles.css">
     <script src="/static/cookie-consent.js"></script>
       <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
     </html>
   `);
@@ -4825,7 +4825,7 @@ app.get('/social', (c) => {
     <link rel="stylesheet" href="/static/cookie-styles.css">
     <script src="/static/cookie-consent.js"></script>
       <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
     </html>
   `);
@@ -5007,7 +5007,7 @@ app.get('/profile/:userId', (c) => {
     <link rel="stylesheet" href="/static/cookie-styles.css">
     <script src="/static/cookie-consent.js"></script>
       <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
     </html>
   `);
@@ -6547,7 +6547,7 @@ app.get('/legal.html', (c) => {
 </footer>
 
     <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
 </html>`);
 });
@@ -8055,7 +8055,7 @@ app.get('/about', (c) => {
 </footer>
 
     <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
 </html>`);
 });
@@ -9563,7 +9563,7 @@ app.get('/contact', (c) => {
 </footer>
 
     <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
 </html>`);
 });
@@ -11071,7 +11071,7 @@ app.get('/privacy-policy', (c) => {
 </footer>
 
     <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
 </html>`);
 });
@@ -12579,7 +12579,7 @@ app.get('/terms-of-service', (c) => {
 </footer>
 
     <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
 </html>`);
 });
@@ -14088,7 +14088,7 @@ app.get('/privacy', (c) => {
 </footer>
 
     <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
 </html>`);
 });
@@ -15595,7 +15595,7 @@ app.get('/terms', (c) => {
 </footer>
 
     <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
 </html>`);
 });
@@ -15677,7 +15677,7 @@ app.get('/admin-dashboard', (c) => {
               });
           </script>
           <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
       </html>
     `, 401);
@@ -15991,7 +15991,7 @@ app.get('/admin-dashboard', (c) => {
             setInterval(loadStats, 30000);
         </script>
         <!-- Adsterra Popunder Ad -->
-    <script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+    <script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 </body>
     </html>
   `);
