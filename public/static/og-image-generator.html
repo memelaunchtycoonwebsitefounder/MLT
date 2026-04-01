@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MemeLaunch Tycoon OG Image Generator</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0A0B0D 0%, #1A1B1F 50%, #0A0B0D 100%);
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .og-image {
+            width: 1200px;
+            height: 630px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 60px;
+            box-sizing: border-box;
+            border: 3px solid #FF6B35;
+            position: relative;
+            overflow: hidden;
+        }
+        .og-image::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,107,53,0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: white;
+        }
+        .logo {
+            font-size: 96px;
+            margin-bottom: 20px;
+        }
+        .title {
+            font-size: 72px;
+            font-weight: bold;
+            background: linear-gradient(90deg, #FF6B35 0%, #E91E63 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(255,107,53,0.5);
+        }
+        .subtitle {
+            font-size: 36px;
+            color: #ffffff;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 40px;
+        }
+        .feature {
+            text-align: center;
+        }
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .feature-text {
+            font-size: 24px;
+            color: #ffffff;
+            opacity: 0.8;
+        }
+        .cta {
+            margin-top: 40px;
+            font-size: 28px;
+            color: #FF6B35;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="og-image">
+        <div class="content">
+            <div class="logo">🚀</div>
+            <div class="title">MemeLaunch Tycoon</div>
+            <div class="subtitle">Free Meme Coin Trading Simulator</div>
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">💰</div>
+                    <div class="feature-text">$10,000 Start</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🎮</div>
+                    <div class="feature-text">Create & Trade</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🏆</div>
+                    <div class="feature-text">Compete & Win</div>
+                </div>
+            </div>
+            <div class="cta">Join Thousands of Players!</div>
+        </div>
+    </div>
+    
+    <script>
+        // Instructions: Open this page in a browser, then take a screenshot at 1200x630
+        console.log('Take a screenshot of this page at 1200x630 resolution for the OG image');
+    </script>
+</body>
+</html>

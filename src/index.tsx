@@ -2477,7 +2477,60 @@ app.get('/market', (c) => {
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
         <meta name="version" content="202603020321">
-        <title data-i18n="market.title">Market</title> - MemeLaunch Tycoon
+        
+        <!-- Primary Meta Tags -->
+        <title>Meme Coin Market - Buy & Sell Virtual Coins | MemeLaunch Tycoon</title>
+        <meta name="title" content="Meme Coin Market - Buy & Sell Virtual Coins">
+        <meta name="description" content="Browse and trade hundreds of virtual meme coins. Real-time prices, market trends, and trading opportunities. Start trading with $10,000 virtual coins.">
+        <meta name="keywords" content="meme coin market, crypto trading, virtual trading, coin prices, market trends, buy sell coins">
+        <meta name="author" content="MemeLaunch Tycoon">
+        <meta name="robots" content="index, follow">
+        
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://memelaunchtycoon.com/market">
+        <meta property="og:title" content="Meme Coin Market - Buy & Sell Virtual Coins">
+        <meta property="og:description" content="Browse and trade hundreds of virtual meme coins. Real-time prices and market trends.">
+        <meta property="og:image" content="https://memelaunchtycoon.com/static/og-image.png">
+        <meta property="og:site_name" content="MemeLaunch Tycoon">
+        
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary_large_image">
+        <meta property="twitter:url" content="https://memelaunchtycoon.com/market">
+        <meta property="twitter:title" content="Meme Coin Market - Buy & Sell Virtual Coins">
+        <meta property="twitter:description" content="Browse and trade hundreds of virtual meme coins. Real-time prices and market trends.">
+        <meta property="twitter:image" content="https://memelaunchtycoon.com/static/twitter-image.png">
+        
+        <!-- Canonical URL -->
+        <link rel="canonical" href="https://memelaunchtycoon.com/market">
+        
+        <!-- Structured Data -->
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "Meme Coin Market",
+          "description": "Browse and trade virtual meme coins with real-time prices and market trends.",
+          "url": "https://memelaunchtycoon.com/market",
+          "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://memelaunchtycoon.com/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Market",
+                "item": "https://memelaunchtycoon.com/market"
+              }
+            ]
+          }
+        }
+        </script>
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">
@@ -3523,7 +3576,28 @@ app.get('/dashboard', (c) => {
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
         <meta name="version" content="202603020321">
-        <title data-i18n="dashboard.pageTitle">Dashboard - MemeLaunch Tycoon</title>
+        
+        <!-- Primary Meta Tags -->
+        <title>Dashboard - Track Your Meme Coin Portfolio | MemeLaunch Tycoon</title>
+        <meta name="title" content="Dashboard - Track Your Meme Coin Portfolio">
+        <meta name="description" content="Monitor your virtual meme coin investments, track performance, and manage your portfolio. Real-time updates and detailed analytics.">
+        <meta name="keywords" content="crypto dashboard, portfolio tracker, meme coin portfolio, investment tracker">
+        <meta name="author" content="MemeLaunch Tycoon">
+        <meta name="robots" content="noindex, nofollow">
+        
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://memelaunchtycoon.com/dashboard">
+        <meta property="og:title" content="Dashboard - MemeLaunch Tycoon">
+        <meta property="og:description" content="Monitor your virtual meme coin investments and track portfolio performance.">
+        <meta property="og:image" content="https://memelaunchtycoon.com/static/og-image.png">
+        
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary_large_image">
+        <meta property="twitter:url" content="https://memelaunchtycoon.com/dashboard">
+        <meta property="twitter:title" content="Dashboard - MemeLaunch Tycoon">
+        <meta property="twitter:description" content="Monitor your virtual meme coin investments.">
+        <meta property="twitter:image" content="https://memelaunchtycoon.com/static/twitter-image.png">
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/professional-theme.css?v=20260221151619" rel="stylesheet">
@@ -4349,7 +4423,43 @@ app.get('/leaderboard', (c) => {
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
         <meta name="version" content="202603020321">
-        <title data-i18n="leaderboard.pageTitle">Leaderboard - MemeLaunch Tycoon</title>
+        
+        <!-- Primary Meta Tags -->
+        <title>Leaderboard - Top Meme Coin Traders | MemeLaunch Tycoon</title>
+        <meta name="title" content="Leaderboard - Top Meme Coin Traders">
+        <meta name="description" content="See who's dominating the meme coin market! Check rankings, compete with other traders, and climb to the top of the leaderboard.">
+        <meta name="keywords" content="leaderboard, top traders, crypto rankings, trading competition, meme coin champions">
+        <meta name="author" content="MemeLaunch Tycoon">
+        <meta name="robots" content="index, follow">
+        
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://memelaunchtycoon.com/leaderboard">
+        <meta property="og:title" content="Leaderboard - Top Meme Coin Traders">
+        <meta property="og:description" content="See who's dominating the meme coin market! Check rankings and compete with other traders.">
+        <meta property="og:image" content="https://memelaunchtycoon.com/static/og-image.png">
+        <meta property="og:site_name" content="MemeLaunch Tycoon">
+        
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary_large_image">
+        <meta property="twitter:url" content="https://memelaunchtycoon.com/leaderboard">
+        <meta property="twitter:title" content="Leaderboard - Top Meme Coin Traders">
+        <meta property="twitter:description" content="See who's dominating the meme coin market!">
+        <meta property="twitter:image" content="https://memelaunchtycoon.com/static/twitter-image.png">
+        
+        <!-- Canonical URL -->
+        <link rel="canonical" href="https://memelaunchtycoon.com/leaderboard">
+        
+        <!-- Structured Data -->
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "Leaderboard",
+          "description": "Top meme coin traders and rankings",
+          "url": "https://memelaunchtycoon.com/leaderboard"
+        }
+        </script>
         <script defer src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css?v=20260221151619" rel="stylesheet">

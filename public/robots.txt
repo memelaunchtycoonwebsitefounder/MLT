@@ -1,17 +1,37 @@
-# Allow all search engines to crawl the site
+# robots.txt for MemeLaunch Tycoon
+# https://memelaunchtycoon.com
+
 User-agent: *
 Allow: /
-
-# Disallow admin/auth endpoints
 Disallow: /api/
-Disallow: /login
-Disallow: /signup
-Disallow: /reset-password
-Disallow: /forgot-password
+Disallow: /admin-dashboard
+Disallow: /dashboard/login
+Disallow: /dashboard/register
 
-# Allow Googlebot specifically
+# Sitemaps
+Sitemap: https://memelaunchtycoon.com/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1
+
+# Popular bots
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 0
 
-# Sitemap location
-Sitemap: https://memelaunchtycoon.com/sitemap.xml
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+
+# Block bad bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
