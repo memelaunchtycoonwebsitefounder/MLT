@@ -9,14 +9,19 @@ Adsterra Popunder 廣告已成功添加到所有頁面，現在可以開始產�
 ### 廣告類型：
 - **類型**: Popunder（彈出式背景廣告）
 - **提供商**: Adsterra
-- **廣告 ID**: 178e4091eddcb131be13ce883019531d
+- **廣告 ID**: ~~178e4091eddcb131be13ce883019531d~~ → **e3fe621fd0fae79d9cf33a3c587d3f26** (已更新)
 - **加載方式**: JS SYNC (無廣告攔截器繞過)
 
 ### 廣告代碼：
 ```html
 <!-- Adsterra Popunder Ad -->
-<script src="https://pl29014555.profitablecpmratenetwork.com/17/8e/40/178e4091eddcb131be13ce883019531d.js"></script>
+<script src="https://pl29033074.profitablecpmratenetwork.com/e3/fe/62/e3fe621fd0fae79d9cf33a3c587d3f26.js"></script>
 ```
+
+**更新歷史**：
+- ~~舊代碼~~: `pl29014555...178e4091eddcb131be13ce883019531d.js` (已棄用)
+- **新代碼**: `pl29033074...e3fe621fd0fae79d9cf33a3c587d3f26.js` (當前使用)
+- **更新時間**: 2026-04-01
 
 ### 廣告位置：
 - 放置在每個頁面的 `</body>` 標籤之前
@@ -86,11 +91,12 @@ Adsterra Popunder 廣告已成功添加到所有頁面，現在可以開始產�
 
 ## 🚀 部署信息
 
-- **部署 URL**: https://a5a21d90.memelaunch-tycoon.pages.dev
+- **最新部署 URL**: https://be81742e.memelaunch-tycoon.pages.dev
 - **生產 URL**: https://memelaunchtycoon.com
-- **構建大小**: 1,155.12 kB（增加約 3.6 KB）
-- **Git 提交**: `a90f8f7`
-- **部署時間**: 2026-04-01
+- **構建大小**: 1,155.12 kB
+- **最新 Git 提交**: `c44c7ba` (廣告代碼更新)
+- **首次部署**: `a90f8f7` (2026-04-01)
+- **廣告代碼更新**: 2026-04-01
 
 ## 🔍 測試與驗證
 
