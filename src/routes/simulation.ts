@@ -25,9 +25,27 @@ simulation.get('/:coinId/state', async (c) => {
       return c.json({ success: false, error: 'Simulation not found' }, 404);
     }
 
+    // 獲取交易總數
+    const tradeCount = await c.env.DB.prepare(
+      'SELECT COUNT(*) as total FROM simulated_trades WHERE coin_id = ?'
+    )
+      .bind(coinId)
+      .first() as any;
+
+    // 獲取活躍機器人列表
+    const activeBots = await c.env.DB.prepare(
+      'SELECT DISTINCT bot_id, bot_name FROM simulated_trades WHERE coin_id = ?'
+    )
+      .bind(coinId)
+      .all();
+
     return c.json({
       success: true,
-      data: state,
+      data: {
+        ...state,
+        total_trades: tradeCount?.total || 0,
+        active_bots: activeBots?.results || [],
+      },
     });
   } catch (error) {
     console.error('Error fetching simulation state:', error);
