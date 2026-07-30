@@ -23,6 +23,7 @@ import admin from './routes/admin';
 import websocket from './routes/websocket';
 import contact from './routes/contact';
 import privacy from './routes/privacy';
+import fate from './routes/fate';
 
 // Import AI Scheduler
 import { initializeGlobalScheduler, getSchedulerStatus } from './services/scheduler';
@@ -116,6 +117,9 @@ app.route('/api/upload', uploadRoutes);
 app.route('/api/admin', admin);
 app.route('/api/contact', contact);
 app.route('/api/privacy-request', privacy);
+
+// Fate System routes (public access for testing)
+app.route('/api/fate', fate);
 
 // WebSocket routes for real-time price updates
 app.route('/api/ws', websocket);
