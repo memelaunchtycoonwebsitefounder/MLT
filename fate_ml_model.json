@@ -1,0 +1,147 @@
+{
+  "version": "1.0",
+  "trained_samples": 21005,
+  "category_stats": {
+    "animal": {
+      "moon": 654,
+      "stable": 971,
+      "rug": 773,
+      "slow_death": 1113,
+      "total": 3511,
+      "probabilities": {
+        "moon": 0.18627171745941326,
+        "stable": 0.27655938479065795,
+        "rug": 0.2201651951011108,
+        "slow_death": 0.317003702648818
+      },
+      "success_rate": 0.4628311022500712
+    },
+    "food": {
+      "moon": 420,
+      "stable": 933,
+      "rug": 823,
+      "slow_death": 1348,
+      "total": 3524,
+      "probabilities": {
+        "moon": 0.1191827468785471,
+        "stable": 0.26475595913734395,
+        "rug": 0.23354143019296253,
+        "slow_death": 0.38251986379114644
+      },
+      "success_rate": 0.38393870601589103
+    },
+    "meme": {
+      "moon": 851,
+      "stable": 1005,
+      "rug": 775,
+      "slow_death": 874,
+      "total": 3505,
+      "probabilities": {
+        "moon": 0.2427960057061341,
+        "stable": 0.2867332382310984,
+        "rug": 0.2211126961483595,
+        "slow_death": 0.249358059914408
+      },
+      "success_rate": 0.5295292439372326
+    },
+    "tech": {
+      "moon": 532,
+      "stable": 997,
+      "rug": 820,
+      "slow_death": 1230,
+      "total": 3579,
+      "probabilities": {
+        "moon": 0.14864487286951664,
+        "stable": 0.27856943280245877,
+        "rug": 0.22911427773120985,
+        "slow_death": 0.34367141659681477
+      },
+      "success_rate": 0.42721430567197544
+    },
+    "celebrity": {
+      "moon": 1003,
+      "stable": 942,
+      "rug": 773,
+      "slow_death": 656,
+      "total": 3374,
+      "probabilities": {
+        "moon": 0.2972732661529342,
+        "stable": 0.27919383521043273,
+        "rug": 0.22910491997628926,
+        "slow_death": 0.1944279786603438
+      },
+      "success_rate": 0.5764671013633669
+    },
+    "random": {
+      "moon": 389,
+      "stable": 1038,
+      "rug": 775,
+      "slow_death": 1310,
+      "total": 3512,
+      "probabilities": {
+        "moon": 0.1107630979498861,
+        "stable": 0.2955580865603645,
+        "rug": 0.22067198177676536,
+        "slow_death": 0.37300683371298404
+      },
+      "success_rate": 0.40632118451025057
+    }
+  },
+  "trend_stats": {
+    "bull": {
+      "moon": 1245,
+      "stable": 1916,
+      "rug": 1577,
+      "slow_death": 2141,
+      "total": 6879,
+      "probabilities": {
+        "moon": 0.18098560837331007,
+        "stable": 0.27852885593836313,
+        "rug": 0.22924843727285943,
+        "slow_death": 0.3112370984154674
+      }
+    },
+    "sideways": {
+      "moon": 1295,
+      "stable": 1989,
+      "rug": 1606,
+      "slow_death": 2206,
+      "total": 7096,
+      "probabilities": {
+        "moon": 0.18249718151071026,
+        "stable": 0.28029875986471253,
+        "rug": 0.22632468996617813,
+        "slow_death": 0.3108793686583991
+      }
+    },
+    "bear": {
+      "moon": 1309,
+      "stable": 1981,
+      "rug": 1556,
+      "slow_death": 2184,
+      "total": 7030,
+      "probabilities": {
+        "moon": 0.18620199146514935,
+        "stable": 0.2817923186344239,
+        "rug": 0.22133712660028448,
+        "slow_death": 0.31066856330014225
+      }
+    }
+  },
+  "feature_correlations": {
+    "high_reputation_success": 0.4723726977248104,
+    "low_reputation_success": 0.4529450477130635,
+    "high_budget_success": 0.46399696816574026,
+    "low_budget_success": 0.45797761335609943,
+    "with_social_success": 0.4665646853146853,
+    "without_social_success": 0.442428730099963
+  },
+  "feature_weights": {
+    "creator_reputation": 0.25,
+    "marketing_budget": 0.2,
+    "has_social_media": 0.15,
+    "market_trend": 0.15,
+    "category": 0.15,
+    "competition_level": 0.1
+  }
+}

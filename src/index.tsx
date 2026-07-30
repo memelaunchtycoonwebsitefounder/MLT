@@ -24,6 +24,7 @@ import websocket from './routes/websocket';
 import contact from './routes/contact';
 import privacy from './routes/privacy';
 import fate from './routes/fate';
+import market from './routes/market';
 
 // Import AI Scheduler
 import { initializeGlobalScheduler, getSchedulerStatus } from './services/scheduler';
@@ -120,6 +121,9 @@ app.route('/api/privacy-request', privacy);
 
 // Fate System routes (public access for testing)
 app.route('/api/fate', fate);
+
+// Market Data routes (public access)
+app.route('/api/market', market);
 
 // WebSocket routes for real-time price updates
 app.route('/api/ws', websocket);

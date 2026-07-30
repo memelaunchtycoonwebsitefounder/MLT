@@ -19,6 +19,7 @@ import type {
 } from './fate-types';
 
 import { RandomEventEngine } from './random-event-engine';
+import { MarketDataService } from './services/market-data';
 
 /**
  * FateEngine 主類
@@ -27,6 +28,7 @@ export class FateEngine {
   private db: D1Database;
   private config: FateEngineConfig;
   private randomEventEngine: RandomEventEngine;
+  private marketDataService: MarketDataService;
 
   // 類別基礎成功率 (基於 11,005 案例統計)
   private readonly CATEGORY_SUCCESS_RATES: Record<CoinCategory, { moon: number; stable: number }> = {
@@ -48,6 +50,7 @@ export class FateEngine {
       ...config,
     };
     this.randomEventEngine = new RandomEventEngine();
+    this.marketDataService = MarketDataService.getInstance();
   }
 
   // ============================================================================
