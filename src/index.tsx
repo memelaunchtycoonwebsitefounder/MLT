@@ -2501,6 +2501,8 @@ app.get('/coin/:id', (c) => {
         <script src="/static/language-switcher.js?v=20260221151619"></script>
         <script src="/static/coin-detail.js?v=20260221151619"></script>
         <script src="/static/simulation-realtime.js?v=20260730"></script>
+        <script src="/static/live-timer.js?v=20260730"></script>
+        <script src="/static/live-chart.js?v=20260730"></script>
         <!-- Cookie Consent & Compliance -->
     <link rel="stylesheet" href="/static/cookie-styles.css">
     <script src="/static/cookie-consent.js"></script>
