@@ -1990,6 +1990,24 @@ app.get('/coin/:id', (c) => {
                 <div class="grid lg:grid-cols-3 gap-8">
                     <!-- Left Column - Chart & Stats -->
                     <div class="lg:col-span-2 space-y-8">
+                        
+                        <!-- 🤖 AI SIMULATION BANNER -->
+                        <div class="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-2 border-purple-500 rounded-2xl p-6">
+                            <div class="flex items-center justify-between flex-wrap gap-4">
+                                <div class="flex items-center space-x-4">
+                                    <i class="fas fa-robot text-4xl text-purple-400"></i>
+                                    <div>
+                                        <h3 class="text-2xl font-bold text-white">🤖 AI Trading Simulation Active</h3>
+                                        <p class="text-gray-300">This coin is being traded by AI bots in real-time</p>
+                                    </div>
+                                </div>
+                                <a href="/sim-test/${coinId}" target="_blank" class="bg-purple-500 hover:bg-purple-600 px-6 py-3 rounded-lg font-bold transition flex items-center space-x-2">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    <span>View Simulation Dashboard</span>
+                                </a>
+                            </div>
+                        </div>
+                        
                         <!-- Price Chart -->
                         <div class="glass-effect rounded-2xl p-6">
                             <h2 class="text-2xl font-bold mb-6">
