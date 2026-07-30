@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """
-Generate 1000 high-quality historical meme coin cases for Fate System
+Generate high-quality historical meme coin cases for Fate System
+Usage: python3 generate_cases.py [count]
+Default count: 1000
 """
 import random
+import sys
 
 # 定義六大類別及其特性
 categories = {
@@ -100,16 +103,25 @@ def generate_case(case_id):
         outcome, max_p, supply * max_p, days_peak, final_status
     )
 
-# 生成 1000 條案例
-print("-- 1000 High-Quality Historical Cases for Fate System")
+# 生成指定數量的案例
+if len(sys.argv) > 1:
+    try:
+        count = int(sys.argv[1])
+    except ValueError:
+        print("Error: Invalid count parameter. Using default 1000.", file=sys.stderr)
+        count = 1000
+else:
+    count = 1000
+
+print(f"-- {count} High-Quality Historical Cases for Fate System")
 print("-- Generated with statistical distributions and quality-based outcomes")
 print("-- Categories: animal (15% moon), food (10%), meme (20%), tech (12%), celebrity (25%), random (8%)")
 print()
 
-for i in range(1, 1001):
+for i in range(1, count + 1):
     data = generate_case(i)
     sql = f"INSERT INTO coin_history_cases (coin_name, coin_symbol, initial_supply, initial_price, category, creator_reputation, creator_previous_coins, market_trend, competition_level, has_website, has_twitter, has_telegram, marketing_budget, initial_holders, initial_volume, first_week_growth, outcome, max_price, max_market_cap, days_to_peak, final_status) VALUES ('{data[0]}', '{data[1]}', {data[2]}, {data[3]}, '{data[4]}', {data[5]}, {data[6]}, '{data[7]}', {data[8]}, {data[9]}, {data[10]}, {data[11]}, {data[12]}, {data[13]}, {data[14]}, {data[15]}, '{data[16]}', {data[17]}, {data[18]}, {data[19]}, '{data[20]}');"
     print(sql)
 
 print()
-print("-- End of 1000 cases")
+print(f"-- End of {count} cases")
