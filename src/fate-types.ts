@@ -148,6 +148,7 @@ export interface FatePrediction {
   trajectory: FateTrajectory;
   influence_factors: InfluenceFactors;
   similar_cases: SimilarCase[]; // 前 10 個最相似案例
+  random_events: RandomEvent[]; // 預測生命週期中的隨機事件
   recommendations: string[]; // 投資建議
   warnings: string[]; // 風險警告
   quality_score: number; // 0-1, 綜合質量分數

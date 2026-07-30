@@ -18,12 +18,15 @@ import type {
   CoinCategory,
 } from './fate-types';
 
+import { RandomEventEngine } from './random-event-engine';
+
 /**
  * FateEngine 主類
  */
 export class FateEngine {
   private db: D1Database;
   private config: FateEngineConfig;
+  private randomEventEngine: RandomEventEngine;
 
   // 類別基礎成功率 (基於 11,005 案例統計)
   private readonly CATEGORY_SUCCESS_RATES: Record<CoinCategory, { moon: number; stable: number }> = {
@@ -44,6 +47,7 @@ export class FateEngine {
       confidence_boost_factor: 1.2,
       ...config,
     };
+    this.randomEventEngine = new RandomEventEngine();
   }
 
   // ============================================================================
@@ -63,11 +67,45 @@ export class FateEngine {
     // 3. 生成命運軌跡預測
     const trajectory = this.predictTrajectory(coinInput, similarCases, influenceFactors);
 
-    // 4. 生成建議和警告
+    // 4. 生成隨機事件 (如果啟用)
+    let randomEvents: RandomEvent[] = [];
+    if (this.config.random_event_enabled) {
+      const qualityScore = this.calculateQualityScore(influenceFactors);
+      // 假設平均生命週期為 90 天
+      const totalDays = 90;
+      randomEvents = this.randomEventEngine.generateEvents(
+        coinInput.category,
+        0, // 當前天數從 0 開始
+        totalDays,
+        qualityScore
+      );
+      
+      // 5. 應用隨機事件影響到軌跡
+      if (randomEvents.length > 0) {
+        const adjustedProbs = this.randomEventEngine.applyEventsToOutcome(
+          trajectory.outcome_probabilities,
+          randomEvents
+        );
+        trajectory.outcome_probabilities = adjustedProbs;
+        
+        // 重新確定最高概率的結果
+        const maxProb = Math.max(...Object.values(adjustedProbs));
+        const predictedOutcome = Object.entries(adjustedProbs).find(
+          ([_, prob]) => prob === maxProb
+        )?.[0] as FateOutcome;
+        
+        if (predictedOutcome) {
+          trajectory.predicted_outcome = predictedOutcome;
+          trajectory.confidence = maxProb;
+        }
+      }
+    }
+
+    // 6. 生成建議和警告
     const recommendations = this.generateRecommendations(coinInput, trajectory, influenceFactors);
     const warnings = this.generateWarnings(coinInput, trajectory);
 
-    // 5. 計算綜合質量分數
+    // 7. 計算綜合質量分數
     const qualityScore = this.calculateQualityScore(influenceFactors);
 
     return {
@@ -75,6 +113,7 @@ export class FateEngine {
       trajectory,
       influence_factors: influenceFactors,
       similar_cases: similarCases,
+      random_events: randomEvents,
       recommendations,
       warnings,
       quality_score: qualityScore,
@@ -673,5 +712,149 @@ export class FateEngine {
       factors.timing_score * 0.15 +
       factors.luck_score * 0.05
     );
+  }
+
+  // ============================================================================
+  // 用戶決策影響系統
+  // ============================================================================
+
+  /**
+   * 應用用戶決策並計算對命運的影響
+   */
+  async applyDecision(
+    coinInput: CoinInput,
+    currentPrediction: FatePrediction,
+    decision: UserDecision
+  ): Promise<DecisionImpact> {
+    // 1. 計算決策對影響因子的改變
+    const influenceChange = this.calculateDecisionInfluence(decision, coinInput);
+
+    // 2. 計算新的影響因子
+    const newInfluenceFactors: InfluenceFactors = {
+      creator_score: Math.min(
+        1,
+        currentPrediction.influence_factors.creator_score + (influenceChange.creator_score || 0)
+      ),
+      marketing_score: Math.min(
+        1,
+        currentPrediction.influence_factors.marketing_score + (influenceChange.marketing_score || 0)
+      ),
+      community_score: Math.min(
+        1,
+        currentPrediction.influence_factors.community_score + (influenceChange.community_score || 0)
+      ),
+      timing_score: Math.min(
+        1,
+        currentPrediction.influence_factors.timing_score + (influenceChange.timing_score || 0)
+      ),
+      luck_score: Math.min(
+        1,
+        currentPrediction.influence_factors.luck_score + (influenceChange.luck_score || 0)
+      ),
+    };
+
+    // 3. 基於新影響因子重新預測軌跡
+    const updatedTrajectory = this.predictTrajectory(
+      coinInput,
+      currentPrediction.similar_cases,
+      newInfluenceFactors
+    );
+
+    // 4. 生成決策觸發的隨機事件
+    const triggeredEvents = this.randomEventEngine.generateDecisionTriggeredEvents(
+      decision.decision_type,
+      decision.investment_amount || 0
+    );
+
+    // 5. 應用事件影響
+    if (triggeredEvents.length > 0) {
+      const adjustedProbs = this.randomEventEngine.applyEventsToOutcome(
+        updatedTrajectory.outcome_probabilities,
+        triggeredEvents
+      );
+      updatedTrajectory.outcome_probabilities = adjustedProbs;
+
+      // 重新確定最高概率的結果
+      const maxProb = Math.max(...Object.values(adjustedProbs));
+      const predictedOutcome = Object.entries(adjustedProbs).find(
+        ([_, prob]) => prob === maxProb
+      )?.[0] as FateOutcome;
+
+      if (predictedOutcome) {
+        updatedTrajectory.predicted_outcome = predictedOutcome;
+        updatedTrajectory.confidence = maxProb;
+      }
+    }
+
+    return {
+      decision,
+      influence_change: influenceChange,
+      trajectory_update: updatedTrajectory,
+      new_events: triggeredEvents,
+    };
+  }
+
+  /**
+   * 計算決策對影響因子的改變
+   */
+  private calculateDecisionInfluence(
+    decision: UserDecision,
+    coinInput: CoinInput
+  ): Partial<InfluenceFactors> {
+    const changes: Partial<InfluenceFactors> = {};
+
+    switch (decision.decision_type) {
+      case 'increase_marketing':
+        // 增加營銷預算 -> 提升 marketing_score
+        const budgetIncrease = decision.investment_amount || 0;
+        changes.marketing_score = Math.min(0.2, budgetIncrease / 50000); // 最多 +0.2
+        break;
+
+      case 'build_community':
+        // 建設社群 -> 提升 community_score
+        changes.community_score = 0.15;
+        changes.marketing_score = 0.05; // 間接提升營銷
+        break;
+
+      case 'add_features':
+        // 添加功能 -> 提升 creator_score (顯示能力)
+        changes.creator_score = 0.1;
+        changes.community_score = 0.05; // 增加社群活躍度
+        break;
+
+      case 'celebrity_endorsement':
+        // 名人背書 -> 大幅提升 marketing 和 community
+        const endorsementCost = decision.investment_amount || 0;
+        if (endorsementCost >= 10000) {
+          changes.marketing_score = 0.25;
+          changes.community_score = 0.2;
+          changes.creator_score = 0.1; // 聲譽提升
+        } else {
+          changes.marketing_score = 0.15;
+          changes.community_score = 0.1;
+        }
+        break;
+
+      case 'partner_collaboration':
+        // 合作夥伴 -> 提升 creator_score 和 timing_score
+        changes.creator_score = 0.12;
+        changes.timing_score = 0.08;
+        changes.community_score = 0.05;
+        break;
+
+      case 'hold':
+        // 持有不動 -> 小幅提升 timing (耐心等待)
+        changes.timing_score = 0.03;
+        break;
+
+      case 'sell':
+        // 賣出 -> 降低所有因子 (放棄項目)
+        changes.creator_score = -0.1;
+        changes.marketing_score = -0.15;
+        changes.community_score = -0.2;
+        break;
+    }
+
+    return changes;
   }
 }

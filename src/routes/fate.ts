@@ -5,7 +5,7 @@
 
 import { Hono } from 'hono';
 import { FateEngine } from '../fate-engine';
-import type { CoinInput } from '../fate-types';
+import type { CoinInput, UserDecision, FatePrediction } from '../fate-types';
 import type { Env } from '../types';
 
 const fate = new Hono<{ Bindings: Env }>();
@@ -228,6 +228,119 @@ fate.get('/categories', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching categories:', error);
+    return c.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      },
+      500
+    );
+  }
+});
+
+// ============================================================================
+// POST /api/fate/decision - 應用用戶決策並獲取影響
+// ============================================================================
+fate.post('/decision', async (c) => {
+  try {
+    const body = await c.req.json<{
+      coin_input: CoinInput;
+      current_prediction: FatePrediction;
+      decision: UserDecision;
+    }>();
+
+    const { coin_input, current_prediction, decision } = body;
+
+    // 驗證必填字段
+    if (!coin_input || !current_prediction || !decision) {
+      return c.json(
+        {
+          success: false,
+          error: 'Missing required fields: coin_input, current_prediction, decision',
+        },
+        400
+      );
+    }
+
+    const engine = new FateEngine(c.env.DB);
+    const decisionImpact = await engine.applyDecision(coin_input, current_prediction, decision);
+
+    return c.json({
+      success: true,
+      data: decisionImpact,
+    });
+  } catch (error) {
+    console.error('Error applying decision:', error);
+    return c.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      },
+      500
+    );
+  }
+});
+
+// ============================================================================
+// POST /api/fate/simulate-decision - 模擬決策影響（不保存）
+// ============================================================================
+fate.post('/simulate-decision', async (c) => {
+  try {
+    const body = await c.req.json<{
+      coin_input: CoinInput;
+      current_prediction: FatePrediction;
+      decisions: UserDecision[]; // 支持多個決策模擬
+    }>();
+
+    const { coin_input, current_prediction, decisions } = body;
+
+    if (!coin_input || !current_prediction || !decisions || !Array.isArray(decisions)) {
+      return c.json(
+        {
+          success: false,
+          error: 'Missing required fields: coin_input, current_prediction, decisions (array)',
+        },
+        400
+      );
+    }
+
+    const engine = new FateEngine(c.env.DB);
+    
+    // 順序應用每個決策
+    let currentPrediction = current_prediction;
+    const impactHistory = [];
+
+    for (const decision of decisions) {
+      const impact = await engine.applyDecision(coin_input, currentPrediction, decision);
+      impactHistory.push(impact);
+
+      // 更新當前預測為應用決策後的狀態
+      currentPrediction = {
+        ...currentPrediction,
+        trajectory: impact.trajectory_update,
+        influence_factors: {
+          ...currentPrediction.influence_factors,
+          ...Object.fromEntries(
+            Object.entries(impact.influence_change).map(([key, value]) => [
+              key,
+              (currentPrediction.influence_factors[key as keyof typeof currentPrediction.influence_factors] || 0) +
+                (value || 0),
+            ])
+          ),
+        },
+      };
+    }
+
+    return c.json({
+      success: true,
+      data: {
+        initial_prediction: current_prediction,
+        final_prediction: currentPrediction,
+        decision_impacts: impactHistory,
+      },
+    });
+  } catch (error) {
+    console.error('Error simulating decisions:', error);
     return c.json(
       {
         success: false,

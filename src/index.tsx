@@ -4664,6 +4664,108 @@ app.get('/leaderboard', (c) => {
   `);
 })
 
+// Fate System page - Prediction and simulation
+app.get('/fate', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="image/x-icon" href="/favicon.ico">
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+        <title>命運預測系統 - Meme Launch Tycoon</title>
+        
+        <!-- TailwindCSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        
+        <!-- FontAwesome -->
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        
+        <!-- Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+        
+        <style>
+          body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+          }
+          
+          .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+          }
+        </style>
+    </head>
+    <body class="text-white">
+        <!-- Navigation -->
+        <nav class="bg-gray-900/50 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-6">
+                        <a href="/" class="text-2xl font-bold bg-gradient-to-r from-orange-400 to-pink-600 bg-clip-text text-transparent">
+                            MLT
+                        </a>
+                        <a href="/dashboard" class="text-gray-300 hover:text-white transition text-sm">Dashboard</a>
+                        <a href="/market" class="text-gray-300 hover:text-white transition text-sm">Market</a>
+                        <a href="/fate" class="text-white font-semibold transition text-sm">Fate System</a>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div id="username-display" class="text-sm text-gray-300">Loading...</div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container mx-auto px-4 py-8">
+            <div class="mb-8 text-center">
+                <h1 class="text-4xl font-bold mb-2">
+                    <i class="fas fa-crystal-ball mr-3"></i>
+                    命運預測系統
+                </h1>
+                <p class="text-gray-200 text-lg">基於 11,005+ 真實案例的智能預測引擎</p>
+            </div>
+
+            <!-- Fate Dashboard Container -->
+            <div id="fateDashboardContainer"></div>
+        </div>
+
+        <!-- Scripts -->
+        <script src="/static/fate-dashboard.js"></script>
+        <script>
+          // Load user info
+          async function loadUserInfo() {
+            try {
+              const token = localStorage.getItem('token');
+              if (!token) {
+                window.location.href = '/login';
+                return;
+              }
+
+              const response = await fetch('/api/auth/me', {
+                headers: { 'Authorization': 'Bearer ' + token }
+              });
+
+              if (response.ok) {
+                const data = await response.json();
+                document.getElementById('username-display').textContent = data.user.username;
+              } else {
+                window.location.href = '/login';
+              }
+            } catch (error) {
+              console.error('Failed to load user:', error);
+            }
+          }
+
+          loadUserInfo();
+        </script>
+    </body>
+    </html>
+  `);
+})
+
 // Social page - Activity feed and comments
 app.get('/social', (c) => {
   return c.html(`
