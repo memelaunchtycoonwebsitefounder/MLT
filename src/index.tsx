@@ -16176,6 +16176,124 @@ app.get('/admin-dashboard', (c) => {
 });
 
 
+// 🤖 AI SIMULATION TEST PAGE - Direct render simulation data
+app.get('/sim-test/:coinId', async (c) => {
+  const coinId = parseInt(c.req.param('coinId'));
+  
+  try {
+    // Fetch simulation data from database
+    const state = await c.env.DB.prepare('SELECT * FROM coin_simulations WHERE coin_id = ?').bind(coinId).first() as any;
+    const tradesResult = await c.env.DB.prepare('SELECT * FROM simulated_trades WHERE coin_id = ? ORDER BY timestamp DESC LIMIT 10').bind(coinId).all();
+    const eventsResult = await c.env.DB.prepare('SELECT * FROM simulation_events WHERE coin_id = ? ORDER BY timestamp DESC LIMIT 10').bind(coinId).all();
+    
+    const trades = tradesResult.results || [];
+    const events = eventsResult.results || [];
+    
+    return c.html(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>AI Simulation Test - Coin ${coinId}</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+      </head>
+      <body class="bg-gray-900 text-white p-8">
+        <div class="max-w-6xl mx-auto">
+          <h1 class="text-4xl font-bold mb-8">🤖 AI Trading Simulation - Coin #${coinId}</h1>
+          
+          ${state ? `
+            <div class="bg-purple-500/20 border-2 border-purple-500 rounded-lg p-6 mb-8">
+              <h2 class="text-2xl font-bold mb-4">✅ Simulation Active</h2>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <p class="text-gray-400">Fate Outcome</p>
+                  <p class="text-2xl font-bold text-${state.fate_outcome === 'moon' ? 'green' : state.fate_outcome === 'rug' ? 'red' : 'blue'}-400">${state.fate_outcome.toUpperCase()}</p>
+                </div>
+                <div>
+                  <p class="text-gray-400">Progress</p>
+                  <p class="text-2xl font-bold">Day ${state.current_day}/${state.total_days}</p>
+                </div>
+                <div>
+                  <p class="text-gray-400">Initial Price</p>
+                  <p class="text-2xl font-bold">$${state.initial_price?.toFixed(8)}</p>
+                </div>
+                <div>
+                  <p class="text-gray-400">Current Price</p>
+                  <p class="text-2xl font-bold">${state.current_price ? '$' + state.current_price.toFixed(8) : 'N/A'}</p>
+                </div>
+              </div>
+            </div>
+          ` : `
+            <div class="bg-red-500/20 border-2 border-red-500 rounded-lg p-6 mb-8">
+              <h2 class="text-2xl font-bold">❌ No Simulation Found</h2>
+              <p>This coin does not have AI trading simulation enabled yet.</p>
+            </div>
+          `}
+          
+          <div class="grid md:grid-cols-2 gap-8">
+            <div class="bg-gray-800 rounded-lg p-6">
+              <h2 class="text-2xl font-bold mb-4"><i class="fas fa-robot mr-2 text-purple-400"></i>AI Bot Trades (${trades.length})</h2>
+              <div class="space-y-2">
+                ${trades.length > 0 ? trades.map((t: any) => `
+                  <div class="bg-gray-900 p-4 rounded flex justify-between items-center">
+                    <div>
+                      <p class="font-bold">${t.bot_name}</p>
+                      <p class="text-sm text-gray-400">${new Date(t.timestamp).toLocaleString()}</p>
+                    </div>
+                    <div class="text-right">
+                      <p class="${t.type === 'buy' ? 'text-green-400' : 'text-red-400'} font-bold">
+                        <i class="fas fa-arrow-${t.type === 'buy' ? 'up' : 'down'}"></i> ${t.type.toUpperCase()} ${t.amount}
+                      </p>
+                      <p class="text-sm">$${t.price.toFixed(8)}</p>
+                    </div>
+                  </div>
+                `).join('') : '<p class="text-gray-400">No trades yet</p>'}
+              </div>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-6">
+              <h2 class="text-2xl font-bold mb-4"><i class="fas fa-chart-line mr-2 text-pink-400"></i>Market Events (${events.length})</h2>
+              <div class="space-y-2">
+                ${events.length > 0 ? events.map((e: any) => `
+                  <div class="bg-gray-900 p-4 rounded">
+                    <div class="flex justify-between items-start mb-2">
+                      <p class="font-bold">${e.event_name}</p>
+                      <span class="${e.impact > 0 ? 'text-green-400' : 'text-red-400'} text-sm">${e.impact > 0 ? '+' : ''}${(e.impact * 100).toFixed(1)}%</span>
+                    </div>
+                    <p class="text-sm text-gray-400">${e.description}</p>
+                    <p class="text-xs text-gray-500 mt-2">${new Date(e.timestamp).toLocaleString()}</p>
+                  </div>
+                `).join('') : '<p class="text-gray-400">No events yet</p>'}
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-8 text-center">
+            <a href="/coin/${coinId}" class="bg-blue-500 hover:bg-blue-600 px-8 py-3 rounded-lg inline-block">
+              <i class="fas fa-eye mr-2"></i>View Full Coin Page
+            </a>
+            <a href="/create" class="bg-green-500 hover:bg-green-600 px-8 py-3 rounded-lg inline-block ml-4">
+              <i class="fas fa-plus mr-2"></i>Create New Coin
+            </a>
+          </div>
+        </div>
+      </body>
+      </html>
+    `);
+  } catch (error) {
+    return c.html(`
+      <html>
+      <body style="background:#1a1a2e;color:white;padding:40px;font-family:sans-serif;">
+        <h1>❌ Error Loading Simulation</h1>
+        <pre style="background:#000;padding:20px;border-radius:8px;">${error instanceof Error ? error.message : 'Unknown error'}</pre>
+        <a href="/market" style="color:#4a9eff;">← Back to Market</a>
+      </body>
+      </html>
+    `);
+  }
+});
+
 export default app;
 
 // Export Durable Object

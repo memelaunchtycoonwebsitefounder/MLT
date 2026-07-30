@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Simulation Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">🤖 AI Trading Simulation Test</h1>
+        
+        <div class="mb-6">
+            <label class="block mb-2">Coin ID:</label>
+            <input type="number" id="coinId" value="2" class="bg-gray-800 border border-gray-700 px-4 py-2 rounded">
+            <button onclick="loadData()" class="ml-2 bg-blue-500 px-6 py-2 rounded hover:bg-blue-600">Load Data</button>
+        </div>
+        
+        <div id="results" class="space-y-6"></div>
+    </div>
+    
+    <script>
+        async function loadData() {
+            const coinId = document.getElementById('coinId').value;
+            const results = document.getElementById('results');
+            results.innerHTML = '<p class="text-yellow-400"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
+            
+            try {
+                // Test 1: Simulation State
+                const stateRes = await fetch(`/api/simulation/${coinId}/state`);
+                const stateData = await stateRes.json();
+                
+                // Test 2: Trades
+                const tradesRes = await fetch(`/api/simulation/${coinId}/trades?limit=5`);
+                const tradesData = await tradesRes.json();
+                
+                // Test 3: Events
+                const eventsRes = await fetch(`/api/simulation/${coinId}/events?limit=5`);
+                const eventsData = await eventsRes.json();
+                
+                // Display results
+                results.innerHTML = `
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <h2 class="text-2xl font-bold mb-4">✅ Simulation State</h2>
+                        <pre class="bg-gray-900 p-4 rounded overflow-auto">${JSON.stringify(stateData, null, 2)}</pre>
+                    </div>
+                    
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <h2 class="text-2xl font-bold mb-4">✅ Recent Trades (${tradesData.data?.length || 0})</h2>
+                        <div class="space-y-2">
+                            ${tradesData.data?.map(t => `
+                                <div class="bg-gray-900 p-3 rounded flex justify-between">
+                                    <span><i class="fas fa-robot text-purple-400"></i> ${t.bot_name}</span>
+                                    <span class="${t.type === 'buy' ? 'text-green-400' : 'text-red-400'}">${t.type.toUpperCase()} ${t.amount}</span>
+                                    <span>$${t.price.toFixed(8)}</span>
+                                </div>
+                            `).join('') || '<p class="text-gray-400">No trades</p>'}
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <h2 class="text-2xl font-bold mb-4">✅ Events (${eventsData.data?.length || 0})</h2>
+                        <div class="space-y-2">
+                            ${eventsData.data?.map(e => `
+                                <div class="bg-gray-900 p-3 rounded">
+                                    <div class="font-bold">${e.event_name}</div>
+                                    <div class="text-sm text-gray-400">${e.description}</div>
+                                    <div class="text-xs text-gray-500">Impact: ${(e.impact * 100).toFixed(2)}%</div>
+                                </div>
+                            `).join('') || '<p class="text-gray-400">No events</p>'}
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                results.innerHTML = `<div class="bg-red-500/20 border border-red-500 p-4 rounded">
+                    <p class="font-bold">❌ Error:</p>
+                    <pre>${error.message}</pre>
+                </div>`;
+            }
+        }
+        
+        // Auto-load on page load
+        window.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>
