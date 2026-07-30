@@ -25,6 +25,7 @@ import contact from './routes/contact';
 import privacy from './routes/privacy';
 import fate from './routes/fate';
 import market from './routes/market';
+import simulation from './routes/simulation';
 
 // Import AI Scheduler
 import { initializeGlobalScheduler, getSchedulerStatus } from './services/scheduler';
@@ -124,6 +125,9 @@ app.route('/api/fate', fate);
 
 // Market Data routes (public access)
 app.route('/api/market', market);
+
+// AI Trading Simulation routes (public access for testing)
+app.route('/api/simulation', simulation);
 
 // WebSocket routes for real-time price updates
 app.route('/api/ws', websocket);

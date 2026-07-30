@@ -22,6 +22,7 @@ import {
 import {
   startCoinScheduler,
 } from '../services/scheduler';
+import { AITradingSimulator } from '../services/ai-trading-simulator';
 
 const coins = new Hono<{ Bindings: Env }>();
 
@@ -358,6 +359,10 @@ coins.post('/', async (c) => {
 
     // Initialize AI traders
     await initializeAITraders(c.env.DB, coinId, total_supply, destinyType);
+
+    // 🤖 啟動 AI 交易模擬系統
+    const simulator = new AITradingSimulator(c.env.DB);
+    await simulator.startSimulation(coinId, prePurchaseTrade.newPrice);
 
     // Schedule market events
     const scheduledEvents = await scheduleEventsForCoin(
