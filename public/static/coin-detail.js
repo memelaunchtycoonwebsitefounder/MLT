@@ -100,7 +100,7 @@ const updateUserBalance = (balance, mltBalance) => {
   }
 };
 
-// Load coin data
+// Load coin data + SIMULATION STATE
 const loadCoinData = async (skipChart = false) => {
   try {
     const token = localStorage.getItem('auth_token');
@@ -114,6 +114,10 @@ const loadCoinData = async (skipChart = false) => {
       renderCoinData();
       await loadUserHoldings();
       loadRecentTransactions();
+      
+      // 🤖 Load simulation state
+      await loadSimulationState();
+      
       if (!skipChart) {
         console.log('🔄 Reloading chart with latest data...');
         await initPriceChart();
@@ -243,49 +247,74 @@ const loadUserHoldings = async () => {
   }
 };
 
-// Load recent transactions
+// Load recent transactions - NOW SHOWS AI BOT TRADES
 const loadRecentTransactions = async () => {
   try {
-    // Note: Coin-specific transaction history endpoint not implemented yet
-    // For now, show empty state
-    renderTransactions([]);
+    // 🤖 Load AI bot trades from simulation system
+    const response = await fetchUtils.get(`/api/simulation/${COIN_ID}/trades?limit=20`);
+    
+    if (response.data.success && response.data.data) {
+      const trades = response.data.data;
+      console.log('🤖 Loaded', trades.length, 'AI bot trades');
+      renderTransactions(trades);
+    } else {
+      renderTransactions([]);
+    }
   } catch (error) {
-    console.error('Failed to load transactions:', error);
+    console.error('Failed to load AI trades:', error);
+    // Fallback to empty state if simulation not started yet
     renderTransactions([]);
   }
 };
 
-// Render transactions
+// Render transactions - ENHANCED FOR AI BOT TRADES
 const renderTransactions = (transactions) => {
   const container = document.getElementById('recent-transactions');
   
   if (transactions.length === 0) {
     container.innerHTML = `
       <div class="text-center py-8 text-gray-400">
-        <i class="fas fa-inbox text-4xl mb-2"></i>
-        <p>No transaction records</p>
+        <i class="fas fa-robot text-4xl mb-2"></i>
+        <p>Waiting for AI bots to start trading...</p>
       </div>
     `;
     return;
   }
   
-  container.innerHTML = transactions.slice(0, 10).map(tx => `
-    <div class="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition">
-      <div class="flex items-center space-x-3">
-        <div class="w-8 h-8 rounded-full ${tx.type === 'buy' ? 'bg-green-500' : 'bg-red-500'} flex items-center justify-center">
-          <i class="fas fa-arrow-${tx.type === 'buy' ? 'up' : 'down'} text-white text-sm"></i>
+  container.innerHTML = transactions.slice(0, 10).map(tx => {
+    const isBuy = tx.type === 'buy';
+    const botType = tx.bot_name?.includes('Whale') ? 'whale' : 
+                    tx.bot_name?.includes('Trader') ? 'trader' : 
+                    tx.bot_name?.includes('Holder') ? 'holder' : 'flipper';
+    
+    const botIcons = {
+      whale: '🐋',
+      trader: '📈',
+      holder: '💎',
+      flipper: '⚡'
+    };
+    
+    return `
+      <div class="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-full ${isBuy ? 'bg-green-500' : 'bg-red-500'} flex items-center justify-center">
+            <i class="fas fa-arrow-${isBuy ? 'up' : 'down'} text-white text-sm"></i>
+          </div>
+          <div>
+            <p class="font-bold">
+              <span class="text-purple-400">${botIcons[botType]} ${tx.bot_name || 'AI Bot'}</span>
+              ${isBuy ? 'bought' : 'sold'} ${Number(tx.amount).toLocaleString()} ${coinData.symbol}
+            </p>
+            <p class="text-sm text-gray-400">${new Date(tx.timestamp).toLocaleString('zh-TW')}</p>
+          </div>
         </div>
-        <div>
-          <p class="font-bold">${tx.type === 'buy' ? 'Buy' : 'Sell'} ${Number(tx.amount).toLocaleString()} ${coinData.symbol}</p>
-          <p class="text-sm text-gray-400">${new Date(tx.created_at).toLocaleString('zh-TW')}</p>
+        <div class="text-right">
+          <p class="font-bold">$${Number(tx.price).toFixed(8)}</p>
+          <p class="text-sm text-gray-400">Total: $${(tx.amount * tx.price).toFixed(4)}</p>
         </div>
       </div>
-      <div class="text-right">
-        <p class="font-bold">$${Number(tx.price).toFixed(8)}</p>
-        <p class="text-sm text-gray-400">Total: $${Number(tx.total_cost || tx.amount * tx.price).toFixed(4)}</p>
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 };
 
 // Initialize price chart with Lightweight Charts (TradingView-style)
@@ -1267,12 +1296,12 @@ function updateDestinyStatus(coin) {
 }
 
 /**
- * Update AI activity statistics
+ * Update AI activity statistics - NOW WITH REAL SIMULATION DATA
  */
 function updateAIActivity(coin) {
   const aiTradeCountEl = document.getElementById('ai-trade-count');
   if (aiTradeCountEl) {
-    aiTradeCountEl.textContent = coin.ai_trade_count || 0;
+    aiTradeCountEl.textContent = window.simulationState?.total_trades || coin.ai_trade_count || 0;
   }
   
   const realTradeCountEl = document.getElementById('real-trade-count');
@@ -1285,18 +1314,19 @@ function updateAIActivity(coin) {
     uniqueTradersEl.textContent = coin.unique_real_traders || 0;
   }
   
-  // Update AI status indicator
+  // Update AI status indicator with simulation status
   const aiStatusEl = document.getElementById('ai-status');
-  if (aiStatusEl && coin.is_ai_active !== undefined) {
-    if (coin.is_ai_active) {
+  if (aiStatusEl) {
+    const isActive = window.simulationState?.status === 'active';
+    if (isActive) {
       aiStatusEl.innerHTML = `
         <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-        <span class="text-sm text-green-400 font-bold">Running</span>
+        <span class="text-sm text-green-400 font-bold">Simulating - Day ${window.simulationState.current_day}/${window.simulationState.total_days}</span>
       `;
     } else {
       aiStatusEl.innerHTML = `
         <div class="w-2 h-2 bg-gray-500 rounded-full"></div>
-        <span class="text-sm text-gray-400">Stopped</span>
+        <span class="text-sm text-gray-400">Waiting</span>
       `;
     }
   }
@@ -1484,3 +1514,155 @@ if (typeof i18n !== 'undefined') {
     window.location.reload();
   });
 }
+
+// ========================================
+// 🤖 AI TRADING SIMULATION SYSTEM
+// ========================================
+
+/**
+ * Load simulation state from backend
+ */
+async function loadSimulationState() {
+  try {
+    const response = await fetchUtils.get(`/api/simulation/${COIN_ID}/state`);
+    
+    if (response.data.success && response.data.data) {
+      window.simulationState = response.data.data;
+      console.log('🤖 Simulation state loaded:', window.simulationState);
+      
+      // Update UI with simulation info
+      updateSimulationUI();
+      
+      // Load events
+      await loadSimulationEvents();
+    } else {
+      console.log('⚠️ No simulation state found - coin may not have simulation yet');
+      window.simulationState = null;
+    }
+  } catch (error) {
+    console.error('❌ Failed to load simulation state:', error);
+    window.simulationState = null;
+  }
+}
+
+/**
+ * Update UI elements with simulation data
+ */
+function updateSimulationUI() {
+  if (!window.simulationState) return;
+  
+  const state = window.simulationState;
+  
+  // Add simulation info banner
+  const statsContainer = document.querySelector('.grid.grid-cols-2.md\\:grid-cols-4');
+  if (statsContainer && !document.getElementById('simulation-banner')) {
+    const banner = document.createElement('div');
+    banner.id = 'simulation-banner';
+    banner.className = 'col-span-2 md:col-span-4 bg-purple-500/20 border border-purple-500/30 rounded-lg p-4';
+    banner.innerHTML = `
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <i class="fas fa-robot text-purple-400 text-2xl"></i>
+          <div>
+            <p class="text-white font-bold">AI Simulation Active</p>
+            <p class="text-gray-400 text-sm">
+              Fate: <span class="text-${getFateColor(state.fate_outcome)}">${state.fate_outcome.toUpperCase()}</span> • 
+              Day ${state.current_day}/${state.total_days} • 
+              ${state.active_bots?.length || 0} bots trading
+            </p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-2xl font-bold text-purple-400">${state.total_trades || 0}</p>
+          <p class="text-gray-400 text-sm">AI Trades</p>
+        </div>
+      </div>
+    `;
+    statsContainer.parentElement.insertBefore(banner, statsContainer);
+  }
+}
+
+/**
+ * Get color for fate outcome
+ */
+function getFateColor(fate) {
+  const colors = {
+    moon: 'green-400',
+    stable: 'blue-400',
+    rug: 'red-400',
+    slow_death: 'orange-400'
+  };
+  return colors[fate] || 'gray-400';
+}
+
+/**
+ * Load simulation events and display them
+ */
+async function loadSimulationEvents() {
+  try {
+    const response = await fetchUtils.get(`/api/simulation/${COIN_ID}/events?limit=10`);
+    
+    if (response.data.success && response.data.data) {
+      const events = response.data.data;
+      console.log('🎯 Loaded', events.length, 'simulation events');
+      
+      // Display events in timeline
+      displaySimulationEvents(events);
+    }
+  } catch (error) {
+    console.error('❌ Failed to load simulation events:', error);
+  }
+}
+
+/**
+ * Display simulation events in the timeline
+ */
+function displaySimulationEvents(events) {
+  if (events.length === 0) return;
+  
+  const timeline = document.getElementById('event-timeline');
+  if (!timeline) return;
+  
+  // Clear existing events
+  timeline.innerHTML = '';
+  
+  // Event icons and colors
+  const eventConfig = {
+    whale_buy: { icon: '🐋', color: 'text-green-400', label: 'Whale Buy' },
+    whale_sell: { icon: '🐋', color: 'text-red-400', label: 'Whale Sell' },
+    viral_tweet: { icon: '🔥', color: 'text-pink-400', label: 'Viral Tweet' },
+    influencer_pump: { icon: '📢', color: 'text-purple-400', label: 'Influencer Pump' },
+    hack_attack: { icon: '💀', color: 'text-red-400', label: 'Hack Attack' },
+    fomo_wave: { icon: '🌊', color: 'text-blue-400', label: 'FOMO Wave' },
+    panic_sell: { icon: '😱', color: 'text-orange-400', label: 'Panic Sell' },
+    listing_announcement: { icon: '📰', color: 'text-green-400', label: 'Listing News' },
+    market_crash: { icon: '📉', color: 'text-red-400', label: 'Market Crash' }
+  };
+  
+  events.forEach(event => {
+    const config = eventConfig[event.event_type] || { icon: '📊', color: 'text-gray-400', label: event.event_name };
+    
+    const eventEl = document.createElement('div');
+    eventEl.className = 'flex items-start space-x-3 p-3 rounded-lg bg-gray-800/50 hover:bg-gray-800 transition';
+    eventEl.innerHTML = `
+      <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-gray-700 text-2xl">
+        ${config.icon}
+      </div>
+      <div class="flex-1">
+        <div class="flex items-center justify-between mb-1">
+          <div class="flex items-center space-x-2">
+            <span class="font-bold ${config.color}">${config.label}</span>
+            <span class="text-xs text-purple-400">🤖 AI Generated</span>
+          </div>
+          <span class="text-xs text-gray-500">${formatTime(event.timestamp)}</span>
+        </div>
+        <p class="text-sm text-gray-400">${event.description || 'Market event occurred'}</p>
+        <p class="text-xs text-gray-500 mt-1">Impact: <span class="${event.impact > 0 ? 'text-green-400' : 'text-red-400'}">${event.impact > 0 ? '+' : ''}${(event.impact * 100).toFixed(1)}%</span></p>
+      </div>
+    `;
+    
+    timeline.appendChild(eventEl);
+  });
+}
+
+console.log('✅ AI Trading Simulation system loaded');
