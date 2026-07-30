@@ -26,6 +26,7 @@ import privacy from './routes/privacy';
 import fate from './routes/fate';
 import market from './routes/market';
 import simulation from './routes/simulation';
+import decisions from './routes/decisions';
 
 // Import AI Scheduler
 import { initializeGlobalScheduler, getSchedulerStatus } from './services/scheduler';
@@ -128,6 +129,36 @@ app.route('/api/market', market);
 
 // AI Trading Simulation routes (public access for testing)
 app.route('/api/simulation', simulation);
+
+// User Decision Points routes
+app.route('/api/decisions', decisions);
+
+// Auto-generator endpoint (for testing and manual triggers)
+app.post('/api/auto-generate', async (c) => {
+  try {
+    const { AutoGenerator } = await import('./services/auto-generator');
+    const generator = new AutoGenerator(c.env.DB);
+    const result = await generator.runCycle();
+    return c.json({ success: true, data: result });
+  } catch (error) {
+    console.error('[AutoGenerator] Error:', error);
+    return c.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }, 500);
+  }
+});
+
+// Scheduled auto-generator (runs every 30 seconds via Cloudflare Cron)
+app.get('/api/cron/auto-generate', async (c) => {
+  try {
+    const { AutoGenerator } = await import('./services/auto-generator');
+    const generator = new AutoGenerator(c.env.DB);
+    const result = await generator.runCycle();
+    console.log('[Cron] Auto-generator result:', result);
+    return c.json({ success: true, data: result });
+  } catch (error) {
+    console.error('[Cron] Error:', error);
+    return c.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }, 500);
+  }
+});
 
 // WebSocket routes for real-time price updates
 app.route('/api/ws', websocket);
@@ -2469,6 +2500,7 @@ app.get('/coin/:id', (c) => {
         <script src="/static/i18n.js?v=20260221151619"></script>
         <script src="/static/language-switcher.js?v=20260221151619"></script>
         <script src="/static/coin-detail.js?v=20260221151619"></script>
+        <script src="/static/simulation-realtime.js?v=20260730"></script>
         <!-- Cookie Consent & Compliance -->
     <link rel="stylesheet" href="/static/cookie-styles.css">
     <script src="/static/cookie-consent.js"></script>
